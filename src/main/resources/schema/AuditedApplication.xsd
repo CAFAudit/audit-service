@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:aa="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+        targetNamespace="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+        elementFormDefault="qualified">
+
+  <element name="AuditedApplication">
+    <complexType>
+      <sequence>
+        <element name="ApplicationId" type="string" />
+        <element name="AuditEvents">
+          <complexType>
+            <sequence>
+              <element name="AuditEvent" type="aa:AuditEvent" maxOccurs="unbounded" />
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <complexType name="AuditEvent">
+    <sequence>
+      <element name="TypeId" type="string" />
+      <element name="CategoryId" type="string" />
+      <element name="Params">
+        <complexType>
+          <sequence>
+            <element name="Param" type="aa:AuditEventParam" maxOccurs="unbounded" />
+          </sequence>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="AuditEventParam">
+    <sequence>
+      <element name="Name" type="string" />
+      <element name="Type" type="aa:AuditEventParamType" />
+      <element name="ColumnName" type="string" minOccurs="0" />
+    </sequence>
+  </complexType>
+
+  <simpleType name="AuditEventParamType">
+    <restriction base="string">
+      <enumeration value="string" />
+      <enumeration value="long" />
+    </restriction>
+  </simpleType>
+
+</schema>

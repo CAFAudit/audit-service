@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuditedApplication			
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd" 
+    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"			
+>
+	<ApplicationId>ProductX</ApplicationId>
+	<AuditEvents>
+	  <AuditEvent>
+		<TypeId>viewDocument</TypeId>
+		<UnexpectedElement>This is here for unit test purposes.</UnexpectedElement>
+		<Params>
+		  <Param>
+			<Name>docId</Name>
+			<Type>long</Type>
+			<Description>Identifies the document that was viewed</Description>
+		  </Param>
+		</Params>
+	  </AuditEvent>
+	  <AuditEvent>
+		<TypeId>policyApplied</TypeId>
+		<UnexpectedElement>This is here for unit test purposes.</UnexpectedElement>
+		<Params>
+		  <Param>
+			<Name>PolicyId</Name>
+			<Type>long</Type>
+			<Description>Identifies the policy being applied</Description>
+		  </Param>
+		  <Param>
+			<Name>policyName</Name>
+			<Type>string</Type>
+			<Description>The name of the policy being applied</Description>
+		  </Param>
+		  <Param>
+			<Name>policyDef</Name>
+			<Type>string</Type>
+			<Description>The definition of the policy being applied</Description>
+		  </Param>
+		</Params>
+	  </AuditEvent>	  
+	</AuditEvents>
+</AuditedApplication>

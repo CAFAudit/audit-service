@@ -38,13 +38,18 @@
       <element name="Name" type="string" />
       <element name="Type" type="aa:AuditEventParamType" />
       <element name="ColumnName" type="string" minOccurs="0" />
+      <element name="Description" type="string" />
     </sequence>
   </complexType>
 
   <simpleType name="AuditEventParamType">
     <restriction base="string">
       <enumeration value="string" />
+      <enumeration value="short" />
+      <enumeration value="int" />
       <enumeration value="long" />
+      <enumeration value="float" />
+      <enumeration value="date" />
     </restriction>
   </simpleType>
 

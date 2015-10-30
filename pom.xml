@@ -15,6 +15,13 @@
         This project provides an XML to Java transformation plugin.
     </description>
 
+    <parent>
+        <groupId>com.hpe.caf</groupId>
+        <artifactId>caf-maven</artifactId>
+        <version>14-SNAPSHOT</version>
+        <relativePath>../caf-maven</relativePath>
+    </parent>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -39,12 +46,10 @@
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
-            <version>3.0.8</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -55,7 +60,6 @@
         <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom</artifactId>
-            <version>1.1.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugin-testing</groupId>
@@ -72,7 +76,6 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-schema</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

@@ -8,6 +8,13 @@
     <artifactId>caf-audit-schema</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <parent>
+        <groupId>com.hpe.caf</groupId>
+        <artifactId>caf-maven</artifactId>
+        <version>14-SNAPSHOT</version>
+        <relativePath>../caf-maven</relativePath>
+    </parent>
+
     <build>
         <plugins>
             <plugin>

@@ -76,6 +76,7 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-schema</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

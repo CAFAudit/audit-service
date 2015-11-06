@@ -79,7 +79,7 @@ public class XMLToJavaTransformTest {
         }
         catch( MojoExecutionException ee )
         {
-            final String msg = "Exception : org.apache.maven.plugin.MojoExecutionException: The audit events XML configuration file cannot be found.";
+            final String msg = "The audit events XML configuration file cannot be found.";
             Assert.assertEquals(msg, ee.getMessage());
         }
 

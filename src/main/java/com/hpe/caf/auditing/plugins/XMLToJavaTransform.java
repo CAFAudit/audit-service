@@ -34,27 +34,27 @@ public class XMLToJavaTransform {
                             String templateName,
                             String outputFilename
     ) throws Exception {
-        Writer writer = null;
         boolean bool = false;
 
-        try
+        //  Check that the audit events XML config file exists and conforms to the XML schema.
+        //  The XSD is provided via caf-audit-schema as a remote resource.
+        if (this.auditXMLConfig == null || !this.auditXMLConfig.exists())
         {
-            //  Check that the audit events XML config file exists and conforms to the XML schema.
-            //  The XSD is provided via caf-audit-schema as a remote resource.
-            if (this.auditXMLConfig == null || !this.auditXMLConfig.exists())
-            {
-                throw new MojoExecutionException("The audit events XML configuration file cannot be found.");
-            }
+            throw new MojoExecutionException("The audit events XML configuration file cannot be found.");
+        }
 
-            InputStream xmlInputStream = new FileInputStream(this.auditXMLConfig);
-            InputStream xsdInputStream = this.getClass().getClassLoader().getResourceAsStream(xsdName);
+        try(
+                InputStream xmlInputStream = new FileInputStream(this.auditXMLConfig);
+                InputStream xsdInputStream = this.getClass().getClassLoader().getResourceAsStream(xsdName)
+        )
+        {
+            //  Check that the audit events XML config file conforms to the XML schema.
+            //  The XSD is provided via caf-audit-schema as a remote resource.
             bool = validateXMLAgainstXSD(xmlInputStream, xsdInputStream);
             if (bool != true)
             {
                 throw new MojoExecutionException("The audit events XML configuration file does not conform to the schema.");
             }
-            xmlInputStream.close();
-            xsdInputStream.close();
 
             //  Generate output directory if needed. This folder is needed to store the transform .java file.
             //  File outputDirectory = new File(outputDirectory);
@@ -106,7 +106,7 @@ public class XMLToJavaTransform {
             }
 
             //  Create a new .java file for transform output.
-            String transformOutputFile = outputDirectory + "/" + outputFilename;
+            String transformOutputFile = outputDirectory + File.separator + outputFilename;
             File f = new File(transformOutputFile);
             if (f.exists())
             {
@@ -118,32 +118,18 @@ public class XMLToJavaTransform {
             if(bool == true)
             {
                 String outFileName = f.getAbsolutePath();
-                writer = new BufferedWriter(new FileWriter(new File(outFileName)));
 
-                //  Perform the XML to Java transformation.
-                template.merge( context , writer);
+                try(BufferedWriter writer = new BufferedWriter(new FileWriter(new File(outFileName)))) {
+
+                    //  Perform the XML to Java transformation.
+                    template.merge(context, writer);
+                }
             }
         }
         catch( Exception e )
         {
             throw new MojoExecutionException("Exception : " + e);
         }
-        finally
-        {
-            if ( writer != null)
-            {
-                try
-                {
-                    writer.flush();
-                    writer.close();
-                }
-                catch( Exception e )
-                {
-                    throw new MojoExecutionException("Exception : " + e);
-                }
-            }
-        }
-
     }
 
     private static boolean validateXMLAgainstXSD(InputStream xml, InputStream xsd)

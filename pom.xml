@@ -17,9 +17,9 @@
 
     <parent>
         <groupId>com.hpe.caf</groupId>
-        <artifactId>caf-maven</artifactId>
-        <version>14-SNAPSHOT</version>
-        <relativePath>../caf-maven</relativePath>
+        <artifactId>caf-latest-develop</artifactId>
+        <version>1-SNAPSHOT</version>
+        <relativePath>../caf-latest-develop</relativePath>
     </parent>
 
     <properties>
@@ -76,7 +76,6 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-schema</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

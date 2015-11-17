@@ -20,7 +20,7 @@ package $package;
 
 import com.hpe.caf.auditing.AuditLogHelper;
 import com.hpe.caf.util.rabbitmq.RabbitUtil;
-import com.hpe.caf.worker.audit.AuditWorkerTask;
+import com.hpe.caf.worker.audit.AuditTask;
 import com.rabbitmq.client.Channel;
 
 import java.io.IOException;
@@ -129,13 +129,13 @@ $javadocParamsList
     public static void $methodDeclaration
      throws IOException
     {
-        final AuditWorkerTask auditWorkerTask = AuditLogHelper.createAuditWorkerTask();
-        auditWorkerTask.setApplicationId(APPLICATION_IDENTIFIER);
-        auditWorkerTask.setUserId(userId);
-        auditWorkerTask.setEventTypeId("$typeId");
-        auditWorkerTask.setEventParams($eventParamsList);
+        final AuditWorkerTask auditTask = AuditLogHelper.createAuditWorkerTask();
+        auditTask.setApplicationId(APPLICATION_IDENTIFIER);
+        auditTask.setUserId(userId);
+        auditTask.setEventTypeId("$typeId");
+        auditTask.setEventParams($eventParamsList);
 
-        AuditLogHelper.sendAuditWorkerTask(channel, QUEUE_NAME, auditWorkerTask);
+        AuditLogHelper.sendAuditWorkerTask(channel, QUEUE_NAME, auditTask);
     }
 	#end
 

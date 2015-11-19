@@ -2,9 +2,8 @@
 package com.hpe.caf.auditing.plugins.unittest;
 
 import com.hpe.caf.auditing.AuditLogHelper;
-import com.hpe.caf.util.rabbitmq.RabbitUtil;
 import com.hpe.caf.worker.audit.AuditWorkerTask;
-import com.rabbitmq.client.Channel;
+import com.hpe.caf.auditing.AuditChannel;
 
 import java.io.IOException;
 import java.util.Date;
@@ -24,10 +23,10 @@ public final class AuditLog
      * Checks that the AuditLog queue exists and creates it if it doesn't.
      * This function should be called before any of the audit... functions are called.
      */
-    public static void ensureQueueExists(final Channel channel)
+    public static void ensureQueueExists(final AuditChannel channel)
 			throws IOException
     {
-        RabbitUtil.declareWorkerQueue(channel, QUEUE_NAME);
+        channel.declareQueue(QUEUE_NAME);
     }
 
             																	            																																																													            																																																													            																																																													            																																																													            																																																													            																																																															
@@ -44,7 +43,7 @@ public final class AuditLog
      */
     public static void auditViewDocument
 	(
-		final Channel channel,
+		final AuditChannel channel,
 		final String userId,
 		final String param1,
 		final short param2,

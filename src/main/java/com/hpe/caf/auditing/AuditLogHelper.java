@@ -7,8 +7,6 @@ import com.hpe.caf.api.worker.TaskStatus;
 import com.hpe.caf.codec.JsonCodec;
 import com.hpe.caf.worker.audit.AuditWorkerConstants;
 import com.hpe.caf.worker.audit.AuditWorkerTask;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.MessageProperties;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -54,7 +52,7 @@ public final class AuditLogHelper {
 
     public static void sendAuditWorkerTask
     (
-        final Channel channel,
+        final AuditChannel channel,
         final String queueName,
         final AuditWorkerTask auditWorkerTask
     )
@@ -91,7 +89,7 @@ public final class AuditLogHelper {
         }
 
         // Send the message
-        channel.basicPublish("", queueName, MessageProperties.TEXT_PLAIN, taskMessageBytes);
+        channel.publish(queueName, taskMessageBytes);
     }
 
     private static String getSystemName() {

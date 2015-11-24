@@ -10,20 +10,32 @@ public class RabbitMQAuditChannel implements AuditChannel{
 
     private Channel rabbitMQChannel;
 
+    /*
+     * Constructor.
+     */
     public RabbitMQAuditChannel(Channel rabbitMQChannel) throws IOException {
         this.rabbitMQChannel = rabbitMQChannel;
     }
 
+    /**
+     * Publish a message.
+     */
     @Override
     public void publish(String routingKey, byte[] body) throws IOException {
         rabbitMQChannel.basicPublish("", routingKey, MessageProperties.TEXT_PLAIN, body);
     }
 
+    /**
+     * Close the channel.
+     */
     @Override
     public void close() throws Exception {
         rabbitMQChannel.close();
     }
 
+    /**
+     * Declare the specified queue.
+     */
     @Override
     public void declareQueue(String queueName) throws IOException {
 

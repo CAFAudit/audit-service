@@ -38,6 +38,9 @@ public final class AuditLogHelper {
     private AuditLogHelper() {
     }
 
+    /*
+     * Create an instance of the audit worker task comprising audit event details.
+     */
     public static AuditWorkerTask createAuditWorkerTask()
     {
         final AuditWorkerTask auditWorkerTask = new AuditWorkerTask();
@@ -50,6 +53,9 @@ public final class AuditLogHelper {
         return auditWorkerTask;
     }
 
+    /*
+     * Publish audit event details on the queue.
+     */
     public static void sendAuditWorkerTask
     (
         final AuditChannel channel,

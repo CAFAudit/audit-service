@@ -8,7 +8,7 @@ import net.jodah.lyra.config.Config;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public class RabbitMQAuditConnection implements AuditConnection{
+class RabbitMQAuditConnection implements AuditConnection{
 
     private Connection rabbitMQConnection;
 

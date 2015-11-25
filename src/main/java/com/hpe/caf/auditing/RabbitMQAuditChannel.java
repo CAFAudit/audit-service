@@ -6,7 +6,7 @@ import com.rabbitmq.client.MessageProperties;
 import java.io.IOException;
 import java.util.Collections;
 
-public class RabbitMQAuditChannel implements AuditChannel{
+class RabbitMQAuditChannel implements AuditChannel{
 
     private Channel rabbitMQChannel;
 

@@ -6,6 +6,8 @@ import com.hpe.caf.worker.audit.AuditWorkerTask;
 import com.hpe.caf.auditing.AuditChannel;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -29,28 +31,32 @@ public final class AuditLog
         channel.declareQueue(QUEUE_NAME);
     }
 
-            																	            																																																													            																																																													            																																																													            																																																													            																																																													            																																																															
+            																	            																																																													            																																																																							            																																																																							            																																																																							            																																																																							            																																																																							            																																																																							            																																																																									
     /**
      * Audit the viewDocument event
 	 * @param channel Identifies the channel to be used for message queuing 
 	 * @param userId Identifies the user who triggered the event 
-	 * @param param1 Description for param1 
-	 * @param param2 Description for param2 
-	 * @param param3 Description for param3 
-	 * @param param4 Description for param4 
-	 * @param param5 Description for param5 
-	 * @param param6 Description for param6 		 
+	 * @param String_Param Description for String_Param 
+	 * @param Int16_Param Description for Int16_Param 
+	 * @param Int32_Param Description for Int32_Param 
+	 * @param Int64_Param Description for Int64_Param 
+	 * @param Float_Param Description for Float_Param 
+	 * @param Double_Param Description for Double_Param 
+	 * @param Boolean_Param Description for Boolean_Param 
+	 * @param Date_Param Description for Date_Param 		 
      */
     public static void auditViewDocument
 	(
 		final AuditChannel channel,
 		final String userId,
-		final String param1,
-		final short param2,
-		final int param3,
-		final long param4,
-		final float param5,
-		final Date param6
+		final String String_Param,
+		final short Int16_Param,
+		final int Int32_Param,
+		final long Int64_Param,
+		final float Float_Param,
+		final double Double_Param,
+		final boolean Boolean_Param,
+		final Date Date_Param
 	)
      throws IOException
     {
@@ -58,7 +64,8 @@ public final class AuditLog
         auditWorkerTask.setApplicationId(APPLICATION_IDENTIFIER);
         auditWorkerTask.setUserId(userId);
         auditWorkerTask.setEventTypeId("viewDocument");
-        auditWorkerTask.setEventParams(new String[] {param1,String.valueOf(param2),String.valueOf(param3),String.valueOf(param4),String.valueOf(param5),String.valueOf(param6)});
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        auditWorkerTask.setEventParams(new String[] {String_Param,String.valueOf(Int16_Param),String.valueOf(Int32_Param),String.valueOf(Int64_Param),String.valueOf(Float_Param),String.valueOf(Double_Param),String.valueOf(Boolean_Param),df.format(Date_Param)});
 
         AuditLogHelper.sendAuditWorkerTask(channel, QUEUE_NAME, auditWorkerTask);
     }

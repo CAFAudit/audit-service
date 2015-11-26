@@ -1,46 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<AuditedApplication			
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd" 
-    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"			
+<AuditedApplication
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+		xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
 >
 	<ApplicationId>ProductX</ApplicationId>
 	<AuditEvents>
-	  <AuditEvent>
-		<TypeId>viewDocument</TypeId>
-		<CategoryId>documentEvents</CategoryId>
-		  <Params>
-			  <Param>
-				  <Name>param1</Name>
-				  <Type>string</Type>
-				  <Description>Description for param1</Description>
-			  </Param>
-			  <Param>
-				  <Name>param2</Name>
-				  <Type>short</Type>
-				  <Description>Description for param2</Description>
-			  </Param>
-			  <Param>
-				  <Name>param3</Name>
-				  <Type>int</Type>
-				  <Description>Description for param3</Description>
-			  </Param>
-			  <Param>
-				  <Name>param4</Name>
-				  <Type>long</Type>
-				  <Description>Description for param4</Description>
-			  </Param>
-			  <Param>
-				  <Name>param5</Name>
-				  <Type>float</Type>
-				  <Description>Description for param5</Description>
-			  </Param>
-			  <Param>
-				  <Name>param6</Name>
-				  <Type>date</Type>
-				  <Description>Description for param6</Description>
-			  </Param>
-		  </Params>
-	  </AuditEvent>
+		<AuditEvent>
+			<TypeId>viewDocument</TypeId>
+			<CategoryId>documentEvents</CategoryId>
+			<Params>
+				<Param>
+					<Name>String_Param</Name>
+					<Type>string</Type>
+					<Description>Description for String_Param</Description>
+				</Param>
+				<Param>
+					<Name>Int16_Param</Name>
+					<Type>short</Type>
+					<Description>Description for Int16_Param</Description>
+				</Param>
+				<Param>
+					<Name>Int32_Param</Name>
+					<Type>int</Type>
+					<Description>Description for Int32_Param</Description>
+				</Param>
+				<Param>
+					<Name>Int64_Param</Name>
+					<Type>long</Type>
+					<Description>Description for Int64_Param</Description>
+				</Param>
+				<Param>
+					<Name>Float_Param</Name>
+					<Type>float</Type>
+					<Description>Description for Float_Param</Description>
+				</Param>
+				<Param>
+					<Name>Double_Param</Name>
+					<Type>double</Type>
+					<Description>Description for Double_Param</Description>
+				</Param>
+				<Param>
+					<Name>Boolean_Param</Name>
+					<Type>boolean</Type>
+					<Description>Description for Boolean_Param</Description>
+				</Param>
+				<Param>
+					<Name>Date_Param</Name>
+					<Type>date</Type>
+					<Description>Description for Date_Param</Description>
+				</Param>
+			</Params>
+		</AuditEvent>
 	</AuditEvents>
 </AuditedApplication>

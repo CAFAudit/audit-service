@@ -49,6 +49,8 @@
       <enumeration value="int" />
       <enumeration value="long" />
       <enumeration value="float" />
+      <enumeration value="double" />
+      <enumeration value="boolean" />
       <enumeration value="date" />
     </restriction>
   </simpleType>

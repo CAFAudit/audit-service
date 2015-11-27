@@ -1,5 +1,6 @@
 package com.hpe.caf.auditing;
 
+import com.hpe.caf.auditing.rabbitmq.RabbitMQAuditConnection;
 import net.jodah.lyra.ConnectionOptions;
 import net.jodah.lyra.config.Config;
 

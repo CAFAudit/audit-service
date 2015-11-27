@@ -1,5 +1,6 @@
-package com.hpe.caf.auditing;
+package com.hpe.caf.auditing.rabbitmq;
 
+import com.hpe.caf.auditing.rabbitmq.RabbitMQAuditChannel;
 import com.rabbitmq.client.Channel;
 import org.junit.Test;
 import org.mockito.Mockito;

@@ -1,5 +1,7 @@
-package com.hpe.caf.auditing;
+package com.hpe.caf.auditing.rabbitmq;
 
+import com.hpe.caf.auditing.AuditChannel;
+import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.util.rabbitmq.RabbitUtil;
 import com.rabbitmq.client.Connection;
 import net.jodah.lyra.ConnectionOptions;
@@ -8,7 +10,7 @@ import net.jodah.lyra.config.Config;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-class RabbitMQAuditConnection implements AuditConnection{
+public class RabbitMQAuditConnection implements AuditConnection{
 
     private Connection rabbitMQConnection;
 

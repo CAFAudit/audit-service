@@ -1,5 +1,6 @@
-package com.hpe.caf.auditing;
+package com.hpe.caf.auditing.rabbitmq;
 
+import com.hpe.caf.auditing.AuditChannel;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 

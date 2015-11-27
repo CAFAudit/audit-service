@@ -38,7 +38,7 @@ public final class AuditLog
      * Checks that the AuditLog queue exists and creates it if it doesn't.
      * This function should be called before any of the audit... functions are called.
      */
-    public static void ensureQueueExists(final AuditChannel channel)
+    public static void declareApplication(final AuditChannel channel)
         throws IOException
     {
         channel.declareApplication(APPLICATION_IDENTIFIER);

@@ -2,8 +2,8 @@ package com.hpe.caf.auditing;
 
 import java.io.IOException;
 
-public interface AuditChannel extends AutoCloseable {
-
+public interface AuditChannel extends AutoCloseable
+{
     /**
      * Publish a message.
      *

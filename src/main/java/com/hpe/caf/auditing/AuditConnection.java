@@ -2,8 +2,8 @@ package com.hpe.caf.auditing;
 
 import java.io.IOException;
 
-public interface AuditConnection extends AutoCloseable{
-
+public interface AuditConnection extends AutoCloseable
+{
     /**
      * Create a new audit channel.
      *
@@ -11,5 +11,4 @@ public interface AuditConnection extends AutoCloseable{
      * @throws IOException if an I/O problem is encountered
      */
     AuditChannel createChannel() throws IOException;
-
 }

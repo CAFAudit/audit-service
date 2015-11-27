@@ -10,9 +10,9 @@ import net.jodah.lyra.config.Config;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public class RabbitMQAuditConnection implements AuditConnection{
-
-    private Connection rabbitMQConnection;
+public final class RabbitMQAuditConnection implements AuditConnection
+{
+    private final Connection rabbitMQConnection;
 
     /**
      * Constructor to create a new Lyra managed RabbitMQ connection with a default Lyra configuration.

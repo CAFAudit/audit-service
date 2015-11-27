@@ -10,12 +10,12 @@
 #set($toString = "String.valueOf")
 #set($dateFormatString = "df.format")
 #set($newStringArray = "new String[] ")
-#set($javadocParamsComment = "	 * @param")
+#set($javadocParamsComment = "     * @param")
 #set($finalChannelArg = "final AuditChannel channel")
 #set($finalUserIdArg = "final String userId")
 #set($final = "final ")
-#set($channelJavaDocsComment = "	 * @param channel Identifies the channel to be used for message queuing ")
-#set($userIdJavaDocsComment = "	 * @param userId Identifies the user who triggered the event ")
+#set($channelJavaDocsComment = "     * @param channel Identifies the channel to be used for message queuing ")
+#set($userIdJavaDocsComment = "     * @param userId Identifies the user who triggered the event ")
 
 package $package;
 
@@ -44,7 +44,7 @@ public final class AuditLog
      * This function should be called before any of the audit... functions are called.
      */
     public static void ensureQueueExists(final AuditChannel channel)
-			throws IOException
+        throws IOException
     {
         channel.declareQueue(QUEUE_NAME);
     }
@@ -52,99 +52,99 @@ public final class AuditLog
     ##
     ## For each audit event specified, generate code for auditing the actual event.
     ##
-	#foreach($auditevent in $root.getRootElement().getChild("AuditEvents",$namespace).getChildren("AuditEvent",$namespace))
-		##
-		#set($methodNamePrefix = "audit")
-		#set($typeId = $auditevent.getChild("TypeId",$namespace).getText())
-		#set($upperCaseTypeId = "$typeId.substring(0, 1).toUpperCase()$typeId.substring(1)")
-		#set($argList = "")
-		#set($eventParamsList = "")
-		#set($javadocParamsList = "")
-		##
-		## For each parameter specified, build up argument, javadoc and eventParams list.
-		##
-		#foreach($param in $auditevent.getChild("Params",$namespace).getChildren("Param",$namespace))
-			#set($name = $param.getChild("Name",$namespace).getText())
-			#set($type = $param.getChild("Type",$namespace).getText())
-			##  Do not change case for supported primitive types.
-			#if( $type == "short" || $type == "int" || $type == "long" || $type == "float" || $type == "double"|| $type == "boolean")
+    #foreach($auditevent in $root.getRootElement().getChild("AuditEvents",$namespace).getChildren("AuditEvent",$namespace))
+        ##
+        #set($methodNamePrefix = "audit")
+        #set($typeId = $auditevent.getChild("TypeId",$namespace).getText())
+        #set($upperCaseTypeId = "$typeId.substring(0, 1).toUpperCase()$typeId.substring(1)")
+        #set($argList = "")
+        #set($eventParamsList = "")
+        #set($javadocParamsList = "")
+        ##
+        ## For each parameter specified, build up argument, javadoc and eventParams list.
+        ##
+        #foreach($param in $auditevent.getChild("Params",$namespace).getChildren("Param",$namespace))
+            #set($name = $param.getChild("Name",$namespace).getText())
+            #set($type = $param.getChild("Type",$namespace).getText())
+            ##  Do not change case for supported primitive types.
+            #if( $type == "short" || $type == "int" || $type == "long" || $type == "float" || $type == "double"|| $type == "boolean")
                 #set($upperCaseType = $type)
             #else
                 #set($upperCaseType = "$type.substring(0, 1).toUpperCase()$type.substring(1)")
             #end
-			#set($desc = $param.getChild("Description",$namespace).getText())
-			##
-			## Build up method argument list.
-			##
-			#if ( $argList != "" )
-				#set($argList = "$argList$comma
-		$final$upperCaseType$space$name")
-			#else
-				#set($argList = "$finalChannelArg$comma
-		$finalUserIdArg$comma
-		$final$upperCaseType$space$name")
-			#end
-			##
-			## Build up event params list.
-			##
-			#if ( $eventParamsList != "" )
-				#if ($type != "string")
-					#if ($type == "date")
-						#set($convertTypeToString = "$dateFormatString$leftPar$name$rightPar")
-						#set($eventParamsList = "$eventParamsList$comma$convertTypeToString")
-					#else
-						#set($convertTypeToString = "$toString$leftPar$name$rightPar")
-						#set($eventParamsList = "$eventParamsList$comma$convertTypeToString")
-					#end
-				#else
-					#set($eventParamsList = "$eventParamsList$comma$name")
-				#end
-			#else
-				#if ($type != "string")
-				    #set($convertTypeToString = "$toString$leftPar$name$rightPar")
-					#set($eventParamsList = "$newStringArray$leftCurlyBracket$convertTypeToString")
-				#else
-					#set($eventParamsList = "$newStringArray$leftCurlyBracket$name")			
-				#end
-			#end
-			##
-			## Build up javadoc list.
-			##
-			#if ( $javadocParamsList != "" )
-				#set($javadocParamsList = "$javadocParamsList
+            #set($desc = $param.getChild("Description",$namespace).getText())
+            ##
+            ## Build up method argument list.
+            ##
+            #if ( $argList != "" )
+                #set($argList = "$argList$comma
+        $final$upperCaseType$space$name")
+            #else
+                #set($argList = "$finalChannelArg$comma
+        $finalUserIdArg$comma
+        $final$upperCaseType$space$name")
+            #end
+            ##
+            ## Build up event params list.
+            ##
+            #if ( $eventParamsList != "" )
+                #if ($type != "string")
+                    #if ($type == "date")
+                        #set($convertTypeToString = "$dateFormatString$leftPar$name$rightPar")
+                        #set($eventParamsList = "$eventParamsList$comma$convertTypeToString")
+                    #else
+                        #set($convertTypeToString = "$toString$leftPar$name$rightPar")
+                        #set($eventParamsList = "$eventParamsList$comma$convertTypeToString")
+                    #end
+                #else
+                    #set($eventParamsList = "$eventParamsList$comma$name")
+                #end
+            #else
+                #if ($type != "string")
+                    #set($convertTypeToString = "$toString$leftPar$name$rightPar")
+                    #set($eventParamsList = "$newStringArray$leftCurlyBracket$convertTypeToString")
+                #else
+                    #set($eventParamsList = "$newStringArray$leftCurlyBracket$name")
+                #end
+            #end
+            ##
+            ## Build up javadoc list.
+            ##
+            #if ( $javadocParamsList != "" )
+                #set($javadocParamsList = "$javadocParamsList
 $javadocParamsComment$space$name$space$desc$space")
-			#else
-				#set($javadocParamsList = "$javadocParamsList$channelJavaDocsComment
+            #else
+                #set($javadocParamsList = "$javadocParamsList$channelJavaDocsComment
 $userIdJavaDocsComment
 $javadocParamsComment$space$name$space$desc$space")
-			#end
-		#end
-		##
-		#if ( $eventParamsList != "" )
-			#set($eventParamsList = "$eventParamsList$rightCurlyBracket")
-		#end
-		##
-		#set($methodDeclaration = "$methodNamePrefix$upperCaseTypeId
-	$leftPar
-		$argList
-	$rightPar")
+            #end
+        #end
+        ##
+        #if ( $eventParamsList != "" )
+            #set($eventParamsList = "$eventParamsList$rightCurlyBracket")
+        #end
+        ##
+        #set($methodDeclaration = "$methodNamePrefix$upperCaseTypeId
+    $leftPar
+        $argList
+    $rightPar")
 
     /**
      * Audit the $typeId event
-$javadocParamsList		 
+$javadocParamsList
      */
     public static void $methodDeclaration
-     throws IOException
+        throws IOException
     {
         final AuditWorkerTask auditWorkerTask = AuditLogHelper.createAuditWorkerTask();
         auditWorkerTask.setApplicationId(APPLICATION_IDENTIFIER);
         auditWorkerTask.setUserId(userId);
         auditWorkerTask.setEventTypeId("$typeId");
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         auditWorkerTask.setEventParams($eventParamsList);
 
         AuditLogHelper.sendAuditWorkerTask(channel, QUEUE_NAME, auditWorkerTask);
     }
-	#end
+#end
 
 }

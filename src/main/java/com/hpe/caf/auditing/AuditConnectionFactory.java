@@ -1,5 +1,6 @@
 package com.hpe.caf.auditing;
 
+import com.hpe.caf.auditing.kafka.KafkaAuditConnection;
 import com.hpe.caf.auditing.rabbitmq.RabbitMQAuditConnection;
 import net.jodah.lyra.ConnectionOptions;
 import net.jodah.lyra.config.Config;
@@ -36,5 +37,14 @@ public class AuditConnectionFactory {
      */
     public static AuditConnection createConnection(ConnectionOptions opts, Config config) throws IOException, TimeoutException {
         return new RabbitMQAuditConnection(opts, config);
+    }
+
+    /**
+     * Create Kafka connection for the Audit application using the specified
+     * list of seed brokers.
+     */
+    public static AuditConnection createKafkaConnection(String kafkaBrokers)
+    {
+        return new KafkaAuditConnection(kafkaBrokers);
     }
 }

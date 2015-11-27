@@ -17,6 +17,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-api</artifactId>
         </dependency>
@@ -35,6 +39,11 @@
         <dependency>
             <groupId>com.hpe.caf.util</groupId>
             <artifactId>util-rabbitmq</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>0.8.2.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

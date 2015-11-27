@@ -1,8 +1,8 @@
 package com.hpe.caf.auditing.rabbitmq;
 
 import com.hpe.caf.auditing.AuditChannel;
+import com.hpe.caf.auditing.AuditEventBuilder;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.MessageProperties;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -19,11 +19,26 @@ final class RabbitMQAuditChannel implements AuditChannel
     }
 
     /**
-     * Publish a message.
+     * Declare the specified application
      */
     @Override
-    public void publish(String routingKey, byte[] body) throws IOException {
-        rabbitMQChannel.basicPublish("", routingKey, MessageProperties.TEXT_PLAIN, body);
+    public void declareApplication(String applicationId) throws IOException
+    {
+        final String queueName = RabbitMQAuditQueue.getQueueName(applicationId);
+
+        /**
+         * The queue contents are durable and should be disk backed.
+         * The queue can be used by any channel consumer.
+         * Do not automatically remove the queue if it becomes empty.
+         */
+        rabbitMQChannel.queueDeclare(
+            queueName, true, false, false, Collections.emptyMap());
+    }
+
+    @Override
+    public AuditEventBuilder createEventBuilder()
+    {
+        return new RabbitMQAuditEventBuilder(rabbitMQChannel);
     }
 
     /**
@@ -32,19 +47,5 @@ final class RabbitMQAuditChannel implements AuditChannel
     @Override
     public void close() throws Exception {
         rabbitMQChannel.close();
-    }
-
-    /**
-     * Declare the specified queue.
-     */
-    @Override
-    public void declareQueue(String queueName) throws IOException {
-
-        /**
-         * The queue contents are durable and should be disk backed.
-         * The queue can be used by any channel consumer.
-         * Do not automatically remove the queue if it becomes empty.
-         */
-        rabbitMQChannel.queueDeclare(queueName, true, false, false, Collections.emptyMap());
     }
 }

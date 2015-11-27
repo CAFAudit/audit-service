@@ -1,19 +1,9 @@
 package com.hpe.caf.auditing.rabbitmq;
 
-import com.hpe.caf.auditing.rabbitmq.RabbitMQAuditChannel;
-import com.rabbitmq.client.Channel;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 public class RabbitMQAuditChannelTest {
-
-    @Test(expected = Exception.class)
-    public void testPublish() throws Exception {
-
-        RabbitMQAuditChannel channel = Mockito.mock(RabbitMQAuditChannel.class);
-        Mockito.doThrow(new Exception()).when(channel).publish(Mockito.anyString(), Mockito.any(byte[].class));
-        channel.publish(Mockito.anyString(), Mockito.any(byte[].class));
-    }
 
     @Test(expected = Exception.class)
     public void testClose() throws Exception {
@@ -24,10 +14,10 @@ public class RabbitMQAuditChannelTest {
     }
 
     @Test(expected = Exception.class)
-    public void testDeclareQueue() throws Exception {
+    public void testDeclareApplication() throws Exception {
 
         RabbitMQAuditChannel channel = Mockito.mock(RabbitMQAuditChannel.class);
-        Mockito.doThrow(new Exception()).when(channel).declareQueue(Mockito.anyString());
-        channel.declareQueue(Mockito.anyString());
+        Mockito.doThrow(new Exception()).when(channel).declareApplication(Mockito.anyString());
+        channel.declareApplication(Mockito.anyString());
     }
 }

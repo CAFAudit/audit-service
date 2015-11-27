@@ -5,19 +5,19 @@ import java.io.IOException;
 public interface AuditChannel extends AutoCloseable
 {
     /**
-     * Publish a message.
+     * Prepares the auditing infrastructure to receive events for the specified
+     * application.  
      *
-     * @param routingKey the routing key
-     * @param body the message body
+     * @param applicationId the identifier of the application
      * @throws java.io.IOException if an error is encountered
      */
-    void publish(String routingKey, byte[] body) throws IOException;
+    void declareApplication(String applicationId) throws IOException;
 
     /**
-     * Declare a queue.
+     * Creates an object which can be used for preparing and sending an audit
+     * event.
      *
-     * @param queueName the name of the queue
-     * @throws java.io.IOException if an error is encountered
+     * @return an audit event builder
      */
-    void declareQueue(String queueName) throws IOException;
+    AuditEventBuilder createEventBuilder();
 }

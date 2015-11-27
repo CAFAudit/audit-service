@@ -1,9 +1,8 @@
 
 package com.hpe.caf.auditing.plugins.unittest;
 
-import com.hpe.caf.auditing.AuditLogHelper;
-import com.hpe.caf.worker.audit.AuditWorkerTask;
 import com.hpe.caf.auditing.AuditChannel;
+import com.hpe.caf.auditing.AuditEventBuilder;
 
 import java.io.IOException;
 import java.util.Date;
@@ -14,7 +13,6 @@ import java.util.Date;
 public final class AuditLog
 {
     private static final String APPLICATION_IDENTIFIER = "ProductX";
-    private static final String QUEUE_NAME = "AuditEventQueue." + APPLICATION_IDENTIFIER;
 
     private AuditLog() {
     }
@@ -26,10 +24,10 @@ public final class AuditLog
     public static void ensureQueueExists(final AuditChannel channel)
         throws IOException
     {
-        channel.declareQueue(QUEUE_NAME);
+        channel.declareApplication(APPLICATION_IDENTIFIER);
     }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
     /**
      * Audit the viewDocument event
      * @param channel Identifies the channel to be used for message queuing 
@@ -58,13 +56,20 @@ public final class AuditLog
     )
         throws IOException
     {
-        final AuditWorkerTask auditWorkerTask = AuditLogHelper.createAuditWorkerTask();
-        auditWorkerTask.setApplicationId(APPLICATION_IDENTIFIER);
-        auditWorkerTask.setUserId(userId);
-        auditWorkerTask.setEventTypeId("viewDocument");
-        auditWorkerTask.setEventParams(new String[] {String_Param,String.valueOf(Int16_Param),String.valueOf(Int32_Param),String.valueOf(Int64_Param),String.valueOf(Float_Param),String.valueOf(Double_Param),String.valueOf(Boolean_Param),Date_Param.toInstant().toString()});
+        final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
+        auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
+        auditEventBuilder.setUser(userId);
+        auditEventBuilder.setEventType("documentEvents", "viewDocument");
+        auditEventBuilder.addEventParameter("String_Param", null, String_Param);
+        auditEventBuilder.addEventParameter("Int16_Param", null, Int16_Param);
+        auditEventBuilder.addEventParameter("Int32_Param", null, Int32_Param);
+        auditEventBuilder.addEventParameter("Int64_Param", null, Int64_Param);
+        auditEventBuilder.addEventParameter("Float_Param", null, Float_Param);
+        auditEventBuilder.addEventParameter("Double_Param", null, Double_Param);
+        auditEventBuilder.addEventParameter("Boolean_Param", null, Boolean_Param);
+        auditEventBuilder.addEventParameter("Date_Param", null, Date_Param);
 
-        AuditLogHelper.sendAuditWorkerTask(channel, QUEUE_NAME, auditWorkerTask);
+        auditEventBuilder.send();
     }
 
 }

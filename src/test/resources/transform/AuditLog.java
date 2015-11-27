@@ -6,8 +6,6 @@ import com.hpe.caf.worker.audit.AuditWorkerTask;
 import com.hpe.caf.auditing.AuditChannel;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -64,8 +62,7 @@ public final class AuditLog
         auditWorkerTask.setApplicationId(APPLICATION_IDENTIFIER);
         auditWorkerTask.setUserId(userId);
         auditWorkerTask.setEventTypeId("viewDocument");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        auditWorkerTask.setEventParams(new String[] {String_Param,String.valueOf(Int16_Param),String.valueOf(Int32_Param),String.valueOf(Int64_Param),String.valueOf(Float_Param),String.valueOf(Double_Param),String.valueOf(Boolean_Param),df.format(Date_Param)});
+        auditWorkerTask.setEventParams(new String[] {String_Param,String.valueOf(Int16_Param),String.valueOf(Int32_Param),String.valueOf(Int64_Param),String.valueOf(Float_Param),String.valueOf(Double_Param),String.valueOf(Boolean_Param),Date_Param.toInstant().toString()});
 
         AuditLogHelper.sendAuditWorkerTask(channel, QUEUE_NAME, auditWorkerTask);
     }

@@ -8,7 +8,7 @@
 #set($leftCurlyBracket = "{")
 #set($rightCurlyBracket = "}")
 #set($toString = "String.valueOf")
-#set($dateFormatString = "df.format")
+#set($dateToInstant = ".toInstant().toString()")
 #set($newStringArray = "new String[] ")
 #set($javadocParamsComment = "     * @param")
 #set($finalChannelArg = "final AuditChannel channel")
@@ -24,8 +24,6 @@ import com.hpe.caf.worker.audit.AuditWorkerTask;
 import com.hpe.caf.auditing.AuditChannel;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -90,7 +88,7 @@ public final class AuditLog
             #if ( $eventParamsList != "" )
                 #if ($type != "string")
                     #if ($type == "date")
-                        #set($convertTypeToString = "$dateFormatString$leftPar$name$rightPar")
+						#set($convertTypeToString = "$name$dateToInstant")
                         #set($eventParamsList = "$eventParamsList$comma$convertTypeToString")
                     #else
                         #set($convertTypeToString = "$toString$leftPar$name$rightPar")
@@ -140,7 +138,6 @@ $javadocParamsList
         auditWorkerTask.setApplicationId(APPLICATION_IDENTIFIER);
         auditWorkerTask.setUserId(userId);
         auditWorkerTask.setEventTypeId("$typeId");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         auditWorkerTask.setEventParams($eventParamsList);
 
         AuditLogHelper.sendAuditWorkerTask(channel, QUEUE_NAME, auditWorkerTask);

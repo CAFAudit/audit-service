@@ -21,26 +21,6 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf</groupId>
-            <artifactId>caf-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.hpe.caf.codec</groupId>
-            <artifactId>codec-json</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.hpe.caf.worker</groupId>
-            <artifactId>worker-audit-shared</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.hpe.caf.util</groupId>
-            <artifactId>util-rabbitmq</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-clients</artifactId>
             <version>0.8.2.1</version>
@@ -54,11 +34,6 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 

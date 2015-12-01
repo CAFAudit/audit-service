@@ -13,6 +13,11 @@ final class KafkaAuditChannel implements AuditChannel
     }
 
     @Override
+    public void declareApplication(String applicationId) {
+        // Nothing to do - topics are auto-created
+    }
+
+    @Override
     public AuditEventBuilder createEventBuilder() {
         return new KafkaAuditEventBuilder(producer);
     }

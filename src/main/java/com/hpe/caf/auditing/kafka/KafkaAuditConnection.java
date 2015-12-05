@@ -1,5 +1,7 @@
 package com.hpe.caf.auditing.kafka;
 
+import com.hpe.caf.api.ConfigurationException;
+import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -11,12 +13,13 @@ public final class KafkaAuditConnection implements AuditConnection
 {
     private final Producer<String, String> producer;
 
-    public KafkaAuditConnection(String kafkaBrokers)
-    {
+    public KafkaAuditConnection(ConfigurationSource configSource) throws ConfigurationException {
+        final KafkaAuditConfiguration config = configSource.getConfiguration(KafkaAuditConfiguration.class);
+
         final Properties props = new Properties();
-        props.put("bootstrap.servers", kafkaBrokers);
-        props.put("acks", "all");
-        props.put("retries", 0);
+        props.put("bootstrap.servers", config.getBootstrapServers());
+        props.put("acks", config.getAcks());
+        props.put("retries", config.getRetries());
         props.put("linger.ms", 0);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");

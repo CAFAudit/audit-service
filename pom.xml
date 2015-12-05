@@ -35,6 +35,10 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.hpe.caf</groupId>
+            <artifactId>caf-api</artifactId>
+        </dependency>
     </dependencies>
 
     <ciManagement>

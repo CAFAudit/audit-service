@@ -1,0 +1,72 @@
+---
+numberOfMessages: 3
+messages:
+- auditLogMethodParams:
+  - name: "userId"
+    type: "String"
+    value: "user1@hpe.com"
+  - name: "StringType"
+    type: "String"
+    value: "user1"
+  - name: "Int16Type"
+    type: "short"
+    value: 1
+  - name: "Int32Type"
+    type: "int"
+    value: 1
+  - name: "Int64Type"
+    type: "long"
+    value: 1
+  - name: "FloatType"
+    type: "float"
+    value: 123.45
+  - name: "DoubleType"
+    type: "double"
+    value: 678.8
+  - name: "BooleanType"
+    type: "boolean"
+    value: true
+  - name: "DateType"
+    type: "Date"
+    value: 2016-01-14 12:45:26.319
+  auditLogMethod: "auditTestEvent1"
+- auditLogMethodParams:
+  - name: "userId"
+    type: "String"
+    value: "user2@hpe.com"
+  - name: "StringType"
+    type: "String"
+    value: "user1"
+  - name: "Int16Type"
+    type: "short"
+    value: 2
+  - name: "Int32Type"
+    type: "int"
+    value: 2
+  - name: "Int64Type"
+    type: "long"
+    value: 2
+  - name: "FloatType"
+    type: "float"
+    value: 23.45
+  - name: "DoubleType"
+    type: "double"
+    value: 123.4
+  - name: "BooleanType"
+    type: "boolean"
+    value: false
+  - name: "DateType"
+    type: "Date"
+    value: 2016-01-18 12:45:26.319
+  auditLogMethod: "auditTestEvent1"
+- auditLogMethodParams:
+  - name: "userId"
+    type: "String"
+    value: "user3@hpe.com"
+  - name: "StringType2"
+    type: "String"
+    value: "user3"
+  - name: "Int16Type2"
+    type: "short"
+    value: 3
+  auditLogMethod: "auditTestEvent2"

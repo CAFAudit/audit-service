@@ -170,7 +170,7 @@ public class DBUtil {
         while (rs.next()) {
             HashMap<String,Object> row = new HashMap<String, Object>(columns);
             for(int i=1; i<=columns; ++i) {
-                row.put(md.getColumnName(i),rs.getObject(i));
+                row.put(md.getColumnName(i).replace("eventParam",""),rs.getObject(i));
             }
             list.add(row);
         }

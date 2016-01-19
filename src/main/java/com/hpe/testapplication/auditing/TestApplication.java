@@ -41,7 +41,7 @@ public class TestApplication {
         CLASS_NAME_TYPE_MAP.put("Date", Date.class);
     }
 
-    private static List<HashMap<String,Object>> expectedResultSet = new ArrayList<HashMap<String,Object>>();
+    private static final List<HashMap<String,Object>> expectedResultSet = new ArrayList<>();
 
     private static final Logger LOG = LoggerFactory.getLogger(TestApplication.class);
 
@@ -67,7 +67,7 @@ public class TestApplication {
         LOG.debug("Number of messages to be sent is {}...",messageCount);
 
         //  Get list of audit event messages to be sent.
-        List<AuditEventMessage> messageArrayList = new ArrayList<AuditEventMessage>();
+        List<AuditEventMessage> messageArrayList;
         messageArrayList = messages.getMessages();
 
         //  Send the audit event messages;
@@ -80,7 +80,7 @@ public class TestApplication {
         dbUtil.writeTableRowsToDisk();
 
         LOG.debug("Getting database rows as a list...");
-        List<HashMap<String,Object>> actualResultSet = new ArrayList<HashMap<String,Object>>();
+        List<HashMap<String,Object>> actualResultSet;
         actualResultSet = dbUtil.getTableRowsAsList();
 
         //  Verify the data returned from the database matches that expected.
@@ -97,16 +97,15 @@ public class TestApplication {
     private static void sendAuditEventMessages(final ConfigurationSource config, List<AuditEventMessage> messageArrayList) throws Exception {
         try (
                 AuditConnection connection = AuditConnectionFactory.createConnection(config);
-                AuditChannel channel = connection.createChannel();
+                AuditChannel channel = connection.createChannel()
         ) {
             //  Prepare the auditing infrastructure.
             LOG.debug("Preparing the auditing infrastructure...");
             AuditLog.declareApplication(channel);
 
             //  Parse and send each message to kafka.
-            Class<?> auditLogClass = null;
-            Object auditLogInstance = null;
-            Method method = null;
+            Class<?> auditLogClass;
+            Method method;
             LOG.debug("Processing message test data...");
             for (AuditEventMessage message : messageArrayList) {
 
@@ -115,12 +114,12 @@ public class TestApplication {
                 String methodName = message.getAuditLogMethod();
 
                 //  Identify parameters to be passed to the AuditLog method.
-                List<AuditEventMessageParam> messageParamsArrayList = new ArrayList<AuditEventMessageParam>();
+                List<AuditEventMessageParam> messageParamsArrayList;
                 messageParamsArrayList = message.getAuditLogMethodParams();
 
                 //  Process each parameter and build up object arrays for method invocation.
-                ArrayList<Class> classTypes = new ArrayList<Class>();
-                ArrayList<Object> objectTypes = new ArrayList<Object>();
+                ArrayList<Class> classTypes = new ArrayList<>();
+                ArrayList<Object> objectTypes = new ArrayList<>();
 
                 //  Include AuditChannel in parameter setup.
                 classTypes.add(AuditChannel.class);
@@ -128,7 +127,7 @@ public class TestApplication {
 
                 //  For each message, build a hashmap of test data so we can compare against retrieved data
                 //  from the database.
-                HashMap<String, Object> messageMap = new HashMap<String, Object>();
+                HashMap<String, Object> messageMap = new HashMap<>();
 
                 LOG.debug("Processing method parameters for method invocation...");
                 for (AuditEventMessageParam param : messageParamsArrayList) {
@@ -204,7 +203,7 @@ public class TestApplication {
                     method = auditLogClass.getDeclaredMethod(methodName, paramTypes);
 
                     LOG.debug("Invoking method {}...",methodName);
-                    method.invoke(auditLogInstance, params);
+                    method.invoke(null, params);
 
                 } catch (Exception e) {
                     LOG.error("Exception caught during method invocation for method {}",methodName);
@@ -244,12 +243,10 @@ public class TestApplication {
                             Date actualDate = df.parse(actualvalue.toString());
                             if (!Objects.equals(actualDate,value)) {
                                 //  Date values still don't match.
-                                databaseDataMatches = false;
-                                return databaseDataMatches;
+                                return false;
                             }
                         } else {
-                            databaseDataMatches = false;
-                            return databaseDataMatches;
+                            return false;
                         }
                     }
                 }
@@ -265,7 +262,7 @@ public class TestApplication {
         return databaseDataMatches;
     }
 
-    private final static Class convertToJavaClass(String name, ClassLoader cl)
+    private static Class convertToJavaClass(String name, ClassLoader cl)
             throws ClassNotFoundException {
 
         Class c = (Class) CLASS_NAME_TYPE_MAP.get(name);

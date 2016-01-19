@@ -14,8 +14,8 @@ import java.util.*;
  */
 public class DBUtil {
 
-    static final String JDBC_DRIVER = "com.vertica.jdbc.Driver";
-    static final String OUTPUT_FILENAME = "caf-audit-qa-output.txt";
+    private static final String JDBC_DRIVER = "com.vertica.jdbc.Driver";
+    private static final String OUTPUT_FILENAME = "caf-audit-qa-output.txt";
 
     private static String user;         // username of the database user account
     private static String passw;        // password of the user
@@ -38,38 +38,15 @@ public class DBUtil {
     }
 
     /**
-     *  Gets table row count.
-     */
-    public int getTableRowCount() throws Exception {
-
-        int rowCount = 0;
-        String rowCountSQL = "select count(*) as rowCount from " + this.dbTable;
-
-        try (
-                Connection conn = getConnection();
-                Statement stmt = conn.createStatement();
-        ) {
-            //  Execute a query to determine row count.
-            LOG.debug("getTableRowCount: Getting count of rows...");
-            ResultSet rs = stmt.executeQuery(rowCountSQL);
-            if(rs.next()){
-                rowCount = rs.getInt("rowCount");
-            }
-        }
-
-        return rowCount;
-    }
-
-    /**
      *  Truncates the specified table.
      */
     public void truncateTable() throws Exception {
 
-        String truncateTableSQL = "TRUNCATE TABLE " + this.dbTable;
+        String truncateTableSQL = "TRUNCATE TABLE " + dbTable;
 
         try (
                 Connection conn = getConnection();
-                Statement stmt = conn.createStatement();
+                Statement stmt = conn.createStatement()
         ) {
             //  Execute a query to determine if the specified table column exists.
             LOG.debug("truncateTable: Truncating table...");
@@ -82,12 +59,12 @@ public class DBUtil {
      */
     public void writeTableRowsToDisk() throws Exception {
 
-        String getTableRowsSQL = "SELECT * FROM " + this.dbTable;
+        String getTableRowsSQL = "SELECT * FROM " + dbTable;
 
         try (
                 PrintWriter writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(OUTPUT_FILENAME)), "UTF-8"));
                 Connection conn = getConnection();
-                Statement stmt = conn.createStatement();
+                Statement stmt = conn.createStatement()
         ) {
             ResultSet rs = stmt.executeQuery(getTableRowsSQL);
             ResultSetMetaData rsmd = rs.getMetaData();
@@ -120,12 +97,12 @@ public class DBUtil {
      */
     public List<HashMap<String,Object>> getTableRowsAsList() throws Exception {
 
-        List<HashMap<String,Object>> rsList = null;
-        String getTableRowsSQL = "SELECT * FROM " + this.dbTable;
+        List<HashMap<String,Object>> rsList;
+        String getTableRowsSQL = "SELECT * FROM " + dbTable;
 
         try (
                 Connection conn = getConnection();
-                Statement stmt = conn.createStatement();
+                Statement stmt = conn.createStatement()
         ) {
             ResultSet rs = stmt.executeQuery(getTableRowsSQL);
             rsList = convertResultSetToList(rs);
@@ -140,7 +117,7 @@ public class DBUtil {
     private static Connection getConnection
     () throws Exception {
 
-        Connection conn = null;
+        Connection conn;
 
         try{
             // Register JDBC driver.
@@ -165,10 +142,10 @@ public class DBUtil {
     private List<HashMap<String,Object>> convertResultSetToList(ResultSet rs) throws SQLException {
         ResultSetMetaData md = rs.getMetaData();
         int columns = md.getColumnCount();
-        List<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
+        List<HashMap<String,Object>> list = new ArrayList<>();
 
         while (rs.next()) {
-            HashMap<String,Object> row = new HashMap<String, Object>(columns);
+            HashMap<String,Object> row = new HashMap<>(columns);
             for(int i=1; i<=columns; ++i) {
                 row.put(md.getColumnName(i).replace("eventParam",""),rs.getObject(i));
             }

@@ -7,10 +7,6 @@
     <packaging>maven-plugin</packaging>
     <version>1.0-SNAPSHOT</version>
 
-    <name>CAF Audit Plugin</name>
-
-    <url></url>
-
     <description>
         This project provides an XML to Java transformation plugin.
     </description>

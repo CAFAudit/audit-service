@@ -5,7 +5,7 @@
     <groupId>com.hpe.caf</groupId>
     <artifactId>caf-audit-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
 
     <description>
         This project provides an XML to Java transformation plugin.
@@ -88,7 +88,7 @@
                         </goals>
                         <configuration>
                             <resourceBundles>
-                                <resourceBundle>com.hpe.caf:caf-audit-schema:1.0-SNAPSHOT</resourceBundle>
+                                <resourceBundle>com.hpe.caf:caf-audit-schema:1.0</resourceBundle>
                             </resourceBundles>
                         </configuration>
                     </execution>

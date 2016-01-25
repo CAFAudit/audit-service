@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.Exception;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
@@ -27,19 +28,6 @@ import java.util.*;
 public class TestApplication {
 
     private static final String REQUIRED_INPUTS_FILE_NAME = "caf-audit-qa.yaml";
-    private static final Map CLASS_NAME_TYPE_MAP = new HashMap();
-
-    static {
-        CLASS_NAME_TYPE_MAP.put("String", String.class);
-        CLASS_NAME_TYPE_MAP.put("boolean", Boolean.TYPE);
-        CLASS_NAME_TYPE_MAP.put("byte", Byte.TYPE);
-        CLASS_NAME_TYPE_MAP.put("short", Short.TYPE);
-        CLASS_NAME_TYPE_MAP.put("int", Integer.TYPE);
-        CLASS_NAME_TYPE_MAP.put("long", Long.TYPE);
-        CLASS_NAME_TYPE_MAP.put("float", Float.TYPE);
-        CLASS_NAME_TYPE_MAP.put("double", Double.TYPE);
-        CLASS_NAME_TYPE_MAP.put("Date", Date.class);
-    }
 
     private static final List<HashMap<String,Object>> expectedResultSet = new ArrayList<>();
 
@@ -76,9 +64,11 @@ public class TestApplication {
         //  Pause to allow messages to be sent through to Kafka and onto Vertica.
         Thread.sleep(10000);
 
+        //  Write resultset to disk.
         LOG.debug("Writing database rows to disk...");
         dbUtil.writeTableRowsToDisk();
 
+        //  Get resultset as a list.
         LOG.debug("Getting database rows as a list...");
         List<HashMap<String,Object>> actualResultSet;
         actualResultSet = dbUtil.getTableRowsAsList();
@@ -94,116 +84,100 @@ public class TestApplication {
         LOG.debug("Done.");
     }
 
-    private static void sendAuditEventMessages(final ConfigurationSource config, List<AuditEventMessage> messageArrayList) throws Exception {
+    private static void sendAuditEventMessages(final ConfigurationSource config, List<AuditEventMessage> testEventMessages) throws Exception {
         try (
                 AuditConnection connection = AuditConnectionFactory.createConnection(config);
                 AuditChannel channel = connection.createChannel()
         ) {
+            Class<?> auditLog;
+            Class[] paramTypes = new Class[0];
+
             //  Prepare the auditing infrastructure.
             LOG.debug("Preparing the auditing infrastructure...");
             AuditLog.declareApplication(channel);
 
-            //  Parse and send each message to kafka.
-            Class<?> auditLogClass;
-            Method method;
+            //  Iterate through each test event message and send to Kafka.
             LOG.debug("Processing message test data...");
-            for (AuditEventMessage message : messageArrayList) {
+            for (AuditEventMessage testEventMessage : testEventMessages) {
+                ArrayList<Parameter> auditLogParams = new ArrayList<>();
+                List<AuditEventMessageParam> testMessageParams;
+                ArrayList<Object> testMethodArgs = new ArrayList<>();
 
-                //  Identify AuditLog method to be invoked.
+                //  For each test event message, build a hashmap of expected result data.
+                HashMap<String, Object> testEventMessageMap = new HashMap<>();
+
+                //  Identify AuditLog method to be invoked for this test event message.
                 LOG.debug("Identifying method to be invoked...");
-                String methodName = message.getAuditLogMethod();
+                String methodName = testEventMessage.getAuditLogMethod();
 
-                //  Identify parameters to be passed to the AuditLog method.
-                List<AuditEventMessageParam> messageParamsArrayList;
-                messageParamsArrayList = message.getAuditLogMethodParams();
+                //  Use reflection to get parameters and parameter types for the method to be invoked.
+                auditLog = Class.forName("com.hpe.testapplication.auditing.AuditLog");
+                Method[] methods = auditLog.getMethods();
+                for (Method method : methods) {
+                    //  Match on the specified method name.
+                    if (method.getName().equals(methodName)) {
+                        //  Get a list of parameters.
+                        Parameter[] params = method.getParameters();
+                        Collections.addAll(auditLogParams, params);
 
-                //  Process each parameter and build up object arrays for method invocation.
-                ArrayList<Class> classTypes = new ArrayList<>();
-                ArrayList<Object> objectTypes = new ArrayList<>();
-
-                //  Include AuditChannel in parameter setup.
-                classTypes.add(AuditChannel.class);
-                objectTypes.add(channel);
-
-                //  For each message, build a hashmap of test data so we can compare against retrieved data
-                //  from the database.
-                HashMap<String, Object> messageMap = new HashMap<>();
-
-                LOG.debug("Processing method parameters for method invocation...");
-                for (AuditEventMessageParam param : messageParamsArrayList) {
-
-                    //  Parameter type and value needs converted to class type and java object type respectively for method invocation.
-                    String type = param.getType();
-                    classTypes.add(convertToJavaClass(type, TestApplication.class.getClassLoader()));
-
-                    switch (type) {
-                        case "short":
-                            objectTypes.add(Short.parseShort(param.getValue().toString()));
-
-                            //  Add test data name and values pairs to hashmap. Converting
-                            //  to Long here intentionally to compare with database later.
-                            messageMap.put(param.getName(),Long.parseLong(param.getValue().toString()));
-                            break;
-                        case "int":
-                            objectTypes.add(Integer.parseInt(param.getValue().toString()));
-
-                            //  Add test data name and values pairs to hashmap. Converting
-                            //  to Long here intentionally to compare with database later.
-                            messageMap.put(param.getName(),Long.parseLong(param.getValue().toString()));
-                            break;
-                        case "long":
-                            objectTypes.add(Long.parseLong(param.getValue().toString()));
-
-                            //  Add test data name and values pairs to hashmap.
-                            messageMap.put(param.getName(),Long.parseLong(param.getValue().toString()));
-                            break;
-                        case "float":
-                            objectTypes.add(Float.parseFloat(param.getValue().toString()));
-
-                            //  Add test data name and values pairs to hashmap. Converting
-                            //  to Double here intentionally to compare with database later.
-                            messageMap.put(param.getName(),Double.parseDouble(param.getValue().toString()));
-                            break;
-                        case "double":
-                            objectTypes.add(Double.parseDouble(param.getValue().toString()));
-
-                            //  Add test data name and values pairs to hashmap.
-                            messageMap.put(param.getName(),Double.parseDouble(param.getValue().toString()));
-                            break;
-                        case "boolean":
-                            objectTypes.add(Boolean.parseBoolean(param.getValue().toString()));
-
-                            //  Add test data name and values pairs to hashmap.
-                            messageMap.put(param.getName(),Boolean.parseBoolean(param.getValue().toString()));
-                            break;
-                        case "Date":
-                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                            objectTypes.add(df.parse(param.getValue().toString()));
-
-                            //  Add test data name and values pairs to hashmap.
-                            messageMap.put(param.getName(), df.parse(param.getValue().toString()));
-                            break;
-                        default:
-                            objectTypes.add(param.getValue());
-
-                            //  Add test data name and values pairs to hashmap.
-                            messageMap.put(param.getName(),param.getValue());
+                        //  Get list of parameter types.
+                        paramTypes = method.getParameterTypes();
                     }
                 }
 
-                //  Add each message map to list of expected result sets.
-                expectedResultSet.add(messageMap);
+                //  Include AuditChannel in test method args.
+                testMethodArgs.add(channel);
 
-                //  Invoke the target method for this message.
+                //  Identify parameter test data to be passed to the AuditLog method.
+                testMessageParams = testEventMessage.getAuditLogMethodParams();
+
+                LOG.debug("Processing method parameters for method invocation...");
+                for (AuditEventMessageParam param : testMessageParams) {
+
+                    // For each test data event parameter, build up arraylist and hashmap of test data values
+                    // for further processing.
+                    for (Parameter alcParam : auditLogParams) {
+                        if (alcParam.getName().equals(param.getName())) {
+                            Class<?> type = alcParam.getType();
+
+                            if (type.isAssignableFrom(String.class)) {
+                                testMethodArgs.add(param.getValue());
+                                testEventMessageMap.put(param.getName(), param.getValue());
+                            } else if (type.isAssignableFrom(short.class)) {
+                                testMethodArgs.add(Short.parseShort(param.getValue().toString()));
+                                testEventMessageMap.put(param.getName(), Long.parseLong(param.getValue().toString()));
+                            } else if (type.isAssignableFrom(int.class)) {
+                                testMethodArgs.add(Integer.parseInt(param.getValue().toString()));
+                                testEventMessageMap.put(param.getName(), Long.parseLong(param.getValue().toString()));
+                            } else if (type.isAssignableFrom(long.class)) {
+                                testMethodArgs.add(Long.parseLong(param.getValue().toString()));
+                                testEventMessageMap.put(param.getName(), Long.parseLong(param.getValue().toString()));
+                            } else if (type.isAssignableFrom(float.class)) {
+                                testMethodArgs.add(Float.parseFloat(param.getValue().toString()));
+                                testEventMessageMap.put(param.getName(), Double.parseDouble(param.getValue().toString()));
+                            } else if (type.isAssignableFrom(double.class)) {
+                                testMethodArgs.add(Double.parseDouble(param.getValue().toString()));
+                                testEventMessageMap.put(param.getName(), Double.parseDouble(param.getValue().toString()));
+                            } else if (type.isAssignableFrom(boolean.class)) {
+                                testMethodArgs.add(Boolean.parseBoolean(param.getValue().toString()));
+                                testEventMessageMap.put(param.getName(), Boolean.parseBoolean(param.getValue().toString()));
+                            } else if (type.isAssignableFrom(Date.class)) {
+                                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                                testMethodArgs.add(df.parse(param.getValue().toString()));
+                                testEventMessageMap.put(param.getName(), df.parse(param.getValue().toString()));
+                            }
+                        }
+                    }
+                }
+
+                //  Add each event message map to list of expected result sets.
+                expectedResultSet.add(testEventMessageMap);
+
+                //  Invoke the target method for this test event message.
                 try {
-                    Class[] paramTypes = classTypes.toArray(new Class[classTypes.size()]);
-                    Object[] params = objectTypes.toArray(new Object[objectTypes.size()]);
-
-                    auditLogClass = Class.forName("com.hpe.testapplication.auditing.AuditLog");
-                    method = auditLogClass.getDeclaredMethod(methodName, paramTypes);
-
-                    LOG.debug("Invoking method {}...",methodName);
-                    method.invoke(null, params);
+                    Object[] params = testMethodArgs.toArray(new Object[testMethodArgs.size()]);
+                    Method alcMethod = auditLog.getMethod(methodName, paramTypes);
+                    alcMethod.invoke(null, params);
 
                 } catch (Exception e) {
                     LOG.error("Exception caught during method invocation for method {}",methodName);
@@ -260,21 +234,5 @@ public class TestApplication {
         }
 
         return databaseDataMatches;
-    }
-
-    private static Class convertToJavaClass(String name, ClassLoader cl)
-            throws ClassNotFoundException {
-
-        Class c = (Class) CLASS_NAME_TYPE_MAP.get(name);
-
-        if (c == null) {
-            try {
-                c = cl.loadClass(name);
-            } catch (ClassNotFoundException cnfe) {
-                throw new ClassNotFoundException("Parameter class not found: " + name);
-            }
-        }
-
-        return c;
     }
 }

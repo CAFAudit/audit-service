@@ -118,7 +118,13 @@ public class TestApplication {
                     if (method.getName().equals(methodName)) {
                         //  Get a list of parameters.
                         Parameter[] params = method.getParameters();
-                        Collections.addAll(auditLogParams, params);
+
+                        for (Parameter parameter : params) {
+                            if (!parameter.isNamePresent()) {
+                                throw new IllegalArgumentException("Parameter names are not present!");
+                            }
+                            auditLogParams.add(parameter);
+                        }
 
                         //  Get list of parameter types.
                         paramTypes = method.getParameterTypes();

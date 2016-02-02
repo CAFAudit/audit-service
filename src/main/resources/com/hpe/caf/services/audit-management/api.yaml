@@ -1,0 +1,34 @@
+swagger: "2.0"
+################################################################################
+#                              API Information                                 #
+################################################################################
+# Provides metadata about the API.
+info:
+  title: "CAF Audit Management API"
+  version: "1.0"
+  description: "Management API for CAF Auditing"
+host: auditmanagement.caf.hpe.com
+basePath: /v1
+################################################################################
+#                                   Paths                                      #
+################################################################################
+# The available paths and operations for the API.
+paths:
+  /applications:
+    post:
+      description: Used to create the Vertica database schema for an application.
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: file
+          type: file
+          in: formData
+          required: true
+          description: XML audit event file which defines the audit events in use by the application.
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Bad request
+        500:
+          description: Internal server error

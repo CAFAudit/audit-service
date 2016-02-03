@@ -1,0 +1,102 @@
+swagger: "2.0"
+################################################################################
+#                              API Information                                 #
+################################################################################
+# Provides metadata about the API.
+info:
+  version: v1
+  title: CAF Audit Management API
+  description: |
+    The first version of the CAF Audit Managament API will facilitate the upload
+    of the application audit events file in order to create the necessary schema
+    in the Vertica database for audit event data storage.
+
+    Applications will define audit events that will occur in the system in an
+    XML audit event file. The API will auto-generate and load table definition
+    or modification SQL from this XML into the Vertica database.
+
+    All endpoints are accessible via http and are located at
+    `auditmanagement.caf.hpe.com`.
+
+    #### XML Audit Events File
+
+    A sample XML is included next:
+    ```
+    <AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd">
+      <ApplicationId>ProductX</ApplicationId>
+      <AuditEvents>
+        <AuditEvent>
+          <TypeId>viewDocument</TypeId>
+          <CategoryId>documentEvents</CategoryId>
+          <Params>
+            <Param>
+              <Name>docId</Name>
+              <Type>long</Type>
+              <Description>Document identifier</Description >
+            </Param>
+          </Params>
+        </AuditEvent>
+        <AuditEvent>
+          <TypeId>policyApplied</TypeId>
+          <CategoryId>policyEvents</CategoryId>
+          <Params>
+            <Param>
+              <Name>policyId</Name>
+              <Type>long</Type>
+              <Description>Policy identifier</Description >
+            </Param>
+            <Param>
+              <Name>policyName</Name>
+              <Type>string</Type>
+              <Description>Policy Name</Description >
+            </Param>
+            <Param>
+              <Name>policyDef</Name>
+              <Type>string</Type>
+              <ColumnName>policyDefinition</ColumnName>
+              <Description>Policy definition</Description >
+            </Param>
+          </Params>
+        </AuditEvent>
+      </AuditEvents>
+    </AuditedApplication>
+    ```
+    `AuditedApplication` is the root element. `ApplicationId` identifies the name
+    of the application that the audit event type is associated with. The database
+    table created by the API endpoint will derive it's name from `ApplicationId`.
+    For each audit event defined, `TypeId` is a string identifier for the
+    particular event (e.g. viewDocument) and `CategoryId` is a string identifier
+    for the category of event. A list of parameter elements are then defined for
+    each audit event. This includes the name of the parameter, the type (i.e.
+    string, short, int, long, float, double, boolean or date), description and
+    an optional `ColumnName` element which identifies an alternative database
+    column to be used for storage in the event that multiple audit events
+    comprise of parameters with the same name. The column names created by by
+    the API endpoint for audit event parameters is taken from either the
+    `ColumnName` or `Name`. Each is also prefixed with 'eventParam'.
+
+host: auditmanagement.caf.hpe.com
+basePath: /v1
+################################################################################
+#                                   Paths                                      #
+################################################################################
+# The available paths and operations for the API.
+paths:
+  /applications:
+    post:
+      description: Used to create the Vertica database schema for application defined audit events.
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: file
+          type: file
+          in: formData
+          required: true
+          description: XML file which defines the audit events in use by the application.
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Bad request
+        500:
+          description: Internal server error

@@ -128,7 +128,6 @@
                         <configuration>
                             <inputSpec>/com/hpe/caf/services/audit/contract/swagger.yaml</inputSpec>
                             <language>java</language>
-                            <templateDirectory>${project.basedir}/Templates</templateDirectory>
                             <addCompileSourceRoot>false</addCompileSourceRoot>
                             <modelPackage>com.hpe.caf.services.audit.client.model</modelPackage>
                             <apiPackage>com.hpe.caf.services.audit.client.api</apiPackage>

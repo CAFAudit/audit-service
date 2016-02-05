@@ -1,0 +1,41 @@
+{
+  "id": "/${marathon-group}/caf-audit-management-service",
+  "cpus": "${caf-audit-management-service-cpus}",
+  "mem": "${caf-audit-management-service-mem}",
+  "instances": "${caf-audit-management-service-instances}",
+  "container": {
+    "docker": {
+      "image": "${docker-registry}/caf/caf-audit-management-service:${caf-audit-management-service-version}",
+      "network": "BRIDGE",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 0,
+          "protocol": "tcp",
+          "servicePort": "${caf-audit-management-service-8080-serviceport}"
+        }
+      ],
+      "privileged": true,
+      "forcePullImage": "${force-pull}"
+    },
+    "type": "DOCKER"
+  },
+  "healthChecks": [
+    {
+      "protocol": "HTTP",
+      "gracePeriodSeconds": "${caf-audit-management-service-healthcheck-graceperiodseconds}",
+      "intervalSeconds": "${caf-audit-management-service-healthcheck-intervalseconds}",
+      "maxConsecutiveFailures": "${caf-audit-management-service-healthcheck-maxconsecutivefailures}",
+      "path": "/boilerplateapi/boilerplate/checkhealth?project_id=1",
+      "timeoutSeconds": "${caf-audit-management-service-healthcheck-timeoutseconds}"
+    }
+  ],
+  "env": {
+    "_JAVA_OPTIONS": "-Xms${caf-audit-management-service-java-mem-min}m -Xmx${caf-audit-management-service-java-mem-max}m"
+    "xxx": "${caf-audit-management-service-xxx}"
+  },
+  "uris": [
+    "${marathon-uris-root}/${docker-login-config}"
+  ]
+}
+

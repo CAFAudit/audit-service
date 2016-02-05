@@ -1,0 +1,20 @@
+{
+  "docker-registry": "rh7-artifactory.hpswlabs.hp.com:8443",
+  "marathon-group": "demo",
+  "force-pull": false,
+  "marathon-uris-root": "/vagrant",
+  "docker-login-config": "<MUST_REPLACE: Location of docker login config tar>",
+
+  "caf-audit-management-service-cpus": "0.5",
+  "caf-audit-management-service-mem": "512",
+  "caf-audit-management-service-instances": "1",
+  "caf-audit-management-service-version": "1.0",
+  "caf-audit-management-service-8080-serviceport": "25080",
+  "caf-audit-management-service-healthcheck-graceperiodseconds": "300",
+  "caf-audit-management-service-healthcheck-intervalseconds": "120",
+  "caf-audit-management-service-healthcheck-maxconsecutivefailures": "5",
+  "caf-audit-management-service-healthcheck-timeoutseconds": "20",
+  "caf-audit-management-service-java-mem-min": "256",
+  "caf-audit-management-service-java-mem-max": "256",
+  "caf-audit-management-service-xxx": "<MUST_REPLACE: XXX e.g. xxx>"
+}

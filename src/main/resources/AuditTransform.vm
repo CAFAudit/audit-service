@@ -1,0 +1,97 @@
+#set($transformContext = $transformContext)
+##
+#macro( columnTypeToVerticaType $type )
+#if( $type == "short" || $type == "int" || $type == "long")
+#set($verticaType = "int")
+#elseif ( $type == "string" )
+#set($verticaType = "varchar(65000)")
+#elseif ( $type == "float" )
+#set($verticaType = "float")
+#elseif ( $type == "double" )
+#set($verticaType = "float")
+#elseif ( $type == "boolean" )
+#set($verticaType = "boolean")
+#elseif ( $type == "date" )
+#set($verticaType = "timestamp")
+#end
+#end
+##
+## Check transform context - create table or modify table
+#if( $transformContext == "CREATE")
+##  Create table context. Generate CREATE TABLE SQL ...
+#set($namespace = $root.getRootElement().getNamespace())
+#set($identifier = $root.getRootElement().getChild("ApplicationId",$namespace).getText())
+#set($space = " ")
+#set($comma = ",")
+#set($ProcessId = "processId varchar(128)")
+#set($ThreadId = "threadId int")
+#set($EventOrder = "eventOrder int")
+#set($EventTime = "eventTime timestamp")
+#set($EventTimeSource = "eventTimeSource varchar(128)")
+#set($UserId = "userId varchar(128)")
+#set($EventCategoryId = "eventCategoryId varchar(128)")
+#set($EventTypeId = "eventTypeId varchar(128)")
+#set($PrimaryKeyColumns="processId,threadId,eventOrder")
+#set($CustomEventParamPrefix="eventParam")
+##
+## Generate CREATE TABLE statement
+CREATE TABLE IF NOT EXISTS public.$identifier
+(
+## Fixed columns
+$ProcessId,
+$ThreadId,
+$EventOrder,
+$EventTime,
+$EventTimeSource,
+$UserId,
+$EventCategoryId,
+$EventTypeId,
+##
+## Generate column definitions to support all audit events and their metadata.
+##
+#set($columnList = "")
+#foreach($auditevent in $root.getRootElement().getChild("AuditEvents",$namespace).getChildren("AuditEvent",$namespace))
+##
+## For each audit event parameter specified, generate a column definitions for it's event data.
+##
+#foreach($param in $auditevent.getChild("Params",$namespace).getChildren("Param",$namespace))
+#set($name="")
+#set($type="")
+#set($columnName="")
+#set($columnDefinition="")
+##
+#set($name = $param.getChild("Name",$namespace).getText())
+#set($type = $param.getChild("Type",$namespace).getText())
+## Map Java type to Vertica type.
+#set($verticaType = $type)
+#columnTypeToVerticaType($type)
+#set($columnName = $param.getChild("ColumnName",$namespace).getText())
+#if ( "$!columnName" == "" )
+#set($columnName = $name)
+#end
+## Make sure column name definition is not added if the column has already been added before.
+#set($columnNameDefn="$CustomEventParamPrefix$columnName")
+#if (!$columnList.contains($columnNameDefn.toString()))
+#if ( $columnList != "" )
+#set($columnList = "$columnList$comma
+$CustomEventParamPrefix$columnName$space$verticaType")
+#else
+#set($columnList = "$CustomEventParamPrefix$columnName$space$verticaType")
+#end
+#end
+#end
+#end
+$columnList
+);
+## Assign primary key.
+ALTER TABLE public.$identifier
+ADD PRIMARY KEY ($PrimaryKeyColumns);
+#else
+##  Modify table context. Generate ALTER TABLE SQL ...
+#set($columnType = $columnType)
+#columnTypeToVerticaType($columnType)
+#set($schema = $schema)
+#set($tableName = $tableName)
+#set($columnName = $columnName)
+ALTER TABLE $schema.$tableName ADD COLUMN $columnName $verticaType
+#end

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuditedApplication
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+		xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+>
+	<ApplicationId></ApplicationId>
+	<AuditEvents>
+		<AuditEvent>
+			<TypeId>viewDocument</TypeId>
+			<CategoryId>documentEvents</CategoryId>
+			<Params>
+				<Param>
+					<Name>String_Param</Name>
+					<Type>string</Type>
+					<ColumnName>String_Param</ColumnName>
+					<Description>Description for String_Param</Description>
+				</Param>
+			</Params>
+		</AuditEvent>
+	</AuditEvents>
+</AuditedApplication>

@@ -18,6 +18,8 @@
     </parent>
 
     <properties>
+        <version.major>1-SNAPSHOT</version.major>
+        <version.major.minor>${project.version}</version.major.minor>
         <swagger-contract-artifactId>caf-audit-management-contract</swagger-contract-artifactId>
         <swagger-contract-version>1.0-SNAPSHOT</swagger-contract-version>
         <swagger-codegen-inputSpec>/com/hpe/caf/services/audit/contract/swagger.yaml</swagger-codegen-inputSpec>

@@ -15,9 +15,6 @@ info:
     XML audit event file. The API will auto-generate and load table definition
     or modification SQL from this XML into the Vertica database.
 
-    All endpoints are accessible via http and are located at
-    `auditmanagement.caf.hpe.com`.
-
     #### XML Audit Events File
 
     A sample XML is included next:
@@ -75,7 +72,25 @@ info:
     the API endpoint for audit event parameters is taken from either the
     `ColumnName` or `Name`. Each is also prefixed with 'eventParam'.
 
-host: auditmanagement.caf.hpe.com
+    #### Vertica Database Connection
+
+    The API connects to the Vertica analytical database server via JDBC. The following connection
+    properties need to be supplied:
+
+    `database.url` - the Vertica database connection string URL with format:
+    jdbc:vertica://VerticaHost:portNumber/databaseName
+
+    `database.schema` - the logical schema of the new database table. E.g. public
+
+    `database.username` - the name of the database user account. E.g. dbadmin
+
+    `database.password` - the password of the database user account
+
+    These can be provided through system environment variables or can be collectively
+    initialized in a config.properties file with a new system environment variable created,
+    `AUDIT_MANAGEMENT_API_CONFIG_PATH`, which points to the directory containing the properties
+    file.
+
 basePath: /v1
 ################################################################################
 #                                   Paths                                      #
@@ -97,6 +112,6 @@ paths:
         200:
           description: Ok
         400:
-          description: Bad request
+          description: Bad Request (missing database connection properties or unexpected/invalid XML)
         500:
           description: Internal server error

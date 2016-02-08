@@ -29,7 +29,7 @@ info:
             <Param>
               <Name>docId</Name>
               <Type>long</Type>
-              <Description>Document identifier</Description >
+              <Description>Document identifier</Description>
             </Param>
           </Params>
         </AuditEvent>
@@ -40,18 +40,18 @@ info:
             <Param>
               <Name>policyId</Name>
               <Type>long</Type>
-              <Description>Policy identifier</Description >
+              <Description>Policy identifier</Description>
             </Param>
             <Param>
               <Name>policyName</Name>
               <Type>string</Type>
-              <Description>Policy Name</Description >
+              <Description>Policy Name</Description>
             </Param>
             <Param>
               <Name>policyDef</Name>
               <Type>string</Type>
               <ColumnName>policyDefinition</ColumnName>
-              <Description>Policy definition</Description >
+              <Description>Policy definition</Description>
             </Param>
           </Params>
         </AuditEvent>

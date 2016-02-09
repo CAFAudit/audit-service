@@ -16,5 +16,9 @@
   "caf-audit-management-service-healthcheck-timeoutseconds": "20",
   "caf-audit-management-service-java-mem-min": "256",
   "caf-audit-management-service-java-mem-max": "256",
-  "caf-audit-management-service-xxx": "<MUST_REPLACE: XXX e.g. xxx>"
+  "caf-audit-management-service-database-url": "<MUST_REPLACE: Vertica database connection string URL, e.g. jdbc:vertica://192.168.56.30:5433/CAFAudit >",
+  "caf-audit-management-service-database-schema": "<MUST_REPLACE: Name of the Vertica database logical schema, e.g. public >",
+  "caf-audit-management-service-database-username": "<MUST_REPLACE: Vertica database account username, e.g. dbadmin >",
+  "caf-audit-management-service-database-password": "<MUST_REPLACE: Vertica database account password >",
+  "caf-audit-management-service-config-path": ""
 }

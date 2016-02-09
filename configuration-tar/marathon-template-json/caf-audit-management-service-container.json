@@ -26,13 +26,17 @@
       "gracePeriodSeconds": "${caf-audit-management-service-healthcheck-graceperiodseconds}",
       "intervalSeconds": "${caf-audit-management-service-healthcheck-intervalseconds}",
       "maxConsecutiveFailures": "${caf-audit-management-service-healthcheck-maxconsecutivefailures}",
-      "path": "/boilerplateapi/boilerplate/checkhealth?project_id=1",
+      "path": "/",
       "timeoutSeconds": "${caf-audit-management-service-healthcheck-timeoutseconds}"
     }
   ],
   "env": {
-    "_JAVA_OPTIONS": "-Xms${caf-audit-management-service-java-mem-min}m -Xmx${caf-audit-management-service-java-mem-max}m"
-    "xxx": "${caf-audit-management-service-xxx}"
+    "_JAVA_OPTIONS": "-Xms${caf-audit-management-service-java-mem-min}m -Xmx${caf-audit-management-service-java-mem-max}m",
+    "database.url": "${caf-audit-management-service-database-url}",
+    "database.schema": "${caf-audit-management-service-database-schema}",
+    "database.username": "${caf-audit-management-service-database-username}",
+    "database.password": "${caf-audit-management-service-database-password}",
+    "AUDIT_MANAGEMENT_API_CONFIG_PATH": "${caf-audit-management-service-config-path}"
   },
   "uris": [
     "${marathon-uris-root}/${docker-login-config}"

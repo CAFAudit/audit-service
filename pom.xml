@@ -23,6 +23,9 @@
         <caf-audit-management-service.container.name>caf/caf-audit-management-service:${project.version}</caf-audit-management-service.container.name>
         <version.major>1-SNAPSHOT</version.major>
         <version.major.minor>${project.version}</version.major.minor>
+        <tomcatBaseImage>tomcat:jre8</tomcatBaseImage>
+        <webserviceWarName>caf-audit-management</webserviceWarName>
+        <webserviceBasePath>/v1</webserviceBasePath>
         <deployFileUrl>${project.distributionManagement.snapshotRepository.url}</deployFileUrl>
         <repositoryId>${project.distributionManagement.snapshotRepository.id}</repositoryId>
     </properties>
@@ -50,6 +53,19 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.3.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.hpe.caf</groupId>
+            <artifactId>caf-audit-management-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.hpe.caf</groupId>
+            <artifactId>caf-audit-management-client</artifactId>
+            <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -95,8 +111,7 @@
         <profile>
             <id>use-default-fixed-ports</id>
             <properties>
-                <webservice.adminport>8081</webservice.adminport>
-                <!-- TODO: any others here? -->
+                <webservice.adminport>25080</webservice.adminport>
             </properties>
         </profile>
 
@@ -151,9 +166,11 @@
                         <docker.host.address>${docker.host.address}</docker.host.address>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <!-- TODO: what are the env vars for the web service?
-                        <webserviceurl>http://${docker.host.address}:${webservice.adminport}/v1</webserviceurl>
-                        -->
+                        <database.url>jdbc:vertica://192.168.56.30:5433/CAFAudit</database.url>
+                        <database.schema>public</database.schema>
+                        <database.username>dbadmin</database.username>
+                        <database.password>CAFAudit</database.password>
+                        <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}${webserviceBasePath}</webserviceurl>
                     </environmentVariables>
                 </configuration>
             </plugin>
@@ -231,7 +248,7 @@
                             <name>${caf-audit-management-service.container.name}</name>
                             <build>
                                 <maintainer>philip.crooks@hpe.com</maintainer>
-                                <from>tomcat:jre8</from>
+                                <from>${tomcatBaseImage}</from>
                                 <tags>
                                     <tag>${version.major}</tag>
                                     <tag>${version.major.minor}</tag>
@@ -244,10 +261,7 @@
                                         <args>--</args>
                                     </exec>
                                 </entryPoint>
-                                <cmd>
-                                    <!-- TODO: How to load & start caf-audit-management-service.war in Tomcat? -->
-                                    /start.sh
-                                </cmd>
+                                <cmd>/start.sh</cmd>
                                 <assembly>
                                     <basedir>/</basedir>
                                     <mode>tar</mode>
@@ -268,7 +282,7 @@
                                                     <include>com.hpe.caf:caf-audit-management-service</include>
                                                 </includes>
                                                 <outputDirectory>/opt</outputDirectory>
-                                                <outputFileNameMapping>caf-audit-management-service.war</outputFileNameMapping>
+                                                <outputFileNameMapping>${webserviceWarName}.war</outputFileNameMapping>
                                             </dependencySet>
                                             <dependencySet>
                                                 <useProjectArtifact>false</useProjectArtifact>
@@ -287,33 +301,18 @@
                                     <port>${webservice.adminport}:8080</port>
                                 </ports>
                                 <env>
-                                    <!-- TODO: what are the env vars for the web service?
-                                    <webserviceurl>http://${docker.host.address}:${webservice.adminport}/v1</webserviceurl>
-                                    -->
+                                    <!-- When the container is deployed in Marathon it will use the environment variable values specified in the container json. -->
+                                    <database.url>jdbc:vertica://192.168.56.30:5433/CAFAudit</database.url>
+                                    <database.schema>public</database.schema>
+                                    <database.username>dbadmin</database.username>
+                                    <database.password>CAFAudit</database.password>
                                 </env>
-                                <volumes>
-                                    <!-- TODO: any volumes required? Take these from a "config" image?
-                                    <from>
-                                        <image>config</image>
-                                    </from>
-                                    -->
-                                </volumes>
-                                <links>
-                                    <!-- TODO: any here? -->
-                                </links>
+                                <volumes></volumes>
+                                <links></links>
                                 <log>
                                     <enabled>true</enabled>
                                 </log>
-                                <wait>
-                                    <http>
-                                        <url>
-                                            <!-- TODO: what should this be? -->
-                                            http://${docker.host.address}:${webservice.adminport}/v1/checkhealth?project_id=1
-                                        </url>
-                                    </http>
-                                    <time>120000</time>
-                                    <shutdown>500</shutdown>
-                                </wait>
+                                <wait></wait>
                             </run>
                         </image>
                     </images>

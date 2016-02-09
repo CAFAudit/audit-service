@@ -35,7 +35,7 @@
     </init-param>
     <init-param>
       <param-name>swagger.api.basepath</param-name>
-      <param-value>https://auditmanagement.caf.hpe.com/v1</param-value>
+      <param-value>https://localhost/v1</param-value>
     </init-param>
     <load-on-startup>2</load-on-startup>
   </servlet>

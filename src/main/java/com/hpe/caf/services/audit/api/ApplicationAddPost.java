@@ -48,8 +48,6 @@ public class ApplicationAddPost {
     private static final String ERR_MSG_XML_APPID_VALUE_MISSING = "The application identifier has not been supplied in the XML audit events file.";
     private static final String ERR_MSG_DB_CONNECTION_PROPS_MISSING = "One or more Vertica database connection properties have not been provided.";
 
-    private static AppConfig properties;
-
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationAddPost.class);
 
     public static void addApplication(InputStream auditXMLConfig) throws Exception {
@@ -58,6 +56,7 @@ public class ApplicationAddPost {
             LOG.info("Starting...");
 
             //  Read in app config properties.
+            AppConfig properties;
             try {
                 properties = getAppConfigProperties();
 
@@ -198,7 +197,7 @@ public class ApplicationAddPost {
     /**
      * Load required inputs from config.properties or environment variables.
      */
-    private static AppConfig getAppConfigProperties() throws ApiException {
+    private static AppConfig getAppConfigProperties() {
         AnnotationConfigApplicationContext propertiesApplicationContext = new AnnotationConfigApplicationContext();
         propertiesApplicationContext.register(PropertySourcesPlaceholderConfigurer.class);
         RootBeanDefinition beanDefinition = new RootBeanDefinition();
@@ -211,8 +210,7 @@ public class ApplicationAddPost {
     /**
      * Reads the specified xml file into the AuditedApplication object hierarchy.
      */
-    private static AuditedApplication readAuditAppDataXmlFile(InputStream xmlFile)
-            throws JAXBException, ParserConfigurationException, SAXException {
+    private static AuditedApplication readAuditAppDataXmlFile(InputStream xmlFile) throws JAXBException {
 
         final JAXBContext jaxbContext = JAXBContext.newInstance(AuditedApplication.class);
         final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();

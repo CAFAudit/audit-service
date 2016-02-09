@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseHelper {
 
-    static final String JDBC_VERTICA_PREFIX = "jdbc:vertica:";
-    static final String JDBC_DRIVER = "com.vertica.jdbc.Driver";
-    static final String ERR_MSG_DB_URL_FORMAT_INVALID = "Invalid database url string format - must start with jdbc:vertica:";
+    private static final String JDBC_VERTICA_PREFIX = "jdbc:vertica:";
+    private static final String JDBC_DRIVER = "com.vertica.jdbc.Driver";
+    private static final String ERR_MSG_DB_URL_FORMAT_INVALID = "Invalid database url string format - must start with jdbc:vertica:";
 
     private static AppConfig appConfig;
 
@@ -26,7 +26,7 @@ public class DatabaseHelper {
      */
     public DatabaseHelper(AppConfig appConfig)
     {
-        this.appConfig = appConfig;
+        DatabaseHelper.appConfig = appConfig;
     }
 
     /**

@@ -125,7 +125,7 @@ public class DatabaseHelper {
         final String dbURL = appConfig.getDatabaseURL().toLowerCase();
         if ( !dbURL.startsWith(JDBC_VERTICA_PREFIX) )
         {
-            throw new ApiException(ERR_MSG_DB_URL_FORMAT_INVALID);
+            throw new BadRequestException(ERR_MSG_DB_URL_FORMAT_INVALID);
         }
 
         try{
@@ -142,7 +142,7 @@ public class DatabaseHelper {
             conn = DriverManager.getConnection(dbURL, myProp);
         } catch(Exception ex){
             LOG.error("Cannot get connection");
-            throw new ApiException(ex.getMessage());
+            throw new BadRequestException(ex.getMessage());
         }
 
         return conn;

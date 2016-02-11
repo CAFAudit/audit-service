@@ -1,8 +1,6 @@
 package com.hpe.caf.services.audit.api.generated;
 
-import com.hpe.caf.services.audit.api.ApiException;
 import com.hpe.caf.services.audit.api.ApplicationAddPost;
-import com.hpe.caf.services.audit.api.generated.ApplicationsApiService;
 
 import javax.ws.rs.core.Response;
 import java.io.InputStream;

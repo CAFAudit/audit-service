@@ -16,8 +16,8 @@ public class ApiExceptionMapper implements ExceptionMapper<Exception> {
         //  Default response to HTTP 500 (i.e. INTERNAL SERVER ERROR)
         Response.Status httpStatus = Response.Status.INTERNAL_SERVER_ERROR;
 
-        //  Map ApiExceptions thrown to HTTP 400 (i.e. BAD REQUEST)
-        if (exception instanceof ApiException)
+        //  Map BadRequestExceptions thrown to HTTP 400 (i.e. BAD REQUEST)
+        if (exception instanceof BadRequestException)
             httpStatus = Response.Status.BAD_REQUEST;
 
         //  Include exception message in response.

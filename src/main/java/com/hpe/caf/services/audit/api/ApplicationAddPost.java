@@ -12,18 +12,11 @@ import com.hpe.caf.auditing.schema.AuditEventParamType;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -65,10 +58,10 @@ public class ApplicationAddPost {
                         properties.getDatabaseSchema() == null ||
                         properties.getDatabaseUsername() == null ||
                         properties.getDatabasePassword() == null) {
-                    throw new ApiException(ERR_MSG_DB_CONNECTION_PROPS_MISSING);
+                    throw new BadRequestException(ERR_MSG_DB_CONNECTION_PROPS_MISSING);
                 }
             } catch (NullPointerException npe) {
-                throw new ApiException(ERR_MSG_DB_CONNECTION_PROPS_MISSING);
+                throw new BadRequestException(ERR_MSG_DB_CONNECTION_PROPS_MISSING);
             }
 
             //  InputStream will need read multiple times, so convert to byte array first.
@@ -79,7 +72,7 @@ public class ApplicationAddPost {
             LOG.info("Checking validity of XML audit events file...");
             boolean isValid = isXMLValid(is,TRANSFORM_XSD_FILEPATH);
             if (!isValid) {
-                throw new ApiException(ERR_MSG_XML_NOT_VALID);
+                throw new BadRequestException(ERR_MSG_XML_NOT_VALID);
             }
 
             //  Read the application event data xml file - XML/Java binding.
@@ -124,7 +117,7 @@ public class ApplicationAddPost {
             }
             else {
                 LOG.debug("ApplicationId not found. Nothing to be done therefore...");
-                throw new ApiException(ERR_MSG_XML_APPID_VALUE_MISSING);
+                throw new BadRequestException(ERR_MSG_XML_APPID_VALUE_MISSING);
             }
 
             LOG.info("Complete.");

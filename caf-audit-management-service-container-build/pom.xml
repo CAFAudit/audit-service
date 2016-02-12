@@ -45,6 +45,7 @@
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-management-client</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
             <scope>test</scope>
         </dependency>
     </dependencies>

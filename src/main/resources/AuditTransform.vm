@@ -12,9 +12,11 @@
 #set($javadocParamsComment = "     * @param")
 #set($finalChannelArg = "final AuditChannel channel")
 #set($finalUserIdArg = "final String userId")
+#set($finalTenantIdArg = "final String tenantId")
 #set($final = "final ")
 #set($channelJavaDocsComment = "     * @param channel Identifies the channel to be used for message queuing ")
 #set($userIdJavaDocsComment = "     * @param userId Identifies the user who triggered the event ")
+#set($tenantIdJavaDocsComment = "     * @param tenantId Identifies the tenant that the user belongs to ")
 
 package $package;
 
@@ -78,6 +80,7 @@ public final class AuditLog
             #else
                 #set($argList = "$finalChannelArg$comma
         $finalUserIdArg$comma
+        $finalTenantIdArg$comma
         $final$upperCaseType$space$name")
             #end
             ##
@@ -98,6 +101,7 @@ $javadocParamsComment$space$name$space$desc$space")
             #else
                 #set($javadocParamsList = "$javadocParamsList$channelJavaDocsComment
 $userIdJavaDocsComment
+$tenantIdJavaDocsComment
 $javadocParamsComment$space$name$space$desc$space")
             #end
         #end
@@ -117,6 +121,7 @@ $javadocParamsList
         final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
         auditEventBuilder.setUser(userId);
+        auditEventBuilder.setTenant(tenantId);
         auditEventBuilder.setEventType("$categoryId", "$typeId");
 $eventParamsList
         auditEventBuilder.send();

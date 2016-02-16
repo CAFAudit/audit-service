@@ -107,6 +107,13 @@ public class ApplicationAddPostTest {
         Mockito.doNothing().when(mockDatabaseHelper).addColumn(Mockito.anyString());
         PowerMockito.whenNew(DatabaseHelper.class).withArguments(Mockito.any()).thenReturn(mockDatabaseHelper);
 
+        //  Set-up test database connection properties.
+        HashMap<String, String> newEnv  = new HashMap<>();
+        newEnv.put("database.url","testUrl");
+        newEnv.put("database.username","testUserName");
+        newEnv.put("database.password","testPassword");
+        TestUtil.setSystemEnvironmentFields(newEnv);
+
         //  Test successful run of applications endpoint.
         InputStream auditConfigXMLStream = new ByteArrayInputStream(AUDIT_EVENTS_XML.getBytes(StandardCharsets.UTF_8));
         ApplicationAddPost.addApplication(auditConfigXMLStream);

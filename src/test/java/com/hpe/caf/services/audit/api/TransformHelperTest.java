@@ -26,9 +26,9 @@ public class TransformHelperTest {
         is = new FileInputStream(auditEventsXMLFile);
 
         TransformHelper transform = new TransformHelper();
-        String createTableSQL = transform.doCreateTableTransform(is,VELOCITY_TEMPLATE_NAME);
+        String createTableSQL = transform.doCreateTableTransform(is,VELOCITY_TEMPLATE_NAME,"public");
 
-        String EXPECTED_CREATE_TABLE_OUTPUT = "CREATE TABLE IF NOT EXISTS public.ApplicationX\n" +
+        String EXPECTED_CREATE_TABLE_OUTPUT = "CREATE TABLE IF NOT EXISTS public.AuditApplicationX\n" +
                 "(\n" +
                 "processId varchar(128),\n" +
                 "threadId int,\n" +
@@ -49,7 +49,7 @@ public class TransformHelperTest {
                 "eventParamString_Param2 varchar(65000),\n" +
                 "eventParamInt16_Param2 int\n" +
                 ");\n" +
-                "ALTER TABLE public.ApplicationX\n" +
+                "ALTER TABLE public.AuditApplicationX\n" +
                 "ADD PRIMARY KEY (processId,threadId,eventOrder);\n";
 
         Assert.assertEquals(createTableSQL.replaceAll("[\n\r]", ""), EXPECTED_CREATE_TABLE_OUTPUT.replaceAll("[\n\r]", ""));

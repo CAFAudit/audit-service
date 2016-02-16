@@ -37,7 +37,7 @@ public class TransformHelper {
     /**
      * Parses the audit events XML and generates a sql statement for table creation.
      */
-    public String doCreateTableTransform(InputStream auditXMLConfig, String templateName) throws Exception {
+    public String doCreateTableTransform(InputStream auditXMLConfig, String templateName, String schema) throws Exception {
 
         //  Build a Document from the audit events XML file.
         SAXBuilder builder;
@@ -57,6 +57,7 @@ public class TransformHelper {
         //  Construct Velocity context object and populate it.
         LOG.debug("doCreateTableTransform: Constructing Velocity context...");
         this.context.put("root", root);
+        this.context.put("schema", schema);
         this.context.put("transformContext", "CREATE");
 
         //  Generate 'CREATE TABLE' sql statement.

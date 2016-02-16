@@ -19,10 +19,6 @@ public class AppConfig {
         return environment.getProperty("database.url");
     }
 
-    public String getDatabaseSchema(){
-        return environment.getProperty("database.schema");
-    }
-
     public String getDatabaseUsername(){
         return environment.getProperty("database.username");
     }

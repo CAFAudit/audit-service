@@ -1,6 +1,8 @@
 package com.hpe.caf.services.audit.api;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -85,6 +87,22 @@ public class DatabaseHelper {
     }
 
     /**
+     * Creates a new schema in the database.
+     */
+    public void createSchema(String schemaName) throws Exception {
+
+        String createSchemaSQL = "CREATE SCHEMA IF NOT EXISTS " + schemaName;
+
+        try (
+                Connection conn = getConnection();
+                Statement stmt = conn.createStatement()
+        ) {
+            //  Execute a statement to create a new schema.
+            stmt.execute(createSchemaSQL);
+        }
+    }
+
+    /**
      * Creates a new table in the database.
      */
     public void createTable(String createTableSQL) throws Exception {
@@ -93,11 +111,9 @@ public class DatabaseHelper {
                 Statement stmt = conn.createStatement()
         ) {
             //  Execute a statement to create a new table.
-            LOG.debug("Creating database table...");
             stmt.execute(createTableSQL);
         }
     }
-
 
     /**
      * Adds a new database column to an existing database table.
@@ -147,5 +163,196 @@ public class DatabaseHelper {
 
         return conn;
     }
+
+    /**
+     * Create the AuditManagement database schema and tables.
+     */
+    public void createAuditManagementSchema() throws Exception {
+
+        //  Create the AuditManagement schema if it does not already exist.
+        LOG.debug("Creating the AuditManagement database schema...");
+        createSchema("AuditManagement");
+
+        //  Create AuditManagement.ApplicationEvents table to store application defined audit
+        //  events XML.
+        if (!doesTableExist("AuditManagement","ApplicationEvents")) {
+            String sqlCreateApplicationEventsTable = "CREATE TABLE IF NOT EXISTS AuditManagement.ApplicationEvents ("
+                    + "   applicationId varchar(128) not null primary key,"
+                    + "   eventsXML long varchar not null )";
+            LOG.debug("Creating the AuditManagement.ApplicationEvents database table...");
+            createTable(sqlCreateApplicationEventsTable);
+        }
+
+        //  Create AuditManagement.TenantApplications table to store tenant and application
+        //  mappings.
+        if (!doesTableExist("AuditManagement","TenantApplications")) {
+            String sqlCreateTenantApplicationsTable = "CREATE TABLE IF NOT EXISTS AuditManagement.TenantApplications ("
+                    + "   tenantId varchar(128) not null,"
+                    + "   applicationId varchar(128) not null,"
+                    + "   PRIMARY KEY (tenantId, applicationId));"
+                    + "ALTER TABLE AuditManagement.TenantApplications"
+                    + "   ADD CONSTRAINT fk_applicationId FOREIGN KEY (applicationId)"
+                    + "   REFERENCES AuditManagement.ApplicationEvents (applicationId);";
+            LOG.debug("Creating the AuditManagement.TenantApplications database table...");
+            createTable(sqlCreateTenantApplicationsTable);
+        }
+    }
+
+    /**
+     * Store application name and XML audit event mappings.
+     */
+    public void insertApplicationEventsRow(String applicationId, String eventsXML) throws Exception {
+
+        String insertRowSQL = "INSERT INTO AuditManagement.ApplicationEvents (applicationId, eventsXML) VALUES (?,?)";
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(insertRowSQL)
+        ) {
+            stmt.setString(1,applicationId);
+            stmt.setString(2,eventsXML);
+
+            LOG.debug("Inserting row into AuditManagement.ApplicationEvents for application {}...", applicationId);
+            stmt.execute();
+        }
+    }
+
+    /**
+     * Modify application name and XML audit event mappings.
+     */
+    public void updateApplicationEventsRow(String applicationId, String eventsXML) throws Exception {
+
+        String updateRowSQL = "UPDATE AuditManagement.ApplicationEvents SET eventsXML = ? WHERE applicationId = ?";
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(updateRowSQL)
+        ) {
+            stmt.setString(2,applicationId);
+            stmt.setString(1,eventsXML);
+
+            LOG.debug("Updating row in AuditManagement.ApplicationEvents for application {}...", applicationId);
+            stmt.execute();
+        }
+    }
+
+    /**
+     * Store tenant and application mappings.
+     */
+    public void insertTenantApplicationsRow(String tenantId, String applicationId) throws Exception {
+
+        String insertRowSQL = "INSERT INTO AuditManagement.TenantApplications (tenantId, applicationId) VALUES (?,?)";
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(insertRowSQL)
+        ) {
+            stmt.setString(1,tenantId);
+            stmt.setString(2,applicationId);
+
+            LOG.debug("Inserting row into AuditManagement.TenantApplications for tenant {}, application {} ...", tenantId, applicationId);
+            stmt.execute();
+        }
+    }
+
+    /**
+     * Returns a list of tenants for the specified application identifier.
+     */
+    public List<String> getTenantsForApp(String applicationId) throws Exception {
+
+        List<String> tenantList = new ArrayList<>();
+        String getTenantsSQL = "SELECT tenantId FROM AuditManagement.TenantApplications WHERE applicationId = ?";
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(getTenantsSQL)
+        ) {
+            stmt.setString(1,applicationId);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                tenantList.add(rs.getString("tenantId"));
+            }
+        }
+
+        return tenantList;
+    }
+
+    /**
+     * Returns the events XML for the specified application identifier.
+     */
+    public String getEventsXMLForApp(String applicationId) throws Exception {
+
+        String eventsXML="";
+        String getEventsXmlSQL = "SELECT eventsXML FROM AuditManagement.ApplicationEvents WHERE applicationId = ?";
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(getEventsXmlSQL)
+        ) {
+            stmt.setString(1,applicationId);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                eventsXML = rs.getString("eventsXML");
+            }
+        }
+
+        return eventsXML;
+    }
+
+    /**
+     * Check if the application defined audit events XML has already been registered.
+     */
+    public boolean doesApplicationEventsRowExist(String applicationId) throws Exception {
+
+        boolean exists = false;
+
+        String rowExistsSQL = "select 1 as rowExists from AuditManagement.ApplicationEvents where applicationId = ?";
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(rowExistsSQL)
+        ) {
+            stmt.setString(1,applicationId);
+
+            //  Execute a query to determine if the specified table column exists.
+            LOG.debug("doesApplicationEventsRowExist: Checking if ApplicationEvents row already exists...");
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                exists = rs.getInt("rowExists") > 0;
+            }
+        }
+
+        return exists;
+    }
+
+    /**
+     * Check if tenant/application mapping has already been registered.
+     */
+    public boolean doesTenantApplicationsRowExist(String tenantId, String applicationId) throws Exception {
+
+        boolean exists = false;
+
+        String rowExistsSQL = "select 1 as rowExists from AuditManagement.TenantApplications where tenantId = ? and applicationId = ?";
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(rowExistsSQL)
+        ) {
+            stmt.setString(1,tenantId);
+            stmt.setString(2,applicationId);
+
+            //  Execute a query to determine if the specified row exists.
+            LOG.debug("doesTenantApplicationsRowExist: Checking if TenantApplications row already exists...");
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                exists = rs.getInt("rowExists") > 0;
+            }
+        }
+
+        return exists;
+    }
+
 }
 

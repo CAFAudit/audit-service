@@ -21,6 +21,7 @@
 ##  Create table context. Generate CREATE TABLE SQL ...
 #set($namespace = $root.getRootElement().getNamespace())
 #set($identifier = $root.getRootElement().getChild("ApplicationId",$namespace).getText())
+#set($schema = $schema)
 #set($space = " ")
 #set($comma = ",")
 #set($ProcessId = "processId varchar(128)")
@@ -33,9 +34,11 @@
 #set($EventTypeId = "eventTypeId varchar(128)")
 #set($PrimaryKeyColumns="processId,threadId,eventOrder")
 #set($CustomEventParamPrefix="eventParam")
+#set($tableNamePrefix = "Audit")
+#set($tableName = "$tableNamePrefix$identifier")
 ##
 ## Generate CREATE TABLE statement
-CREATE TABLE IF NOT EXISTS public.$identifier
+CREATE TABLE IF NOT EXISTS $schema.$tableName
 (
 ## Fixed columns
 $ProcessId,
@@ -84,7 +87,7 @@ $CustomEventParamPrefix$columnName$space$verticaType")
 $columnList
 );
 ## Assign primary key.
-ALTER TABLE public.$identifier
+ALTER TABLE $schema.$tableName
 ADD PRIMARY KEY ($PrimaryKeyColumns);
 #else
 ##  Modify table context. Generate ALTER TABLE SQL ...

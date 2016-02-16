@@ -7,17 +7,22 @@ info:
   version: v1
   title: CAF Audit Management API
   description: |
-    The first version of the CAF Audit Managament API will facilitate the upload
-    of the application audit events file in order to create the necessary schema
-    in the Vertica database for audit event data storage.
+    The CAF Audit Managament API will facilitate the registration of both
+    application defined audit events XML and new tenants.
 
-    Applications will define audit events that will occur in the system in an
-    XML audit event file. The API will auto-generate and load table definition
-    or modification SQL from this XML into the Vertica database.
+    The applications endpoint should be used to register or modify the audit
+    events XML file defined for each application. The XML along with the
+    application mapping will be stored in the Vertica database.
+
+    The tenants endpoint should be used to add new tenants. One or more
+    applications can be specified when adding a new tenant. This will result
+    in application specific storage tables being created under tenant specific
+    schemas in the Vertica database.
 
     #### XML Audit Events File
 
-    A sample XML is included next:
+    Applications will define audit events that will occur in the system in an
+    XML audit event file. A sample XML is included next:
     ```
     <AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd">
       <ApplicationId>ProductX</ApplicationId>
@@ -60,7 +65,7 @@ info:
     ```
     `AuditedApplication` is the root element. `ApplicationId` identifies the name
     of the application that the audit event type is associated with. The database
-    table created by the API endpoint will derive it's name from `ApplicationId`.
+    table created by the tenants API endpoint will derive it's name from `ApplicationId`.
     For each audit event defined, `TypeId` is a string identifier for the
     particular event (e.g. viewDocument) and `CategoryId` is a string identifier
     for the category of event. A list of parameter elements are then defined for
@@ -68,9 +73,9 @@ info:
     string, short, int, long, float, double, boolean or date), description and
     an optional `ColumnName` element which identifies an alternative database
     column to be used for storage in the event that multiple audit events
-    comprise of parameters with the same name. The column names created by by
-    the API endpoint for audit event parameters is taken from either the
-    `ColumnName` or `Name`. Each is also prefixed with 'eventParam'.
+    comprise of parameters with the same name. The column names created by the
+    API for audit event parameters is taken from either the `ColumnName` or `Name`.
+    Each is also prefixed with 'eventParam'.
 
     #### Vertica Database Connection
 
@@ -99,7 +104,7 @@ basePath: /v1
 paths:
   /applications:
     post:
-      description: Used to create the Vertica database schema for application defined audit events.
+      description: Used to register or modify application defined audit events XML in the Vertica database.
       consumes:
         - multipart/form-data
       parameters:
@@ -113,5 +118,26 @@ paths:
           description: Ok
         400:
           description: Bad Request (missing database connection properties or unexpected/invalid XML)
+        500:
+          description: Internal server error
+  /tenants:
+    post:
+      description: Used to register and create the Vertica database schema for a new tenant.
+      parameters:
+        - name: tenantId
+          type: string
+          in: query
+          required: true
+          description: Identifies the tenant.
+        - name: application
+          type: array
+          in: query
+          required: true
+          description: Identifies the application(s) that the tenant is to be registered with.
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Bad Request (missing database connection properties)
         500:
           description: Internal server error

@@ -5,7 +5,7 @@ final class KafkaAuditTopic
     private KafkaAuditTopic() {
     }
 
-    public static String getTopicName(String applicationId) {
-        return "AuditEventTopic." + applicationId;
+    public static String getTopicName(String applicationId, String tenantId) {
+        return "AuditEventTopic." + applicationId + "." + tenantId;
     }
 }

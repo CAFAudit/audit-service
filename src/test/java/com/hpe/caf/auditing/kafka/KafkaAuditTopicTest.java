@@ -7,8 +7,8 @@ public class KafkaAuditTopicTest {
 
     @Test
     public void testGetTopicName() throws Exception {
-        String topicName = KafkaAuditTopic.getTopicName("TestTopic");
-        Assert.assertEquals("AuditEventTopic.TestTopic",topicName);
+        String topicName = KafkaAuditTopic.getTopicName("App","Tenant");
+        Assert.assertEquals("AuditEventTopic.App.Tenant",topicName);
     }
 
 }

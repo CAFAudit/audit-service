@@ -15,6 +15,7 @@ final class KafkaAuditEventBuilder implements AuditEventBuilder
     private final Producer<String, String> producer;
     private final ObjectNode jsonAuditMessage;
     private String applicationId;
+    private String tenantId;
 
     public KafkaAuditEventBuilder(final Producer<String, String> producer)
     {
@@ -42,6 +43,12 @@ final class KafkaAuditEventBuilder implements AuditEventBuilder
     @Override
     public void setUser(final String userId) {
         jsonAuditMessage.put("userId", userId);
+    }
+
+    @Override
+    public void setTenant(final String tenantId) {
+        this.tenantId = tenantId;
+        jsonAuditMessage.put("tenantId", tenantId);
     }
 
     @Override
@@ -146,7 +153,7 @@ final class KafkaAuditEventBuilder implements AuditEventBuilder
     public void send() throws Exception
     {
         // Get the topic name
-        final String topic = KafkaAuditTopic.getTopicName(applicationId);
+        final String topic = KafkaAuditTopic.getTopicName(applicationId,tenantId);
 
         // Get the partition key
         final int partitionKey =

@@ -211,22 +211,25 @@ public class TestApplication {
                     Object value = entry.get(key);
 
                     // Search for key/value pair in actual hashmap and compare
-                    // with expected value.
+                    // with expected value. Ignore tenantId as this is not stored in the
+                    // DB.
                     HashMap<String, Object> actualHashMap = actual.get(hashMapIndex);
                     Object actualvalue = actualHashMap.get(key);
-                    if (!Objects.equals(actualvalue,value)) {
+                    if (!key.equals("tenantId")) {
+                        if (!Objects.equals(actualvalue,value)) {
 
-                        //  Database returns timestamp objects and not java Date.
-                        //  Convert and re-check before assuming dates are different.
-                        if (actualvalue instanceof Timestamp) {
-                            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                            Date actualDate = df.parse(actualvalue.toString());
-                            if (!Objects.equals(actualDate,value)) {
-                                //  Date values still don't match.
+                            //  Database returns timestamp objects and not java Date.
+                            //  Convert and re-check before assuming dates are different.
+                            if (actualvalue instanceof Timestamp) {
+                                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                                Date actualDate = df.parse(actualvalue.toString());
+                                if (!Objects.equals(actualDate,value)) {
+                                    //  Date values still don't match.
+                                    return false;
+                                }
+                            } else {
                                 return false;
                             }
-                        } else {
-                            return false;
                         }
                     }
                 }

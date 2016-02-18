@@ -86,13 +86,17 @@ info:
     `database.url` - the Vertica database connection string URL with format:
     jdbc:vertica://VerticaHost:portNumber/databaseName
 
-    `database.schema` - the logical schema of the new database table. E.g. public
-
     `database.username` - the name of the database user account. E.g. dbadmin
 
     `database.password` - the password of the database user account
 
-    These can be provided through system environment variables or can be collectively
+    #### Kafka Connection
+
+    The API connects to the Kafka server. The following property needs to be supplied:
+
+    `kafka.brokers` - the address of the Kafka broker. E.g. 192.168.56.20:9092
+
+    Both Kafka and Vertica properties can be provided through system environment variables or can be collectively
     initialized in a config.properties file with a new system environment variable created,
     `AUDIT_MANAGEMENT_API_CONFIG_PATH`, which points to the directory containing the properties
     file.

@@ -10,9 +10,9 @@ info:
     The CAF Audit Managament API will facilitate the registration of both
     application defined audit events XML and new tenants.
 
-    The applications endpoint should be used to register or modify the audit
-    events XML file defined for each application. The XML along with the
-    application mapping will be stored in the Vertica database.
+    The applications endpoint should be used to register the audit events XML
+    file defined for each application. The XML along with the application mapping
+    will be stored in the Vertica database.
 
     The tenants endpoint should be used to add new tenants. One or more
     applications can be specified when adding a new tenant. This will result
@@ -65,7 +65,8 @@ info:
     ```
     `AuditedApplication` is the root element. `ApplicationId` identifies the name
     of the application that the audit event type is associated with. The database
-    table created by the tenants API endpoint will derive it's name from `ApplicationId`.
+    table created by the tenants API endpoint will derive it's name from this
+    `ApplicationId` and will be created in a database schema named after the tenant.
     For each audit event defined, `TypeId` is a string identifier for the
     particular event (e.g. viewDocument) and `CategoryId` is a string identifier
     for the category of event. A list of parameter elements are then defined for
@@ -104,7 +105,7 @@ basePath: /v1
 paths:
   /applications:
     post:
-      description: Used to register or modify application defined audit events XML in the Vertica database.
+      description: Used to register application defined audit events XML in the Vertica database.
       consumes:
         - multipart/form-data
       parameters:
@@ -131,6 +132,8 @@ paths:
           description: Identifies the tenant.
         - name: application
           type: array
+          items:
+            type: string
           in: query
           required: true
           description: Identifies the application(s) that the tenant is to be registered with.

@@ -33,9 +33,9 @@
   "env": {
     "_JAVA_OPTIONS": "-Xms${caf-audit-management-service-java-mem-min}m -Xmx${caf-audit-management-service-java-mem-max}m",
     "database.url": "${caf-audit-management-service-database-url}",
-    "database.schema": "${caf-audit-management-service-database-schema}",
     "database.username": "${caf-audit-management-service-database-username}",
     "database.password": "${caf-audit-management-service-database-password}",
+    "kafka.brokers": "${caf-audit-management-service-kafka-brokers}",
     "AUDIT_MANAGEMENT_API_CONFIG_PATH": "${caf-audit-management-service-config-path}"
   },
   "uris": [

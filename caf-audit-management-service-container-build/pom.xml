@@ -146,9 +146,9 @@
                     </systemPropertyVariables>
                     <environmentVariables>
                         <database.url>jdbc:vertica://192.168.56.30:5433/CAFAudit</database.url>
-                        <database.schema>public</database.schema>
                         <database.username>dbadmin</database.username>
                         <database.password>CAFAudit</database.password>
+                        <kafka.brokers>192.168.56.20:9092</kafka.brokers>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}${webserviceBasePath}</webserviceurl>
                     </environmentVariables>
                 </configuration>
@@ -253,9 +253,9 @@
                                 <env>
                                     <!-- When the container is deployed in Marathon it will use the environment variable values specified in the container json. -->
                                     <database.url>jdbc:vertica://192.168.56.30:5433/CAFAudit</database.url>
-                                    <database.schema>public</database.schema>
                                     <database.username>dbadmin</database.username>
                                     <database.password>CAFAudit</database.password>
+                                    <kafka.brokers>192.168.56.20:9092</kafka.brokers>
                                 </env>
                                 <volumes></volumes>
                                 <links></links>

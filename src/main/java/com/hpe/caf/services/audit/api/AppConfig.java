@@ -26,4 +26,8 @@ public class AppConfig {
     public String getDatabasePassword(){
         return environment.getProperty("database.password");
     }
+
+    public String getKafkaBrokers(){
+        return environment.getProperty("kafka.brokers");
+    }
 }

@@ -15,6 +15,10 @@ public class TenantAddPost {
 
     private static final String ERR_MSG_TENANT_APPS_IS_MISSING = "The AuditManagement.TenantApplications table does not exist.";
     private static final String TRANSFORM_TEMPLATE_NAME = "AuditTransform.vm";
+    private static final String KAFKA_SCHEDULER_NAME_SUFFIX = "AuditScheduler";
+    private static final String KAFKA_TARGET_TABLE_PREFIX = "Audit";
+    private static final String KAFKA_REJECT_TABLE = "kafka_rej";
+    private static final String KAFKA_TARGET_TOPIC_PREFIX = "AuditEventTopic.";
 
     private static final Logger LOG = LoggerFactory.getLogger(TenantAddPost.class);
 
@@ -72,6 +76,34 @@ public class TenantAddPost {
                         databaseHelper.createTable(createTableSQL);
 
                         LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
+
+                        //  Create Kafka scheduler and associate a topic with that scheduler.
+                        LOG.info("addTenant: Creating Kafka scheduler...");
+                        String schedulerName = tenantId + KAFKA_SCHEDULER_NAME_SUFFIX;
+                        KafkaScheduler.createScheduler(properties, schedulerName);
+
+                        String targetTable = new StringBuilder()
+                                .append(tenantId)
+                                .append(".")
+                                .append(KAFKA_TARGET_TABLE_PREFIX)
+                                .append(application)
+                                .toString();
+
+                        String rejectionTable = new StringBuilder()
+                                .append(tenantId)
+                                .append(".")
+                                .append(KAFKA_REJECT_TABLE)
+                                .toString();
+
+                        String targetTopic = new StringBuilder()
+                                .append(KAFKA_TARGET_TOPIC_PREFIX)
+                                .append(application)
+                                .append(".")
+                                .append(tenantId)
+                                .toString();
+
+                        LOG.info("addTenant: Associating Kafka topic with the scheduler...");
+                        KafkaScheduler.associateTopic(properties, schedulerName, targetTable, rejectionTable, targetTopic);
                     }
                 }
             }

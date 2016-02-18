@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(TenantAddPost.class)
+@PrepareForTest({TenantAddPost.class,KafkaScheduler.class})
 public class TenantAddPostTest {
 
     @Test
@@ -32,6 +32,11 @@ public class TenantAddPostTest {
         TransformHelper mockTransformHelper = Mockito.mock(TransformHelper.class);
         Mockito.when(mockTransformHelper.doCreateTableTransform(Mockito.any(), Mockito.anyString(), Mockito.anyString())).thenReturn("");
         PowerMockito.whenNew(TransformHelper.class).withNoArguments().thenReturn(mockTransformHelper);
+
+        //  Mock KafkaScheduler calls.
+        PowerMockito.mockStatic(KafkaScheduler.class);
+        PowerMockito.doNothing().when(KafkaScheduler.class, "createScheduler", Mockito.any(), Mockito.anyString());
+        PowerMockito.doNothing().when(KafkaScheduler.class, "associateTopic", Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
 
         //  Set-up test database connection properties.
         HashMap<String, String> newEnv  = new HashMap<>();

@@ -256,6 +256,25 @@ public class DatabaseHelper {
     }
 
     /**
+     * Remove tenant and application mapping.
+     */
+    public void deleteTenantApplicationsRow(String tenantId, String applicationId) throws Exception {
+
+        String insertRowSQL = "DELETE FROM AuditManagement.TenantApplications WHERE tenantId = ? AND applicationId = ?";
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(insertRowSQL)
+        ) {
+            stmt.setString(1,tenantId);
+            stmt.setString(2,applicationId);
+
+            LOG.debug("Deleting row from AuditManagement.TenantApplications for tenant {}, application {} ...", tenantId, applicationId);
+            stmt.execute();
+        }
+    }
+
+    /**
      * Returns a list of tenants for the specified application identifier.
      */
     public List<String> getTenantsForApp(String applicationId) throws Exception {

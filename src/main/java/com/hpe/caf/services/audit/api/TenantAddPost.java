@@ -63,47 +63,54 @@ public class TenantAddPost {
                         LOG.debug("addTenant: Creating new row in AuditManagement.TenantApplications for tenant '{}', application '{}'...", tenantId, application);
                         databaseHelper.insertTenantApplicationsRow(tenantId,application);
 
-                        //  Create new schema for the specified tenant.
-                        LOG.debug("addTenant: Creating new database schema for tenant '{}'...", tenantId);
-                        databaseHelper.createSchema(tenantId);
+                        try {
+                            //  Create new schema for the specified tenant.
+                            LOG.debug("addTenant: Creating new database schema for tenant '{}'...", tenantId);
+                            databaseHelper.createSchema(tenantId);
 
-                        InputStream auditConfigXMLStream = new ByteArrayInputStream(auditConfigXMLString.getBytes(StandardCharsets.UTF_8));
+                            InputStream auditConfigXMLStream = new ByteArrayInputStream(auditConfigXMLString.getBytes(StandardCharsets.UTF_8));
 
-                        //  Create <tenantId>.Audit<application> table based on the audit events XML.
-                        LOG.debug("addTenant: Creating new auditing table for tenant '{}', application '{}'...", tenantId, application);
-                        TransformHelper transform = new TransformHelper();
-                        String createTableSQL = transform.doCreateTableTransform(auditConfigXMLStream,TRANSFORM_TEMPLATE_NAME,tenantId);
-                        databaseHelper.createTable(createTableSQL);
+                            //  Create <tenantId>.Audit<application> table based on the audit events XML.
+                            LOG.debug("addTenant: Creating new auditing table for tenant '{}', application '{}'...", tenantId, application);
+                            TransformHelper transform = new TransformHelper();
+                            String createTableSQL = transform.doCreateTableTransform(auditConfigXMLStream,TRANSFORM_TEMPLATE_NAME,tenantId);
+                            databaseHelper.createTable(createTableSQL);
 
-                        LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
+                            LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
 
-                        //  Create Kafka scheduler and associate a topic with that scheduler.
-                        LOG.info("addTenant: Creating Kafka scheduler...");
-                        String schedulerName = tenantId + KAFKA_SCHEDULER_NAME_SUFFIX;
-                        KafkaScheduler.createScheduler(properties, schedulerName);
+                            //  Create Kafka scheduler and associate a topic with that scheduler.
+                            LOG.info("addTenant: Creating Kafka scheduler...");
+                            String schedulerName = tenantId + KAFKA_SCHEDULER_NAME_SUFFIX;
+                            KafkaScheduler.createScheduler(properties, schedulerName);
 
-                        String targetTable = new StringBuilder()
-                                .append(tenantId)
-                                .append(".")
-                                .append(KAFKA_TARGET_TABLE_PREFIX)
-                                .append(application)
-                                .toString();
+                            String targetTable = new StringBuilder()
+                                    .append(tenantId)
+                                    .append(".")
+                                    .append(KAFKA_TARGET_TABLE_PREFIX)
+                                    .append(application)
+                                    .toString();
 
-                        String rejectionTable = new StringBuilder()
-                                .append(tenantId)
-                                .append(".")
-                                .append(KAFKA_REJECT_TABLE)
-                                .toString();
+                            String rejectionTable = new StringBuilder()
+                                    .append(tenantId)
+                                    .append(".")
+                                    .append(KAFKA_REJECT_TABLE)
+                                    .toString();
 
-                        String targetTopic = new StringBuilder()
-                                .append(KAFKA_TARGET_TOPIC_PREFIX)
-                                .append(application)
-                                .append(".")
-                                .append(tenantId)
-                                .toString();
+                            String targetTopic = new StringBuilder()
+                                    .append(KAFKA_TARGET_TOPIC_PREFIX)
+                                    .append(application)
+                                    .append(".")
+                                    .append(tenantId)
+                                    .toString();
 
-                        LOG.info("addTenant: Associating Kafka topic with the scheduler...");
-                        KafkaScheduler.associateTopic(properties, schedulerName, targetTable, rejectionTable, targetTopic);
+                            LOG.info("addTenant: Associating Kafka topic with the scheduler...");
+                            KafkaScheduler.associateTopic(properties, schedulerName, targetTable, rejectionTable, targetTopic);
+
+                        } catch (Exception ex) {
+                            //  Something unexpected has gone wrong. Delete tenant/application mapping to facilitate retry,
+                            databaseHelper.deleteTenantApplicationsRow(tenantId,application);
+                            throw ex;
+                        }
                     }
                 }
             }

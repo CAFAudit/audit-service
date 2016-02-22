@@ -3,6 +3,7 @@
   "marathon-group": "demo",
   "force-pull": false,
   "marathon-uris-root": "/vagrant",
+  "service-config-location":"marathon-config",
   "docker-login-config": "<MUST_REPLACE: Location of docker login config tar>",
 
   "caf-audit-management-service-cpus": "0.5",

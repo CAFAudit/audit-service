@@ -32,6 +32,7 @@
   ],
   "env": {
     "_JAVA_OPTIONS": "-Xms${caf-audit-management-service-java-mem-min}m -Xmx${caf-audit-management-service-java-mem-max}m",
+    "CAF_CONFIG_PATH": "/mnt/mesos/sandbox",
     "database.url": "${caf-audit-management-service-database-url}",
     "database.username": "${caf-audit-management-service-database-username}",
     "database.password": "${caf-audit-management-service-database-password}",
@@ -39,6 +40,7 @@
     "AUDIT_MANAGEMENT_API_CONFIG_PATH": "${caf-audit-management-service-config-path}"
   },
   "uris": [
+    "${marathon-uris-root}/${service-config-location}/cfg_${marathon-group}_audit-management-service_KafkaAuditConfiguration",
     "${marathon-uris-root}/${docker-login-config}"
   ]
 }

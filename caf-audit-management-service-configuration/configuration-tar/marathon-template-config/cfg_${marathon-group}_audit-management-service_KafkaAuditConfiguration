@@ -1,0 +1,5 @@
+{
+    "bootstrapServers": "${caf-audit-management-service-kafka-brokers}",
+    "acks": "all",
+    "retries": "0"
+}

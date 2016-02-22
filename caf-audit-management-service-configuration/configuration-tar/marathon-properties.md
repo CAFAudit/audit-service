@@ -15,6 +15,9 @@
 #### marathon-uris-root
 - The root folder that contains all files available for Marathon to copy into containers.
 
+####service-config-location
+- The folder within 'marathon-uris-root' that the configuration files for the service reside e.g. If the folder on disk was '/vagrant/config', 'marathon-uris-root' would be '/vagrant' and 'service-config-location' would be 'config'. This should be the config output folder set for Marathon-loader.
+
 #### docker-login-config
 - Following the steps [here](https://mesosphere.github.io/marathon/docs/native-docker-private-registry.html) this property specifies the path to the tar containing your docker login configuration file. This is required for each container to be able to pull their image down from Artifactory. **Note this value must be replaced.**
 

@@ -17,6 +17,12 @@
     <packaging>pom</packaging>
 
 
+    <properties>
+        <!-- Must be the same events XML file used in the test code, see AuditIT.auditXMLConfigFile -->
+        <auditXMLConfigFile>./test-case/events.xml</auditXMLConfigFile>
+    </properties>
+
+
     <dependencies>
         <dependency>
             <groupId>com.hpe.caf</groupId>
@@ -31,14 +37,24 @@
             <type>exe</type>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.3.0</version>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+        </dependency>
+
+        <!-- Integration test dependencies -->
+        <dependency>
+            <groupId>com.hpe.caf</groupId>
+            <artifactId>caf-audit</artifactId>
+            <version>1.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -48,6 +64,116 @@
             <type>jar</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.hpe.caf.config</groupId>
+            <artifactId>config-file</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.hpe.caf.codec</groupId>
+            <artifactId>codec-json</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.hpe.caf.config</groupId>
+            <artifactId>config-system</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.hpe.caf.cipher</groupId>
+            <artifactId>cipher-null</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.hpe.caf.util</groupId>
+            <artifactId>util-moduleloader</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.hpe.caf.util</groupId>
+            <artifactId>util-naming</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.53</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.6.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.6.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.6.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>2.6.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vertica</groupId>
+            <artifactId>vertica-jdbc</artifactId>
+            <version>7.1.2-0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <!--Required at runtime for log4j output-->
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <!--Required at runtime for log4j output-->
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <!--ADAPTER (not bridge) that allows slf4j api to route to the log4j implm-->
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.0-rc2</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j-api</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <!-- End Logging -->
     </dependencies>
 
 
@@ -100,6 +226,44 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.hpe.caf</groupId>
+                <artifactId>caf-audit-plugin</artifactId>
+                <version>1.1-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <id>generate-code</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xmltojava</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <auditXMLConfig>${auditXMLConfigFile}</auditXMLConfig>
+                    <packageName>com.hpe.caf.services.audit.api</packageName>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add_test_sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.version}</version>
@@ -109,6 +273,11 @@
                         <goals>
                             <goal>testCompile</goal>
                         </goals>
+                        <configuration>
+                            <testCompilerArgument>-parameters</testCompilerArgument>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -145,10 +314,12 @@
                         <docker.host.address>${docker.host.address}</docker.host.address>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <database.url>jdbc:vertica://192.168.56.30:5433/CAFAudit</database.url>
+                        <database.url>jdbc:vertica://192.168.56.30:5433/AuditIT</database.url>
                         <database.username>dbadmin</database.username>
-                        <database.password>CAFAudit</database.password>
+                        <database.password>AuditIT</database.password>
                         <kafka.brokers>192.168.56.20:9092</kafka.brokers>
+                        <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
+                        <CAF_CONFIG_PATH>${project.basedir}/test-config</CAF_CONFIG_PATH>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}${webserviceBasePath}</webserviceurl>
                     </environmentVariables>
                 </configuration>
@@ -187,6 +358,27 @@
                     <logDate>default</logDate>
                     <watchInterval>500</watchInterval>
                     <images>
+                        <image>
+                            <alias>config</alias>
+                            <name>${project.artifactId}-test-config:${project.version}</name>
+                            <build>
+                                <maintainer>philip.crooks@hpe.com</maintainer>
+                                <assembly>
+                                    <basedir>/config</basedir>
+                                    <inline>
+                                        <fileSets>
+                                            <fileSet>
+                                                <directory>test-config</directory>
+                                                <outputDirectory>/</outputDirectory>
+                                                <includes>
+                                                    <include>*</include>
+                                                </includes>
+                                            </fileSet>
+                                        </fileSets>
+                                    </inline>
+                                </assembly>
+                            </build>
+                        </image>
                         <image>
                             <alias>auditManagementWebService</alias>
                             <name>${caf-audit-management-service.container.name}</name>
@@ -252,12 +444,18 @@
                                 </ports>
                                 <env>
                                     <!-- When the container is deployed in Marathon it will use the environment variable values specified in the container json. -->
-                                    <database.url>jdbc:vertica://192.168.56.30:5433/CAFAudit</database.url>
+                                    <database.url>jdbc:vertica://192.168.56.30:5433/AuditIT</database.url>
                                     <database.username>dbadmin</database.username>
-                                    <database.password>CAFAudit</database.password>
+                                    <database.password>AuditIT</database.password>
                                     <kafka.brokers>192.168.56.20:9092</kafka.brokers>
+                                    <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
+                                    <CAF_CONFIG_PATH>/config</CAF_CONFIG_PATH>
                                 </env>
-                                <volumes></volumes>
+                                <volumes>
+                                    <from>
+                                        <image>config</image>
+                                    </from>
+                                </volumes>
                                 <links></links>
                                 <log>
                                     <enabled>true</enabled>

@@ -28,6 +28,7 @@ import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,10 +51,8 @@ public class AuditIT {
     private static final String AUDIT_IT_DATABASE_NAME = "AuditIT";
     private static final String AUDIT_IT_DATABASE_PORT = "5433";
 
-    //Must be the same events XML file used in the caf-audit-plugin, see pom.xml property auditXMLConfigFile.
-    private static final String auditXMLConfigFile = "./test-case/events.xml";
-
-    private static final String auditYAMLFile = "./test-case/events.yaml";
+    //The audit events XML file in the test case directory must be the same events XML file used in the caf-audit-plugin, see pom.xml property auditXMLConfigFile.
+    private static final String testCaseDirectory = "./test-case";
 
     private static DefaultApi auditManagementWsClient;
 
@@ -165,15 +164,17 @@ public class AuditIT {
         AuditTestCase testCase = getTestCase();
         try (TestCaseDb testCaseDb = new TestCaseDb(AUDIT_IT_DATABASE_NAME)) {
             String applicationId = registerApplicationInDatabase(testCase);
-            AuditEventMessages messagesToSend = getTestMessages(testCase);
-            String tenantId = getTenantId(messagesToSend);
-            addTenantInDatabase(tenantId, applicationId);
-            List<HashMap<String, Object>> expectedResultSet = sendTestMessages(messagesToSend);
+            for (Path eventsYaml : testCase.getYaml()) {
+                AuditEventMessages messagesToSend = getTestMessages(eventsYaml);
+                String tenantId = getTenantId(messagesToSend);
+                addTenantInDatabase(tenantId, applicationId);
+                List<HashMap<String, Object>> expectedResultSet = sendTestMessages(messagesToSend);
 
-            LOG.info("Pausing to allow messages to propagate through Kafka to Vertica...");
-            Thread.sleep(10000);
+                LOG.info("Pausing to allow messages to propagate through Kafka to Vertica...");
+                Thread.sleep(10000);
 
-            verifyResults(applicationId, tenantId, expectedResultSet);
+                verifyResults(applicationId, tenantId, expectedResultSet);
+            }
         }
 
         LOG.info("*** Completed Audit tests ***");
@@ -181,9 +182,7 @@ public class AuditIT {
 
 
     private AuditTestCase getTestCase() throws Exception {
-        Path xml = Paths.get(auditXMLConfigFile);
-        Path yaml = Paths.get(auditYAMLFile);
-        AuditTestCase testCase = new AuditTestCase(xml, yaml);
+        AuditTestCase testCase = new AuditTestCase(Paths.get(testCaseDirectory));
         return testCase;
     }
 
@@ -196,10 +195,10 @@ public class AuditIT {
     }
 
 
-    private AuditEventMessages getTestMessages(AuditTestCase testCase) throws Exception {
-        LOG.info("De-serializing YAML test data...");
+    private AuditEventMessages getTestMessages(Path eventsYaml) throws Exception {
+        LOG.info("De-serializing YAML test data {} ...", eventsYaml.toString());
         ObjectMapper mapper = new YAMLMapper();
-        AuditEventMessages messages = mapper.readValue(Files.readAllBytes(testCase.getYaml()), AuditEventMessages.class);
+        AuditEventMessages messages = mapper.readValue(Files.readAllBytes(eventsYaml), AuditEventMessages.class);
         int messageCount = messages.getNumberOfMessages();
         LOG.info("Number of messages to be sent is {}.", messageCount);
         return messages;
@@ -431,19 +430,37 @@ public class AuditIT {
 
 
     class AuditTestCase {
-        private Path yaml;
+        private Collection<Path> yaml;
         private Path xml;
 
-        public AuditTestCase(Path xml, Path yaml) {
-            this.xml = xml;
-            this.yaml = yaml;
+        public AuditTestCase(Path testCaseDirectory) throws Exception {
+            yaml = new Vector<>();
+            try (DirectoryStream<Path> directoryContents = Files.newDirectoryStream(testCaseDirectory)) {
+                for (Path path : directoryContents) {
+                    if (Files.isRegularFile(path)) {
+                        if (path.getFileSystem().getPathMatcher("glob:*.xml").matches(path.getFileName())) {
+                            if (xml == null) {
+                                this.xml = path;
+                            }
+                        } else if (path.getFileSystem().getPathMatcher("glob:*.yaml").matches(path.getFileName())) {
+                            this.yaml.add(path);
+                        }
+                    }
+                }
+            }
+            if (xml == null) {
+                throw new Exception("No events XML file was found in the test case directory. Expected to find an audit events file with the extension .xml");
+            }
+            if (yaml.isEmpty()) {
+                throw new Exception("No test case YAML files were found in the test case directory. Expected to find at least one file with the extension .yaml");
+            }
         }
 
         public Path getXml() {
             return xml;
         }
 
-        public Path getYaml() {
+        public Collection<Path> getYaml() {
             return yaml;
         }
     }

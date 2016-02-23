@@ -1,0 +1,57 @@
+---
+numberOfMessages: 3
+messages:
+- auditLogMethodParams:
+  - name: "userId"
+    value: "user1@hpe.com"
+  - name: "tenantId"
+    value: "tenant1"
+  - name: "StringType"
+    value: "user1"
+  - name: "Int16Type"
+    value: 1
+  - name: "Int32Type"
+    value: 1
+  - name: "Int64Type"
+    value: 1
+  - name: "FloatType"
+    value: 123.45
+  - name: "DoubleType"
+    value: 678.8
+  - name: "BooleanType"
+    value: true
+  - name: "DateType"
+    value: 2016-01-14 12:45:26.319
+  auditLogMethod: "auditTestEvent1"
+- auditLogMethodParams:
+  - name: "userId"
+    value: "user2@hpe.com"
+  - name: "tenantId"
+    value: "tenant1"
+  - name: "StringType"
+    value: "user1"
+  - name: "Int16Type"
+    value: 2
+  - name: "Int32Type"
+    value: 2
+  - name: "Int64Type"
+    value: 2
+  - name: "FloatType"
+    value: 23.45
+  - name: "DoubleType"
+    value: 123.4
+  - name: "BooleanType"
+    value: false
+  - name: "DateType"
+    value: 2016-01-18 12:45:26.319
+  auditLogMethod: "auditTestEvent1"
+- auditLogMethodParams:
+  - name: "userId"
+    value: "user3@hpe.com"
+  - name: "tenantId"
+    value: "tenant1"
+  - name: "StringType2"
+    value: "user3"
+  - name: "Int16Type2"
+    value: 3
+  auditLogMethod: "auditTestEvent2"

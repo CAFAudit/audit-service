@@ -26,7 +26,7 @@ public class DBUtil {
 
     public DBUtil(final String verticaHost, final String databaseName, final String databasePort, final String databaseSchema, final String tableName, final String databaseUsername, final String databasePassword) {
         dbURL = MessageFormat.format("jdbc:vertica://{0}:{1}/{2}", Objects.requireNonNull(verticaHost), Objects.requireNonNull(databasePort), Objects.requireNonNull(databaseName));
-        dbTable = MessageFormat.format("{0}.{1}", Objects.requireNonNull(databaseSchema), Objects.requireNonNull(tableName));
+        dbTable = MessageFormat.format("{0}.Audit{1}", Objects.requireNonNull(databaseSchema), Objects.requireNonNull(tableName));
         user = Objects.requireNonNull(databaseUsername);
         passw = Objects.requireNonNull(databasePassword);
     }

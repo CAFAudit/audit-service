@@ -35,6 +35,7 @@
         <version.major.minor>${project.version}</version.major.minor>
         <tomcatBaseImage>tomcat:jre8</tomcatBaseImage>
         <webserviceWarName>caf-audit-management</webserviceWarName>
+        <swaggerUIWarName>caf-audit-management-ui</swaggerUIWarName>
         <webserviceBasePath>/v1</webserviceBasePath>
         <deployFileUrl>${project.distributionManagement.snapshotRepository.url}</deployFileUrl>
         <repositoryId>${project.distributionManagement.snapshotRepository.id}</repositoryId>

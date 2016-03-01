@@ -174,6 +174,14 @@
             <version>1.2</version>
         </dependency>
         <!-- End Logging -->
+
+        <!-- Swagger UI -->
+        <dependency>
+            <groupId>com.hpe.caf</groupId>
+            <artifactId>caf-audit-management-ui</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>war</type>
+        </dependency>
     </dependencies>
 
 
@@ -402,6 +410,7 @@
                                 </entryPoint>
                                 <runCmds>
                                     <runCmd>mv /opt/caf-audit-management.war $CATALINA_HOME/webapps</runCmd>
+                                    <runCmd>mv /opt/caf-audit-management-ui.war $CATALINA_HOME/webapps</runCmd> <!-- Move the swagger ui war to tomcat webapps folder. -->
                                 </runCmds>
                                 <cmd>/start.sh</cmd>
                                 <assembly>
@@ -425,6 +434,15 @@
                                                 </includes>
                                                 <outputDirectory>/opt</outputDirectory>
                                                 <outputFileNameMapping>${webserviceWarName}.war</outputFileNameMapping>
+                                            </dependencySet>
+                                            <!-- Including the swagger ui in the container image. -->
+                                            <dependencySet>
+                                                <useProjectArtifact>true</useProjectArtifact>
+                                                <includes>
+                                                    <include>com.hpe.caf:caf-audit-management-ui</include>
+                                                </includes>
+                                                <outputDirectory>/opt</outputDirectory>
+                                                <outputFileNameMapping>${swaggerUIWarName}.war</outputFileNameMapping>
                                             </dependencySet>
                                             <dependencySet>
                                                 <useProjectArtifact>false</useProjectArtifact>

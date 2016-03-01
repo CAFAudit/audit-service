@@ -19,7 +19,7 @@ info:
     in application specific storage tables being created under tenant specific
     schemas in the Vertica database.
 
-    #### XML Audit Events File
+    ### XML Audit Events File
 
     Applications will define audit events that will occur in the system in an
     XML audit event file. A sample XML is included next:
@@ -78,7 +78,7 @@ info:
     API for audit event parameters is taken from either the `ColumnName` or `Name`.
     Each is also prefixed with 'eventParam'.
 
-    #### Vertica Database Connection
+    ### Vertica Database Connection
 
     The API connects to the Vertica analytical database server via JDBC. The following connection
     properties need to be supplied:
@@ -90,7 +90,7 @@ info:
 
     `database.password` - the password of the database user account
 
-    #### Kafka Connection
+    ### Kafka Connection
 
     The API connects to the Kafka server. The following property needs to be supplied:
 
@@ -110,6 +110,8 @@ paths:
   /applications:
     post:
       description: Used to register application defined audit events XML in the Vertica database.
+      tags:
+        - applications
       consumes:
         - multipart/form-data
       parameters:
@@ -128,6 +130,8 @@ paths:
   /tenants:
     post:
       description: Used to register and create the Vertica database schema for a new tenant.
+      tags:
+        - tenants
       parameters:
         - name: tenantId
           type: string

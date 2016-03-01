@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hpe.caf</groupId>
+    <artifactId>caf-audit-management-ui</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>caf-audit-management-ui</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.hpe.caf</groupId>
+            <artifactId>caf-audit-management-contract</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hpe.caf</groupId>
+            <artifactId>swagger-ui</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <finalName>caf-audit-management-ui</finalName>
+    </properties>
+
+    <build>
+        <finalName>${finalName}</finalName>
+        <plugins>
+            <!-- The maven dependency plugin adds the contents of the swagger contract and swagger UI dependencies
+            to the specified output directory. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeArtifactIds>caf-audit-management-contract,swagger-ui</includeArtifactIds>
+                            <excludes>**/META-INF/**</excludes>
+                            <outputDirectory>${project.build.directory}/${finalName}/swagger</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Unpack dependencies keeps the internal file structure of the war file.
+            We will requires the swagger.yaml file be in the api-docs folder.
+            So using resources plugin to move the file to the correct location.
+            This step could be avoided by putting the swagger.yaml directly in resources rather than in a package directory. -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/${finalName}/swagger/api-docs</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/${finalName}/swagger/com/hpe/caf/services/audit/contract</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <ciManagement>
+        <system>hudson</system>
+        <url>http://cafbuilder.hpswlabs.hp.com:8080/job/caf-audit-management-ui/</url>
+    </ciManagement>
+
+</project>

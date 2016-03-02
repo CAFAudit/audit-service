@@ -101,7 +101,7 @@ info:
     `AUDIT_MANAGEMENT_API_CONFIG_PATH`, which points to the directory containing the properties
     file.
 
-basePath: /v1
+basePath: /caf-audit-management/v1
 ################################################################################
 #                                   Paths                                      #
 ################################################################################
@@ -111,7 +111,7 @@ paths:
     post:
       description: Used to register application defined audit events XML in the Vertica database.
       tags:
-        - applications
+        - Applications
       consumes:
         - multipart/form-data
       parameters:
@@ -131,7 +131,7 @@ paths:
     post:
       description: Used to register and create the Vertica database schema for a new tenant.
       tags:
-        - tenants
+        - Tenants
       parameters:
         - name: tenantId
           type: string

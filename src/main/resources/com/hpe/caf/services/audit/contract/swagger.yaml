@@ -74,7 +74,7 @@ paths:
       description: Used to register application defined audit events XML in the Vertica database.
       tags:
         - Applications
-      summary: Add a new application to vertica.
+      summary: Adds a new application
       consumes:
         - multipart/form-data
       parameters:
@@ -95,7 +95,7 @@ paths:
       description: Used to register and create the Vertica database schema for a new tenant.
       tags:
         - Tenants
-      summary: Add a new tenant to vertica.
+      summary: Adds a new tenant
       parameters:
         - name: tenantId
           type: string

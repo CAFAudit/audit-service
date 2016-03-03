@@ -5,9 +5,9 @@ swagger: "2.0"
 # Provides metadata about the API.
 info:
   version: v1
-  title: CAF Audit Management API
+  title: CAF Audit Management Service
   description: |
-    The CAF Audit Managament API will facilitate the registration of both
+    The CAF Audit Managament Service will facilitate the registration of both
     application defined audit events XML and new tenants.
 
     The applications endpoint should be used to register the audit events XML

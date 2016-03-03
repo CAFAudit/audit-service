@@ -22,47 +22,9 @@ info:
     ### XML Audit Events File
 
     Applications will define audit events that will occur in the system in an
-    XML audit event file. A sample XML is included next:
-    ```
-    <AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd">
-      <ApplicationId>ProductX</ApplicationId>
-      <AuditEvents>
-        <AuditEvent>
-          <TypeId>viewDocument</TypeId>
-          <CategoryId>documentEvents</CategoryId>
-          <Params>
-            <Param>
-              <Name>docId</Name>
-              <Type>long</Type>
-              <Description>Document identifier</Description>
-            </Param>
-          </Params>
-        </AuditEvent>
-        <AuditEvent>
-          <TypeId>policyApplied</TypeId>
-          <CategoryId>policyEvents</CategoryId>
-          <Params>
-            <Param>
-              <Name>policyId</Name>
-              <Type>long</Type>
-              <Description>Policy identifier</Description>
-            </Param>
-            <Param>
-              <Name>policyName</Name>
-              <Type>string</Type>
-              <Description>Policy Name</Description>
-            </Param>
-            <Param>
-              <Name>policyDef</Name>
-              <Type>string</Type>
-              <ColumnName>policyDefinition</ColumnName>
-              <Description>Policy definition</Description>
-            </Param>
-          </Params>
-        </AuditEvent>
-      </AuditEvents>
-    </AuditedApplication>
-    ```
+    XML audit event file. A sample XML is included [here.](https://rndwiki.corp.hpecorp.net/confluence/pages/viewpage.action?title=Auditing&spaceKey=CAF)
+
+
     `AuditedApplication` is the root element. `ApplicationId` identifies the name
     of the application that the audit event type is associated with. The database
     table created by the tenants API endpoint will derive it's name from this

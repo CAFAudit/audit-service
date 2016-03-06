@@ -1,6 +1,7 @@
 package com.hpe.caf.services.audit.client;
 
-import com.hpe.caf.services.audit.client.api.DefaultApi;
+import com.hpe.caf.services.audit.client.api.ApplicationsApi;
+import com.hpe.caf.services.audit.client.api.TenantsApi;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -18,7 +19,7 @@ public class ApiClientTest {
 
     @Test
     public void testApplicationsPostNullFile() throws Exception {
-        DefaultApi client = new DefaultApi();
+        ApplicationsApi client = new ApplicationsApi();
 
         exception.expect(ApiException.class);
         client.applicationsPost(null);
@@ -28,7 +29,7 @@ public class ApiClientTest {
     public void testApplicationsPostNonexistentHost() throws Exception {
         File auditEventsDefFile = new File(getClass().getClassLoader().getResource("auditEventsDefinition.xml").getFile());
 
-        DefaultApi client = new DefaultApi();
+        ApplicationsApi client = new ApplicationsApi();
         client.getApiClient().setBasePath("http://non.existent.host/v1");
 
         exception.expect(Exception.class);
@@ -37,7 +38,7 @@ public class ApiClientTest {
 
     @Test
     public void testTenantsPostNullTenant() throws Exception {
-        DefaultApi client = new DefaultApi();
+        TenantsApi client = new TenantsApi();
 
         List<String> applications = new ArrayList<String>();
         applications.add("TestApplication1");
@@ -49,7 +50,7 @@ public class ApiClientTest {
 
     @Test
     public void testTenantsPostNullApplication() throws Exception {
-        DefaultApi client = new DefaultApi();
+        TenantsApi client = new TenantsApi();
         client.getApiClient().setBasePath("http://non.existent.host/v1");
 
         String tenant = "TestTenant";
@@ -60,7 +61,7 @@ public class ApiClientTest {
 
     @Test
     public void testTenantsPostNonexistentHost() throws Exception {
-        DefaultApi client = new DefaultApi();
+        TenantsApi client = new TenantsApi();
 
         String tenant = "TestTenant";
         List<String> applications = new ArrayList<String>();

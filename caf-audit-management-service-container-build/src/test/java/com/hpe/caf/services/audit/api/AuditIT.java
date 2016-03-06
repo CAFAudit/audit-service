@@ -11,7 +11,8 @@ import com.hpe.caf.cipher.NullCipherProvider;
 import com.hpe.caf.config.system.SystemBootstrapConfiguration;
 import com.hpe.caf.naming.ServicePath;
 import com.hpe.caf.services.audit.client.ApiException;
-import com.hpe.caf.services.audit.client.api.DefaultApi;
+import com.hpe.caf.services.audit.client.api.ApplicationsApi;
+import com.hpe.caf.services.audit.client.api.TenantsApi;
 import com.hpe.caf.util.ModuleLoader;
 import com.jcraft.jsch.*;
 import org.junit.*;
@@ -54,7 +55,8 @@ public class AuditIT {
     //The audit events XML file in the test case directory must be the same events XML file used in the caf-audit-plugin, see pom.xml property auditXMLConfigFile.
     private static final String testCaseDirectory = "./test-case";
 
-    private static DefaultApi auditManagementWsClient;
+    private static ApplicationsApi auditManagementApplicationsApi;
+    private static TenantsApi auditManagementTenantsApi;
 
     private static final Logger LOG = LoggerFactory.getLogger(AuditIT.class);
 
@@ -145,8 +147,12 @@ public class AuditIT {
 
     @BeforeClass
     public static void setup() throws Exception {
-        auditManagementWsClient = new DefaultApi();
-        auditManagementWsClient.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
+        auditManagementApplicationsApi = new ApplicationsApi();
+        auditManagementApplicationsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
+
+        auditManagementTenantsApi = new TenantsApi();
+        auditManagementTenantsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
+
         stopDatabase(CAF_AUDIT_DATABASE_NAME);
     }
 
@@ -190,7 +196,7 @@ public class AuditIT {
     private String registerApplicationInDatabase(AuditTestCase testCase) throws Exception {
         LOG.info("Registering application in database...");
         File auditEventsDefFile = testCase.getXml().toFile();
-        auditManagementWsClient.applicationsPost(auditEventsDefFile);
+        auditManagementApplicationsApi.applicationsPost(auditEventsDefFile);
         return getAuditEventsXmlApplicationId(auditEventsDefFile);
     }
 
@@ -230,7 +236,7 @@ public class AuditIT {
         LOG.info("Adding tenant in database...");
         List<String> applications = new ArrayList<>();
         applications.add(applicationId);
-        auditManagementWsClient.tenantsPost(tenantName, applications);
+        auditManagementTenantsApi.tenantsPost(tenantName, applications);
     }
 
 

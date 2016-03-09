@@ -78,10 +78,16 @@ public class TenantAddPost {
 
                             LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
 
-                            //  Create Kafka scheduler and associate a topic with that scheduler.
-                            LOG.info("addTenant: Creating Kafka scheduler...");
+                            //  Create Kafka scheduler (per tenant) and associate a topic with that scheduler.
                             String schedulerName = tenantId + KAFKA_SCHEDULER_NAME_SUFFIX;
-                            KafkaScheduler.createScheduler(properties, schedulerName);
+
+                            //  If the specified scheduler name already exists, then ignore creation step.
+                            LOG.debug("addTenant: Checking if Vertica scheduler '{}' has already been created...", schedulerName);
+                            boolean schemaExists = databaseHelper.doesSchemaExist(schedulerName);
+                            if (!schemaExists) {
+                                LOG.info("addTenant: Creating Kafka scheduler...");
+                                KafkaScheduler.createScheduler(properties, schedulerName);
+                            }
 
                             String targetTable = new StringBuilder()
                                     .append(tenantId)

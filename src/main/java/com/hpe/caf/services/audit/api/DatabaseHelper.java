@@ -32,6 +32,32 @@ public class DatabaseHelper {
     }
 
     /**
+     * Checks if the target schema exists in the database.
+     */
+    public boolean doesSchemaExist(String schemaName) throws Exception {
+
+        boolean exists = false;
+
+        String schemaExistsSQL = "select 1 as schemaExists from  v_catalog.schemata where upper(schema_name) = upper(?)";
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(schemaExistsSQL)
+        ) {
+            stmt.setString(1,schemaName);
+
+            //  Execute a query to determine if the specified schema exists.
+            LOG.debug("doesSchemaExist: Checking if schema exists...");
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()){
+                exists = rs.getInt("schemaExists") > 0;
+            }
+        }
+
+        return exists;
+    }
+
+    /**
      * Checks if the target database table exists in the database.
      */
     public boolean doesTableExist(String tableSchema, String tableName) throws Exception {

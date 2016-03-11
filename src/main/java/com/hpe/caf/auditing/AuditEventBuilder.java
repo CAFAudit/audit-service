@@ -10,6 +10,8 @@ public interface AuditEventBuilder
 
     void setTenant(String tenantId);
 
+    void setCorrelation(String correlationId);
+
     void setEventType
     (
         String eventCategoryId,

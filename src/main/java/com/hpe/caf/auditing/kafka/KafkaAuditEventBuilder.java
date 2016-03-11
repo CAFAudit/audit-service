@@ -16,6 +16,7 @@ final class KafkaAuditEventBuilder implements AuditEventBuilder
     private final ObjectNode jsonAuditMessage;
     private String applicationId;
     private String tenantId;
+    private String correlationId;
 
     public KafkaAuditEventBuilder(final Producer<String, String> producer)
     {
@@ -49,6 +50,12 @@ final class KafkaAuditEventBuilder implements AuditEventBuilder
     public void setTenant(final String tenantId) {
         this.tenantId = tenantId;
         jsonAuditMessage.put("tenantId", tenantId);
+    }
+
+    @Override
+    public void setCorrelation(final String correlationId) {
+        this.correlationId = correlationId;
+        jsonAuditMessage.put("correlationId", correlationId);
     }
 
     @Override

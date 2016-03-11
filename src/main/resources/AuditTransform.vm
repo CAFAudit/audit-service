@@ -32,6 +32,7 @@
 #set($UserId = "userId varchar(128)")
 #set($EventCategoryId = "eventCategoryId varchar(128)")
 #set($EventTypeId = "eventTypeId varchar(128)")
+#set($CorrelationId = "correlationId varchar(128)")
 #set($PrimaryKeyColumns="processId,threadId,eventOrder")
 #set($CustomEventParamPrefix="eventParam")
 #set($tableNamePrefix = "Audit")
@@ -49,6 +50,7 @@ $EventTimeSource,
 $UserId,
 $EventCategoryId,
 $EventTypeId,
+$CorrelationId,
 ##
 ## Generate column definitions to support all audit events and their metadata.
 ##

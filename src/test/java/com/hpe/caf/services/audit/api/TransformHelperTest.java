@@ -38,6 +38,7 @@ public class TransformHelperTest {
                 "userId varchar(128),\n" +
                 "eventCategoryId varchar(128),\n" +
                 "eventTypeId varchar(128),\n" +
+                "correlationId varchar(128),\n" +
                 "eventParamString_Param varchar(65000),\n" +
                 "eventParamInt16_Param int,\n" +
                 "eventParamInt32_Param int,\n" +

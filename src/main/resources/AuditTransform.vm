@@ -126,7 +126,7 @@ $javadocParamsList
         auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
         auditEventBuilder.setUser(userId);
         auditEventBuilder.setTenant(tenantId);
-        auditEventBuilder.setCorrelation(correlationId);
+        auditEventBuilder.setCorrelationId(correlationId);
         auditEventBuilder.setEventType("$categoryId", "$typeId");
 $eventParamsList
         auditEventBuilder.send();

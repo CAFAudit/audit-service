@@ -63,7 +63,7 @@ public final class AuditLog
         auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
         auditEventBuilder.setUser(userId);
         auditEventBuilder.setTenant(tenantId);
-        auditEventBuilder.setCorrelation(correlationId);
+        auditEventBuilder.setCorrelationId(correlationId);
         auditEventBuilder.setEventType("documentEvents", "viewDocument");
         auditEventBuilder.addEventParameter("String_Param", null, String_Param);
         auditEventBuilder.addEventParameter("Int16_Param", null, Int16_Param);

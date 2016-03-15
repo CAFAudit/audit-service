@@ -53,7 +53,7 @@ final class KafkaAuditEventBuilder implements AuditEventBuilder
     }
 
     @Override
-    public void setCorrelation(final String correlationId) {
+    public void setCorrelationId(final String correlationId) {
         this.correlationId = correlationId;
         jsonAuditMessage.put("correlationId", correlationId);
     }

@@ -34,8 +34,11 @@
     "_JAVA_OPTIONS": "-Xms${caf-audit-management-service-java-mem-min}m -Xmx${caf-audit-management-service-java-mem-max}m",
     "CAF_CONFIG_PATH": "/mnt/mesos/sandbox",
     "database.url": "${caf-audit-management-service-database-url}",
-    "database.username": "${caf-audit-management-service-database-username}",
-    "database.password": "${caf-audit-management-service-database-password}",
+    "database.service.account": "${caf-audit-management-service-database-service-account}",
+    "database.service.account.password": "${caf-audit-management-service-database-service-account-password}",
+    "database.loader.account": "${caf-audit-management-service-database-loader-account}",
+    "database.loader.account.password": "${caf-audit-management-service-database-loader-account-password}",
+    "database.reader.account": "${caf-audit-management-service-database-reader-account}",
     "kafka.brokers": "${caf-audit-management-service-kafka-brokers}",
     "AUDIT_MANAGEMENT_API_CONFIG_PATH": "${caf-audit-management-service-config-path}"
   },

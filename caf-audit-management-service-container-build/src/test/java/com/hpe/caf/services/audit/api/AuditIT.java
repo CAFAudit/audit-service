@@ -52,6 +52,14 @@ public class AuditIT {
     private static final String AUDIT_IT_DATABASE_NAME = "AuditIT";
     private static final String AUDIT_IT_DATABASE_PORT = "5433";
 
+
+    private static final String AUDIT_IT_DATABASE_LOADER_USER = "cafauditloader";
+    private static final String AUDIT_IT_DATABASE_LOADER_USER_PASSWORD = "'loader'";
+    private static final String AUDIT_IT_DATABASE_READER_USER = "cafauditreader";
+    private static final String AUDIT_IT_DATABASE_READER_USER_PASSWORD = "'reader'";
+    private static final String AUDIT_IT_DATABASE_SERVICE_USER = "cafauditservice";
+    private static final String AUDIT_IT_DATABASE_SERVICE_USER_PASSWORD = "'service'";
+
     //The audit events XML file in the test case directory must be the same events XML file used in the caf-audit-plugin, see pom.xml property auditXMLConfigFile.
     private static final String testCaseDirectory = "./test-case";
 
@@ -131,6 +139,21 @@ public class AuditIT {
         issueVerticaSshCommand(command);
     }
 
+    private static void createDatabaseUser(final String databaseName, final String userName, final String userPassword) throws Exception {
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"CREATE USER {1} IDENTIFIED BY {2}\"", databaseName, userName, userPassword);
+        LOG.info("command {} ...", command);
+        issueVerticaSshCommand(command);
+    }
+
+    private static void grantCreateOnDBPrivilege(final String databaseName, final String userName) throws Exception {
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT CREATE ON DATABASE {0} TO {1}\"", databaseName, userName);
+        issueVerticaSshCommand(command);
+    }
+
+    private static void grantPseudoSuperUserRole(final String databaseName, final String userName) throws Exception {
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT PSEUDOSUPERUSER TO {1}\"", databaseName, userName);
+        issueVerticaSshCommand(command);
+    }
 
     private static String getAuditEventsXmlApplicationId(File auditEventsXml) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -478,6 +501,11 @@ public class AuditIT {
         public TestCaseDb(final String testDbName) throws Exception {
             this.testDbName = testDbName;
             createDatabase(testDbName);
+            createDatabaseUser(testDbName,AUDIT_IT_DATABASE_READER_USER,AUDIT_IT_DATABASE_READER_USER_PASSWORD);
+            createDatabaseUser(testDbName,AUDIT_IT_DATABASE_SERVICE_USER,AUDIT_IT_DATABASE_SERVICE_USER_PASSWORD);
+            grantCreateOnDBPrivilege(testDbName,AUDIT_IT_DATABASE_SERVICE_USER);
+            createDatabaseUser(testDbName,AUDIT_IT_DATABASE_LOADER_USER,AUDIT_IT_DATABASE_LOADER_USER_PASSWORD);
+            grantPseudoSuperUserRole(testDbName,AUDIT_IT_DATABASE_LOADER_USER);
         }
 
         @Override

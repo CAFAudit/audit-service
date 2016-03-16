@@ -58,11 +58,20 @@
 ##### caf-audit-management-service-database-url
 - This property specifies the connection string URL used by the CAF Audit Management Service to connect to the Vertica database. This URL has the format  jdbc:vertica://VerticaHost:portNumber/databaseName
 
-##### caf-audit-management-service-database-username
+##### caf-audit-management-service-database-service-account
 - This property specifies the username of the Vertica database account used by the CAF Audit Management Service to access the Vertica database.
 
-##### caf-audit-management-service-database-password
+##### caf-audit-management-service-database-service-account-password
 - This property specifies the password of the Vertica database account used by the CAF Audit Management Service to access the Vertica database.
+
+##### caf-audit-management-service-database-loader-account
+- This property specifies the username of the Vertica database account used to configure the loading of data from Kafka into Vertica.
+
+##### caf-audit-management-service-database-loader-account-password
+- This property specifies the password of the Vertica database account used to configure the loading of data from Kafka into Vertica.
+
+##### caf-audit-management-service-database-reader-account
+- This property specifies the username of the Vertica database account that will be used for reporting.
 
 ##### caf-audit-management-service-kafka-brokers
 - This property specifies the address (HOST:PORT) of the Kafka broker.

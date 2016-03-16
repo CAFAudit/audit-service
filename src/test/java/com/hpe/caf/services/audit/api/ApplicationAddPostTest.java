@@ -63,7 +63,7 @@ public class ApplicationAddPostTest {
 
         //  Mock DatabaseHelper calls.
         DatabaseHelper mockDatabaseHelper = Mockito.mock(DatabaseHelper.class);
-        Mockito.doNothing().when(mockDatabaseHelper).createAuditManagementSchema();
+        Mockito.doNothing().when(mockDatabaseHelper).createAuditManagementSchema(Mockito.anyString());
         Mockito.when(mockDatabaseHelper.doesApplicationEventsRowExist(Mockito.anyString())).thenReturn(false);
         Mockito.doNothing().when(mockDatabaseHelper).insertApplicationEventsRow(Mockito.anyString(),Mockito.anyString());
         PowerMockito.whenNew(DatabaseHelper.class).withArguments(Mockito.any()).thenReturn(mockDatabaseHelper);
@@ -71,15 +71,18 @@ public class ApplicationAddPostTest {
         //  Set-up test database connection properties.
         HashMap<String, String> newEnv  = new HashMap<>();
         newEnv.put("database.url","testUrl");
-        newEnv.put("database.username","testUserName");
-        newEnv.put("database.password","testPassword");
+        newEnv.put("database.service.account","testServiceUser");
+        newEnv.put("database.service.account.password","testPassword");
+        newEnv.put("database.loader.account","testLoaderUser");
+        newEnv.put("database.loader.account.password","testPassword");
+        newEnv.put("database.audit.account","testAuditUser");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         //  Test successful run of applications endpoint.
         InputStream auditConfigXMLStream = new ByteArrayInputStream(AUDIT_EVENTS_XML.getBytes(StandardCharsets.UTF_8));
         ApplicationAddPost.addApplication(auditConfigXMLStream);
 
-        Mockito.verify(mockDatabaseHelper, Mockito.times(1)).createAuditManagementSchema();
+        Mockito.verify(mockDatabaseHelper, Mockito.times(1)).createAuditManagementSchema(Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).doesApplicationEventsRowExist(Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).insertApplicationEventsRow(Mockito.anyString(),Mockito.anyString());
 
@@ -96,7 +99,7 @@ public class ApplicationAddPostTest {
 
         //  Mock DatabaseHelper calls.
         DatabaseHelper mockDatabaseHelper = Mockito.mock(DatabaseHelper.class);
-        Mockito.doNothing().when(mockDatabaseHelper).createAuditManagementSchema();
+        Mockito.doNothing().when(mockDatabaseHelper).createAuditManagementSchema(Mockito.anyString());
         Mockito.when(mockDatabaseHelper.doesApplicationEventsRowExist(Mockito.anyString())).thenReturn(true);
         Mockito.doNothing().when(mockDatabaseHelper).updateApplicationEventsRow(Mockito.anyString(),Mockito.anyString());
         List<String> tenants = new ArrayList<>();
@@ -110,8 +113,11 @@ public class ApplicationAddPostTest {
         //  Set-up test database connection properties.
         HashMap<String, String> newEnv  = new HashMap<>();
         newEnv.put("database.url","testUrl");
-        newEnv.put("database.username","testUserName");
-        newEnv.put("database.password","testPassword");
+        newEnv.put("database.service.account","testServiceUser");
+        newEnv.put("database.service.account.password","testPassword");
+        newEnv.put("database.loader.account","testLoaderUser");
+        newEnv.put("database.loader.account.password","testPassword");
+        newEnv.put("database.audit.account","testAuditUser");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         //  Test successful run of applications endpoint.
@@ -119,7 +125,7 @@ public class ApplicationAddPostTest {
         ApplicationAddPost.addApplication(auditConfigXMLStream);
         auditConfigXMLStream.close();
 
-        Mockito.verify(mockDatabaseHelper, Mockito.times(1)).createAuditManagementSchema();
+        Mockito.verify(mockDatabaseHelper, Mockito.times(1)).createAuditManagementSchema(Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).doesApplicationEventsRowExist(Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).updateApplicationEventsRow(Mockito.anyString(),Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).getTenantsForApp(Mockito.anyString());

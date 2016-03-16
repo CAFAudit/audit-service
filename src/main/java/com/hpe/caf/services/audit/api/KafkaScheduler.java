@@ -17,8 +17,8 @@ public class KafkaScheduler {
         String[] args = new String[]{"-Dscheduler", "--add",
                 "--config-schema", schedulerName,
                 "--brokers", properties.getKafkaBrokers(),
-                "--username", properties.getDatabaseUsername(),
-                "--password", properties.getDatabasePassword(),
+                "--username", properties.getDatabaseLoaderAccount(),
+                "--password", properties.getDatabaseLoaderAccountPassword(),
                 "--jdbc-url", properties.getDatabaseURL()};
         try {
             LOG.info("createScheduler: Creating a Scheduler configuration. ");
@@ -36,8 +36,8 @@ public class KafkaScheduler {
                 "--rejection-table", rejectionTable,
                 "--topic", targetTopic,
                 "--parser", "KafkaJSONParser",
-                "--username", properties.getDatabaseUsername(),
-                "--password", properties.getDatabasePassword(),
+                "--username", properties.getDatabaseLoaderAccount(),
+                "--password", properties.getDatabaseLoaderAccountPassword(),
                 "--jdbc-url", properties.getDatabaseURL()};
         try {
             LOG.info("associateTopic: Creating a Topic configuration. ");

@@ -19,12 +19,24 @@ public class AppConfig {
         return environment.getProperty("database.url");
     }
 
-    public String getDatabaseUsername(){
-        return environment.getProperty("database.username");
+    public String getDatabaseServiceAccount(){
+        return environment.getProperty("database.service.account");
     }
 
-    public String getDatabasePassword(){
-        return environment.getProperty("database.password");
+    public String getDatabaseServiceAccountPassword(){
+        return environment.getProperty("database.service.account.password");
+    }
+
+    public String getDatabaseLoaderAccount(){
+        return environment.getProperty("database.loader.account");
+    }
+
+    public String getDatabaseLoaderAccountPassword(){
+        return environment.getProperty("database.loader.account.password");
+    }
+
+    public String getDatabaseReaderAccount(){
+        return environment.getProperty("database.reader.account");
     }
 
     public String getKafkaBrokers(){

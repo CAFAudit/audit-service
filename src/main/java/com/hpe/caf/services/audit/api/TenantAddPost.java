@@ -1,5 +1,6 @@
 package com.hpe.caf.services.audit.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,9 +65,10 @@ public class TenantAddPost {
                         databaseHelper.insertTenantApplicationsRow(tenantId,application);
 
                         try {
-                            //  Create new schema for the specified tenant.
+                            //  Create new schema for the specified tenant and grant usage to the audit user.
                             LOG.debug("addTenant: Creating new database schema for tenant '{}'...", tenantId);
                             databaseHelper.createSchema(tenantId);
+                            databaseHelper.grantUsageOnSchema(tenantId, properties.getDatabaseReaderAccount());
 
                             InputStream auditConfigXMLStream = new ByteArrayInputStream(auditConfigXMLString.getBytes(StandardCharsets.UTF_8));
 
@@ -75,6 +77,10 @@ public class TenantAddPost {
                             TransformHelper transform = new TransformHelper();
                             String createTableSQL = transform.doCreateTableTransform(auditConfigXMLStream,TRANSFORM_TEMPLATE_NAME,tenantId);
                             databaseHelper.createTable(createTableSQL);
+
+                            //  Grant SELECT on the new table to the audit user account.
+                            String tableName = StringUtils.substringBetween(createTableSQL, "CREATE TABLE IF NOT EXISTS ", "(");
+                            databaseHelper.grantSelectOnTable(tableName, properties.getDatabaseReaderAccount());
 
                             LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
 

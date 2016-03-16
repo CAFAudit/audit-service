@@ -26,6 +26,7 @@ public class TenantAddPostTest {
         Mockito.doNothing().when(mockDatabaseHelper).insertTenantApplicationsRow(Mockito.anyString(),Mockito.anyString());
         Mockito.doNothing().when(mockDatabaseHelper).createSchema(Mockito.anyString());
         Mockito.doNothing().when(mockDatabaseHelper).createTable(Mockito.anyString());
+        Mockito.doNothing().when(mockDatabaseHelper).grantSelectOnTable(Mockito.anyString(),Mockito.anyString());
         PowerMockito.whenNew(DatabaseHelper.class).withArguments(Mockito.any()).thenReturn(mockDatabaseHelper);
 
         //  Mock TransformHelper calls.
@@ -41,8 +42,11 @@ public class TenantAddPostTest {
         //  Set-up test database connection properties.
         HashMap<String, String> newEnv  = new HashMap<>();
         newEnv.put("database.url","testUrl");
-        newEnv.put("database.username","testUserName");
-        newEnv.put("database.password","testPassword");
+        newEnv.put("database.service.account","testServiceUser");
+        newEnv.put("database.service.account.password","testPassword");
+        newEnv.put("database.loader.account","testLoaderUser");
+        newEnv.put("database.loader.account.password","testPassword");
+        newEnv.put("database.audit.account","testAuditUser");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         List<String> applications = new ArrayList<>();
@@ -58,6 +62,7 @@ public class TenantAddPostTest {
         Mockito.verify(mockDatabaseHelper, Mockito.times(2)).createSchema(Mockito.anyString());
         Mockito.verify(mockTransformHelper, Mockito.times(2)).doCreateTableTransform(Mockito.any(),Mockito.anyString(),Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(2)).createTable(Mockito.anyString());
+        Mockito.verify(mockDatabaseHelper, Mockito.times(2)).grantSelectOnTable(Mockito.anyString(),Mockito.anyString());
 
     }
 
@@ -72,8 +77,11 @@ public class TenantAddPostTest {
         //  Set-up test database connection properties.
         HashMap<String, String> newEnv  = new HashMap<>();
         newEnv.put("database.url","testUrl");
-        newEnv.put("database.username","testUserName");
-        newEnv.put("database.password","testPassword");
+        newEnv.put("database.service.account","testServiceUser");
+        newEnv.put("database.service.account.password","testPassword");
+        newEnv.put("database.loader.account","testLoaderUser");
+        newEnv.put("database.loader.account.password","testPassword");
+        newEnv.put("database.audit.account","testAuditUser");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         List<String> applications = new ArrayList<>();
@@ -88,6 +96,7 @@ public class TenantAddPostTest {
         Mockito.verify(mockDatabaseHelper, Mockito.times(0)).insertTenantApplicationsRow(Mockito.anyString(),Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(0)).createSchema(Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(0)).createTable(Mockito.anyString());
+        Mockito.verify(mockDatabaseHelper, Mockito.times(0)).grantSelectOnTable(Mockito.anyString(),Mockito.anyString());
 
     }
 }

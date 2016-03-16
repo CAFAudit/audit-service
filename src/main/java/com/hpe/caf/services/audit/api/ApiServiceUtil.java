@@ -9,7 +9,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  */
 public class ApiServiceUtil {
 
-    private static final String ERR_MSG_DB_CONNECTION_PROPS_MISSING = "One or more Vertica database connection properties have not been provided.";
+    private static final String ERR_MSG_DB_URL_MISSING = "The Vertica database connection URL has not been provided.";
+    private static final String ERR_MSG_DB_SERVICE_CREDENTIALS_MISSING = "The credentials for the service database account have not been provided.";
+    private static final String ERR_MSG_DB_LOADER_CREDENTIALS_MISSING = "The credentials for the loader database account have not been provided.";
 
     /**
      * Load required inputs from config.properties or environment variables.
@@ -27,14 +29,32 @@ public class ApiServiceUtil {
         properties = propertiesApplicationContext.getBean(AppConfig.class);
 
         try {
-            //  Make sure DB connection properties have been specified.
-            if (properties.getDatabaseURL() == null ||
-                    properties.getDatabaseUsername() == null ||
-                    properties.getDatabasePassword() == null) {
-                throw new BadRequestException(ERR_MSG_DB_CONNECTION_PROPS_MISSING);
+            //  Make sure database URL has been provided.
+            if (properties.getDatabaseURL() == null) {
+                throw new BadRequestException(ERR_MSG_DB_URL_MISSING);
             }
         } catch (NullPointerException npe) {
-            throw new BadRequestException(ERR_MSG_DB_CONNECTION_PROPS_MISSING);
+            throw new BadRequestException(ERR_MSG_DB_URL_MISSING);
+        }
+
+        try {
+            //  Make sure database service account credentials have been provided.
+            if (properties.getDatabaseServiceAccount() == null ||
+                    properties.getDatabaseServiceAccountPassword() == null) {
+                throw new BadRequestException(ERR_MSG_DB_SERVICE_CREDENTIALS_MISSING);
+            }
+        } catch (NullPointerException npe) {
+            throw new BadRequestException(ERR_MSG_DB_SERVICE_CREDENTIALS_MISSING);
+        }
+
+        try {
+            //  Make sure database loader account credentials have been provided.
+            if (properties.getDatabaseLoaderAccount() == null ||
+                    properties.getDatabaseLoaderAccountPassword() == null) {
+                throw new BadRequestException(ERR_MSG_DB_LOADER_CREDENTIALS_MISSING);
+            }
+        } catch (NullPointerException npe) {
+            throw new BadRequestException(ERR_MSG_DB_LOADER_CREDENTIALS_MISSING);
         }
 
         return properties;

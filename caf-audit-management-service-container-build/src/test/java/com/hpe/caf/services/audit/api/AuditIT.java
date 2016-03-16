@@ -141,7 +141,6 @@ public class AuditIT {
 
     private static void createDatabaseUser(final String databaseName, final String userName, final String userPassword) throws Exception {
         String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"CREATE USER {1} IDENTIFIED BY {2}\"", databaseName, userName, userPassword);
-        LOG.info("command {} ...", command);
         issueVerticaSshCommand(command);
     }
 

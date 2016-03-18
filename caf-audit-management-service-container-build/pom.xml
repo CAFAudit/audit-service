@@ -466,8 +466,11 @@
                                 <env>
                                     <!-- When the container is deployed in Marathon it will use the environment variable values specified in the container json. -->
                                     <database.url>jdbc:vertica://192.168.56.30:5433/AuditIT</database.url>
-                                    <database.username>dbadmin</database.username>
-                                    <database.password>AuditIT</database.password>
+                                    <database.service.account>cafauditservice</database.service.account>
+                                    <database.service.account.password>service</database.service.account.password>
+                                    <database.loader.account>dbadmin</database.loader.account>
+                                    <database.loader.account.password>AuditIT</database.loader.account.password>
+                                    <database.reader.account>cafauditreader</database.reader.account>
                                     <kafka.brokers>192.168.56.20:9092</kafka.brokers>
                                     <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
                                     <CAF_CONFIG_PATH>/config</CAF_CONFIG_PATH>
@@ -499,5 +502,3 @@
     </build>
 
 </project>
-
-

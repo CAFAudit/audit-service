@@ -431,7 +431,7 @@
                                         </fileSets>
                                         <dependencySets>
                                             <dependencySet>
-                                                <useProjectArtifact>true</useProjectArtifact>
+                                                <useProjectArtifact>false</useProjectArtifact>
                                                 <includes>
                                                     <include>com.hpe.caf:caf-audit-management-service</include>
                                                 </includes>
@@ -440,7 +440,7 @@
                                             </dependencySet>
                                             <!-- Including the swagger ui in the container image. -->
                                             <dependencySet>
-                                                <useProjectArtifact>true</useProjectArtifact>
+                                                <useProjectArtifact>false</useProjectArtifact>
                                                 <includes>
                                                     <include>com.hpe.caf:caf-audit-management-ui</include>
                                                 </includes>

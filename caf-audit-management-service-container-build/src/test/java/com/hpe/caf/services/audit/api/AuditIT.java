@@ -128,8 +128,9 @@ public class AuditIT {
     }
 
 
-    private static void stopDatabase(final String databaseName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/admintools -t stop_db -d {0} -p {0}", databaseName);
+    private static void stopDatabase(final String databaseName, final boolean force) throws Exception {
+        String command = MessageFormat.format(
+            "/opt/vertica/bin/admintools -t stop_db -d {0} -p {0}" + (force ? " -F" : ""), databaseName);
         issueVerticaSshCommand(command);
     }
 
@@ -175,7 +176,7 @@ public class AuditIT {
         auditManagementTenantsApi = new TenantsApi();
         auditManagementTenantsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
 
-        stopDatabase(CAF_AUDIT_DATABASE_NAME);
+        stopDatabase(CAF_AUDIT_DATABASE_NAME, false);
     }
 
 
@@ -509,7 +510,7 @@ public class AuditIT {
 
         @Override
         public void close() throws Exception {
-            stopDatabase(testDbName);
+            stopDatabase(testDbName, true);
             dropDatabase(testDbName);
         }
     }

@@ -78,7 +78,7 @@ public class ApplicationAddPost {
 
                 //  Ensure the AuditManagement database schema and tables are in place.
                 LOG.debug("addApplication: Creating Audit Management database schema if necessary...");
-                databaseHelper.createAuditManagementSchema(properties.getDatabaseReaderAccount());
+                databaseHelper.createAuditManagementSchema(properties.getDatabaseReaderRole());
 
                 //  Check if row already exists in AuditManagement.ApplicationEvents for the specified application
                 String auditXMLConfigString = new String(auditXMLConfigBytes);

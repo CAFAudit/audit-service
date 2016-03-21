@@ -35,8 +35,8 @@ public class AppConfig {
         return environment.getProperty("database.loader.account.password");
     }
 
-    public String getDatabaseReaderAccount(){
-        return environment.getProperty("database.reader.account");
+    public String getDatabaseReaderRole(){
+        return environment.getProperty("database.reader.role");
     }
 
     public String getKafkaBrokers(){

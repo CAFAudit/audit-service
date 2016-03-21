@@ -17,7 +17,7 @@ public class ApiServiceUtilTest {
         newEnv.put("database.service.account.password","testPassword");
         newEnv.put("database.loader.account","testLoaderUser");
         newEnv.put("database.loader.account.password","testPassword");
-        newEnv.put("database.reader.account","testAuditUser");
+        newEnv.put("database.reader.role","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         //  Test successful call to class method.
@@ -27,7 +27,7 @@ public class ApiServiceUtilTest {
         Assert.assertEquals(configProps.getDatabaseServiceAccountPassword(),"testPassword");
         Assert.assertEquals(configProps.getDatabaseLoaderAccount(),"testLoaderUser");
         Assert.assertEquals(configProps.getDatabaseLoaderAccountPassword(),"testPassword");
-        Assert.assertEquals(configProps.getDatabaseReaderAccount(),"testAuditUser");
+        Assert.assertEquals(configProps.getDatabaseReaderRole(),"testReaderRole");
     }
 
     @Test(expected = BadRequestException.class)

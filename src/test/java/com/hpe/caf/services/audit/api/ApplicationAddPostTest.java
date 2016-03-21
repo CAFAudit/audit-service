@@ -75,7 +75,7 @@ public class ApplicationAddPostTest {
         newEnv.put("database.service.account.password","testPassword");
         newEnv.put("database.loader.account","testLoaderUser");
         newEnv.put("database.loader.account.password","testPassword");
-        newEnv.put("database.audit.account","testAuditUser");
+        newEnv.put("database.reader.role","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         //  Test successful run of applications endpoint.
@@ -117,7 +117,7 @@ public class ApplicationAddPostTest {
         newEnv.put("database.service.account.password","testPassword");
         newEnv.put("database.loader.account","testLoaderUser");
         newEnv.put("database.loader.account.password","testPassword");
-        newEnv.put("database.audit.account","testAuditUser");
+        newEnv.put("database.reader.role","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         //  Test successful run of applications endpoint.

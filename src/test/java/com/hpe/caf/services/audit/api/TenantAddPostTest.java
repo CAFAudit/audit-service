@@ -46,7 +46,7 @@ public class TenantAddPostTest {
         newEnv.put("database.service.account.password","testPassword");
         newEnv.put("database.loader.account","testLoaderUser");
         newEnv.put("database.loader.account.password","testPassword");
-        newEnv.put("database.audit.account","testAuditUser");
+        newEnv.put("database.reader.role","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         List<String> applications = new ArrayList<>();
@@ -81,7 +81,7 @@ public class TenantAddPostTest {
         newEnv.put("database.service.account.password","testPassword");
         newEnv.put("database.loader.account","testLoaderUser");
         newEnv.put("database.loader.account.password","testPassword");
-        newEnv.put("database.audit.account","testAuditUser");
+        newEnv.put("database.reader.role","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         List<String> applications = new ArrayList<>();

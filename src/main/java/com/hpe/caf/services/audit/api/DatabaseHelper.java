@@ -129,17 +129,17 @@ public class DatabaseHelper {
     }
 
     /**
-     * Grant USAGE on schema to the specified user.
+     * Grant USAGE on schema to the specified role.
      */
-    public void grantUsageOnSchema(String schemaName, String userName) throws Exception {
+    public void grantUsageOnSchema(String schemaName, String roleName) throws Exception {
 
-        String grantUsageOnSchemaSQL = "GRANT USAGE ON SCHEMA " + schemaName + " TO " + userName;
+        String grantUsageOnSchemaSQL = "GRANT USAGE ON SCHEMA " + schemaName + " TO \"" + roleName + "\"";
 
         try (
                 Connection conn = getConnection();
                 Statement stmt = conn.createStatement()
         ) {
-            //  Execute a statement to grant usage on the schema to the specified user.
+            //  Execute a statement to grant usage on the schema to the specified role.
             stmt.execute(grantUsageOnSchemaSQL);
         }
     }
@@ -158,17 +158,17 @@ public class DatabaseHelper {
     }
 
     /**
-     * Grant SELECT on the table to the specified user.
+     * Grant SELECT on the table to the specified role.
      */
-    public void grantSelectOnTable(String tableName, String userName) throws Exception {
+    public void grantSelectOnTable(String tableName, String roleName) throws Exception {
 
-        String grantSelectOnTableSQL = "GRANT SELECT ON TABLE " + tableName + " TO " + userName;
+        String grantSelectOnTableSQL = "GRANT SELECT ON TABLE " + tableName + " TO \"" + roleName + "\"";
 
         try (
                 Connection conn = getConnection();
                 Statement stmt = conn.createStatement()
         ) {
-            //  Execute a statement to grant select on the table to the specified user.
+            //  Execute a statement to grant select on the table to the specified role.
             stmt.execute(grantSelectOnTableSQL);
         }
     }
@@ -225,26 +225,26 @@ public class DatabaseHelper {
     /**
      * Create the AuditManagement database schema and tables.
      */
-    public void createAuditManagementSchema(String auditUserAccount) throws Exception {
+    public void createAuditManagementSchema(String role) throws Exception {
 
-        //  Create the AuditManagement schema if it does not already exist and grant usage to the audit user.
+        //  Create the AuditManagement schema if it does not already exist and grant usage to the audit reader role.
         LOG.debug("Creating the AuditManagement database schema...");
         createSchema("AuditManagement");
-        grantUsageOnSchema("AuditManagement", auditUserAccount);
+        grantUsageOnSchema("AuditManagement", role);
 
         //  Create AuditManagement.ApplicationEvents table to store application defined audit
-        //  events XML and grant SELECT to the audit user.
+        //  events XML and grant SELECT to the audit reader role.
         if (!doesTableExist("AuditManagement","ApplicationEvents")) {
             String sqlCreateApplicationEventsTable = "CREATE TABLE IF NOT EXISTS AuditManagement.ApplicationEvents ("
                     + "   applicationId varchar(128) not null primary key,"
                     + "   eventsXML long varchar not null )";
             LOG.debug("Creating the AuditManagement.ApplicationEvents database table...");
             createTable(sqlCreateApplicationEventsTable);
-            grantSelectOnTable("AuditManagement.ApplicationEvents", auditUserAccount);
+            grantSelectOnTable("AuditManagement.ApplicationEvents", role);
         }
 
         //  Create AuditManagement.TenantApplications table to store tenant and application
-        //  mappings and grant SELECT to the audit user.
+        //  mappings and grant SELECT to the audit reader role.
         if (!doesTableExist("AuditManagement","TenantApplications")) {
             String sqlCreateTenantApplicationsTable = "CREATE TABLE IF NOT EXISTS AuditManagement.TenantApplications ("
                     + "   tenantId varchar(128) not null,"
@@ -255,7 +255,7 @@ public class DatabaseHelper {
                     + "   REFERENCES AuditManagement.ApplicationEvents (applicationId);";
             LOG.debug("Creating the AuditManagement.TenantApplications database table...");
             createTable(sqlCreateTenantApplicationsTable);
-            grantSelectOnTable("AuditManagement.TenantApplications", auditUserAccount);
+            grantSelectOnTable("AuditManagement.TenantApplications", role);
         }
     }
 

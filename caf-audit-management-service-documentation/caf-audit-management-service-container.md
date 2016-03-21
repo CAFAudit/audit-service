@@ -19,5 +19,8 @@ The password of the Vertica database account used by the CAF Audit Management Se
 #### kafka.brokers
 The address of the Kafka broker. e.g. 192.168.56.20:9092
 
+#### caf.audit.management.cli
+Docker image that contains the Audit Management Utility. e.g. rh7-artifactory.hpswlabs.hp.com:8443/caf-audit:1.0
+
 #### AUDIT\_MANAGEMENT\_API\_CONFIG\_PATH
 The path to the directory containing the config.properties which can be used as an alternative means of specifying the database environment variables.

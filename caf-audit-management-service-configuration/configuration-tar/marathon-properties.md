@@ -76,6 +76,9 @@
 ##### caf-audit-management-service-kafka-brokers
 - This property specifies the address (HOST:PORT) of the Kafka broker.
 
+#### caf-audit-management-service-cli-image
+- This property specifies the Docker image that contains the Audit Management utility.
+
 ##### caf-audit-management-service-config-path
 - This property specifies the path to the directory containing the config.properties which can be used as an alternative means of specifying the database environment variables.
 

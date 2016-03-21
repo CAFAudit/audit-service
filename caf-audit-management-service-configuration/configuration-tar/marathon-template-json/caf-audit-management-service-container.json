@@ -40,6 +40,7 @@
     "database.loader.account.password": "${caf-audit-management-service-database-loader-account-password}",
     "database.reader.role": "${caf-audit-management-service-database-reader-role}",
     "kafka.brokers": "${caf-audit-management-service-kafka-brokers}",
+    "caf.audit.management.cli": "${caf-audit-management-service-cli-image}",
     "AUDIT_MANAGEMENT_API_CONFIG_PATH": "${caf-audit-management-service-config-path}"
   },
   "uris": [

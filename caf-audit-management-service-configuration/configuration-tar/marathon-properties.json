@@ -24,5 +24,6 @@
   "caf-audit-management-service-database-loader-account-password": "<MUST_REPLACE: Vertica database loader account password >",
   "caf-audit-management-service-database-reader-role": "<MUST_REPLACE: Vertica database reader role, e.g. caf-audit-read >",
   "caf-audit-management-service-kafka-brokers": "<MUST_REPLACE: The address of the Kafka broker. e.g. 192.168.56.20:9092 >",
+  "caf-audit-management-service-cli-image": "<MUST_REPLACE: Docker image that contains the Audit Management Utility. e.g. rh7-artifactory.hpswlabs.hp.com:8443/caf-audit:1.0 >",
   "caf-audit-management-service-config-path": ""
 }

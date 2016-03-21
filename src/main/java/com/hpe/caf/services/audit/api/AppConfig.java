@@ -42,4 +42,8 @@ public class AppConfig {
     public String getKafkaBrokers(){
         return environment.getProperty("kafka.brokers");
     }
+
+    public String getCAFAuditManagementCLI(){
+        return environment.getProperty("caf.audit.management.cli");
+    }
 }

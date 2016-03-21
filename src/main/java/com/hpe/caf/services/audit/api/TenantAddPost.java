@@ -93,6 +93,9 @@ public class TenantAddPost {
                             if (!schemaExists) {
                                 LOG.info("addTenant: Creating Kafka scheduler...");
                                 KafkaScheduler.createScheduler(properties, schedulerName);
+
+                                LOG.info("addTenant: Launching Kafka scheduler...");
+                                KafkaScheduler.launchScheduler(properties, tenantId, schedulerName);
                             }
 
                             String targetTable = new StringBuilder()
@@ -117,7 +120,7 @@ public class TenantAddPost {
 
                             LOG.info("addTenant: Associating Kafka topic with the scheduler...");
                             KafkaScheduler.associateTopic(properties, schedulerName, targetTable, rejectionTable, targetTopic);
-
+  
                         } catch (Exception ex) {
                             //  Something unexpected has gone wrong. Delete tenant/application mapping to facilitate retry,
                             databaseHelper.deleteTenantApplicationsRow(tenantId,application);

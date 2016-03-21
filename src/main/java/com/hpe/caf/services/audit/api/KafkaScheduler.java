@@ -1,5 +1,6 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.daemon.DaemonLauncher;
 import com.vertica.solutions.kafka.cli.SchedulerConfigurationCLI;
 import com.vertica.solutions.kafka.cli.TopicConfigurationCLI;
 import org.slf4j.Logger;
@@ -47,4 +48,21 @@ public class KafkaScheduler {
         }
     }
 
+    public static void launchScheduler (
+        final AppConfig properties,
+        final String tenantId,
+        final String schedulerName
+    ) throws Exception {
+        final String id = "caf-audit-" + tenantId;
+        final String image = properties.getCAFAuditManagementCLI();
+        final String[] args = new String[] {
+            "launch",
+            "--config-schema", schedulerName,
+            "--jdbc-url", properties.getDatabaseURL(),
+            "--username", properties.getDatabaseLoaderAccount(),
+            "--password", properties.getDatabaseLoaderAccountPassword()
+        };
+
+        DaemonLauncher.create().launch(id, image, args);
+    }
 }

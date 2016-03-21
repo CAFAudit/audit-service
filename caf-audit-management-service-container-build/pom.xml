@@ -474,6 +474,7 @@
                                     <kafka.brokers>192.168.56.20:9092</kafka.brokers>
                                     <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
                                     <CAF_CONFIG_PATH>/config</CAF_CONFIG_PATH>
+                                    <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
                                 </env>
                                 <volumes>
                                     <from>

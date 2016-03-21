@@ -323,11 +323,11 @@
                     </systemPropertyVariables>
                     <environmentVariables>
                         <database.url>jdbc:vertica://192.168.56.30:5433/AuditIT</database.url>
-                        <database.service.account>cafauditservice</database.service.account>
+                        <database.service.account>caf-audit-service</database.service.account>
                         <database.service.account.password>service</database.service.account.password>
-                        <database.loader.account>cafauditloader</database.loader.account>
+                        <database.loader.account>caf-audit-loader</database.loader.account>
                         <database.loader.account.password>loader</database.loader.account.password>
-                        <database.reader.account>cafauditreader</database.reader.account>
+                        <database.reader.role>caf-audit-read</database.reader.role>
                         <kafka.brokers>192.168.56.20:9092</kafka.brokers>
                         <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
                         <CAF_CONFIG_PATH>${project.basedir}/test-config</CAF_CONFIG_PATH>

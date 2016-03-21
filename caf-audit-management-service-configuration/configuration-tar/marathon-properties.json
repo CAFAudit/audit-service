@@ -18,11 +18,11 @@
   "caf-audit-management-service-java-mem-min": "256",
   "caf-audit-management-service-java-mem-max": "256",
   "caf-audit-management-service-database-url": "<MUST_REPLACE: Vertica database connection string URL, e.g. jdbc:vertica://192.168.56.30:5433/CAFAudit >",
-  "caf-audit-management-service-database-service-account": "<MUST_REPLACE: Vertica database service account username, e.g. cafauditservice >",
+  "caf-audit-management-service-database-service-account": "<MUST_REPLACE: Vertica database service account username, e.g. caf-audit-service >",
   "caf-audit-management-service-database-service-account-password": "<MUST_REPLACE: Vertica database service account password >",
-  "caf-audit-management-service-database-loader-account": "<MUST_REPLACE: Vertica database loader account username, e.g. cafauditloader >",
+  "caf-audit-management-service-database-loader-account": "<MUST_REPLACE: Vertica database loader account username, e.g. caf-audit-loader >",
   "caf-audit-management-service-database-loader-account-password": "<MUST_REPLACE: Vertica database loader account password >",
-  "caf-audit-management-service-database-reader-account": "<MUST_REPLACE: Vertica database reader account username, e.g. cafauditreader >",
+  "caf-audit-management-service-database-reader-role": "<MUST_REPLACE: Vertica database reader role, e.g. caf-audit-read >",
   "caf-audit-management-service-kafka-brokers": "<MUST_REPLACE: The address of the Kafka broker. e.g. 192.168.56.20:9092 >",
   "caf-audit-management-service-config-path": ""
 }

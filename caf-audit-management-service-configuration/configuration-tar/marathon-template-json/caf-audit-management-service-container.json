@@ -38,7 +38,7 @@
     "database.service.account.password": "${caf-audit-management-service-database-service-account-password}",
     "database.loader.account": "${caf-audit-management-service-database-loader-account}",
     "database.loader.account.password": "${caf-audit-management-service-database-loader-account-password}",
-    "database.reader.account": "${caf-audit-management-service-database-reader-account}",
+    "database.reader.role": "${caf-audit-management-service-database-reader-role}",
     "kafka.brokers": "${caf-audit-management-service-kafka-brokers}",
     "AUDIT_MANAGEMENT_API_CONFIG_PATH": "${caf-audit-management-service-config-path}"
   },

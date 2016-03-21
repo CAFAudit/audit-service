@@ -70,8 +70,8 @@
 ##### caf-audit-management-service-database-loader-account-password
 - This property specifies the password of the Vertica database account used to configure the loading of data from Kafka into Vertica.
 
-##### caf-audit-management-service-database-reader-account
-- This property specifies the username of the Vertica database account that will be used for reporting.
+##### caf-audit-management-service-database-reader-role
+- This property specifies the name of the Vertica database role that will be used for reporting users.
 
 ##### caf-audit-management-service-kafka-brokers
 - This property specifies the address (HOST:PORT) of the Kafka broker.

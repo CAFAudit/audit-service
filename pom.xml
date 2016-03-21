@@ -60,7 +60,7 @@
                 <configuration>
                     <images>
                         <image>
-                            <name>${docker.dev.repo}/caf-audit:${caf-audit-management-cli.version}</name>
+                            <name>${docker.dev.repo}/caf/audit:${caf-audit-management-cli.version}</name>
                             <build>
                                 <maintainer>Hewlett Packard Enterprise &lt;www.hpe.com&gt;</maintainer>
                                 <from>java:8</from>

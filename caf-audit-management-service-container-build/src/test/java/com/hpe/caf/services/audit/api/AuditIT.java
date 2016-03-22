@@ -53,12 +53,14 @@ public class AuditIT {
     private static final String AUDIT_IT_DATABASE_PORT = "5433";
 
 
-    private static final String AUDIT_IT_DATABASE_LOADER_USER = "cafauditloader";
+    private static final String AUDIT_IT_DATABASE_LOADER_USER = "caf-audit-loader";
     private static final String AUDIT_IT_DATABASE_LOADER_USER_PASSWORD = "'loader'";
-    private static final String AUDIT_IT_DATABASE_READER_USER = "cafauditreader";
+    private static final String AUDIT_IT_DATABASE_READER_ROLE = "caf-audit-read";
+    private static final String AUDIT_IT_DATABASE_READER_USER = "caf-audit-reader";
     private static final String AUDIT_IT_DATABASE_READER_USER_PASSWORD = "'reader'";
-    private static final String AUDIT_IT_DATABASE_SERVICE_USER = "cafauditservice";
+    private static final String AUDIT_IT_DATABASE_SERVICE_USER = "caf-audit-service";
     private static final String AUDIT_IT_DATABASE_SERVICE_USER_PASSWORD = "'service'";
+    private static final String AUDIT_IT_DATABASE_PSEUDOSUPERUSER_ROLE = "PSEUDOSUPERUSER";
 
     //The audit events XML file in the test case directory must be the same events XML file used in the caf-audit-plugin, see pom.xml property auditXMLConfigFile.
     private static final String testCaseDirectory = "./test-case";
@@ -140,18 +142,33 @@ public class AuditIT {
         issueVerticaSshCommand(command);
     }
 
+    private static void createDatabaseRole(final String databaseName, final String roleName) throws Exception {
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"CREATE ROLE \\\"{1}\\\" \"", databaseName, roleName);
+        issueVerticaSshCommand(command);
+    }
+
+    private static void grantDatabaseRole(final String databaseName, final String roleName, final String userName) throws Exception {
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT \\\"{1}\\\" TO \\\"{2}\\\"\"", databaseName, roleName, userName);
+        issueVerticaSshCommand(command);
+    }
+
+    private static void enableDatabaseRole(final String databaseName, final String roleName, final String userName) throws Exception {
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"ALTER USER \\\"{1}\\\" DEFAULT ROLE \\\"{2}\\\"\"", databaseName, userName, roleName);
+        issueVerticaSshCommand(command);
+    }
+
     private static void createDatabaseUser(final String databaseName, final String userName, final String userPassword) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"CREATE USER {1} IDENTIFIED BY {2}\"", databaseName, userName, userPassword);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"CREATE USER \\\"{1}\\\" IDENTIFIED BY {2}\"", databaseName, userName, userPassword);
         issueVerticaSshCommand(command);
     }
 
     private static void grantCreateOnDBPrivilege(final String databaseName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT CREATE ON DATABASE {0} TO {1}\"", databaseName, userName);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT CREATE ON DATABASE {0} TO \\\"{1}\\\" \"", databaseName, userName);
         issueVerticaSshCommand(command);
     }
 
     private static void grantPseudoSuperUserRole(final String databaseName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT PSEUDOSUPERUSER TO {1}\"", databaseName, userName);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT PSEUDOSUPERUSER TO \\\"{1}\\\" \"", databaseName, userName);
         issueVerticaSshCommand(command);
     }
 
@@ -501,11 +518,20 @@ public class AuditIT {
         public TestCaseDb(final String testDbName) throws Exception {
             this.testDbName = testDbName;
             createDatabase(testDbName);
+
+            createDatabaseRole(testDbName,AUDIT_IT_DATABASE_READER_ROLE);
+
             createDatabaseUser(testDbName,AUDIT_IT_DATABASE_READER_USER,AUDIT_IT_DATABASE_READER_USER_PASSWORD);
+            grantDatabaseRole(testDbName,AUDIT_IT_DATABASE_READER_ROLE,AUDIT_IT_DATABASE_READER_USER);
+            enableDatabaseRole(testDbName,AUDIT_IT_DATABASE_READER_ROLE,AUDIT_IT_DATABASE_READER_USER);
+
             createDatabaseUser(testDbName,AUDIT_IT_DATABASE_SERVICE_USER,AUDIT_IT_DATABASE_SERVICE_USER_PASSWORD);
             grantCreateOnDBPrivilege(testDbName,AUDIT_IT_DATABASE_SERVICE_USER);
+
             createDatabaseUser(testDbName,AUDIT_IT_DATABASE_LOADER_USER,AUDIT_IT_DATABASE_LOADER_USER_PASSWORD);
             grantPseudoSuperUserRole(testDbName,AUDIT_IT_DATABASE_LOADER_USER);
+            enableDatabaseRole(testDbName,AUDIT_IT_DATABASE_PSEUDOSUPERUSER_ROLE,AUDIT_IT_DATABASE_LOADER_USER);
+
         }
 
         @Override

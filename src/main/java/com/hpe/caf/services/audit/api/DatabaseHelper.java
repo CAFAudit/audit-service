@@ -145,6 +145,22 @@ public class DatabaseHelper {
     }
 
     /**
+     * Grant USAGE on the audit scheduler schema to the specified user.
+     */
+    public void grantUsageOnAuditSchedulerSchema(String schemaName, String userName) throws Exception {
+
+        String grantUsageOnSchemaSQL = "GRANT USAGE ON SCHEMA " + schemaName + " TO \"" + userName + "\"";
+
+        try (
+                Connection conn = getConnection(appConfig.getDatabaseLoaderAccount(), appConfig.getDatabaseLoaderAccountPassword());
+                Statement stmt = conn.createStatement()
+        ) {
+            //  Execute a statement to grant usage on the schema to the specified user.
+            stmt.execute(grantUsageOnSchemaSQL);
+        }
+    }
+
+    /**
      * Creates a new table in the database.
      */
     public void createTable(String createTableSQL) throws Exception {
@@ -188,10 +204,17 @@ public class DatabaseHelper {
     }
 
     /**
-     * Creates a connection to the Vertica database.
+     * Creates a connection to the Vertica database as the service account.
      */
     private static Connection getConnection
             () throws Exception {
+        return getConnection(appConfig.getDatabaseServiceAccount(), appConfig.getDatabaseServiceAccountPassword());
+    }
+
+    /**
+     * Creates a connection to the Vertica database as the specified user.
+     */
+    private static Connection getConnection(String username, String password) throws Exception {
 
         Connection conn;
 
@@ -209,8 +232,8 @@ public class DatabaseHelper {
 
             // Open a connection.
             Properties myProp = new Properties();
-            myProp.put("user", appConfig.getDatabaseServiceAccount());
-            myProp.put("password", appConfig.getDatabaseServiceAccountPassword());
+            myProp.put("user", username);
+            myProp.put("password", password);
 
             LOG.debug("Connecting to database...");
             conn = DriverManager.getConnection(dbURL, myProp);

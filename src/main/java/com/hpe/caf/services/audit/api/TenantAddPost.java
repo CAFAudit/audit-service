@@ -96,6 +96,9 @@ public class TenantAddPost {
 
                                 LOG.info("addTenant: Launching Kafka scheduler...");
                                 KafkaScheduler.launchScheduler(properties, tenantId, schedulerName);
+
+                                // Granting USAGE on new schema to the web service account so they can check existence next time round.
+                                databaseHelper.grantUsageOnAuditSchedulerSchema(schedulerName, properties.getDatabaseServiceAccount());
                             }
 
                             String targetTable = new StringBuilder()

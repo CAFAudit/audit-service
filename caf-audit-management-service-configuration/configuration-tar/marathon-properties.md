@@ -82,3 +82,20 @@
 ##### caf-audit-management-service-config-path
 - This property specifies the path to the directory containing the config.properties which can be used as an alternative means of specifying the database environment variables.
 
+##### caf-audit-scheduler-marathon-cpus
+- Configures the amount of CPU of each audit scheduler container. This does not have to be a whole number.
+
+##### caf-audit-scheduler-marathon-instances
+- Configures the number of instances of the audit scheduler container to start on launch.
+
+##### caf-audit-scheduler-marathon-mem
+- Configures the amount of RAM of each audit scheduler container. Note that this property does not configure the amount of RAM available to the container but is instead an upper limit. If the container's RAM exceeds this value it will cause docker to destroy and restart the container.
+
+##### caf-audit-scheduler-marathon-container-docker-forcePullImage
+- Configures the forcePullImage setting of each audit scheduler container.
+
+##### caf-audit-scheduler-marathon-container-docker-network
+- Configures the network type of each audit scheduler container.
+
+##### caf-audit-scheduler-marathon-container-type
+- Configures the container type of each audit scheduler container.

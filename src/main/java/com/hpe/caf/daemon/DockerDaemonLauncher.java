@@ -5,15 +5,28 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.client.model.HostConfig;
 import com.github.dockerjava.client.model.RestartPolicy;
 import com.github.dockerjava.jaxrs1.JaxRs1Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class DockerDaemonLauncher implements DaemonLauncher {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DockerDaemonLauncher.class);
 
     @Override
     public void launch(
         final String id,
         final String image,
-        final String[] args
+        final String[] args,
+        final String marathonCPUs,
+        final String marathonMem,
+        final String marathonInstances,
+        final String[] marathonURIs,
+        final String marathonContainerType,
+        final String marathonContainerNetwork,
+        final String marathonDockerForcePullImage
     ) {
+        LOG.info("launch: Launching Scheduler via Docker...");
+
         final DockerClient docker = new JaxRs1Client();
 
         final HostConfig hostConfig = new HostConfig();
@@ -31,5 +44,7 @@ public final class DockerDaemonLauncher implements DaemonLauncher {
         final String newContainerId = newContainer.getId();
 
         docker.startContainerCmd(newContainerId).exec();
+
+        LOG.info("launch: Scheduler launched via Docker...");
     }
 }

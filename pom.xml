@@ -186,6 +186,11 @@
       <artifactId>docker-java</artifactId>
       <version>0.10-ALT-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>com.hpe.caf.externals</groupId>
+      <artifactId>marathon-client</artifactId>
+      <version>0.4.11-ALT-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <properties>

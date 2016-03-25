@@ -41,6 +41,7 @@
     "database.reader.role": "${caf-audit-management-service-database-reader-role}",
     "kafka.brokers": "${caf-audit-management-service-kafka-brokers}",
     "caf.audit.management.cli": "${caf-audit-management-service-cli-image}",
+    "CAF_MARATHON_URL": "${caf-audit-scheduler-marathon-url}",
     "caf.audit.scheduler.marathon.cpus": "${caf-audit-scheduler-marathon-cpus}",
     "caf.audit.scheduler.marathon.instances": "${caf-audit-scheduler-marathon-instances}",
     "caf.audit.scheduler.marathon.mem": "${caf-audit-scheduler-marathon-mem}",

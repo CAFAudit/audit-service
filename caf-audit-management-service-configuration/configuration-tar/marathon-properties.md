@@ -82,6 +82,9 @@
 ##### caf-audit-management-service-config-path
 - This property specifies the path to the directory containing the config.properties which can be used as an alternative means of specifying the database environment variables.
 
+##### caf-audit-scheduler-marathon-url
+- This property specifies the endpoint of Marathon REST API.
+
 ##### caf-audit-scheduler-marathon-cpus
 - Configures the amount of CPU of each audit scheduler container. This does not have to be a whole number.
 

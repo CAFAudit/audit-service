@@ -55,21 +55,14 @@ public class KafkaScheduler {
     ) throws Exception {
         final String id = "caf-audit-" + tenantId;
         final String image = properties.getCAFAuditManagementCLI();
-        final String marathonCPUs = properties.getMarathonCPUs();
-        final String marathonMem = properties.getMarathonMem();
-        final String marathonInstances = properties.getMarathonInstances();
-        final String[] marathonURIs = properties.getMarathonURIs();
-        final String marathonContainerType = properties.getMarathonContainerType();
-        final String marathonContainerNetwork = properties.getMarathonContainerNetwork();
-        final String marathonDockerForcePullImage = properties.getMarathonDockerForcePullImage();
         final String[] args = new String[] {
-            "launch",
-            "--config-schema", schedulerName,
-            "--jdbc-url", properties.getDatabaseURL(),
-            "--username", properties.getDatabaseLoaderAccount(),
-            "--password", properties.getDatabaseLoaderAccountPassword()
+                "launch",
+                "--config-schema", schedulerName,
+                "--jdbc-url", properties.getDatabaseURL(),
+                "--username", properties.getDatabaseLoaderAccount(),
+                "--password", properties.getDatabaseLoaderAccountPassword()
         };
 
-        DaemonLauncher.create().launch(id, image, args, marathonCPUs, marathonMem, marathonInstances, marathonURIs, marathonContainerType, marathonContainerNetwork, marathonDockerForcePullImage);
+        DaemonLauncher.create(properties).launch(properties, id, image, args);
     }
 }

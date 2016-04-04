@@ -1,15 +1,14 @@
 package com.hpe.caf.daemon;
 
-import java.util.Map;
+import com.hpe.caf.services.audit.api.AppConfig;
 
 public interface DaemonLauncher {
 
-    static DaemonLauncher create() {
+    static DaemonLauncher create(final AppConfig properties) {
 
         //  If CAF_MARATHON_URL environment variable present then launch via Marathon, otherwise Docker.
-        String value = System.getenv("CAF_MARATHON_URL");
-        if (value != null) {
-            return new MarathonDaemonLauncher(value);
+        if (properties.getMarathonUrl() != null) {
+            return new MarathonDaemonLauncher(properties.getMarathonUrl());
         } else {
             return new DockerDaemonLauncher();
         }
@@ -17,15 +16,9 @@ public interface DaemonLauncher {
     }
 
     void launch(
+        final AppConfig properties,
         final String id,
         final String image,
-        final String[] args,
-        final String marathonCPUs,
-        final String marathonMem,
-        final String marathonInstances,
-        final String[] marathonURIs,
-        final String marathonContainerType,
-        final String marathonContainerNetwork,
-        final String marathonDockerForcePullImage
+        final String[] args
     ) throws Exception;
 }

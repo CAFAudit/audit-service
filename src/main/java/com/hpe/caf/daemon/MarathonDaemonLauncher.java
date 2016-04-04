@@ -1,5 +1,6 @@
 package com.hpe.caf.daemon;
 
+import com.hpe.caf.services.audit.api.AppConfig;
 import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.MarathonClient;
 import mesosphere.marathon.client.model.v2.*;
@@ -8,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,17 +29,21 @@ public final class MarathonDaemonLauncher implements DaemonLauncher {
 
     @Override
     public void launch(
-            final String id,
-            final String image,
-            final String[] args,
-            final String marathonCPUs,
-            final String marathonMem,
-            final String marathonInstances,
-            final String[] marathonURIs,
-            final String marathonContainerType,
-            final String marathonContainerNetwork,
-            final String marathonDockerForcePullImage
+        final AppConfig properties,
+        final String id,
+        final String image,
+        final String[] args
     ) throws Exception {
+
+        //  Get Marathon specific properties.
+        String marathonCPUs = properties.getMarathonCPUs();
+        String marathonMem = properties.getMarathonMem();
+        String marathonInstances = "1";
+        String marathonContainerType = "DOCKER";
+        String marathonContainerDockerCredentials = properties.getMarathonContainerDockerCredentials();
+        String marathonContainerDockerNetwork = properties.getMarathonContainerDockerNetwork();
+        String marathonContainerDockerForcePullImage = properties.getMarathonContainerDockerForcePullImage();
+
         LOG.info("launch: Launching Scheduler via Marathon...");
 
         if(StringUtils.isNotEmpty(marathonEndpoint)){
@@ -51,15 +55,18 @@ public final class MarathonDaemonLauncher implements DaemonLauncher {
                 //  not exist.
                 Group auditSchedulerGroup;
                 try {
-                    auditSchedulerGroup = marathon.getGroup(MARATHON_SCHEDULER_GROUPS_ID);
+                    //  Create new group.
+                    auditSchedulerGroup = new Group();
+                    auditSchedulerGroup.setId(MARATHON_SCHEDULER_GROUPS_ID);
+
+                    LOG.debug("launch: Creating scheduler group...");
+                    marathon.createGroup(auditSchedulerGroup);
 
                 } catch (MarathonException me) {
-                    //  Use 404 error as group existence check.
-                    if (404 == me.getStatus()) {
-                        //  Create new group as it does not yet exist.
-                        final Group newAuditSchedulerGroup = new Group();
-                        newAuditSchedulerGroup.setId(MARATHON_SCHEDULER_GROUPS_ID);
-                        marathon.createGroup(newAuditSchedulerGroup);
+
+                    //  Use 409 to trap and ignore conflict errors where the group already exists.
+                    if (409 == me.getStatus() && me.getMessage().contains("Conflict")) {
+                        LOG.debug("launch: Scheduler group already exists...");
                     }
                     else {
                         throw me;
@@ -73,7 +80,7 @@ public final class MarathonDaemonLauncher implements DaemonLauncher {
                 auditManagementApp.setMem(Double.parseDouble(marathonMem));
                 auditManagementApp.setInstances(Integer.parseInt(marathonInstances));
 
-                List<String> uris = Arrays.asList(marathonURIs);
+                List<String> uris = Arrays.asList(marathonContainerDockerCredentials);
                 auditManagementApp.setUris(uris);
 
                 Container auditManagementContainer = new Container();
@@ -81,8 +88,8 @@ public final class MarathonDaemonLauncher implements DaemonLauncher {
 
                 Docker auditManagementDocker = new Docker();
                 auditManagementDocker.setImage(image);
-                auditManagementDocker.setNetwork(marathonContainerNetwork);
-                auditManagementDocker.setForcePullImage(Boolean.parseBoolean(marathonDockerForcePullImage));
+                auditManagementDocker.setNetwork(marathonContainerDockerNetwork);
+                auditManagementDocker.setForcePullImage(Boolean.parseBoolean(marathonContainerDockerForcePullImage));
 
                 auditManagementContainer.setDocker(auditManagementDocker);
 

@@ -47,16 +47,14 @@ public class AppConfig {
 
     public String getMarathonCPUs(){ return environment.getProperty("caf.audit.scheduler.marathon.cpus"); }
 
+    public String getMarathonContainerDockerCredentials(){ return environment.getProperty("caf.audit.scheduler.marathon.container.docker.credentials"); }
+
+    public String getMarathonContainerDockerNetwork(){ return environment.getProperty("caf.audit.scheduler.marathon.container.docker.network"); }
+
+    public String getMarathonContainerDockerForcePullImage(){ return environment.getProperty("caf.audit.scheduler.marathon.container.docker.forcePullImage"); }
+
     public String getMarathonMem(){ return environment.getProperty("caf.audit.scheduler.marathon.mem"); }
 
-    public String getMarathonInstances(){ return environment.getProperty("caf.audit.scheduler.marathon.instances"); }
-
-    public String[] getMarathonURIs(){ return environment.getProperty("caf.audit.scheduler.marathon.uris").split(","); }
-
-    public String getMarathonContainerType(){ return environment.getProperty("caf.audit.scheduler.marathon.container.type"); }
-
-    public String getMarathonContainerNetwork(){ return environment.getProperty("caf.audit.scheduler.marathon.container.docker.network"); }
-
-    public String getMarathonDockerForcePullImage(){ return environment.getProperty("caf.audit.scheduler.marathon.container.docker.forcePullImage"); }
+    public String getMarathonUrl(){ return environment.getProperty("CAF_MARATHON_URL"); }
 
 }

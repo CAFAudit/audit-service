@@ -43,12 +43,10 @@
     "caf.audit.management.cli": "${caf-audit-management-service-cli-image}",
     "CAF_MARATHON_URL": "${caf-audit-scheduler-marathon-url}",
     "caf.audit.scheduler.marathon.cpus": "${caf-audit-scheduler-marathon-cpus}",
-    "caf.audit.scheduler.marathon.instances": "${caf-audit-scheduler-marathon-instances}",
     "caf.audit.scheduler.marathon.mem": "${caf-audit-scheduler-marathon-mem}",
-    "caf.audit.scheduler.marathon.uris": "${marathon-uris-root}/${docker-login-config}",
+    "caf.audit.scheduler.marathon.container.docker.credentials": "${marathon-uris-root}/${docker-login-config}",
     "caf.audit.scheduler.marathon.container.docker.forcePullImage": "${caf-audit-scheduler-marathon-container-docker-forcePullImage}",
     "caf.audit.scheduler.marathon.container.docker.network": "${caf-audit-scheduler-marathon-container-docker-network}",
-    "caf.audit.scheduler.marathon.container.type": "${caf-audit-scheduler-marathon-container-type}",
     "AUDIT_MANAGEMENT_API_CONFIG_PATH": "${caf-audit-management-service-config-path}"
   },
   "uris": [

@@ -29,10 +29,8 @@
 
   "caf-audit-scheduler-marathon-url": "<MUST_REPLACE: Marathon endpoint>",
   "caf-audit-scheduler-marathon-cpus": "0.5",
-  "caf-audit-scheduler-marathon-instances": "1",
   "caf-audit-scheduler-marathon-mem": "256.0",
   "caf-audit-scheduler-marathon-container-docker-forcePullImage": "false",
-  "caf-audit-scheduler-marathon-container-docker-network": "BRIDGE",
-  "caf-audit-scheduler-marathon-container-type": "DOCKER"
+  "caf-audit-scheduler-marathon-container-docker-network": "BRIDGE"
 
 }

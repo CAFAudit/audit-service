@@ -1,5 +1,6 @@
 package com.hpe.caf.auditing;
 
+import com.hpe.caf.util.processidentifier.ProcessIdentifier;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.Clock;
@@ -12,7 +13,7 @@ import java.util.UUID;
  */
 public final class AuditLogHelper {
 
-    private static final UUID processId = UUID.randomUUID();
+    private static final UUID processId = ProcessIdentifier.getProcessId();
 
     // NB: If this is causing contention then we could use ThreadLocal to
     // make it thread-specific (and also might lead to less confusion as

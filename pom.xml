@@ -39,6 +39,10 @@
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.hpe.caf.util</groupId>
+            <artifactId>util-process-identifier</artifactId>
+        </dependency>
     </dependencies>
 
     <ciManagement>

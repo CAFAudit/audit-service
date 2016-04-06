@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hpe.caf</groupId>
-    <artifactId>caf-audit-plugin</artifactId>
+    <artifactId>caf-audit-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
 
     <description>
         This project provides an XML to Java transformation plugin.
@@ -99,7 +99,7 @@
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>3.4</version>
                 <configuration>
-                    <goalPrefix>caf-audit-plugin</goalPrefix>
+                    <goalPrefix>caf-audit-maven-plugin</goalPrefix>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
                 </configuration>
                 <executions>
@@ -131,7 +131,7 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>caf-audit-plugin.md</file>
+                                    <file>caf-audit-maven-plugin.md</file>
                                     <type>md</type>
                                 </artifact>
                             </artifacts>

@@ -65,7 +65,7 @@ reference the XML audit event file as shown below:
 ```xml
 <plugin>
 	<groupId>com.hpe.caf</groupId>
-	<artifactId>caf-audit-plugin</artifactId>
+	<artifactId>caf-audit-maven-plugin</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<executions>
 		<execution>

@@ -10,9 +10,9 @@
 
     <parent>
         <groupId>com.hpe.caf</groupId>
-        <artifactId>caf-latest-develop</artifactId>
+        <artifactId>caf-maven-latest</artifactId>
         <version>1-SNAPSHOT</version>
-        <relativePath>../caf-latest-develop</relativePath>
+        <relativePath>../caf-maven-latest</relativePath>
     </parent>
 
     <build>

@@ -144,6 +144,6 @@ paths:
         200:
           description: Ok
         400:
-          description: Bad Request (missing database connection properties)
+          description: Bad Request (missing database connection properties or the `tenantId` parameter contains invalid characters)
         500:
           description: Internal server error

@@ -45,22 +45,53 @@ info:
     The API connects to the Vertica analytical database server via JDBC. The following connection
     properties need to be supplied:
 
-    `database.url` - the Vertica database connection string URL with format:
+    `CAF_DATABASE_URL` - the Vertica database connection string URL with format:
     jdbc:vertica://VerticaHost:portNumber/databaseName
 
-    `database.username` - the name of the database user account. E.g. dbadmin
+    `CAF_DATABASE_SERVICE_ACCOUNT` - the name of the Vertica database account used by the CAF Audit Management Service to access the Vertica database. E.g. caf-audit-service
 
-    `database.password` - the password of the database user account
+    `CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD` - the password of the Vertica database account used by the CAF Audit Management Service to access the Vertica database.
+
+    `CAF_DATABASE_LOADER_ACCOUNT` - the name of the Vertica database account used to configure the loading of data from Kafka into Vertica. E.g. caf-audit-loader
+
+    `CAF_DATABASE_LOADER_ACCOUNT_PASSWORD` - the password of the Vertica database account used to configure the loading of data from Kafka into Vertica.
+
+    `CAF_DATABASE_READER_ROLE` - the name of the Vertica database role that will be used for reporting users. E.g. caf-audit-read
 
     ### Kafka Connection
 
     The API connects to the Kafka server. The following property needs to be supplied:
 
-    `kafka.brokers` - the address of the Kafka broker. E.g. 192.168.56.20:9092
+    `CAF_KAFKA_BROKERS` - the address of the Kafka broker. E.g. 192.168.56.20:9092
 
-    Both Kafka and Vertica properties can be provided through system environment variables or can be collectively
+    ### Vertica Audit Schedulers
+
+    The API configures and launches Vertica audit schedulers. These schedulers can be launched using Docker or Marathon.
+    For launch using Docker, the following properties needs to be supplied:
+
+    `CAF_AUDIT_MANAGEMENT_CLI` - the Docker container used to launch the scheduler.
+
+    `DOCKER_HOST` - the machine on which the container runs.
+
+    For launch using Marathon, the following properties needs to be supplied:
+
+    `CAF_AUDIT_MANAGEMENT_CLI` - the Docker container used to launch the scheduler.
+
+    `CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_CREDENTIALS` - the docker credentials file.
+
+    `CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_FORCEPULLIMAGE` - the forcePullImage setting of each audit scheduler container.
+
+    `CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_NETWORK` - the network type of each audit scheduler container.
+
+    `CAF_AUDIT_SCHEDULER_MARATHON_CPUS` - the amount of CPU of each audit scheduler container.
+
+    `CAF_AUDIT_SCHEDULER_MARATHON_MEM` - the amount of RAM of each audit scheduler container.
+
+    `CAF_MARATHON_URL` - the endpoint of Marathon REST API.
+
+    Docker, Kafka, Marathon and Vertica properties can be provided through system environment variables or can be collectively
     initialized in a config.properties file with a new system environment variable created,
-    `AUDIT_MANAGEMENT_API_CONFIG_PATH`, which points to the directory containing the properties
+    `CAF_AUDIT_MANAGEMENT_API_CONFIG_PATH`, which points to the directory containing the properties
     file.
 
 basePath: /caf-audit-management/v1

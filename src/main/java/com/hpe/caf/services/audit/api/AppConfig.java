@@ -9,51 +9,51 @@ import org.springframework.core.env.Environment;
  * Configuration class for the audit management api. Includes database connection properties.
  */
 @Configuration
-@PropertySource(value = "file:${AUDIT_MANAGEMENT_API_CONFIG_PATH}/config.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file:${CAF_AUDIT_MANAGEMENT_API_CONFIG_PATH}/config.properties", ignoreResourceNotFound = true)
 public class AppConfig {
 
     @Autowired
     private Environment environment;
 
     public String getDatabaseURL(){
-        return environment.getProperty("database.url");
+        return environment.getProperty("CAF_DATABASE_URL");
     }
 
     public String getDatabaseServiceAccount(){
-        return environment.getProperty("database.service.account");
+        return environment.getProperty("CAF_DATABASE_SERVICE_ACCOUNT");
     }
 
     public String getDatabaseServiceAccountPassword(){
-        return environment.getProperty("database.service.account.password");
+        return environment.getProperty("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD");
     }
 
     public String getDatabaseLoaderAccount(){
-        return environment.getProperty("database.loader.account");
+        return environment.getProperty("CAF_DATABASE_LOADER_ACCOUNT");
     }
 
     public String getDatabaseLoaderAccountPassword(){
-        return environment.getProperty("database.loader.account.password");
+        return environment.getProperty("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD");
     }
 
     public String getDatabaseReaderRole(){
-        return environment.getProperty("database.reader.role");
+        return environment.getProperty("CAF_DATABASE_READER_ROLE");
     }
 
     public String getKafkaBrokers(){
-        return environment.getProperty("kafka.brokers");
+        return environment.getProperty("CAF_KAFKA_BROKERS");
     }
 
-    public String getCAFAuditManagementCLI(){ return environment.getProperty("caf.audit.management.cli"); }
+    public String getCAFAuditManagementCLI(){ return environment.getProperty("CAF_AUDIT_MANAGEMENT_CLI"); }
 
-    public String getMarathonCPUs(){ return environment.getProperty("caf.audit.scheduler.marathon.cpus"); }
+    public String getMarathonCPUs(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_CPUS"); }
 
-    public String getMarathonContainerDockerCredentials(){ return environment.getProperty("caf.audit.scheduler.marathon.container.docker.credentials"); }
+    public String getMarathonContainerDockerCredentials(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_CREDENTIALS"); }
 
-    public String getMarathonContainerDockerNetwork(){ return environment.getProperty("caf.audit.scheduler.marathon.container.docker.network"); }
+    public String getMarathonContainerDockerNetwork(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_NETWORK"); }
 
-    public String getMarathonContainerDockerForcePullImage(){ return environment.getProperty("caf.audit.scheduler.marathon.container.docker.forcePullImage"); }
+    public String getMarathonContainerDockerForcePullImage(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_FORCEPULLIMAGE"); }
 
-    public String getMarathonMem(){ return environment.getProperty("caf.audit.scheduler.marathon.mem"); }
+    public String getMarathonMem(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_MEM"); }
 
     public String getMarathonUrl(){ return environment.getProperty("CAF_MARATHON_URL"); }
 

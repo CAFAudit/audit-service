@@ -41,12 +41,12 @@ public class TenantAddPostTest {
 
         //  Set-up test database connection properties.
         HashMap<String, String> newEnv  = new HashMap<>();
-        newEnv.put("database.url","testUrl");
-        newEnv.put("database.service.account","testServiceUser");
-        newEnv.put("database.service.account.password","testPassword");
-        newEnv.put("database.loader.account","testLoaderUser");
-        newEnv.put("database.loader.account.password","testPassword");
-        newEnv.put("database.reader.role","testReaderRole");
+        newEnv.put("CAF_DATABASE_URL","testUrl");
+        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT","testServiceUser");
+        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD","testPassword");
+        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT","testLoaderUser");
+        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD","testPassword");
+        newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         List<String> applications = new ArrayList<>();
@@ -76,12 +76,12 @@ public class TenantAddPostTest {
 
         //  Set-up test database connection properties.
         HashMap<String, String> newEnv  = new HashMap<>();
-        newEnv.put("database.url","testUrl");
-        newEnv.put("database.service.account","testServiceUser");
-        newEnv.put("database.service.account.password","testPassword");
-        newEnv.put("database.loader.account","testLoaderUser");
-        newEnv.put("database.loader.account.password","testPassword");
-        newEnv.put("database.reader.role","testReaderRole");
+        newEnv.put("CAF_DATABASE_URL","testUrl");
+        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT","testServiceUser");
+        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD","testPassword");
+        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT","testLoaderUser");
+        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD","testPassword");
+        newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         List<String> applications = new ArrayList<>();

@@ -322,13 +322,13 @@
                         <docker.host.address>${docker.host.address}</docker.host.address>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <database.url>jdbc:vertica://192.168.56.30:5433/AuditIT</database.url>
-                        <database.service.account>caf-audit-service</database.service.account>
-                        <database.service.account.password>service</database.service.account.password>
-                        <database.loader.account>caf-audit-loader</database.loader.account>
-                        <database.loader.account.password>loader</database.loader.account.password>
-                        <database.reader.role>caf-audit-read</database.reader.role>
-                        <kafka.brokers>192.168.56.20:9092</kafka.brokers>
+                        <CAF_DATABASE_URL>jdbc:vertica://192.168.56.30:5433/AuditIT</CAF_DATABASE_URL>
+                        <CAF_DATABASE_SERVICE_ACCOUNT>caf-audit-service</CAF_DATABASE_SERVICE_ACCOUNT>
+                        <CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>service</CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>
+                        <CAF_DATABASE_LOADER_ACCOUNT>caf-audit-loader</CAF_DATABASE_LOADER_ACCOUNT>
+                        <CAF_DATABASE_LOADER_ACCOUNT_PASSWORD>loader</CAF_DATABASE_LOADER_ACCOUNT_PASSWORD>
+                        <CAF_DATABASE_READER_ROLE>caf-audit-read</CAF_DATABASE_READER_ROLE>
+                        <CAF_KAFKA_BROKERS>192.168.56.20:9092</CAF_KAFKA_BROKERS>
                         <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
                         <CAF_CONFIG_PATH>${project.basedir}/test-config</CAF_CONFIG_PATH>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}${webserviceBasePath}</webserviceurl>
@@ -465,17 +465,17 @@
                                 </ports>
                                 <env>
                                     <!-- When the container is deployed in Marathon it will use the environment variable values specified in the container json. -->
-                                    <database.url>jdbc:vertica://192.168.56.30:5433/AuditIT</database.url>
-                                    <database.service.account>caf-audit-service</database.service.account>
-                                    <database.service.account.password>service</database.service.account.password>
-                                    <database.loader.account>caf-audit-loader</database.loader.account>
-                                    <database.loader.account.password>loader</database.loader.account.password>
-                                    <database.reader.role>caf-audit-read</database.reader.role>
-                                    <kafka.brokers>192.168.56.20:9092</kafka.brokers>
+                                    <CAF_DATABASE_URL>jdbc:vertica://192.168.56.30:5433/AuditIT</CAF_DATABASE_URL>
+                                    <CAF_DATABASE_SERVICE_ACCOUNT>caf-audit-service</CAF_DATABASE_SERVICE_ACCOUNT>
+                                    <CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>service</CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>
+                                    <CAF_DATABASE_LOADER_ACCOUNT>caf-audit-loader</CAF_DATABASE_LOADER_ACCOUNT>
+                                    <CAF_DATABASE_LOADER_ACCOUNT_PASSWORD>loader</CAF_DATABASE_LOADER_ACCOUNT_PASSWORD>
+                                    <CAF_DATABASE_READER_ROLE>caf-audit-read</CAF_DATABASE_READER_ROLE>
+                                    <CAF_KAFKA_BROKERS>192.168.56.20:9092</CAF_KAFKA_BROKERS>
                                     <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
                                     <CAF_CONFIG_PATH>/config</CAF_CONFIG_PATH>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
-                                    <caf.audit.management.cli>rh7-artifactory.hpswlabs.hp.com:8443/caf/audit:1.0-SNAPSHOT</caf.audit.management.cli>
+                                    <CAF_AUDIT_MANAGEMENT_CLI>rh7-artifactory.hpswlabs.hp.com:8443/caf/audit:1.0-SNAPSHOT</CAF_AUDIT_MANAGEMENT_CLI>
                                 </env>
                                 <volumes>
                                     <from>

@@ -86,11 +86,9 @@ $CustomEventParamPrefix$columnName$space$verticaType")
 #end
 #end
 #end
-$columnList
+$columnList$comma
+PRIMARY KEY ($PrimaryKeyColumns)
 );
-## Assign primary key.
-ALTER TABLE $schema.$tableName
-ADD PRIMARY KEY ($PrimaryKeyColumns);
 #else
 ##  Modify table context. Generate ALTER TABLE SQL ...
 #set($columnType = $columnType)

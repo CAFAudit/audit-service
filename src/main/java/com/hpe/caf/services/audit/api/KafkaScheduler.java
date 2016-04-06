@@ -13,7 +13,8 @@ public class KafkaScheduler {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaScheduler.class);
 
-    public static void createScheduler(AppConfig properties, String schedulerName) {
+    public static void createScheduler(AppConfig properties, String schedulerName) throws Exception {
+
         //Create a scheduler configuration.
         String[] args = new String[]{"-Dscheduler", "--add",
                 "--config-schema", schedulerName,
@@ -26,10 +27,11 @@ public class KafkaScheduler {
             SchedulerConfigurationCLI.run(args);
         } catch (Exception e) {
             LOG.error("createScheduler: Scheduler configuration could not be created. ");
+            throw e;
         }
     }
 
-    public static void associateTopic(AppConfig properties, String schedulerName, String targetTable, String rejectionTable, String targetTopic) {
+    public static void associateTopic(AppConfig properties, String schedulerName, String targetTable, String rejectionTable, String targetTopic) throws Exception {
         //Associate a topic with the scheduler.
         String[] args = new String[]{"-Dtopic", "--add",
                 "--config-schema", schedulerName,
@@ -45,6 +47,7 @@ public class KafkaScheduler {
             TopicConfigurationCLI.run(args);
         } catch (Exception e) {
             LOG.error("associateTopic: Topic configuration could not be created. ");
+            throw e;
         }
     }
 

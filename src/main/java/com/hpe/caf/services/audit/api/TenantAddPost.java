@@ -125,7 +125,7 @@ public class TenantAddPost {
                             KafkaScheduler.associateTopic(properties, schedulerName, targetTable, rejectionTable, targetTopic);
   
                         } catch (Exception ex) {
-                            //  Something unexpected has gone wrong. Delete tenant/application mapping to facilitate retry,
+                            //  Something unexpected has gone wrong. Delete tenant/application mapping to facilitate retry.
                             databaseHelper.deleteTenantApplicationsRow(tenantId,application);
                             throw ex;
                         }

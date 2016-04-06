@@ -48,10 +48,9 @@ public class TransformHelperTest {
                 "eventParamBoolean_Param boolean,\n" +
                 "eventParamDate_Param timestamp,\n" +
                 "eventParamString_Param2 varchar(65000),\n" +
-                "eventParamInt16_Param2 int\n" +
-                ");\n" +
-                "ALTER TABLE public.AuditApplicationX\n" +
-                "ADD PRIMARY KEY (processId,threadId,eventOrder);\n";
+                "eventParamInt16_Param2 int,\n" +
+                "PRIMARY KEY (processId,threadId,eventOrder)\n" +
+                ");\n";
 
         Assert.assertEquals(createTableSQL.replaceAll("[\n\r]", ""), EXPECTED_CREATE_TABLE_OUTPUT.replaceAll("[\n\r]", ""));
 

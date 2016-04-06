@@ -15,11 +15,14 @@ import java.util.Objects;
 public class TenantAddPost {
 
     private static final String ERR_MSG_TENANT_APPS_IS_MISSING = "The AuditManagement.TenantApplications table does not exist.";
-    private static final String TRANSFORM_TEMPLATE_NAME = "AuditTransform.vm";
+    private static final String ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS = "The tenantId contains invalid characters (allowed: lowercase letters and digits).";
     private static final String KAFKA_SCHEDULER_NAME_SUFFIX = "AuditScheduler";
     private static final String KAFKA_TARGET_TABLE_PREFIX = "Audit";
     private static final String KAFKA_REJECT_TABLE = "kafka_rej";
     private static final String KAFKA_TARGET_TOPIC_PREFIX = "AuditEventTopic.";
+    private static final String TENANTID_INVALID_CHARS_REGEX = "^[a-z0-9]*$";
+    private static final String TENANTID_SCHEMA_PREFIX = "account_";
+    private static final String TRANSFORM_TEMPLATE_NAME = "AuditTransform.vm";
 
     private static final Logger LOG = LoggerFactory.getLogger(TenantAddPost.class);
 
@@ -27,6 +30,12 @@ public class TenantAddPost {
         try
         {
             LOG.info("addTenant: Starting...");
+
+            //  Make sure the tenant id does not contain any invalid characters.
+            if (containsInvalidCharacters(tenantId)) {
+                LOG.error("addTenant: Error - '{}'", ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
+                throw new BadRequestException(ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
+            }
 
             //  Get app config settings.
             LOG.debug("addTenant: Reading database connection properties...");
@@ -67,15 +76,16 @@ public class TenantAddPost {
                         try {
                             //  Create new schema for the specified tenant and grant usage to the audit reader role.
                             LOG.debug("addTenant: Creating new database schema for tenant '{}'...", tenantId);
-                            databaseHelper.createSchema(tenantId);
-                            databaseHelper.grantUsageOnSchema(tenantId, properties.getDatabaseReaderRole());
+                            String tenantSchemaName = TENANTID_SCHEMA_PREFIX + tenantId;
+                            databaseHelper.createSchema(tenantSchemaName);
+                            databaseHelper.grantUsageOnSchema(tenantSchemaName, properties.getDatabaseReaderRole());
 
                             InputStream auditConfigXMLStream = new ByteArrayInputStream(auditConfigXMLString.getBytes(StandardCharsets.UTF_8));
 
                             //  Create <tenantId>.Audit<application> table based on the audit events XML.
                             LOG.debug("addTenant: Creating new auditing table for tenant '{}', application '{}'...", tenantId, application);
                             TransformHelper transform = new TransformHelper();
-                            String createTableSQL = transform.doCreateTableTransform(auditConfigXMLStream,TRANSFORM_TEMPLATE_NAME,tenantId);
+                            String createTableSQL = transform.doCreateTableTransform(auditConfigXMLStream,TRANSFORM_TEMPLATE_NAME,tenantSchemaName);
                             databaseHelper.createTable(createTableSQL);
 
                             //  Grant SELECT on the new table to the audit reader role.
@@ -85,7 +95,7 @@ public class TenantAddPost {
                             LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
 
                             //  Create Kafka scheduler (per tenant) and associate a topic with that scheduler.
-                            String schedulerName = tenantId + KAFKA_SCHEDULER_NAME_SUFFIX;
+                            String schedulerName = tenantSchemaName + KAFKA_SCHEDULER_NAME_SUFFIX;
 
                             //  If the specified scheduler name already exists, then ignore creation step.
                             LOG.debug("addTenant: Checking if Vertica scheduler '{}' has already been created...", schedulerName);
@@ -102,14 +112,14 @@ public class TenantAddPost {
                             }
 
                             String targetTable = new StringBuilder()
-                                    .append(tenantId)
+                                    .append(tenantSchemaName)
                                     .append(".")
                                     .append(KAFKA_TARGET_TABLE_PREFIX)
                                     .append(application)
                                     .toString();
 
                             String rejectionTable = new StringBuilder()
-                                    .append(tenantId)
+                                    .append(tenantSchemaName)
                                     .append(".")
                                     .append(KAFKA_REJECT_TABLE)
                                     .toString();
@@ -140,4 +150,15 @@ public class TenantAddPost {
             throw e;
         }
     }
+
+    /**
+     * Returns TRUE if the specified tenantId contains invalid characters, otherwise FALSE.
+     */
+    private static boolean containsInvalidCharacters(String tenantId) {
+        if (tenantId.matches(TENANTID_INVALID_CHARS_REGEX)) {
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -53,7 +53,7 @@ public class TenantAddPostTest {
         applications.add("Application1");
         applications.add("Application2");
 
-        TenantAddPost.addTenant("TestTenant",applications);
+        TenantAddPost.addTenant("testtenant",applications);
 
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).doesTableExist(Mockito.anyString(),Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(2)).getEventsXMLForApp(Mockito.anyString());
@@ -88,7 +88,7 @@ public class TenantAddPostTest {
         applications.add("Application1");
         applications.add("Application2");
 
-        TenantAddPost.addTenant("TestTenant",applications);
+        TenantAddPost.addTenant("testtenant",applications);
 
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).doesTableExist(Mockito.anyString(),Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(0)).getEventsXMLForApp(Mockito.anyString());
@@ -98,5 +98,23 @@ public class TenantAddPostTest {
         Mockito.verify(mockDatabaseHelper, Mockito.times(0)).createTable(Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(0)).grantSelectOnTable(Mockito.anyString(),Mockito.anyString());
 
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void testAddTenant_Failure_InvalidTenantId_UpperCase () throws Exception {
+        List<String> applications = new ArrayList<>();
+        applications.add("Application1");
+        applications.add("Application2");
+
+        TenantAddPost.addTenant("testTenant1",applications);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void testAddTenant_Failure_InvalidTenantId_Underscore () throws Exception {
+        List<String> applications = new ArrayList<>();
+        applications.add("Application1");
+        applications.add("Application2");
+
+        TenantAddPost.addTenant("testtenant_1",applications);
     }
 }

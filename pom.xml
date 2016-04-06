@@ -99,7 +99,6 @@
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>3.4</version>
                 <configuration>
-                    <goalPrefix>caf-audit-maven-plugin</goalPrefix>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
                 </configuration>
                 <executions>

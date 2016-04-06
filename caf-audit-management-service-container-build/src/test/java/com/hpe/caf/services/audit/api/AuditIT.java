@@ -62,7 +62,7 @@ public class AuditIT {
     private static final String AUDIT_IT_DATABASE_SERVICE_USER_PASSWORD = "'service'";
     private static final String AUDIT_IT_DATABASE_PSEUDOSUPERUSER_ROLE = "PSEUDOSUPERUSER";
 
-    //The audit events XML file in the test case directory must be the same events XML file used in the caf-audit-plugin, see pom.xml property auditXMLConfigFile.
+    //The audit events XML file in the test case directory must be the same events XML file used in the caf-audit-maven-plugin, see pom.xml property auditXMLConfigFile.
     private static final String testCaseDirectory = "./test-case";
 
     private static ApplicationsApi auditManagementApplicationsApi;

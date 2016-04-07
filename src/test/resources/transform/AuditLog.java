@@ -30,8 +30,8 @@ public final class AuditLog
     /**
      * Audit the viewDocument event
      * @param channel Identifies the channel to be used for message queuing 
-     * @param userId Identifies the user who triggered the event 
      * @param tenantId Identifies the tenant that the user belongs to 
+     * @param userId Identifies the user who triggered the event 
      * @param correlationId Identifies the same user action 
      * @param String_Param Description for String_Param 
      * @param Int16_Param Description for Int16_Param 
@@ -45,8 +45,8 @@ public final class AuditLog
     public static void auditViewDocument
     (
         final AuditChannel channel,
-        final String userId,
         final String tenantId,
+        final String userId,
         final String correlationId,
         final String String_Param,
         final short Int16_Param,
@@ -61,8 +61,8 @@ public final class AuditLog
     {
         final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
-        auditEventBuilder.setUser(userId);
         auditEventBuilder.setTenant(tenantId);
+        auditEventBuilder.setUser(userId);
         auditEventBuilder.setCorrelationId(correlationId);
         auditEventBuilder.setEventType("documentEvents", "viewDocument");
         auditEventBuilder.addEventParameter("String_Param", null, String_Param);

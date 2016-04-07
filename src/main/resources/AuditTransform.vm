@@ -11,13 +11,13 @@
 ")
 #set($javadocParamsComment = "     * @param")
 #set($finalChannelArg = "final AuditChannel channel")
-#set($finalUserIdArg = "final String userId")
 #set($finalTenantIdArg = "final String tenantId")
+#set($finalUserIdArg = "final String userId")
 #set($finalCorrelationIdArg = "final String correlationId")
 #set($final = "final ")
 #set($channelJavaDocsComment = "     * @param channel Identifies the channel to be used for message queuing ")
-#set($userIdJavaDocsComment = "     * @param userId Identifies the user who triggered the event ")
 #set($tenantIdJavaDocsComment = "     * @param tenantId Identifies the tenant that the user belongs to ")
+#set($userIdJavaDocsComment = "     * @param userId Identifies the user who triggered the event ")
 #set($correlationIdJavaDocsComment = "     * @param correlationId Identifies the same user action ")
 
 package $package;
@@ -81,8 +81,8 @@ public final class AuditLog
         $final$upperCaseType$space$name")
             #else
                 #set($argList = "$finalChannelArg$comma
-        $finalUserIdArg$comma
         $finalTenantIdArg$comma
+        $finalUserIdArg$comma
         $finalCorrelationIdArg$comma
         $final$upperCaseType$space$name")
             #end
@@ -103,8 +103,8 @@ public final class AuditLog
 $javadocParamsComment$space$name$space$desc$space")
             #else
                 #set($javadocParamsList = "$javadocParamsList$channelJavaDocsComment
-$userIdJavaDocsComment
 $tenantIdJavaDocsComment
+$userIdJavaDocsComment
 $correlationIdJavaDocsComment
 $javadocParamsComment$space$name$space$desc$space")
             #end
@@ -124,8 +124,8 @@ $javadocParamsList
     {
         final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
-        auditEventBuilder.setUser(userId);
         auditEventBuilder.setTenant(tenantId);
+        auditEventBuilder.setUser(userId);
         auditEventBuilder.setCorrelationId(correlationId);
         auditEventBuilder.setEventType("$categoryId", "$typeId");
 $eventParamsList

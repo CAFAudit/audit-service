@@ -12,6 +12,7 @@ public class ApiServiceUtil {
     private static final String ERR_MSG_DB_URL_MISSING = "The Vertica database connection URL has not been provided.";
     private static final String ERR_MSG_DB_SERVICE_CREDENTIALS_MISSING = "The credentials for the service database account have not been provided.";
     private static final String ERR_MSG_DB_LOADER_CREDENTIALS_MISSING = "The credentials for the loader database account have not been provided.";
+    public static final String TENANTID_SCHEMA_PREFIX = "account_";
 
     /**
      * Load required inputs from config.properties or environment variables.

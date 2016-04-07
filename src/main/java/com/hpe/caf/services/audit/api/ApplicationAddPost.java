@@ -105,12 +105,13 @@ public class ApplicationAddPost {
                     LOG.debug("addApplication: Modifying tenant auditing tables where necessary...");
                     for (String tenantId : tenants) {
                         String tableName = "Audit" + application;
-                        boolean tableModified = ModifyDatabaseSchema(auditAppData, databaseHelper, tenantId, tableName);
+                        String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
+                        boolean tableModified = ModifyDatabaseSchema(auditAppData, databaseHelper, tenantSchemaName, tableName);
                         if (tableModified) {
-                            LOG.debug("addApplication: Table '{}' modified...", tenantId + "." + tableName);
+                            LOG.debug("addApplication: Table '{}' modified...", tenantSchemaName + "." + tableName);
                         }
                         else {
-                            LOG.debug("addApplication: Table schema for '{}' is up to date...", tenantId + "." + tableName);
+                            LOG.debug("addApplication: Table schema for '{}' is up to date...", tenantSchemaName + "." + tableName);
                         }
                     }
                 }

@@ -96,3 +96,7 @@
 
 ##### caf-audit-scheduler-marathon-container-docker-network
 - Configures the network type of each audit scheduler container.
+
+#### caf-audit-management-service-disable
+- This is used to disable the audit management web service.
+

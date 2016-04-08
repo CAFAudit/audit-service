@@ -47,7 +47,8 @@
     "CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_CREDENTIALS": "${marathon-uris-root}/${docker-login-config}",
     "CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_FORCEPULLIMAGE": "${caf-audit-scheduler-marathon-container-docker-forcePullImage}",
     "CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_NETWORK": "${caf-audit-scheduler-marathon-container-docker-network}",
-    "CAF_AUDIT_MANAGEMENT_API_CONFIG_PATH": "${caf-audit-management-service-config-path}"
+    "CAF_AUDIT_MANAGEMENT_API_CONFIG_PATH": "${caf-audit-management-service-config-path}",
+    "CAF_AUDIT_MANAGEMENT_DISABLE": "${caf-audit-management-service-disable}"
   },
   "uris": [
     "${marathon-uris-root}/${service-config-location}/cfg_${marathon-group}_audit-management-service_KafkaAuditConfiguration",

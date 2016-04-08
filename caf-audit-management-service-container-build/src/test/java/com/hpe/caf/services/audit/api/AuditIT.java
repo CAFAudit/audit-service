@@ -13,6 +13,7 @@ import com.hpe.caf.naming.ServicePath;
 import com.hpe.caf.services.audit.client.ApiException;
 import com.hpe.caf.services.audit.client.api.ApplicationsApi;
 import com.hpe.caf.services.audit.client.api.TenantsApi;
+import com.hpe.caf.services.audit.client.model.NewTenant;
 import com.hpe.caf.util.ModuleLoader;
 import com.jcraft.jsch.*;
 import org.junit.*;
@@ -61,6 +62,8 @@ public class AuditIT {
     private static final String AUDIT_IT_DATABASE_SERVICE_USER = "caf-audit-service";
     private static final String AUDIT_IT_DATABASE_SERVICE_USER_PASSWORD = "'service'";
     private static final String AUDIT_IT_DATABASE_PSEUDOSUPERUSER_ROLE = "PSEUDOSUPERUSER";
+
+    private static final String AUDIT_IT_DATABASE_SCHEMA_PREFIX = "account_";
 
     //The audit events XML file in the test case directory must be the same events XML file used in the caf-audit-maven-plugin, see pom.xml property auditXMLConfigFile.
     private static final String testCaseDirectory = "./test-case";
@@ -276,7 +279,11 @@ public class AuditIT {
         LOG.info("Adding tenant in database...");
         List<String> applications = new ArrayList<>();
         applications.add(applicationId);
-        auditManagementTenantsApi.tenantsPost(tenantName, applications);
+
+        NewTenant newTenant = new NewTenant();
+        newTenant.setTenantId(tenantName);
+        newTenant.setApplication(applications);
+        auditManagementTenantsApi.tenantsPost(newTenant);
     }
 
 
@@ -454,7 +461,7 @@ public class AuditIT {
 
 
     private void verifyResults(final String applicationId, final String tenantId, List<HashMap<String, Object>> expectedResultSet) throws Exception {
-        DBUtil dbUtil = new DBUtil(VERTICA_HOST, AUDIT_IT_DATABASE_NAME, AUDIT_IT_DATABASE_PORT, tenantId, applicationId, VERTICA_HOST_USERNAME, AUDIT_IT_DATABASE_NAME);
+        DBUtil dbUtil = new DBUtil(VERTICA_HOST, AUDIT_IT_DATABASE_NAME, AUDIT_IT_DATABASE_PORT, AUDIT_IT_DATABASE_SCHEMA_PREFIX + tenantId, applicationId, VERTICA_HOST_USERNAME, AUDIT_IT_DATABASE_NAME);
 
         LOG.info("Writing database table rows to disk...");
         dbUtil.writeTableRowsToDisk();

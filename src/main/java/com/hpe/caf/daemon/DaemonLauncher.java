@@ -8,7 +8,7 @@ public interface DaemonLauncher {
 
         //  If CAF_MARATHON_URL environment variable present then launch via Marathon, otherwise Docker.
         if (properties.getMarathonUrl() != null) {
-            return new MarathonDaemonLauncher(properties.getMarathonUrl());
+            return new MarathonDaemonLauncher(properties);
         } else {
             return new DockerDaemonLauncher();
         }
@@ -16,7 +16,6 @@ public interface DaemonLauncher {
     }
 
     void launch(
-        final AppConfig properties,
         final String id,
         final String image,
         final String[] args

@@ -5,7 +5,6 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.client.model.HostConfig;
 import com.github.dockerjava.client.model.RestartPolicy;
 import com.github.dockerjava.jaxrs1.JaxRs1Client;
-import com.hpe.caf.services.audit.api.AppConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +14,6 @@ public final class DockerDaemonLauncher implements DaemonLauncher {
 
     @Override
     public void launch(
-        final AppConfig properties,
         final String id,
         final String image,
         final String[] args

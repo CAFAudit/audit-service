@@ -14,7 +14,7 @@ import java.util.List;
 
 public final class MarathonDaemonLauncher implements DaemonLauncher {
 
-    private static String marathonEndpoint;
+    private final AppConfig properties;
 
     private static final String ERR_MSG_MARATHON_HOST_URL_NOT_SPECIFIED = "The Marathon host has not been specified.";
     private static final String ERR_MSG_MARATHON_FAILED_TO_LAUNCH_SCHEDULER = "Failed to launch scheduler";
@@ -23,19 +23,19 @@ public final class MarathonDaemonLauncher implements DaemonLauncher {
 
     private static final Logger LOG = LoggerFactory.getLogger(MarathonDaemonLauncher.class);
 
-    public MarathonDaemonLauncher(String marathonEndpoint) {
-        this.marathonEndpoint = marathonEndpoint;
+    public MarathonDaemonLauncher(final AppConfig properties) {
+        this.properties = properties;
     }
 
     @Override
     public void launch(
-        final AppConfig properties,
         final String id,
         final String image,
         final String[] args
     ) throws Exception {
 
         //  Get Marathon specific properties.
+        String marathonEndpoint = properties.getMarathonUrl();
         String marathonCPUs = properties.getMarathonCPUs();
         String marathonMem = properties.getMarathonMem();
         String marathonInstances = "1";

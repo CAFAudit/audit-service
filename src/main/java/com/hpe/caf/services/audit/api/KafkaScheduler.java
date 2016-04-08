@@ -66,6 +66,6 @@ public class KafkaScheduler {
                 "--password", properties.getDatabaseLoaderAccountPassword()
         };
 
-        DaemonLauncher.create(properties).launch(properties, id, image, args);
+        DaemonLauncher.create(properties).launch(id, image, args);
     }
 }

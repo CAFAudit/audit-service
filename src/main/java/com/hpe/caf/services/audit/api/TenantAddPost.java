@@ -1,5 +1,6 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.services.audit.api.generated.model.NewTenant;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +22,16 @@ public class TenantAddPost {
     private static final String KAFKA_REJECT_TABLE = "kafka_rej";
     private static final String KAFKA_TARGET_TOPIC_PREFIX = "AuditEventTopic.";
     private static final String TENANTID_INVALID_CHARS_REGEX = "^[a-z0-9]*$";
-    private static final String TENANTID_SCHEMA_PREFIX = "account_";
     private static final String TRANSFORM_TEMPLATE_NAME = "AuditTransform.vm";
 
     private static final Logger LOG = LoggerFactory.getLogger(TenantAddPost.class);
 
-    public static void addTenant(String tenantId, List<String> applications) throws Exception {
+    public static void addTenant(NewTenant newTenant) throws Exception {
         try
         {
             LOG.info("addTenant: Starting...");
+
+            String tenantId = newTenant.getTenantId();
 
             //  Make sure the tenant id does not contain any invalid characters.
             if (containsInvalidCharacters(tenantId)) {
@@ -53,7 +55,7 @@ public class TenantAddPost {
 
             //  Iterate through each application, add the necessary tenant/application mapping and tenant
             //  related schema and auditing table.
-            for (String application : applications) {
+            for (String application : newTenant.getApplication()) {
 
                 //  Need to make sure that audit events XML has been registered for this application.
                 LOG.debug("addTenant: Checking audit events XML has been registered for application '{}'...",application);
@@ -76,7 +78,7 @@ public class TenantAddPost {
                         try {
                             //  Create new schema for the specified tenant and grant usage to the audit reader role.
                             LOG.debug("addTenant: Creating new database schema for tenant '{}'...", tenantId);
-                            String tenantSchemaName = TENANTID_SCHEMA_PREFIX + tenantId;
+                            String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
                             databaseHelper.createSchema(tenantSchemaName);
                             databaseHelper.grantUsageOnSchema(tenantSchemaName, properties.getDatabaseReaderRole());
 

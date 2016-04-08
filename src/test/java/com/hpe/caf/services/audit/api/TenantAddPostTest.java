@@ -1,5 +1,6 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.services.audit.api.generated.model.NewTenant;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -49,11 +50,15 @@ public class TenantAddPostTest {
         newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
+        NewTenant newTenant = new NewTenant();
+        newTenant.setTenantId("testtenant");
+
         List<String> applications = new ArrayList<>();
         applications.add("Application1");
         applications.add("Application2");
+        newTenant.setApplication(applications);
 
-        TenantAddPost.addTenant("testtenant",applications);
+        TenantAddPost.addTenant(newTenant);
 
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).doesTableExist(Mockito.anyString(),Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(2)).getEventsXMLForApp(Mockito.anyString());
@@ -84,11 +89,15 @@ public class TenantAddPostTest {
         newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
+        NewTenant newTenant = new NewTenant();
+        newTenant.setTenantId("testtenant");
+
         List<String> applications = new ArrayList<>();
         applications.add("Application1");
         applications.add("Application2");
+        newTenant.setApplication(applications);
 
-        TenantAddPost.addTenant("testtenant",applications);
+        TenantAddPost.addTenant(newTenant);
 
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).doesTableExist(Mockito.anyString(),Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(0)).getEventsXMLForApp(Mockito.anyString());
@@ -102,19 +111,28 @@ public class TenantAddPostTest {
 
     @Test(expected = BadRequestException.class)
     public void testAddTenant_Failure_InvalidTenantId_UpperCase () throws Exception {
+
+        NewTenant newTenant = new NewTenant();
+        newTenant.setTenantId("testTenant1");
+
         List<String> applications = new ArrayList<>();
         applications.add("Application1");
         applications.add("Application2");
+        newTenant.setApplication(applications);
 
-        TenantAddPost.addTenant("testTenant1",applications);
+        TenantAddPost.addTenant(newTenant);
     }
 
     @Test(expected = BadRequestException.class)
     public void testAddTenant_Failure_InvalidTenantId_Underscore () throws Exception {
+        NewTenant newTenant = new NewTenant();
+        newTenant.setTenantId("testtenant_1");
+
         List<String> applications = new ArrayList<>();
         applications.add("Application1");
         applications.add("Application2");
+        newTenant.setApplication(applications);
 
-        TenantAddPost.addTenant("testtenant_1",applications);
+        TenantAddPost.addTenant(newTenant);
     }
 }

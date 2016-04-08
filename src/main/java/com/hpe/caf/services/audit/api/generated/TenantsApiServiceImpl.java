@@ -1,6 +1,7 @@
 package com.hpe.caf.services.audit.api.generated;
 
 import com.hpe.caf.services.audit.api.TenantAddPost;
+import com.hpe.caf.services.audit.api.generated.model.NewTenant;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -10,10 +11,10 @@ import java.util.List;
 public class TenantsApiServiceImpl extends TenantsApiService {
 
     @Override
-    public Response tenantsPost(String tenantId, List<String> application, SecurityContext securityContext)
+    public Response tenantsPost(NewTenant newTenant, SecurityContext securityContext)
         throws Exception {
 
-            TenantAddPost.addTenant(tenantId, application);
+            TenantAddPost.addTenant(newTenant);
             return Response.ok().build();
     }
 }

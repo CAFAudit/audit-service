@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -27,127 +26,131 @@ public class TenantAddPost {
     private static final Logger LOG = LoggerFactory.getLogger(TenantAddPost.class);
 
     public static void addTenant(NewTenant newTenant) throws Exception {
-        try
-        {
-            LOG.info("addTenant: Starting...");
-
-            String tenantId = newTenant.getTenantId();
-
-            //  Make sure the tenant id does not contain any invalid characters.
-            if (containsInvalidCharacters(tenantId)) {
-                LOG.error("addTenant: Error - '{}'", ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
-                throw new BadRequestException(ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
-            }
-
+        try {
             //  Get app config settings.
-            LOG.debug("addTenant: Reading database connection properties...");
             AppConfig properties = ApiServiceUtil.getAppConfigProperties();
 
-            //  Get database helper instance.
-            DatabaseHelper databaseHelper = new DatabaseHelper(properties);
+            //  Only proceed if audit management web service has not been disabled.
+            if (properties.getCAFAuditManagementDisable() == null ||
+                    (properties.getCAFAuditManagementDisable() != null &&
+                     properties.getCAFAuditManagementDisable().toUpperCase().equals("FALSE"))) {
 
-            //  Make sure the AuditManagement.TenantApplications table exists before we continue.
-            boolean tableExists = databaseHelper.doesTableExist("AuditManagement","TenantApplications");
-            if (!tableExists) {
-                LOG.error("addTenant: Error - '{}'", ERR_MSG_TENANT_APPS_IS_MISSING);
-                throw new Exception(ERR_MSG_TENANT_APPS_IS_MISSING);
-            }
+                LOG.info("addTenant: Starting...");
 
-            //  Iterate through each application, add the necessary tenant/application mapping and tenant
-            //  related schema and auditing table.
-            for (String application : newTenant.getApplication()) {
+                String tenantId = newTenant.getTenantId();
 
-                //  Need to make sure that audit events XML has been registered for this application.
-                LOG.debug("addTenant: Checking audit events XML has been registered for application '{}'...",application);
-                String auditConfigXMLString = databaseHelper.getEventsXMLForApp(application);
-                if (!Objects.equals("", auditConfigXMLString)) {
+                //  Make sure the tenant id does not contain any invalid characters.
+                if (containsInvalidCharacters(tenantId)) {
+                    LOG.error("addTenant: Error - '{}'", ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
+                    throw new BadRequestException(ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
+                }
 
-                    //  Audit events XML for this application has been found. Now check if tenantId/application
-                    //  mapping already exists in AuditManagement.TenantApplications.
-                    LOG.debug("addTenant: Checking if AuditManagement.TenantApplications row exists for tenant '{}', application '{}'...", tenantId, application);
-                    boolean rowExists = databaseHelper.doesTenantApplicationsRowExist(tenantId,application);
-                    if (!rowExists){
+                //  Get database helper instance.
+                DatabaseHelper databaseHelper = new DatabaseHelper(properties);
 
-                        LOG.info("addTenant: Starting database changes for tenant '{}', application '{}'...", tenantId, application);
+                //  Make sure the AuditManagement.TenantApplications table exists before we continue.
+                boolean tableExists = databaseHelper.doesTableExist("AuditManagement", "TenantApplications");
+                if (!tableExists) {
+                    LOG.error("addTenant: Error - '{}'", ERR_MSG_TENANT_APPS_IS_MISSING);
+                    throw new Exception(ERR_MSG_TENANT_APPS_IS_MISSING);
+                }
 
-                        //  Row does not yet exists, so create entry in AuditManagement.TenantApplications for
-                        //  tenantId/application.
-                        LOG.debug("addTenant: Creating new row in AuditManagement.TenantApplications for tenant '{}', application '{}'...", tenantId, application);
-                        databaseHelper.insertTenantApplicationsRow(tenantId,application);
+                //  Iterate through each application, add the necessary tenant/application mapping and tenant
+                //  related schema and auditing table.
+                for (String application : newTenant.getApplication()) {
 
-                        try {
-                            //  Create new schema for the specified tenant and grant usage to the audit reader role.
-                            LOG.debug("addTenant: Creating new database schema for tenant '{}'...", tenantId);
-                            String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
-                            databaseHelper.createSchema(tenantSchemaName);
-                            databaseHelper.grantUsageOnSchema(tenantSchemaName, properties.getDatabaseReaderRole());
+                    //  Need to make sure that audit events XML has been registered for this application.
+                    LOG.debug("addTenant: Checking audit events XML has been registered for application '{}'...", application);
+                    String auditConfigXMLString = databaseHelper.getEventsXMLForApp(application);
+                    if (!Objects.equals("", auditConfigXMLString)) {
 
-                            InputStream auditConfigXMLStream = new ByteArrayInputStream(auditConfigXMLString.getBytes(StandardCharsets.UTF_8));
+                        //  Audit events XML for this application has been found. Now check if tenantId/application
+                        //  mapping already exists in AuditManagement.TenantApplications.
+                        LOG.debug("addTenant: Checking if AuditManagement.TenantApplications row exists for tenant '{}', application '{}'...", tenantId, application);
+                        boolean rowExists = databaseHelper.doesTenantApplicationsRowExist(tenantId, application);
+                        if (!rowExists) {
 
-                            //  Create <tenantId>.Audit<application> table based on the audit events XML.
-                            LOG.debug("addTenant: Creating new auditing table for tenant '{}', application '{}'...", tenantId, application);
-                            TransformHelper transform = new TransformHelper();
-                            String createTableSQL = transform.doCreateTableTransform(auditConfigXMLStream,TRANSFORM_TEMPLATE_NAME,tenantSchemaName);
-                            databaseHelper.createTable(createTableSQL);
+                            LOG.info("addTenant: Starting database changes for tenant '{}', application '{}'...", tenantId, application);
 
-                            //  Grant SELECT on the new table to the audit reader role.
-                            String tableName = StringUtils.substringBetween(createTableSQL, "CREATE TABLE IF NOT EXISTS ", "(");
-                            databaseHelper.grantSelectOnTable(tableName, properties.getDatabaseReaderRole());
+                            //  Row does not yet exists, so create entry in AuditManagement.TenantApplications for
+                            //  tenantId/application.
+                            LOG.debug("addTenant: Creating new row in AuditManagement.TenantApplications for tenant '{}', application '{}'...", tenantId, application);
+                            databaseHelper.insertTenantApplicationsRow(tenantId, application);
 
-                            LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
+                            try {
+                                //  Create new schema for the specified tenant and grant usage to the audit reader role.
+                                LOG.debug("addTenant: Creating new database schema for tenant '{}'...", tenantId);
+                                String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
+                                databaseHelper.createSchema(tenantSchemaName);
+                                databaseHelper.grantUsageOnSchema(tenantSchemaName, properties.getDatabaseReaderRole());
 
-                            //  Create Kafka scheduler (per tenant) and associate a topic with that scheduler.
-                            String schedulerName = tenantSchemaName + KAFKA_SCHEDULER_NAME_SUFFIX;
+                                InputStream auditConfigXMLStream = new ByteArrayInputStream(auditConfigXMLString.getBytes(StandardCharsets.UTF_8));
 
-                            //  If the specified scheduler name already exists, then ignore creation step.
-                            LOG.debug("addTenant: Checking if Vertica scheduler '{}' has already been created...", schedulerName);
-                            boolean schemaExists = databaseHelper.doesSchemaExist(schedulerName);
-                            if (!schemaExists) {
-                                LOG.info("addTenant: Creating Kafka scheduler...");
-                                KafkaScheduler.createScheduler(properties, schedulerName);
+                                //  Create <tenantId>.Audit<application> table based on the audit events XML.
+                                LOG.debug("addTenant: Creating new auditing table for tenant '{}', application '{}'...", tenantId, application);
+                                TransformHelper transform = new TransformHelper();
+                                String createTableSQL = transform.doCreateTableTransform(auditConfigXMLStream, TRANSFORM_TEMPLATE_NAME, tenantSchemaName);
+                                databaseHelper.createTable(createTableSQL);
 
-                                LOG.info("addTenant: Launching Kafka scheduler...");
-                                KafkaScheduler.launchScheduler(properties, tenantId, schedulerName);
+                                //  Grant SELECT on the new table to the audit reader role.
+                                String tableName = StringUtils.substringBetween(createTableSQL, "CREATE TABLE IF NOT EXISTS ", "(");
+                                databaseHelper.grantSelectOnTable(tableName, properties.getDatabaseReaderRole());
 
-                                // Granting USAGE on new schema to the web service account so they can check existence next time round.
-                                databaseHelper.grantUsageOnAuditSchedulerSchema(schedulerName, properties.getDatabaseServiceAccount());
+                                LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
+
+                                //  Create Kafka scheduler (per tenant) and associate a topic with that scheduler.
+                                String schedulerName = tenantSchemaName + KAFKA_SCHEDULER_NAME_SUFFIX;
+
+                                //  If the specified scheduler name already exists, then ignore creation step.
+                                LOG.debug("addTenant: Checking if Vertica scheduler '{}' has already been created...", schedulerName);
+                                boolean schemaExists = databaseHelper.doesSchemaExist(schedulerName);
+                                if (!schemaExists) {
+                                    LOG.info("addTenant: Creating Kafka scheduler...");
+                                    KafkaScheduler.createScheduler(properties, schedulerName);
+
+                                    LOG.info("addTenant: Launching Kafka scheduler...");
+                                    KafkaScheduler.launchScheduler(properties, tenantId, schedulerName);
+
+                                    // Granting USAGE on new schema to the web service account so they can check existence next time round.
+                                    databaseHelper.grantUsageOnAuditSchedulerSchema(schedulerName, properties.getDatabaseServiceAccount());
+                                }
+
+                                String targetTable = new StringBuilder()
+                                        .append(tenantSchemaName)
+                                        .append(".")
+                                        .append(KAFKA_TARGET_TABLE_PREFIX)
+                                        .append(application)
+                                        .toString();
+
+                                String rejectionTable = new StringBuilder()
+                                        .append(tenantSchemaName)
+                                        .append(".")
+                                        .append(KAFKA_REJECT_TABLE)
+                                        .toString();
+
+                                String targetTopic = new StringBuilder()
+                                        .append(KAFKA_TARGET_TOPIC_PREFIX)
+                                        .append(application)
+                                        .append(".")
+                                        .append(tenantId)
+                                        .toString();
+
+                                LOG.info("addTenant: Associating Kafka topic with the scheduler...");
+                                KafkaScheduler.associateTopic(properties, schedulerName, targetTable, rejectionTable, targetTopic);
+
+                            } catch (Exception ex) {
+                                //  Something unexpected has gone wrong. Delete tenant/application mapping to facilitate retry.
+                                databaseHelper.deleteTenantApplicationsRow(tenantId, application);
+                                throw ex;
                             }
-
-                            String targetTable = new StringBuilder()
-                                    .append(tenantSchemaName)
-                                    .append(".")
-                                    .append(KAFKA_TARGET_TABLE_PREFIX)
-                                    .append(application)
-                                    .toString();
-
-                            String rejectionTable = new StringBuilder()
-                                    .append(tenantSchemaName)
-                                    .append(".")
-                                    .append(KAFKA_REJECT_TABLE)
-                                    .toString();
-
-                            String targetTopic = new StringBuilder()
-                                    .append(KAFKA_TARGET_TOPIC_PREFIX)
-                                    .append(application)
-                                    .append(".")
-                                    .append(tenantId)
-                                    .toString();
-
-                            LOG.info("addTenant: Associating Kafka topic with the scheduler...");
-                            KafkaScheduler.associateTopic(properties, schedulerName, targetTable, rejectionTable, targetTopic);
-  
-                        } catch (Exception ex) {
-                            //  Something unexpected has gone wrong. Delete tenant/application mapping to facilitate retry.
-                            databaseHelper.deleteTenantApplicationsRow(tenantId,application);
-                            throw ex;
                         }
                     }
                 }
-            }
 
-            LOG.info("addTenant: Done.");
+                LOG.info("addTenant: Done.");
+            }
         }
-        catch( Exception e ) {
+        catch(Exception e){
             LOG.error("Error - '{}'", e.toString());
             throw e;
         }

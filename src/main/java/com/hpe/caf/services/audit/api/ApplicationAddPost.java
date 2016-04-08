@@ -38,91 +38,93 @@ public class ApplicationAddPost {
     public static void addApplication(InputStream auditXMLConfig) throws Exception {
         try
         {
-            LOG.info("addApplication: Starting...");
+            //  Get app config settings.
+            AppConfig properties = ApiServiceUtil.getAppConfigProperties();
 
-            //  InputStream will need read multiple times, so convert to byte array first.
-            byte[] auditXMLConfigBytes = IOUtils.toByteArray(auditXMLConfig);
+            //  Only proceed if audit management web service has not been disabled.
+            if (properties.getCAFAuditManagementDisable() == null ||
+                    (properties.getCAFAuditManagementDisable() != null &&
+                            properties.getCAFAuditManagementDisable().toUpperCase().equals("FALSE"))) {
 
-            //  Check validity of XML and throw error if invalid.
-            ByteArrayInputStream is = new ByteArrayInputStream(auditXMLConfigBytes);
-            LOG.debug("addApplication: Checking validity of audit events XML...");
-            boolean isValid = isXMLValid(is,TRANSFORM_XSD_FILEPATH);
-            if (!isValid) {
-                LOG.error("addApplication: Error - '{}'", ERR_MSG_XML_NOT_VALID);
-                throw new BadRequestException(ERR_MSG_XML_NOT_VALID);
-            }
+                LOG.info("addApplication: Starting...");
 
-            //  Read the application event data xml file - XML/Java binding.
-            AuditedApplication auditAppData;
-            try {
-                ByteArrayInputStream bais = new ByteArrayInputStream(auditXMLConfigBytes);
-                LOG.debug("addApplication: Binding audit events XML to AuditedApplication...");
-                auditAppData = JAXBUnmarshal.bindAuditEventsXml(bais);
-            } catch (JAXBException e) {
-                LOG.error("addApplication: Error - '{}'", ERR_MSG_XML_READ_FAILURE);
-                throw new Exception(ERR_MSG_XML_READ_FAILURE);
-            }
+                //  InputStream will need read multiple times, so convert to byte array first.
+                byte[] auditXMLConfigBytes = IOUtils.toByteArray(auditXMLConfig);
 
-            //  Get ApplicationId from the application event data object.
-            LOG.debug("addApplication: Getting ApplicationId from audit events XML...");
-            String application = auditAppData.getApplicationId();
-            if (isNotNullOrEmpty(application)) {
-                LOG.info("addApplication: ApplicationId is '{}'...",application);
-
-                //  Get app config settings.
-                LOG.debug("addApplication: Reading database connection properties...");
-                AppConfig properties = ApiServiceUtil.getAppConfigProperties();
-
-                //  Get database helper instance.
-                DatabaseHelper databaseHelper = new DatabaseHelper(properties);
-
-                //  Ensure the AuditManagement database schema and tables are in place.
-                LOG.debug("addApplication: Creating Audit Management database schema if necessary...");
-                databaseHelper.createAuditManagementSchema(properties.getDatabaseReaderRole());
-
-                //  Check if row already exists in AuditManagement.ApplicationEvents for the specified application
-                String auditXMLConfigString = new String(auditXMLConfigBytes);
-                auditXMLConfigString = auditXMLConfigString.replaceAll(">\\s*<", "><").replace("\r\n","");
-
-                LOG.debug("addApplication: Checking if AuditManagement.ApplicationEvents row already exists for application '{}'...",application);
-                boolean rowExists = databaseHelper.doesApplicationEventsRowExist(application);
-                if (!rowExists){
-                    LOG.debug("addApplication: Creating new row in AuditManagement.ApplicationEvents for application '{}'...",application);
-                    databaseHelper.insertApplicationEventsRow(application,auditXMLConfigString);
+                //  Check validity of XML and throw error if invalid.
+                ByteArrayInputStream is = new ByteArrayInputStream(auditXMLConfigBytes);
+                LOG.debug("addApplication: Checking validity of audit events XML...");
+                boolean isValid = isXMLValid(is, TRANSFORM_XSD_FILEPATH);
+                if (!isValid) {
+                    LOG.error("addApplication: Error - '{}'", ERR_MSG_XML_NOT_VALID);
+                    throw new BadRequestException(ERR_MSG_XML_NOT_VALID);
                 }
-                else {
 
-                    //  The application has already been registered. So update ApplicationEvents
-                    //  table with audit events XML changes.
-                    LOG.debug("addApplication: Updating row in AuditManagement.ApplicationEvents for application '{}'...",application);
-                    databaseHelper.updateApplicationEventsRow(application,auditXMLConfigString);
+                //  Read the application event data xml file - XML/Java binding.
+                AuditedApplication auditAppData;
+                try {
+                    ByteArrayInputStream bais = new ByteArrayInputStream(auditXMLConfigBytes);
+                    LOG.debug("addApplication: Binding audit events XML to AuditedApplication...");
+                    auditAppData = JAXBUnmarshal.bindAuditEventsXml(bais);
+                } catch (JAXBException e) {
+                    LOG.error("addApplication: Error - '{}'", ERR_MSG_XML_READ_FAILURE);
+                    throw new Exception(ERR_MSG_XML_READ_FAILURE);
+                }
 
-                    //  Identify all tenants currently associated with the application.
-                    LOG.debug("addApplication: Getting list of tenants for application '{}'...",application);
-                    List<String> tenants = databaseHelper.getTenantsForApp(application);
+                //  Get ApplicationId from the application event data object.
+                LOG.debug("addApplication: Getting ApplicationId from audit events XML...");
+                String application = auditAppData.getApplicationId();
+                if (isNotNullOrEmpty(application)) {
+                    LOG.info("addApplication: ApplicationId is '{}'...", application);
 
-                    //  For each tenant, modify table schema if necessary.
-                    LOG.debug("addApplication: Modifying tenant auditing tables where necessary...");
-                    for (String tenantId : tenants) {
-                        String tableName = "Audit" + application;
-                        String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
-                        boolean tableModified = ModifyDatabaseSchema(auditAppData, databaseHelper, tenantSchemaName, tableName);
-                        if (tableModified) {
-                            LOG.debug("addApplication: Table '{}' modified...", tenantSchemaName + "." + tableName);
-                        }
-                        else {
-                            LOG.debug("addApplication: Table schema for '{}' is up to date...", tenantSchemaName + "." + tableName);
+                    //  Get database helper instance.
+                    DatabaseHelper databaseHelper = new DatabaseHelper(properties);
+
+                    //  Ensure the AuditManagement database schema and tables are in place.
+                    LOG.debug("addApplication: Creating Audit Management database schema if necessary...");
+                    databaseHelper.createAuditManagementSchema(properties.getDatabaseReaderRole());
+
+                    //  Check if row already exists in AuditManagement.ApplicationEvents for the specified application
+                    String auditXMLConfigString = new String(auditXMLConfigBytes);
+                    auditXMLConfigString = auditXMLConfigString.replaceAll(">\\s*<", "><").replace("\r\n", "");
+
+                    LOG.debug("addApplication: Checking if AuditManagement.ApplicationEvents row already exists for application '{}'...", application);
+                    boolean rowExists = databaseHelper.doesApplicationEventsRowExist(application);
+                    if (!rowExists) {
+                        LOG.debug("addApplication: Creating new row in AuditManagement.ApplicationEvents for application '{}'...", application);
+                        databaseHelper.insertApplicationEventsRow(application, auditXMLConfigString);
+                    } else {
+
+                        //  The application has already been registered. So update ApplicationEvents
+                        //  table with audit events XML changes.
+                        LOG.debug("addApplication: Updating row in AuditManagement.ApplicationEvents for application '{}'...", application);
+                        databaseHelper.updateApplicationEventsRow(application, auditXMLConfigString);
+
+                        //  Identify all tenants currently associated with the application.
+                        LOG.debug("addApplication: Getting list of tenants for application '{}'...", application);
+                        List<String> tenants = databaseHelper.getTenantsForApp(application);
+
+                        //  For each tenant, modify table schema if necessary.
+                        LOG.debug("addApplication: Modifying tenant auditing tables where necessary...");
+                        for (String tenantId : tenants) {
+                            String tableName = "Audit" + application;
+                            String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
+                            boolean tableModified = ModifyDatabaseSchema(auditAppData, databaseHelper, tenantSchemaName, tableName);
+                            if (tableModified) {
+                                LOG.debug("addApplication: Table '{}' modified...", tenantSchemaName + "." + tableName);
+                            } else {
+                                LOG.debug("addApplication: Table schema for '{}' is up to date...", tenantSchemaName + "." + tableName);
+                            }
                         }
                     }
+                    LOG.info("addApplication: Database changes complete for application '{}'...", application);
+                } else {
+                    LOG.debug("addApplication: ApplicationId not found. Nothing to be done therefore...");
+                    throw new BadRequestException(ERR_MSG_XML_APPID_VALUE_MISSING);
                 }
-                LOG.info("addApplication: Database changes complete for application '{}'...",application);
-            }
-            else {
-                LOG.debug("addApplication: ApplicationId not found. Nothing to be done therefore...");
-                throw new BadRequestException(ERR_MSG_XML_APPID_VALUE_MISSING);
-            }
 
-            LOG.info("addApplication: Done.");
+                LOG.info("addApplication: Done.");
+            }
         }
         catch( Exception e ) {
             LOG.error("addApplication: Error - {}", e.toString());

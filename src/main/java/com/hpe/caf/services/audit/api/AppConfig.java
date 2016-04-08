@@ -57,4 +57,5 @@ public class AppConfig {
 
     public String getMarathonUrl(){ return environment.getProperty("CAF_MARATHON_URL"); }
 
+    public String getCAFAuditManagementDisable(){ return environment.getProperty("CAF_AUDIT_MANAGEMENT_DISABLE"); }
 }

@@ -128,18 +128,12 @@ paths:
         - Tenants
       summary: Adds a new tenant
       parameters:
-        - name: tenantId
-          type: string
-          in: query
+        - name: NewTenant
+          in: body
           required: true
-          description: Identifies the tenant.
-        - name: application
-          type: array
-          items:
-            type: string
-          in: query
-          required: true
-          description: Identifies the application(s) that the tenant is to be registered with.
+          description: Identifies the tenant and the application(s) that the tenant is to be registered with.
+          schema:
+            $ref: '#/definitions/NewTenant'
       responses:
         200:
           description: Ok
@@ -147,3 +141,15 @@ paths:
           description: Bad Request (missing database connection properties or the `tenantId` parameter contains invalid characters)
         500:
           description: Internal server error
+definitions:
+  NewTenant:
+    required:
+      - tenantId
+      - application
+    properties:
+      tenantId:
+        type: string
+      application:
+        type: array
+        items:
+          type: string

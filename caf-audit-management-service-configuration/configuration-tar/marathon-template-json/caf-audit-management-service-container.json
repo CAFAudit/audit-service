@@ -5,7 +5,7 @@
   "instances": "${caf-audit-management-service-instances}",
   "container": {
     "docker": {
-      "image": "${docker-registry}/caf/caf-audit-management-service:${caf-audit-management-service-version}",
+      "image": "${docker-registry}/caf/audit-management-service:${caf-audit-management-service-version}",
       "network": "BRIDGE",
       "portMappings": [
         {

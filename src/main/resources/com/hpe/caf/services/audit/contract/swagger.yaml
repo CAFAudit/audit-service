@@ -89,7 +89,13 @@ info:
 
     `CAF_MARATHON_URL` - the endpoint of Marathon REST API.
 
-    Docker, Kafka, Marathon and Vertica properties can be provided through system environment variables or can be collectively
+    ### Disable Audit Management Web Service
+
+    The Audit Management Web Service can be disabled by setting the following property to true:
+
+    `CAF_AUDIT_MANAGEMENT_DISABLE`
+
+    Docker, Kafka, Marathon, Vertica and web service disablement properties can be provided through system environment variables or can be collectively
     initialized in a config.properties file with a new system environment variable created,
     `CAF_AUDIT_MANAGEMENT_API_CONFIG_PATH`, which points to the directory containing the properties
     file.

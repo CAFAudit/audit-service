@@ -16,7 +16,7 @@ public class TenantAddPost {
 
     private static final String ERR_MSG_TENANT_APPS_IS_MISSING = "The AuditManagement.TenantApplications table does not exist.";
     private static final String ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS = "The tenantId contains invalid characters (allowed: lowercase letters and digits).";
-    private static final String KAFKA_SCHEDULER_NAME_SUFFIX = "AuditScheduler";
+    private static final String KAFKA_SCHEDULER_NAME_PREFIX = "auditscheduler_";
     private static final String KAFKA_TARGET_TABLE_PREFIX = "Audit";
     private static final String KAFKA_REJECT_TABLE = "kafka_rej";
     private static final String KAFKA_TARGET_TOPIC_PREFIX = "AuditEventTopic.";
@@ -99,7 +99,7 @@ public class TenantAddPost {
                                 LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
 
                                 //  Create Kafka scheduler (per tenant) and associate a topic with that scheduler.
-                                String schedulerName = tenantSchemaName + KAFKA_SCHEDULER_NAME_SUFFIX;
+                                String schedulerName = KAFKA_SCHEDULER_NAME_PREFIX + tenantId;
 
                                 //  If the specified scheduler name already exists, then ignore creation step.
                                 LOG.debug("addTenant: Checking if Vertica scheduler '{}' has already been created...", schedulerName);

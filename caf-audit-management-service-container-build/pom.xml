@@ -363,7 +363,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <registry>${docker.dev.repo}</registry>
                     <verbose>true</verbose>
                     <autoPull>on</autoPull>
                     <logDate>default</logDate>

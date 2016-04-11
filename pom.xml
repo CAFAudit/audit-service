@@ -30,7 +30,7 @@
 
 
     <properties>
-        <caf-audit-management-service.container.name>caf/audit-management-service:${project.version}</caf-audit-management-service.container.name>
+        <caf-audit-management-service.container.name>${docker.dev.repo}/caf/audit-management-service:${project.version}</caf-audit-management-service.container.name>
         <version.major>1-SNAPSHOT</version.major>
         <version.major.minor>${project.version}</version.major.minor>
         <tomcatBaseImage>tomcat:jre8</tomcatBaseImage>

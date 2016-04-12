@@ -5,6 +5,7 @@ import com.hpe.caf.auditing.schema.AuditEventParam;
 import com.hpe.caf.auditing.schema.AuditEventParamType;
 import com.hpe.caf.auditing.schema.AuditedApplication;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -52,6 +53,19 @@ public class ApplicationAddPostTest {
             "</AuditedApplication>\n" +
             "\n";
 
+    private HashMap<String, String> newEnv;
+
+    @Before
+    public void setup() throws Exception {
+        newEnv  = new HashMap<>();
+        newEnv.put("CAF_DATABASE_URL","testUrl");
+        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT","testServiceUser");
+        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD","testPassword");
+        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT","testLoaderUser");
+        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD","testPassword");
+        newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
+    }
+
     @Test
     public void testAddPost_Success_RegisterApplication () throws Exception {
 
@@ -69,13 +83,6 @@ public class ApplicationAddPostTest {
         PowerMockito.whenNew(DatabaseHelper.class).withArguments(Mockito.any()).thenReturn(mockDatabaseHelper);
 
         //  Set-up test database connection properties.
-        HashMap<String, String> newEnv  = new HashMap<>();
-        newEnv.put("CAF_DATABASE_URL","testUrl");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT","testServiceUser");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT","testLoaderUser");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         //  Test successful run of applications endpoint.
@@ -111,13 +118,6 @@ public class ApplicationAddPostTest {
         PowerMockito.whenNew(DatabaseHelper.class).withArguments(Mockito.any()).thenReturn(mockDatabaseHelper);
 
         //  Set-up test database connection properties.
-        HashMap<String, String> newEnv  = new HashMap<>();
-        newEnv.put("CAF_DATABASE_URL","testUrl");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT","testServiceUser");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT","testLoaderUser");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         //  Test successful run of applications endpoint.
@@ -162,6 +162,9 @@ public class ApplicationAddPostTest {
                 "</AuditedApplication>\n" +
                 "\n";
 
+        //  Set-up test database connection properties.
+        TestUtil.setSystemEnvironmentFields(newEnv);
+
         InputStream auditConfigXMLStream = new ByteArrayInputStream(INVALID_AUDIT_EVENTS_XML.getBytes(StandardCharsets.UTF_8));
         ApplicationAddPost.addApplication(auditConfigXMLStream);
         auditConfigXMLStream.close();
@@ -175,6 +178,9 @@ public class ApplicationAddPostTest {
         PowerMockito.mockStatic(JAXBUnmarshal.class);
         PowerMockito.when(JAXBUnmarshal.bindAuditEventsXml(Mockito.any()))
                 .thenThrow(new JAXBException("Test"));
+
+        //  Set-up test database connection properties.
+        TestUtil.setSystemEnvironmentFields(newEnv);
 
         //  Test expected failure run due to invalid XML.
         InputStream auditConfigXMLStream = new ByteArrayInputStream(AUDIT_EVENTS_XML.getBytes(StandardCharsets.UTF_8));
@@ -192,11 +198,37 @@ public class ApplicationAddPostTest {
         PowerMockito.when(JAXBUnmarshal.bindAuditEventsXml(Mockito.any()))
                 .thenReturn(auditedApp);
 
+        //  Set-up test database connection properties.
+        TestUtil.setSystemEnvironmentFields(newEnv);
+
         //  Test expected failure run due to invalid XML.
         InputStream auditConfigXMLStream = new ByteArrayInputStream(AUDIT_EVENTS_XML.getBytes(StandardCharsets.UTF_8));
         ApplicationAddPost.addApplication(auditConfigXMLStream);
         auditConfigXMLStream.close();
 
+    }
+
+    @Test
+    public void testAddPost_Success_WebServiceDisabled () throws Exception {
+
+        //  Mock DatabaseHelper calls.
+        DatabaseHelper mockDatabaseHelper = Mockito.mock(DatabaseHelper.class);
+        Mockito.doNothing().when(mockDatabaseHelper).createAuditManagementSchema(Mockito.anyString());
+        Mockito.when(mockDatabaseHelper.doesApplicationEventsRowExist(Mockito.anyString())).thenReturn(false);
+        Mockito.doNothing().when(mockDatabaseHelper).insertApplicationEventsRow(Mockito.anyString(),Mockito.anyString());
+        PowerMockito.whenNew(DatabaseHelper.class).withArguments(Mockito.any()).thenReturn(mockDatabaseHelper);
+
+        //  Set-up test database connection properties.
+        newEnv.put("CAF_AUDIT_MANAGEMENT_DISABLE","true");
+        TestUtil.setSystemEnvironmentFields(newEnv);
+
+        //  Test successful run of applications endpoint.
+        InputStream auditConfigXMLStream = new ByteArrayInputStream(AUDIT_EVENTS_XML.getBytes(StandardCharsets.UTF_8));
+        ApplicationAddPost.addApplication(auditConfigXMLStream);
+
+        Mockito.verify(mockDatabaseHelper, Mockito.times(0)).createAuditManagementSchema(Mockito.anyString());
+        Mockito.verify(mockDatabaseHelper, Mockito.times(0)).doesApplicationEventsRowExist(Mockito.anyString());
+        Mockito.verify(mockDatabaseHelper, Mockito.times(0)).insertApplicationEventsRow(Mockito.anyString(),Mockito.anyString());
     }
 
     private AuditedApplication getAuditedApplication (String applicationId) throws Exception {
@@ -221,36 +253,6 @@ public class ApplicationAddPostTest {
         aa.setAuditEvents(aes);
 
         return aa;
-    }
-
-    @Test
-    public void testAddPost_Success_WebServiceDisabled () throws Exception {
-
-        //  Mock DatabaseHelper calls.
-        DatabaseHelper mockDatabaseHelper = Mockito.mock(DatabaseHelper.class);
-        Mockito.doNothing().when(mockDatabaseHelper).createAuditManagementSchema(Mockito.anyString());
-        Mockito.when(mockDatabaseHelper.doesApplicationEventsRowExist(Mockito.anyString())).thenReturn(false);
-        Mockito.doNothing().when(mockDatabaseHelper).insertApplicationEventsRow(Mockito.anyString(),Mockito.anyString());
-        PowerMockito.whenNew(DatabaseHelper.class).withArguments(Mockito.any()).thenReturn(mockDatabaseHelper);
-
-        //  Set-up test database connection properties.
-        HashMap<String, String> newEnv  = new HashMap<>();
-        newEnv.put("CAF_DATABASE_URL","testUrl");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT","testServiceUser");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT","testLoaderUser");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
-        newEnv.put("CAF_AUDIT_MANAGEMENT_DISABLE","true");
-        TestUtil.setSystemEnvironmentFields(newEnv);
-
-        //  Test successful run of applications endpoint.
-        InputStream auditConfigXMLStream = new ByteArrayInputStream(AUDIT_EVENTS_XML.getBytes(StandardCharsets.UTF_8));
-        ApplicationAddPost.addApplication(auditConfigXMLStream);
-
-        Mockito.verify(mockDatabaseHelper, Mockito.times(0)).createAuditManagementSchema(Mockito.anyString());
-        Mockito.verify(mockDatabaseHelper, Mockito.times(0)).doesApplicationEventsRowExist(Mockito.anyString());
-        Mockito.verify(mockDatabaseHelper, Mockito.times(0)).insertApplicationEventsRow(Mockito.anyString(),Mockito.anyString());
     }
 
 }

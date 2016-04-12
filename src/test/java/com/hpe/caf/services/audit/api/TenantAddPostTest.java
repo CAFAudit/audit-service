@@ -1,6 +1,7 @@
 package com.hpe.caf.services.audit.api;
 
 import com.hpe.caf.services.audit.api.generated.model.NewTenant;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -15,6 +16,19 @@ import java.util.List;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({TenantAddPost.class,KafkaScheduler.class})
 public class TenantAddPostTest {
+
+    private HashMap<String, String> newEnv;
+
+    @Before
+    public void setup() throws Exception {
+        newEnv  = new HashMap<>();
+        newEnv.put("CAF_DATABASE_URL","testUrl");
+        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT","testServiceUser");
+        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD","testPassword");
+        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT","testLoaderUser");
+        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD","testPassword");
+        newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
+    }
 
     @Test
     public void testAddTenant_Success () throws Exception {
@@ -41,13 +55,6 @@ public class TenantAddPostTest {
         PowerMockito.doNothing().when(KafkaScheduler.class, "associateTopic", Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
 
         //  Set-up test database connection properties.
-        HashMap<String, String> newEnv  = new HashMap<>();
-        newEnv.put("CAF_DATABASE_URL","testUrl");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT","testServiceUser");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT","testLoaderUser");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         NewTenant newTenant = new NewTenant();
@@ -96,14 +103,8 @@ public class TenantAddPostTest {
         PowerMockito.doNothing().when(KafkaScheduler.class, "associateTopic", Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
 
         //  Set-up test database connection properties.
-        HashMap<String, String> newEnv  = new HashMap<>();
-        newEnv.put("CAF_DATABASE_URL","testUrl");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT","testServiceUser");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT","testLoaderUser");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
         newEnv.put("CAF_AUDIT_MANAGEMENT_DISABLE","true");
+        TestUtil.setSystemEnvironmentFields(newEnv);
 
         TestUtil.setSystemEnvironmentFields(newEnv);
 
@@ -137,13 +138,6 @@ public class TenantAddPostTest {
         PowerMockito.whenNew(DatabaseHelper.class).withArguments(Mockito.any()).thenReturn(mockDatabaseHelper);
 
         //  Set-up test database connection properties.
-        HashMap<String, String> newEnv  = new HashMap<>();
-        newEnv.put("CAF_DATABASE_URL","testUrl");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT","testServiceUser");
-        newEnv.put("CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT","testLoaderUser");
-        newEnv.put("CAF_DATABASE_LOADER_ACCOUNT_PASSWORD","testPassword");
-        newEnv.put("CAF_DATABASE_READER_ROLE","testReaderRole");
         TestUtil.setSystemEnvironmentFields(newEnv);
 
         NewTenant newTenant = new NewTenant();
@@ -177,6 +171,9 @@ public class TenantAddPostTest {
         applications.add("Application2");
         newTenant.setApplication(applications);
 
+        //  Set-up test database connection properties.
+        TestUtil.setSystemEnvironmentFields(newEnv);
+
         TenantAddPost.addTenant(newTenant);
     }
 
@@ -189,6 +186,9 @@ public class TenantAddPostTest {
         applications.add("Application1");
         applications.add("Application2");
         newTenant.setApplication(applications);
+
+        //  Set-up test database connection properties.
+        TestUtil.setSystemEnvironmentFields(newEnv);
 
         TenantAddPost.addTenant(newTenant);
     }

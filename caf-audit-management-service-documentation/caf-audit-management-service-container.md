@@ -7,52 +7,52 @@ It uses the java:8 base image.
 
 #### Environment Variables
 
-##### CAF_DATABASE_URL
+##### CAF\_DATABASE\_URL
 The connection string URL used by the CAF Audit Management Service to connect to the Vertica database. This URL has the format  jdbc:vertica://VerticaHost:portNumber/databaseName
 
-##### CAF_DATABASE_SERVICE_ACCOUNT
+##### CAF\_DATABASE\_SERVICE\_ACCOUNT
 The username of the Vertica database account used by the CAF Audit Management Service to access the Vertica database.
 
-##### CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD
+##### CAF\_DATABASE\_SERVICE\_ACCOUNT\_PASSWORD
 The password of the Vertica database account used by the CAF Audit Management Service to access the Vertica database.
 
-##### CAF_DATABASE_LOADER_ACCOUNT
+##### CAF\_DATABASE\_LOADER\_ACCOUNT
 The username of the Vertica database account used to configure the loading of data from Kafka into Vertica.
 
-##### CAF_DATABASE_LOADER_ACCOUNT_PASSWORD
+##### CAF\_DATABASE\_LOADER\_ACCOUNT\_PASSWORD
 The password of the Vertica database account used to configure the loading of data from Kafka into Vertica.
 
-##### CAF_DATABASE_READER_ROLE
+##### CAF\_DATABASE\_READER\_ROLE
 The name of the Vertica database role that will be used for reporting users.
 
-##### CAF_KAFKA_BROKERS
+##### CAF\_KAFKA\_BROKERS
 The address (HOST:PORT) of the Kafka broker.
 
-##### CAF_AUDIT_MANAGEMENT_CLI
+##### CAF\_AUDIT\_MANAGEMENT\_CLI
 The Docker image that contains the Audit Management utility for configuring/launching Vertica schedulers. e.g. rh7-artifactory.hpswlabs.hp.com:8443/caf/audit:1.0
 
-##### CAF_MARATHON_URL
+##### CAF\_MARATHON\_URL
 The endpoint of Marathon REST API.
 
-##### CAF_AUDIT_SCHEDULER_MARATHON_CPUS
+##### CAF\_AUDIT\_SCHEDULER\_MARATHON\_CPUS
 The amount of CPU of each audit scheduler container.
 
-##### CAF_AUDIT_SCHEDULER_MARATHON_MEM
+##### CAF\_AUDIT\_SCHEDULER\_MARATHON\_MEM
 The amount of RAM of each audit scheduler container.
 
-##### CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_CREDENTIALS
+##### CAF\_AUDIT\_SCHEDULER\_MARATHON\_CONTAINER\_DOCKER\_CREDENTIALS
 This is the docker login credentials file.
 
-##### CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_FORCEPULLIMAGE
+##### CAF\_AUDIT\_SCHEDULER\_MARATHON\_CONTAINER\_DOCKER\_FORCEPULLIMAGE
 The forcePullImage setting of each audit scheduler container.
 
-##### CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_NETWORK
+##### CAF\_AUDIT\_SCHEDULER\_MARATHON\_CONTAINER\_DOCKER\_NETWORK
 The network type of each audit scheduler container.
 
-##### CAF_AUDIT_MANAGEMENT_DISABLE
+##### CAF\_AUDIT\_MANAGEMENT\_DISABLE
 This is used to disable the audit management web service.
 
-##### CAF_AUDIT_MANAGEMENT_API_CONFIG_PATH
+##### CAF\_AUDIT\_MANAGEMENT\_API\_CONFIG\_PATH
 The path to the directory containing the config.properties which can be used as an alternative means of specifying the environment variables.
 
 

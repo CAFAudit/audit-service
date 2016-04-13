@@ -51,7 +51,6 @@
     "CAF_AUDIT_MANAGEMENT_DISABLE": "${caf-audit-management-service-disable}"
   },
   "uris": [
-    "${marathon-uris-root}/${service-config-location}/cfg_${marathon-group}_audit-management-service_KafkaAuditConfiguration",
     "${marathon-uris-root}/${docker-login-config}"
   ]
 }

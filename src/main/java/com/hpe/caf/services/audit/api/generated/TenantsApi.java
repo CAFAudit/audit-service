@@ -1,14 +1,15 @@
 package com.hpe.caf.services.audit.api.generated;
 
-import java.util.List;
-
 import com.hpe.caf.services.audit.api.generated.model.NewTenant;
 import io.swagger.annotations.ApiParam;
 
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.*;
 
 @Path("/tenants")
 
@@ -32,5 +33,29 @@ public class TenantsApi  {
             @Context SecurityContext securityContext)
             throws Exception {
         return delegate.tenantsPost(newTenant,securityContext);
+    }
+
+
+    @POST
+
+
+
+    @Path("/{tenantId}/updatePartitionCount")
+    @io.swagger.annotations.ApiOperation(value = "Keeps Vertica topic configuration and Kafka topic partitions consistent", notes = "Used to check the number of partitions registered with a topic in Vertica and equate this with the actual number of partitions in Kafka.", response = void.class, tags={ "Partitions" })
+    @io.swagger.annotations.ApiResponses(value = {
+            @io.swagger.annotations.ApiResponse(code = 200, message = "Ok", response = void.class),
+
+            @io.swagger.annotations.ApiResponse(code = 400, message = "Bad Request (missing database connection properties or the `tenantId` parameter contains invalid characters)", response = void.class),
+
+            @io.swagger.annotations.ApiResponse(code = 404, message = "Not found (`tenantId` or `applicationId` not found)", response = void.class),
+
+            @io.swagger.annotations.ApiResponse(code = 500, message = "Internal server error", response = void.class) })
+
+    public Response tenantsTenantIdUpdatePartitionCountPost(
+            @ApiParam(value = "Identifies the tenant.",required=true) @PathParam("tenantId") String tenantId,
+            @ApiParam(value = "Identifies the application.",required=true) @QueryParam("applicationId") String applicationId,
+            @Context SecurityContext securityContext)
+            throws Exception {
+        return delegate.tenantsUpdatePartitionCountPost(tenantId,applicationId,securityContext);
     }
 }

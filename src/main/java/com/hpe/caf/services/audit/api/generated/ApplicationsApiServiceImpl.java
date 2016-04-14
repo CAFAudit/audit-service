@@ -13,7 +13,7 @@ public class ApplicationsApiServiceImpl extends ApplicationsApiService {
 //      public Response applicationsPost(FormDataContentDisposition fileDetail,SecurityContext securityContext)
 //      throws NotFoundException {
 //      // do some magic!
-//      return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+//      return Response.ok().entity(new ApiSuccessResponseMessage(ApiSuccessResponseMessage.OK, "magic!")).build();
 //  }
 
     @Override

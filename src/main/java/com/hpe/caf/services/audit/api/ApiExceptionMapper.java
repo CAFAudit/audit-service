@@ -1,5 +1,7 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.services.audit.api.exceptions.BadRequestException;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;

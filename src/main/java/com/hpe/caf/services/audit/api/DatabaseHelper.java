@@ -1,12 +1,13 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.services.audit.api.exceptions.BadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The DatabaseHelper class is responsible for database operations.
@@ -209,6 +210,13 @@ public class DatabaseHelper {
     private static Connection getConnection
             () throws Exception {
         return getConnection(appConfig.getDatabaseServiceAccount(), appConfig.getDatabaseServiceAccountPassword());
+    }
+
+    /**
+     * Creates a connection to the Vertica database as the service account.
+     */
+    private static Connection getConnectionAsCafAuditLoader() throws Exception {
+        return getConnection(appConfig.getDatabaseLoaderAccount(), appConfig.getDatabaseLoaderAccountPassword());
     }
 
     /**
@@ -457,5 +465,30 @@ public class DatabaseHelper {
         return exists;
     }
 
+    /**
+     * Gets the number of partitions registered with the topic in the kafka_offsets table in the schema defined in the
+     * schedulerName.
+     * @param schedulerName
+     * @param topicName
+     */
+    public int getNumberPartitions(String schedulerName, String topicName) throws Exception {
+
+        String getPartitionsSQL = String.format("SELECT COUNT(kpartition) AS numPartitions FROM %s.kafka_offsets_topk WHERE ktopic = '%s'", schedulerName, topicName);
+
+        int numPartitions = 0;
+
+        try (
+                Connection conn = getConnectionAsCafAuditLoader();
+                PreparedStatement stmt = conn.prepareStatement(getPartitionsSQL)
+        ) {
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                numPartitions = rs.getInt("numPartitions");
+            }
+        }
+
+        return numPartitions;
+    }
 }
 

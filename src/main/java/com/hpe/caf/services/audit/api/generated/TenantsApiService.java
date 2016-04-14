@@ -11,4 +11,6 @@ public abstract class TenantsApiService {
       public abstract Response tenantsPost(NewTenant newTenant, SecurityContext securityContext)
               throws Exception;
 
+      public abstract Response tenantsUpdatePartitionCountPost(String tenantId, String applicationId, SecurityContext securityContext)
+              throws Exception;
 }

@@ -1,5 +1,6 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.services.audit.api.exceptions.BadRequestException;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,5 +1,6 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.services.audit.api.exceptions.BadRequestException;
 import com.hpe.caf.services.audit.api.generated.model.NewTenant;
 import org.junit.Before;
 import org.junit.Test;

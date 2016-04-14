@@ -1,5 +1,6 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.services.audit.api.exceptions.BadRequestException;
 import com.hpe.caf.services.audit.api.generated.model.NewTenant;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -16,11 +17,6 @@ public class TenantAddPost {
 
     private static final String ERR_MSG_TENANT_APPS_IS_MISSING = "The AuditManagement.TenantApplications table does not exist.";
     private static final String ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS = "The tenantId contains invalid characters (allowed: lowercase letters and digits).";
-    private static final String KAFKA_SCHEDULER_NAME_PREFIX = "auditscheduler_";
-    private static final String KAFKA_TARGET_TABLE_PREFIX = "Audit";
-    private static final String KAFKA_REJECT_TABLE = "kafka_rej";
-    private static final String KAFKA_TARGET_TOPIC_PREFIX = "AuditEventTopic.";
-    private static final String TENANTID_INVALID_CHARS_REGEX = "^[a-z0-9]*$";
     private static final String TRANSFORM_TEMPLATE_NAME = "AuditTransform.vm";
 
     private static final Logger LOG = LoggerFactory.getLogger(TenantAddPost.class);
@@ -99,7 +95,7 @@ public class TenantAddPost {
                                 LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
 
                                 //  Create Kafka scheduler (per tenant) and associate a topic with that scheduler.
-                                String schedulerName = KAFKA_SCHEDULER_NAME_PREFIX + tenantId;
+                                String schedulerName = ApiServiceUtil.KAFKA_SCHEDULER_NAME_PREFIX + tenantId;
 
                                 //  If the specified scheduler name already exists, then ignore creation step.
                                 LOG.debug("addTenant: Checking if Vertica scheduler '{}' has already been created...", schedulerName);
@@ -118,18 +114,19 @@ public class TenantAddPost {
                                 String targetTable = new StringBuilder()
                                         .append(tenantSchemaName)
                                         .append(".")
-                                        .append(KAFKA_TARGET_TABLE_PREFIX)
+                                        .append(ApiServiceUtil.KAFKA_TARGET_TABLE_PREFIX)
                                         .append(application)
                                         .toString();
 
                                 String rejectionTable = new StringBuilder()
                                         .append(tenantSchemaName)
                                         .append(".")
-                                        .append(KAFKA_REJECT_TABLE)
+                                        .append(ApiServiceUtil.KAFKA_REJECT_TABLE)
                                         .toString();
 
                                 String targetTopic = new StringBuilder()
-                                        .append(KAFKA_TARGET_TOPIC_PREFIX)
+                                        .append(ApiServiceUtil.KAFKA_TARGET_TOPIC_PREFIX)
+                                        .append(".")
                                         .append(application)
                                         .append(".")
                                         .append(tenantId)
@@ -160,7 +157,7 @@ public class TenantAddPost {
      * Returns TRUE if the specified tenantId contains invalid characters, otherwise FALSE.
      */
     private static boolean containsInvalidCharacters(String tenantId) {
-        if (tenantId.matches(TENANTID_INVALID_CHARS_REGEX)) {
+        if (tenantId.matches(ApiServiceUtil.TENANTID_INVALID_CHARS_REGEX)) {
             return false;
         }
         return true;

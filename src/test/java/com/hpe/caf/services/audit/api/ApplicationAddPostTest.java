@@ -5,6 +5,7 @@ import com.hpe.caf.auditing.schema.AuditEventParam;
 import com.hpe.caf.auditing.schema.AuditEventParamType;
 import com.hpe.caf.auditing.schema.AuditedApplication;
 
+import com.hpe.caf.services.audit.api.exceptions.BadRequestException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

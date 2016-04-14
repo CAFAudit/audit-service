@@ -1,5 +1,6 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.services.audit.api.exceptions.BadRequestException;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -13,6 +14,11 @@ public class ApiServiceUtil {
     private static final String ERR_MSG_DB_SERVICE_CREDENTIALS_MISSING = "The credentials for the service database account have not been provided.";
     private static final String ERR_MSG_DB_LOADER_CREDENTIALS_MISSING = "The credentials for the loader database account have not been provided.";
     public static final String TENANTID_SCHEMA_PREFIX = "account_";
+    public static final String KAFKA_SCHEDULER_NAME_PREFIX = "auditscheduler_";
+    public static final String KAFKA_TARGET_TOPIC_PREFIX = "AuditEventTopic";
+    public static final String KAFKA_REJECT_TABLE = "kafka_rej";
+    public static final String KAFKA_TARGET_TABLE_PREFIX = "Audit";
+    public static final String TENANTID_INVALID_CHARS_REGEX = "^[a-z0-9]*$";
 
     /**
      * Load required inputs from config.properties or environment variables.

@@ -3,8 +3,6 @@ package com.hpe.caf.services.audit.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.hpe.caf.api.*;
-import com.hpe.caf.api.Cipher;
-import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.cipher.NullCipherProvider;
@@ -15,8 +13,16 @@ import com.hpe.caf.services.audit.client.api.ApplicationsApi;
 import com.hpe.caf.services.audit.client.api.TenantsApi;
 import com.hpe.caf.services.audit.client.model.NewTenant;
 import com.hpe.caf.util.ModuleLoader;
-import com.jcraft.jsch.*;
-import org.junit.*;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
+import kafka.admin.AdminUtils;
+import kafka.utils.ZKStringSerializer$;
+import org.I0Itec.zkclient.ZkClient;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -27,7 +33,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.nio.file.DirectoryStream;
@@ -48,6 +56,10 @@ public class AuditIT {
     private static final String VERTICA_HOST_PASSWORD = "password";
 
     private static final String AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH = "http://127.0.0.1:25080/caf-audit-management/v1";
+//    private static final String AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH = "http://127.0.0.1:9090/v1";
+
+    private static final String AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS = "192.168.56.20:2181";
+    private static final String AUDIT_MANAGEMENT_KAFKA_BROKERS = "192.168.56.20:9092";
 
     private static final String CAF_AUDIT_DATABASE_NAME = "CAFAudit";
     private static final String AUDIT_IT_DATABASE_NAME = "AuditIT";
@@ -215,9 +227,9 @@ public class AuditIT {
             String applicationId = registerApplicationInDatabase(testCase);
             for (Path eventsYaml : testCase.getYaml()) {
                 AuditEventMessages messagesToSend = getTestMessages(eventsYaml);
-                String tenantId = getTenantId(messagesToSend);
+                String tenantId = "tenant" + UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
                 addTenantInDatabase(tenantId, applicationId);
-                List<HashMap<String, Object>> expectedResultSet = sendTestMessages(messagesToSend);
+                List<HashMap<String, Object>> expectedResultSet = sendTestMessages(messagesToSend, tenantId);
 
                 LOG.info("Pausing to allow messages to propagate through Kafka to Vertica...");
                 Thread.sleep(10000);
@@ -227,6 +239,88 @@ public class AuditIT {
         }
 
         LOG.info("*** Completed Audit tests ***");
+    }
+
+    /**
+     *  Integration test to verify that the updatePartitionCount web method works.
+     */
+    @Test
+    public void testUpdatePartitionCount() throws Exception {
+
+        LOG.info("*** Beginning Audit UpdatePartitionCount test ***");
+
+        AuditTestCase testCase = getTestCase();
+        try (TestCaseDb testCaseDb = new TestCaseDb(AUDIT_IT_DATABASE_NAME)) {
+            String applicationId = registerApplicationInDatabase(testCase);
+            for (Path eventsYaml : testCase.getYaml()) {
+                AuditEventMessages messagesToSend = getTestMessages(eventsYaml);
+                String tenantId = "tenant" + UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
+
+                //  Get app config settings.
+//                LOG.debug("checkAndUpdatePartitions: Reading kafka connection properties...");
+//                        AppConfig config = ApiServiceUtil.getAppConfigProperties();
+
+                // Create a Kafka Producer
+                Properties props = new Properties();
+//                props.put("bootstrap.servers", config.getKafkaBrokers());
+                props.put("bootstrap.servers", AUDIT_MANAGEMENT_KAFKA_BROKERS);
+                props.put("acks", "all");
+                props.put("retries", 0);
+                props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+                props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+                //i.e. AuditEventTopic.MyDemo.tenant1
+                String topicName = new StringBuilder()
+//                                                .append(ApiServiceUtil.KAFKA_TARGET_TOPIC_PREFIX)
+                        .append("AuditEventTopic")
+                        .append(".")
+                        .append(applicationId)
+                        .append(".")
+                        .append(tenantId)
+                        .toString();
+
+                // number of partitions to create in the kafka topic
+                int numPartitions = 2;
+
+                LOG.info("Creating a topic in Kafka with multiple partitions...");
+
+                // creating a zookeeper client to interact with zookeeper service running on kafka server.
+                ZkClient zkClient = new ZkClient(AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS, 10000, 10000, ZKStringSerializer$.MODULE$);
+//                ZkClient zkClient = new ZkClient(config.getKafkaZookeeperAddress(), 10000, 10000, ZKStringSerializer$.MODULE$);
+
+                // Make sure the topic does not exist then create it with multiple partitions
+                if(!AdminUtils.topicExists(zkClient, topicName)){
+                    AdminUtils.createTopic(zkClient, topicName, numPartitions, 1, new Properties());
+                } else {
+                    LOG.error("Error - testUpdatePartitionCount: '{}'", "Topic already exists and has not been cleared.");
+                    throw new Exception("Topic already exists and has not been cleared.");
+                }
+
+                // sends the test messages.
+                LOG.info("Processing message test data - sending each test event message Kafka...");
+                List<HashMap<String, Object>> expectedResultSet = sendTestMessages(messagesToSend, tenantId);
+
+                //Call the addTenant api client method AFTER creating topic in Kafka
+                addTenantInDatabase(tenantId, applicationId);
+
+                LOG.info("Pausing to allow messages to propagate through Kafka to Vertica...");
+                Thread.sleep(10000);
+
+                //todo: call client
+                auditManagementTenantsApi.tenantsTenantIdUpdatePartitionCountPost(tenantId, applicationId);
+
+                LOG.info("Pausing to allow messages to propagate through Kafka to Vertica...");
+                Thread.sleep(10000);
+
+                verifyMultiplePartitionResults(applicationId, tenantId, expectedResultSet);
+            }
+        } catch(Exception e){
+            System.out.println(e.getMessage());
+            throw e;
+        }
+
+        LOG.info("*** Completed Audit UpdatePartitionCount tests ***");
+
     }
 
 
@@ -287,24 +381,24 @@ public class AuditIT {
     }
 
 
-    private List<HashMap<String, Object>> sendTestMessages(AuditEventMessages messages) throws Exception {
+    private List<HashMap<String, Object>> sendTestMessages(AuditEventMessages messages, String tenantId) throws Exception {
         LOG.info("Loading configuration...");
         BootstrapConfiguration bootstrap = new SystemBootstrapConfiguration();
         Cipher cipher = ModuleLoader.getService(CipherProvider.class, NullCipherProvider.class).getCipher(bootstrap);
         ServicePath path = bootstrap.getServicePath();
         Codec codec = ModuleLoader.getService(Codec.class);
         ManagedConfigurationSource config = ModuleLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, path, codec);
-        return sendAuditEventMessages(config, messages.getMessages());
+        return sendAuditEventMessages(config, messages.getMessages(), tenantId);
     }
 
 
-    private static List<HashMap<String,Object>> sendAuditEventMessages(final ConfigurationSource config, List<AuditEventMessage> testEventMessages) throws Exception {
+    private static List<HashMap<String,Object>> sendAuditEventMessages(final ConfigurationSource config, List<AuditEventMessage> testEventMessages, String tenantId) throws Exception {
         List<HashMap<String,Object>> expectedResultSet = new ArrayList<>();
 
         LOG.info("Obtaining Kafka connection and channel...");
         try (
                 AuditConnection connection = AuditConnectionFactory.createConnection(config);
-                AuditChannel channel = connection.createChannel()
+                com.hpe.caf.auditing.AuditChannel channel = connection.createChannel()
         ) {
             Class<?> auditLog;
             Class[] paramTypes = new Class[0];
@@ -356,8 +450,8 @@ public class AuditIT {
                         if (alcParam.getName().equals(param.getName())) {
                             Class<?> type = alcParam.getType();
                             if (type.isAssignableFrom(String.class)) {
-                                testMethodArgs.add(param.getValue());
-                                testEventMessageMap.put(param.getName(), param.getValue());
+                                testMethodArgs.add(tenantId);
+                                testEventMessageMap.put(param.getName(), tenantId);
                             } else if (type.isAssignableFrom(short.class)) {
                                 testMethodArgs.add(Short.parseShort(param.getValue().toString()));
                                 testEventMessageMap.put(param.getName(), Long.parseLong(param.getValue().toString()));
@@ -388,12 +482,18 @@ public class AuditIT {
                 LOG.info("Adding event message map to the list of expected result sets...");
                 expectedResultSet.add(testEventMessageMap);
 
+
                 LOG.info("Invoking the target method for test event message...");
                 try {
                     Object[] params = testMethodArgs.toArray(new Object[testMethodArgs.size()]);
                     Method alcMethod = auditLog.getMethod(methodName, paramTypes);
-                    alcMethod.invoke(null, params);
+                    // alcMethod.invoke(null, params);
 
+                    //thread to send messages to multiple partitions.
+                    SendMessageRunnable sendMessageRunnable = new SendMessageRunnable(alcMethod, params);
+                    Thread t = new Thread(sendMessageRunnable);
+                    t.start();
+                    t.join(); //wait for thread
                 } catch (Exception e) {
                     LOG.error("Exception caught during method invocation for method {}",methodName);
                     throw new Exception(e);
@@ -459,7 +559,6 @@ public class AuditIT {
         return databaseDataMatches;
     }
 
-
     private void verifyResults(final String applicationId, final String tenantId, List<HashMap<String, Object>> expectedResultSet) throws Exception {
         DBUtil dbUtil = new DBUtil(VERTICA_HOST, AUDIT_IT_DATABASE_NAME, AUDIT_IT_DATABASE_PORT, AUDIT_IT_DATABASE_SCHEMA_PREFIX + tenantId, applicationId, VERTICA_HOST_USERNAME, AUDIT_IT_DATABASE_NAME);
 
@@ -481,6 +580,30 @@ public class AuditIT {
         LOG.info("Successfully verified all messages and contents have been sent as expected.");
     }
 
+    private void verifyMultiplePartitionResults(final String applicationId, final String tenantId, List<HashMap<String, Object>> expectedResultSet) throws Exception{
+        DBUtil dbUtil = new DBUtil(VERTICA_HOST, AUDIT_IT_DATABASE_NAME, AUDIT_IT_DATABASE_PORT, AUDIT_IT_DATABASE_SCHEMA_PREFIX + tenantId, applicationId, VERTICA_HOST_USERNAME, AUDIT_IT_DATABASE_NAME);
+
+        LOG.info("Writing database table rows to disk...");
+        dbUtil.writeTableRowsToDisk();
+
+        LOG.info("Getting database table rows as a list...");
+        List<HashMap<String,Object>> actualResultSet;
+        actualResultSet = dbUtil.getTableRowsAsList();
+
+        boolean matches = false;
+        LOG.info("Verifying all messages and contents have been sent as expected...");
+        if(expectedResultSet.size() == actualResultSet.size()){
+            matches = true;
+        }
+
+        if (!matches) {
+            String failureMessage = "Test failure - expected data does not match data returned from Vertica!";
+            LOG.error(failureMessage);
+            throw new Exception(failureMessage);
+        }
+
+        LOG.info("Successfully verified all messages and contents have been sent as expected.");
+    }
 
     class AuditTestCase {
         private Collection<Path> yaml;
@@ -545,6 +668,28 @@ public class AuditIT {
         public void close() throws Exception {
             stopDatabase(testDbName, true);
             dropDatabase(testDbName);
+        }
+    }
+
+    private static class SendMessageRunnable implements Runnable {
+
+        Object[] params;
+        Method method;
+
+        public SendMessageRunnable(Method method, Object[] params) {
+            this.params = params;
+            this.method = method;
+        }
+
+        @Override
+        public void run() {
+            try {
+                method.invoke(null, params);
+            } catch (Exception e) {
+                e.printStackTrace();
+                LOG.error("Exception caught during method invocation for method {}",method);
+                throw new AssertionError(e);
+            }
         }
     }
 }

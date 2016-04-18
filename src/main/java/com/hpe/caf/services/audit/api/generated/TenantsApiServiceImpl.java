@@ -25,7 +25,8 @@ public class TenantsApiServiceImpl extends TenantsApiService {
 //        return Response.ok().entity(new ApiSuccessResponseMessage(ApiSuccessResponseMessage.OK, "magic!")).build();
         try {
             int partitionsAdded = TenantUpdatePartitionsPost.checkAndUpdatePartitions(tenantId, applicationId);
-            return Response.ok().entity(new ApiResponseMessage(partitionsAdded, "Success")).build();
+//            return Response.ok().entity(new ApiResponseMessage(partitionsAdded, "Success")).build();
+            return Response.ok().build();
         } catch(NotFoundException e){
             return Response.status(Response.Status.NOT_FOUND).entity(new ApiResponseMessage(e.getMessage())).build();
         } catch(BadRequestException e){

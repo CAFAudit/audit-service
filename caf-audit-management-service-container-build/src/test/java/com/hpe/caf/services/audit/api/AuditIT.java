@@ -17,7 +17,9 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import kafka.admin.AdminOperationException;
 import kafka.admin.AdminUtils;
+import kafka.common.TopicExistsException;
 import kafka.utils.ZKStringSerializer$;
 import org.I0Itec.zkclient.ZkClient;
 import org.junit.AfterClass;
@@ -242,12 +244,24 @@ public class AuditIT {
     }
 
     /**
-     *  Integration test to verify that the updatePartitionCount web method works.
+     * Integration test to verify multiple partitions when:
+     * 1. The topic is created with multiple partitions
+     * 2. The topic is altered to increase the number of partitions
      */
     @Test
-    public void testUpdatePartitionCount() throws Exception {
+    public void testUpdatePartitionCount() throws Exception{
+        LOG.info("*** Beginning Audit UpdatePartitionCount test for topic creation ***");
+        partitionTester(true);
 
-        LOG.info("*** Beginning Audit UpdatePartitionCount test ***");
+        LOG.info("*** Beginning Audit UpdatePartitionCount test for addition of partitions to existing topic ***");
+        partitionTester(false);
+
+    }
+
+    /**
+     *  Verify partition test, pass in which mode.
+     */
+    private void partitionTester(boolean createTopicWithMultiplePartitions) throws Exception {
 
         AuditTestCase testCase = getTestCase();
         try (TestCaseDb testCaseDb = new TestCaseDb(AUDIT_IT_DATABASE_NAME)) {
@@ -279,38 +293,60 @@ public class AuditIT {
                         .append(tenantId)
                         .toString();
 
-                // number of partitions to create in the kafka topic
-                int numPartitions = 2;
+                // If we are testing topic creation with multiple partitions we create topic with zookeeper client in Kafka
+                if(createTopicWithMultiplePartitions) {
+                    LOG.info("Creating a topic in Kafka with multiple partitions...");
 
-                LOG.info("Creating a topic in Kafka with multiple partitions...");
+                    // number of partitions to create in the kafka topic
+                    int numPartitions = 2;
 
-                // creating a zookeeper client to interact with zookeeper service running on kafka server.
-                ZkClient zkClient = new ZkClient(AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS, 10000, 10000, ZKStringSerializer$.MODULE$);
-//                ZkClient zkClient = new ZkClient(config.getKafkaZookeeperAddress(), 10000, 10000, ZKStringSerializer$.MODULE$);
+                    // creating a zookeeper client to interact with zookeeper service running on kafka server.
+                    ZkClient zkClient = new ZkClient(AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS, 10000, 10000, ZKStringSerializer$.MODULE$);
 
-                // Make sure the topic does not exist then create it with multiple partitions
-                if(!AdminUtils.topicExists(zkClient, topicName)){
-                    AdminUtils.createTopic(zkClient, topicName, numPartitions, 1, new Properties());
-                } else {
-                    LOG.error("Error - testUpdatePartitionCount: '{}'", "Topic already exists and has not been cleared.");
-                    throw new Exception("Topic already exists and has not been cleared.");
+                    // Make sure the topic does not exist then create it with multiple partitions
+                    try {
+                        AdminUtils.createTopic(zkClient, topicName, numPartitions, 1, new Properties());
+                    } catch (TopicExistsException e) {
+                        LOG.error("Error - partitionTester: topic already exists '{}'. - '{}'", topicName, e);
+                        throw e;
+                    }
                 }
 
-                // sends the test messages.
-                LOG.info("Processing message test data - sending each test event message Kafka...");
+                // sends the test messages (default is to set Kafka topic to 1 partition)
+                LOG.info("Processing message test data - sending each test event message to Kafka...");
                 List<HashMap<String, Object>> expectedResultSet = sendTestMessages(messagesToSend, tenantId);
 
-                //Call the addTenant api client method AFTER creating topic in Kafka
+                //Call the addTenant api client method after creating topic in Kafka
                 addTenantInDatabase(tenantId, applicationId);
 
                 LOG.info("Pausing to allow messages to propagate through Kafka to Vertica...");
                 Thread.sleep(15000);
 
-                //todo: call client
-                auditManagementTenantsApi.tenantsTenantIdUpdatePartitionCountPost(tenantId, applicationId);
+                //call client to update partition count
+                if(!createTopicWithMultiplePartitions) {
+                    // number of partitions to create in the kafka topic
+                    int numPartitions = 2;
 
-                LOG.info("Pausing to allow messages to propagate through Kafka to Vertica...");
-                Thread.sleep(15000);
+                    // creating a zookeeper client to interact with zookeeper service running on kafka server.
+                    ZkClient zkClient = new ZkClient(AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS, 10000, 10000, ZKStringSerializer$.MODULE$);
+
+                    // Make sure the topic does not exist then create it with multiple partitions
+                    if (AdminUtils.topicExists(zkClient, topicName)) {
+                        try {
+                            AdminUtils.addPartitions(zkClient, topicName, numPartitions, "", true, new Properties());
+                        } catch (AdminOperationException e){
+                            LOG.error("Error - partitionTester: Failed to add partitions - '{}'", e);
+                            throw e;
+                        }
+                    } else {
+                        LOG.error("Error - partitionTester: '{}'", "Topic was not created and partitions cannot be added.");
+                        throw new Exception("Topic was not created and partitions cannot be added.");
+                    }
+                    auditManagementTenantsApi.tenantsTenantIdUpdatePartitionCountPost(tenantId, applicationId);
+
+                    LOG.info("Pausing to allow messages from all partitions to propagate through Kafka to Vertica...");
+                    Thread.sleep(15000);
+                }
 
                 verifyMultiplePartitionResults(applicationId, tenantId, expectedResultSet);
             }
@@ -691,5 +727,10 @@ public class AuditIT {
                 throw new AssertionError(e);
             }
         }
+    }
+
+    private static enum PartitionTestMode{
+        CREATE_TOPIC_WITH_MULTIPLE_PARTITIONS,
+        ADD_PARTITIONS_TO_EXISTING_TOPIC
     }
 }

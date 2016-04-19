@@ -28,11 +28,14 @@ public class TenantsApiServiceImpl extends TenantsApiService {
 //            return Response.ok().entity(new ApiResponseMessage(partitionsAdded, "Success")).build();
             return Response.ok().build();
         } catch(NotFoundException e){
-            return Response.status(Response.Status.NOT_FOUND).entity(new ApiResponseMessage(e.getMessage())).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
+//            return Response.status(Response.Status.NOT_FOUND).entity(new ApiResponseMessage(e.getMessage())).build();
         } catch(BadRequestException e){
-            return Response.status(Response.Status.BAD_REQUEST).entity(new ApiResponseMessage(e.getMessage())).build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
+//            return Response.status(Response.Status.BAD_REQUEST).entity(new ApiResponseMessage(e.getMessage())).build();
         } catch (Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ApiResponseMessage(e.getMessage())).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ApiResponseMessage(e.getMessage())).build();
         }
     }
 }

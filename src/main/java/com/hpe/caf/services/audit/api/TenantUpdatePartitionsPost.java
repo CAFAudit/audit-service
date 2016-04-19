@@ -126,11 +126,11 @@ public class TenantUpdatePartitionsPost {
 
 
     /**
-     * Private method to get hte number of partitions in Kafka by calling the kafka-clients library and using a consumer
+     * Public method to get hte number of partitions in Kafka by calling the kafka-clients library and using a consumer
      * function.
      * @return
      */
-    private static int getNumberOfPartitionsKafka(AppConfig properties, String topicName){
+    public static int getNumberOfPartitionsKafka(AppConfig properties, String topicName) throws Exception{
         int numPartitionsKafka = 0;
 
         //create properties for the Kafka consumer to connect to the Kafka server

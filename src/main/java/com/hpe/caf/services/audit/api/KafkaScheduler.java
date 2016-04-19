@@ -32,6 +32,13 @@ public class KafkaScheduler {
     }
 
     public static void associateTopic(AppConfig properties, String schedulerName, String targetTable, String rejectionTable, String targetTopic) throws Exception {
+        // Get the number of partitions in Kafka for the topic.
+        int numPartitions = TenantUpdatePartitionsPost.getNumberOfPartitionsKafka(properties, targetTopic);
+
+        // If the topic does not exist in Kafka, it will return 0, therefore set num-partitions to 1 in Vertica (default).
+        if(numPartitions==0)
+            numPartitions = 1;
+
         //Associate a topic with the scheduler.
         String[] args = new String[]{"-Dtopic", "--add",
                 "--config-schema", schedulerName,
@@ -41,7 +48,8 @@ public class KafkaScheduler {
                 "--parser", "KafkaJSONParser",
                 "--username", properties.getDatabaseLoaderAccount(),
                 "--password", properties.getDatabaseLoaderAccountPassword(),
-                "--jdbc-url", properties.getDatabaseURL()};
+                "--jdbc-url", properties.getDatabaseURL(),
+                "--num-partitions", Integer.toString(numPartitions)};
         try {
             LOG.info("associateTopic: Creating a Topic configuration. ");
             TopicConfigurationCLI.run(args);

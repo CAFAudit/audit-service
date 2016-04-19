@@ -304,13 +304,13 @@ public class AuditIT {
                 addTenantInDatabase(tenantId, applicationId);
 
                 LOG.info("Pausing to allow messages to propagate through Kafka to Vertica...");
-                Thread.sleep(10000);
+                Thread.sleep(15000);
 
                 //todo: call client
                 auditManagementTenantsApi.tenantsTenantIdUpdatePartitionCountPost(tenantId, applicationId);
 
                 LOG.info("Pausing to allow messages to propagate through Kafka to Vertica...");
-                Thread.sleep(10000);
+                Thread.sleep(15000);
 
                 verifyMultiplePartitionResults(applicationId, tenantId, expectedResultSet);
             }
@@ -592,17 +592,17 @@ public class AuditIT {
 
         boolean matches = false;
         LOG.info("Verifying all messages and contents have been sent as expected...");
-        if(expectedResultSet.size() == actualResultSet.size()){
-            matches = true;
-        }
-
-        if (!matches) {
-            String failureMessage = "Test failure - expected data does not match data returned from Vertica!";
+        if(!(expectedResultSet.size() == actualResultSet.size())){
+            String failureMessage = String.format("Test failure - expected %d messages, received %d messages from Vertica.",
+                    expectedResultSet.size(),
+                    actualResultSet.size());
             LOG.error(failureMessage);
             throw new Exception(failureMessage);
         }
 
-        LOG.info("Successfully verified all messages and contents have been sent as expected.");
+        LOG.info(String.format("Test successful - expected %d messages, received %d messages from Vertica.",
+                expectedResultSet.size(),
+                actualResultSet.size()));
     }
 
     class AuditTestCase {

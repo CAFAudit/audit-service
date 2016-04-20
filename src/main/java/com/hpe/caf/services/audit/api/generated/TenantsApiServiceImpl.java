@@ -22,20 +22,15 @@ public class TenantsApiServiceImpl extends TenantsApiService {
     @Override
     public Response tenantsUpdatePartitionCountPost(String tenantId, String applicationId, SecurityContext securityContext) throws Exception{
 
-//        return Response.ok().entity(new ApiSuccessResponseMessage(ApiSuccessResponseMessage.OK, "magic!")).build();
         try {
             int partitionsAdded = TenantUpdatePartitionsPost.checkAndUpdatePartitions(tenantId, applicationId);
-//            return Response.ok().entity(new ApiResponseMessage(partitionsAdded, "Success")).build();
-            return Response.ok().build();
+            return Response.ok().entity(new ApiPartitionResponseMessage(partitionsAdded, "Success")).build();
         } catch(NotFoundException e){
-            return Response.status(Response.Status.NOT_FOUND).build();
-//            return Response.status(Response.Status.NOT_FOUND).entity(new ApiResponseMessage(e.getMessage())).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(new ApiPartitionResponseMessage(e.getMessage())).build();
         } catch(BadRequestException e){
-            return Response.status(Response.Status.BAD_REQUEST).build();
-//            return Response.status(Response.Status.BAD_REQUEST).entity(new ApiResponseMessage(e.getMessage())).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ApiPartitionResponseMessage(e.getMessage())).build();
         } catch (Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ApiResponseMessage(e.getMessage())).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ApiPartitionResponseMessage(e.getMessage())).build();
         }
     }
 }

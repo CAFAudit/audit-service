@@ -3,10 +3,7 @@ package com.hpe.caf.services.audit.api.generated;
 import com.hpe.caf.services.audit.api.generated.model.NewTenant;
 import io.swagger.annotations.ApiParam;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -14,6 +11,7 @@ import javax.ws.rs.core.SecurityContext;
 @Path("/tenants")
 
 
+@Produces({ "application/json" })
 @io.swagger.annotations.Api(description = "the tenants API")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2016-02-09T14:45:42.907Z")
 public class TenantsApi  {

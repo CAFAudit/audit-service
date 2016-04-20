@@ -3,22 +3,22 @@ package com.hpe.caf.services.audit.api.generated;
 /**
  * Created by CS on 14/04/2016.
  */
-public class ApiResponseMessage {
+public class ApiPartitionResponseMessage {
 
     private int partitionsAdded;
     private String message;
 
-    public ApiResponseMessage(){}
+    public ApiPartitionResponseMessage(){}
 
-    public ApiResponseMessage(int partitionsAdded) {
+    public ApiPartitionResponseMessage(int partitionsAdded) {
         this.partitionsAdded = partitionsAdded;
     }
 
-    public ApiResponseMessage(String message) {
+    public ApiPartitionResponseMessage(String message) {
         this.message = message;
     }
 
-    public ApiResponseMessage(int partitionsAdded, String message) {
+    public ApiPartitionResponseMessage(int partitionsAdded, String message) {
         this.partitionsAdded = partitionsAdded;
         this.message = message;
     }

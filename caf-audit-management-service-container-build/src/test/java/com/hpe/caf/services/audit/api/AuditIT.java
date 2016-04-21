@@ -270,13 +270,8 @@ public class AuditIT {
                 AuditEventMessages messagesToSend = getTestMessages(eventsYaml);
                 String tenantId = "tenant" + UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
 
-                //  Get app config settings.
-//                LOG.debug("checkAndUpdatePartitions: Reading kafka connection properties...");
-//                        AppConfig config = ApiServiceUtil.getAppConfigProperties();
-
                 // Create a Kafka Producer
                 Properties props = new Properties();
-//                props.put("bootstrap.servers", config.getKafkaBrokers());
                 props.put("bootstrap.servers", AUDIT_MANAGEMENT_KAFKA_BROKERS);
                 props.put("acks", "all");
                 props.put("retries", 0);
@@ -285,7 +280,6 @@ public class AuditIT {
 
                 //i.e. AuditEventTopic.MyDemo.tenant1
                 String topicName = new StringBuilder()
-//                                                .append(ApiServiceUtil.KAFKA_TARGET_TOPIC_PREFIX)
                         .append("AuditEventTopic")
                         .append(".")
                         .append(applicationId)
@@ -320,7 +314,7 @@ public class AuditIT {
                 addTenantInDatabase(tenantId, applicationId);
 
                 LOG.info("Pausing to allow messages to propagate through Kafka to Vertica...");
-                Thread.sleep(15000);
+                Thread.sleep(20000);
 
                 //call client to update partition count
                 if(!createTopicWithMultiplePartitions) {
@@ -344,8 +338,11 @@ public class AuditIT {
                     }
                     auditManagementTenantsApi.tenantsTenantIdUpdatePartitionCountPost(tenantId, applicationId);
 
+                    // Send messages again and add the expected messages to the expectedResultSet
+                    expectedResultSet.addAll(sendTestMessages(messagesToSend, tenantId));
                     LOG.info("Pausing to allow messages from all partitions to propagate through Kafka to Vertica...");
-                    Thread.sleep(15000);
+
+                    Thread.sleep(20000);
                 }
 
                 verifyMultiplePartitionResults(applicationId, tenantId, expectedResultSet);
@@ -608,7 +605,10 @@ public class AuditIT {
         LOG.info("Verifying all messages and contents have been sent as expected...");
         boolean matches = doesDatabaseMatch(expectedResultSet, actualResultSet);
         if (!matches) {
-            String failureMessage = "Test failure - expected data does not match data returned from Vertica!";
+            String failureMessage = String.format("Test failure - expected data does not match data returned from Vertica!" +
+                    " Expected %d messages, received %d messages from Vertica.",
+                    expectedResultSet.size(),
+                    actualResultSet.size());
             LOG.error(failureMessage);
             throw new Exception(failureMessage);
         }
@@ -727,10 +727,5 @@ public class AuditIT {
                 throw new AssertionError(e);
             }
         }
-    }
-
-    private static enum PartitionTestMode{
-        CREATE_TOPIC_WITH_MULTIPLE_PARTITIONS,
-        ADD_PARTITIONS_TO_EXISTING_TOPIC
     }
 }

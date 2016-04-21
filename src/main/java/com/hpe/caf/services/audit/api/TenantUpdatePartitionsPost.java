@@ -21,14 +21,18 @@ import java.util.Properties;
  */
 public class TenantUpdatePartitionsPost {
 
-    private static final String ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS = "The tenantId contains invalid characters (allowed: lowercase letters and digits).";
-    private static final String ERR_MSG_APPLICATIONID_CONTAINS_INVALID_CHARS = "The applicationId contains invalid characters (allowed: lowercase letters and digits).";
     private static final String ERR_MSG_SCHEDULER_SCHEMA_NOT_FOUND = "Application not registered with CAF Audit Management Service for this tenant.";
-//    private static final String ERR_MSG_SCHEDULER_SCHEMA_NOT_FOUND = "Schema for scheduler not found for the provided Tenant.";
     private static final String ERR_MSG_FAILED_TO_INCREMENT_PARTITIONS = "Failed to increment the number of partitions.";
-    private static final String ERR_MSG_PARTITIONS_ZERO = "Application not registered with CAF Audit Management Service for this tenant.";
+    private static final String ERR_MSG_PARTITIONS_ZERO = "Tenant not found. Application not registered with CAF Audit Management Service for this tenant.";
     private static final Logger LOG = LoggerFactory.getLogger(TenantAddPost.class);
 
+    /**
+     * Checks the number of partitions for the topic for the provided tenantId and applicationId.
+     * @param tenantId
+     * @param applicationId
+     * @return the number of partitions that were added to the Vertica topic configuration.
+     * @throws Exception
+     */
     public static int checkAndUpdatePartitions(String tenantId, String applicationId) throws Exception{
 
         //  Get app config settings.
@@ -76,31 +80,29 @@ public class TenantUpdatePartitionsPost {
                     .toString();
 
             // Get the number of partitions in Kafka
-            int numberOfPartitionsKafka = getNumberOfPartitionsKafka(properties, topicName);
+            final int numberOfPartitionsKafka = getNumberOfPartitionsKafka(properties, topicName);
 
             // Get the number of partitions in Vertica
-            int numberOfPartitionsVertica = getNumberOfPartitionsVertica(properties, schedulerName, topicName);
-
-            // Counter to track the number of partitions added.
-            int partitionsAdded = 0;
+            final int originalNumberOfPartitionsVertica = getNumberOfPartitionsVertica(properties, schedulerName, topicName);
+            int currentPartitionsVertica = originalNumberOfPartitionsVertica;
 
             // If there are more partitions in kafka than in Vertica, add partitions incrementally.
-            while( numberOfPartitionsKafka > numberOfPartitionsVertica ) {
-                int currentPartition = numberOfPartitionsVertica;
+            while( numberOfPartitionsKafka > currentPartitionsVertica ) {
+                int partitionToAdd = currentPartitionsVertica;
                 //create the CLI command
                 String[] args = new String[]{"-Dtopic", "--add",
                         "--config-schema", schedulerName,
                         "--target", targetTable,
                         "--rejection-table", rejectionTable,
                         "--topic", topicName,
-                        "--partition", ""+currentPartition,
-//                        "--parser", "KafkaJSONParser",
+                        "--partition", Integer.toString(partitionToAdd),
+                        "--parser", "KafkaJSONParser",
                         "--username", properties.getDatabaseLoaderAccount(),
                         "--password", properties.getDatabaseLoaderAccountPassword(),
                         "--jdbc-url", properties.getDatabaseURL()};
 
                 try {
-                    //Run the CLI option for topic
+                    //Run the CLI option for adding partition to topic
                     LOG.info("checkAndUpdatePartitions: Adding an extra partition to the topic configuration. ");
                     TopicConfigurationCLI.run(args);
                 } catch (Exception e) {
@@ -109,15 +111,12 @@ public class TenantUpdatePartitionsPost {
                 }
 
                 // Check number of partitions in Vertica to make sure they were incremented
-                numberOfPartitionsVertica = getNumberOfPartitionsVertica(properties, schedulerName, topicName);
-                if(numberOfPartitionsVertica == currentPartition + 1){
-                    partitionsAdded++;
-                } else {
-                    LOG.error("checkAndUpdatePartitions: Error - '{}'", ERR_MSG_FAILED_TO_INCREMENT_PARTITIONS);
-                    throw new Exception(ERR_MSG_FAILED_TO_INCREMENT_PARTITIONS);
-                }
+                currentPartitionsVertica = getNumberOfPartitionsVertica(properties, schedulerName, topicName);
             }
 
+            // Get number partitionsAdded. If this partitionsAdded < 0, the topic isn't created in Kafka, leave partitionsAdded as 0.
+            int partitionsAdded = numberOfPartitionsKafka - originalNumberOfPartitionsVertica;
+            if (partitionsAdded < 0) partitionsAdded = 0;
             LOG.debug("checkAndUpdatePartitions: Number of Vertica topic configuration partitions added: '{}'", partitionsAdded);
             return partitionsAdded;
         }
@@ -126,9 +125,13 @@ public class TenantUpdatePartitionsPost {
 
 
     /**
+     *
      * Public method to get hte number of partitions in Kafka by calling the kafka-clients library and using a consumer
      * function.
-     * @return
+     * @param properties - AppConfig with environment variables to create the KafkaConsumer
+     * @param topicName - Name of the topic to check number of partitions
+     * @return the number of partitions in Kafka for the topic name.
+     * @throws Exception
      */
     public static int getNumberOfPartitionsKafka(AppConfig properties, String topicName) throws Exception{
         int numPartitionsKafka = 0;
@@ -218,16 +221,9 @@ public class TenantUpdatePartitionsPost {
     private static void validateInputParameters(String tenantId, String applicationId) throws BadRequestException {
         //  Make sure the tenant id does not contain any invalid characters.
         if (containsInvalidCharacters(tenantId)) {
-            LOG.error("checkAndUpdatePartitions: Error - '{}'", ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
-            throw new BadRequestException(ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
+            LOG.error("checkAndUpdatePartitions: Error - '{}'", ApiServiceUtil.ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
+            throw new BadRequestException(ApiServiceUtil.ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
         }
-
-        //  Make sure the application id does not contain any invalid characters.
-//        if (containsInvalidCharacters(applicationId)) {
-//            LOG.error("checkAndUpdatePartitions: Error - '{}'", ERR_MSG_APPLICATIONID_CONTAINS_INVALID_CHARS);
-//            throw new BadRequestException(ERR_MSG_APPLICATIONID_CONTAINS_INVALID_CHARS);
-//        }
-
     }
 
 

@@ -16,7 +16,6 @@ import java.util.Objects;
 public class TenantAddPost {
 
     private static final String ERR_MSG_TENANT_APPS_IS_MISSING = "The AuditManagement.TenantApplications table does not exist.";
-    private static final String ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS = "The tenantId contains invalid characters (allowed: lowercase letters and digits).";
     private static final String TRANSFORM_TEMPLATE_NAME = "AuditTransform.vm";
 
     private static final Logger LOG = LoggerFactory.getLogger(TenantAddPost.class);
@@ -37,8 +36,8 @@ public class TenantAddPost {
 
                 //  Make sure the tenant id does not contain any invalid characters.
                 if (containsInvalidCharacters(tenantId)) {
-                    LOG.error("addTenant: Error - '{}'", ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
-                    throw new BadRequestException(ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
+                    LOG.error("addTenant: Error - '{}'", ApiServiceUtil.ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
+                    throw new BadRequestException(ApiServiceUtil.ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS);
                 }
 
                 //  Get database helper instance.

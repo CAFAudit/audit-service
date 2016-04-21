@@ -39,7 +39,7 @@ public class TenantsApi  {
 
 
     @Path("/{tenantId}/updatePartitionCount")
-    @io.swagger.annotations.ApiOperation(value = "Keeps Vertica topic configuration and Kafka topic partitions consistent", notes = "Used to check the number of partitions registered with a topic in Vertica and equate this with the actual number of partitions in Kafka.", response = void.class, tags={ "Partitions" })
+    @io.swagger.annotations.ApiOperation(value = "Keeps Vertica topic configuration and Kafka topic partitions consistent", notes = "Used to check the number of partitions registered with a topic in Vertica and equate this with the actual number of partitions in Kafka.", response = void.class, tags={ "Tenants" })
     @io.swagger.annotations.ApiResponses(value = {
             @io.swagger.annotations.ApiResponse(code = 200, message = "Ok", response = void.class),
 

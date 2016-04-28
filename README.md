@@ -11,4 +11,12 @@ The **POST /tenants** endpoint is used to add new tenants. One or more applicati
 
 ## Deployment
 
-This is available as a Docker container with Apache Tomcat - see [https://github.hpe.com/caf/caf-audit-management-service-container](https://github.hpe.com/caf/caf-audit-management-service-container "caf-audit-management-service-container")
+This is available as a Docker container with Apache Tomcat - see [caf-audit-management-service-container](https://github.hpe.com/caf/caf-audit-management-service-container)
+
+## Usage
+
+To start using the web service, the endpoints can be exercised by accessing the Web UI at the following URL:
+
+	http://<docker.ip.address>:<port>/caf-audit-management-ui
+
+Replace `<docker.ip.address>` and `<port>` as necessary.

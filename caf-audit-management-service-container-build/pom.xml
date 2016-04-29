@@ -27,7 +27,7 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-management-service</artifactId>
-            <version>1.0</version>
+            <version>1.1-SNAPSHOT</version>
             <type>war</type>
         </dependency>
         <dependency>
@@ -54,13 +54,13 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit</artifactId>
-            <version>1.1</version>
+            <version>1.2-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-management-client</artifactId>
-            <version>1.0</version>
+            <version>1.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
@@ -179,7 +179,7 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-management-ui</artifactId>
-            <version>1.0</version>
+            <version>1.1-SNAPSHOT</version>
             <type>war</type>
         </dependency>
 

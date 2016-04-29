@@ -1,6 +1,59 @@
 # Audit Event Definition Schema
 
-This contains the exact XML Schema file that the Audit Event Definition File must adhere to.
+In order to use CAF Auditing in an application, the auditing events that the application uses must be specified along with the parameters that are associated with each of the events. These events are specified in an Audit Event Definition File. 
+
+This project contains the exact XML Schema file that the Audit Event Definition File must adhere to.
+
+## Audit Event Definition File
+
+An example of an Audit Event Definition File is shown next:
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd">
+	  <ApplicationId>SampleApp</ApplicationId>
+	  <AuditEvents>
+	    <AuditEvent>
+	      <TypeId>viewDocument</TypeId>
+	      <CategoryId>documentEvents</CategoryId>
+	      <Params>
+	        <Param>
+	          <Name>docId</Name>
+	          <Type>long</Type>
+	          <Description>Document Identifier</Description>
+	        </Param>
+	      </Params>
+	    </AuditEvent>
+	    <AuditEvent>
+	      <TypeId>deleteDocument</TypeId>
+	      <CategoryId>documentEvents</CategoryId>
+	      <Params>
+	        <Param>
+	          <Name>docId</Name>
+	          <Type>long</Type>
+	          <Description>Document Identifier</Description>
+	        </Param>
+	        <Param>
+	          <Name>authosisedBy</Name>
+	          <Type>string</Type>
+	          <Description>User who authorised the deletion</Description>
+	        </Param>
+	      </Params>
+	    </AuditEvent>
+	  </AuditEvents>
+	</AuditedApplication>
+
+### Description
+
+![Description](images/audit-event-definition-file-desc.png)
+
+`AuditedApplication` is the root element.
+
+`ApplicationId` identifies the application that the Audit Events are associated with.
+
+For each Audit Event defined, `TypeId` is a string identifier for the particular event (e.g. viewDocument) and 
+`CategoryId` is a string identifier for the category of the event.
+
+A list of parameter elements are then defined for each Audit Event. This includes the `Name` of the parameter, the `Type` (i.e. string, short, int, long, float, double, boolean or date), the `Description`, and an optional `ColumnName` element which can be used to force the use of a particular database column when storing the audit data.
 
 ## Using the Schema File
 

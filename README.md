@@ -1,6 +1,6 @@
 # Audit Management Web Service UI
 
-This is the user-interface for calling the [CAF Audit Management Web Service](https://github.hpe.com/caf/caf-audit-management-service) operations. It allows users to see what operations the web service exposes as well as documentation relating to those operations and the web service in general.
+This Swagger UI project builds a documentation web application for the [CAF Audit Management Web Service](https://github.hpe.com/caf/caf-audit-management-service). It allows users to see what operations the web service exposes as well as documentation relating to those operations and the web service in general.
 
 ## Usage
 

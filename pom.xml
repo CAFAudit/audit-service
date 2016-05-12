@@ -26,7 +26,7 @@
 
     <groupId>com.hpe.caf</groupId>
     <artifactId>caf-audit-management-service-container</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
 
 
     <properties>

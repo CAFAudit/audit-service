@@ -15,8 +15,14 @@ public class TenantsApiServiceImpl extends TenantsApiService {
     @Override
     public Response tenantsPost(NewTenant newTenant, SecurityContext securityContext) throws Exception {
 
+        try {
             TenantAddPost.addTenant(newTenant);
-            return Response.ok().build();
+            return Response.status(Response.Status.OK).entity(new ApiResponseMessage("Success")).build();
+        } catch(BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ApiResponseMessage(e.getMessage())).build();
+        } catch(Exception e){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ApiResponseMessage(e.getMessage())).build();
+        }
     }
 
     @Override

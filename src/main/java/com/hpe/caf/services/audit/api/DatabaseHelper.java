@@ -247,7 +247,7 @@ public class DatabaseHelper {
             conn = DriverManager.getConnection(dbURL, myProp);
         } catch(Exception ex){
             LOG.error("Cannot get connection");
-            throw new BadRequestException(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
 
         return conn;

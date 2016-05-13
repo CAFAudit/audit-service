@@ -1,6 +1,7 @@
 package com.hpe.caf.services.audit.api.generated;
 
 import com.hpe.caf.services.audit.api.ApplicationAddPost;
+import com.hpe.caf.services.audit.api.exceptions.BadRequestException;
 
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
@@ -20,7 +21,13 @@ public class ApplicationsApiServiceImpl extends ApplicationsApiService {
     public Response applicationAddPost(InputStream inputStream)
             throws Exception {
 
-        ApplicationAddPost.addApplication(inputStream);
-        return Response.ok().build();
+        try {
+            ApplicationAddPost.addApplication(inputStream);
+            return Response.status(Response.Status.OK).entity(new ApiResponseMessage("Success")).build();
+        } catch (BadRequestException e){
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ApiResponseMessage(e.getMessage())).build();
+        } catch (Exception e){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ApiResponseMessage(e.getMessage())).build();
+        }
     }
 }

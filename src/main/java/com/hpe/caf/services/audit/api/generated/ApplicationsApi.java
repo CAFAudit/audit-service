@@ -1,19 +1,21 @@
 package com.hpe.caf.services.audit.api.generated;
 
+import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
-import java.io.InputStream;
-
-import com.sun.jersey.core.header.FormDataContentDisposition;
-
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.*;
+import java.io.InputStream;
 
 @Path("/applications")
 
 
+@Produces({ "application/json" })
 @io.swagger.annotations.Api(description = "the applications API")
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JaxRSServerCodegen", date = "2016-02-02T09:59:08.217Z")
 public class ApplicationsApi  {

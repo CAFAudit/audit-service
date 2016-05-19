@@ -28,7 +28,7 @@
   "caf-audit-management-service-config-path": "",
   "caf-audit-management-service-disable": "false",
 
-  "caf-audit-scheduler-marathon-url": "<MUST_REPLACE: Marathon endpoint>",
+  "caf-audit-scheduler-marathon-url": "<MUST_REPLACE: Marathon endpoint. e.g. http://192.168.56.10:8080 >",
   "caf-audit-scheduler-marathon-cpus": "0.5",
   "caf-audit-scheduler-marathon-mem": "256.0",
   "caf-audit-scheduler-marathon-container-docker-forcePullImage": "false",

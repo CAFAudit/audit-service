@@ -8,56 +8,50 @@ messages:
     value: "user1@hpe.com"
   - name: "correlationId"
     value: "correlation1"
-  - name: "StringType"
-    value: "user1"
-  - name: "Int16Type"
+  - name: "realmId"
+    value: "caf"
+  - name: "containerId"
+    value: "c82335049236404ba86529e9afacba39"
+  - name: "assetId"
+    value: "a82335049236404ba86529e9afacba39"
+  - name: "revId"
+    value: "1"
+  - name: "requestId"
+    value: "r82335049236404ba86529e9afacba39"
+  - name: "requestType"
     value: 1
-  - name: "Int32Type"
-    value: 1
-  - name: "Int64Type"
-    value: 1
-  - name: "FloatType"
-    value: 123.45
-  - name: "DoubleType"
-    value: 678.8
-  - name: "BooleanType"
-    value: true
-  - name: "DateType"
-    value: 2016-01-14 12:45:26.319
-  auditLogMethod: "auditTestEvent1"
+  - name: "requestUri"
+    value: "testRequestUri"
+  auditLogMethod: "auditApiRequest"
 - auditLogMethodParams:
   - name: "tenantId"
     value: "tenant1"
   - name: "userId"
-    value: "user2@hpe.com"
+    value: "user1@hpe.com"
   - name: "correlationId"
-    value: "correlation2"
-  - name: "StringType"
-    value: "user1"
-  - name: "Int16Type"
-    value: 2
-  - name: "Int32Type"
-    value: 2
-  - name: "Int64Type"
-    value: 2
-  - name: "FloatType"
-    value: 23.45
-  - name: "DoubleType"
-    value: 123.4
-  - name: "BooleanType"
-    value: false
-  - name: "DateType"
-    value: 2016-01-18 12:45:26.319
-  auditLogMethod: "auditTestEvent1"
+    value: "correlation1"
+  - name: "realmId"
+    value: "caf"
+  - name: "requestId"
+    value: "r82335049236404ba86529e9afacba39"
+  - name: "statusCode"
+    value: 200
+  - name: "errorMessage"
+    value: "testErrorMessage"
+  auditLogMethod: "auditApiResponse"
 - auditLogMethodParams:
   - name: "tenantId"
     value: "tenant1"
   - name: "userId"
-    value: "user3@hpe.com"
+    value: "user1@hpe.com"
   - name: "correlationId"
-    value: "correlation3"
-  - name: "StringType2"
-    value: "user3"
-  - name: "Int16Type2"
-    value: 3
-  auditLogMethod: "auditTestEvent2"
+    value: "correlation1"
+  - name: "realmId"
+    value: "caf"
+  - name: "rawSignature"
+    value: "testRawSignature"
+  - name: "referenceLocation"
+    value: "testRefLocn1"
+  - name: "storageDeviceId"
+    value: 100
+  auditLogMethod: "auditBlockPurged"

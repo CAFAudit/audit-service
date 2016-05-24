@@ -37,9 +37,17 @@
     <sequence>
       <element name="Name" type="string" />
       <element name="Type" type="aa:AuditEventParamType" />
+      <element name="Constraints" type="aa:AuditEventParamConstraints" minOccurs="0"/>
       <element name="ColumnName" type="string" minOccurs="0" />
       <element name="Description" type="string" />
     </sequence>
+  </complexType>
+
+  <complexType name="AuditEventParamConstraints">
+      <sequence>
+          <element name="MinLength" type="integer" minOccurs="0" default="1" />
+          <element name="MaxLength" type="integer" minOccurs="0" default="65000" />
+      </sequence>
   </complexType>
 
   <simpleType name="AuditEventParamType">

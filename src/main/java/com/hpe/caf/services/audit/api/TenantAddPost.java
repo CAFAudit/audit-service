@@ -1,12 +1,12 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.auditing.schema.AuditedApplication;
 import com.hpe.caf.services.audit.api.exceptions.BadRequestException;
 import com.hpe.caf.services.audit.api.generated.model.NewTenant;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -16,7 +16,6 @@ import java.util.Objects;
 public class TenantAddPost {
 
     private static final String ERR_MSG_TENANT_APPS_IS_MISSING = "The AuditManagement.TenantApplications table does not exist.";
-    private static final String TRANSFORM_TEMPLATE_NAME = "AuditTransform.vm";
 
     private static final Logger LOG = LoggerFactory.getLogger(TenantAddPost.class);
 
@@ -79,12 +78,13 @@ public class TenantAddPost {
                                 databaseHelper.createSchema(tenantSchemaName);
                                 databaseHelper.grantUsageOnSchema(tenantSchemaName, properties.getDatabaseReaderRole());
 
-                                InputStream auditConfigXMLStream = new ByteArrayInputStream(auditConfigXMLString.getBytes(StandardCharsets.UTF_8));
+                                //  Read the application event data xml file - XML/Java binding.
+                                AuditedApplication auditAppData = ApiServiceUtil.getAuditedApplication(auditConfigXMLString.getBytes(StandardCharsets.UTF_8));
 
-                                //  Create <tenantId>.Audit<application> table based on the audit events XML.
+                                //  Create <tenantId>.Audit<application> table based on the application event data xml file.
                                 LOG.debug("addTenant: Creating new auditing table for tenant '{}', application '{}'...", tenantId, application);
-                                TransformHelper transform = new TransformHelper();
-                                String createTableSQL = transform.doCreateTableTransform(auditConfigXMLStream, TRANSFORM_TEMPLATE_NAME, tenantSchemaName);
+                                XMLToSQLTransform transform = new XMLToSQLTransform(auditAppData);
+                                String createTableSQL = transform.getCreateDatabaseTableSQL(tenantSchemaName);
                                 databaseHelper.createTable(createTableSQL);
 
                                 //  Grant SELECT on the new table to the audit reader role.

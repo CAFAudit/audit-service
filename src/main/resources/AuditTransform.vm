@@ -25,6 +25,7 @@ package $package;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
 
+import java.text.MessageFormat;
 import java.util.Date;
 
 /**
@@ -63,8 +64,18 @@ public final class AuditLog
         ## For each parameter specified, build up argument, javadoc and eventParams list.
         ##
         #foreach($param in $auditevent.getChild("Params",$namespace).getChildren("Param",$namespace))
+            ##
+            #set($name="")
+            #set($type="")
+            #set($minLength="")
+            #set($maxLength="")
+            #set($columnName="")
+            #set($desc="")
+            ##
             #set($name = $param.getChild("Name",$namespace).getText())
             #set($type = $param.getChild("Type",$namespace).getText())
+            #set($minLength = $param.getChild("Constraints",$namespace).getChild("MinLength",$namespace).getText())
+            #set($maxLength = $param.getChild("Constraints",$namespace).getChild("MaxLength",$namespace).getText())
             #set($columnName = $param.getChild("ColumnName",$namespace).getText())
             ##  Do not change case for supported primitive types.
             #if( $type == "short" || $type == "int" || $type == "long" || $type == "float" || $type == "double"|| $type == "boolean")
@@ -73,6 +84,25 @@ public final class AuditLog
                 #set($upperCaseType = "$type.substring(0, 1).toUpperCase()$type.substring(1)")
             #end
             #set($desc = $param.getChild("Description",$namespace).getText())
+            ##
+            ## Build up field validator expression for string types.
+            ##
+            #set($fieldValidators="")
+            #if( $type == "string" )
+                #if ($minLength != "" || $maxLength != "")
+                    #if( "$!minLength" == "" )
+                        ## minLength not specified.
+                        #set($fieldValidators = "ValidateMaxFieldLength(""$name"", $name, $maxLength)")
+                    #else
+                        #if ("$!maxLength" == "")
+                            ## maxLength not specified.
+                            #set($fieldValidators = "ValidateMinFieldLength(""$name"", $name, $minLength)")
+                        #else
+                            #set($fieldValidators = "ValidateFieldLength(""$name"", $name, $minLength, $maxLength)")
+                        #end
+                    #end
+                #end
+            #end
             ##
             ## Build up method argument list.
             ##
@@ -94,7 +124,11 @@ public final class AuditLog
             #else
                 #set($columnNameParam = """$columnName""")
             #end
-            #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name);$newline")
+            #if ( "$!fieldValidators" == "" )
+                #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name);$newline")
+            #else
+                #set($eventParamsList = "$eventParamsList        $fieldValidators;$newline        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name);$newline")
+            #end
             ##
             ## Build up javadoc list.
             ##
@@ -133,4 +167,42 @@ $eventParamsList
     }
 #end
 
+    /**
+     * Validates the field length and throws an appropriate exception if the min length constraint is exceeded.
+     */
+    private static void ValidateMinFieldLength(String fieldName, String fieldValue, Integer minLength)
+    throws Exception
+    {
+        ValidateFieldLength(fieldName, fieldValue, minLength, null);
+    }
+
+    /**
+     * Validates the field length and throws an appropriate exception if the max length constraint is exceeded.
+     */
+    private static void ValidateMaxFieldLength(String fieldName, String fieldValue, Integer maxLength)
+    throws Exception
+    {
+        ValidateFieldLength(fieldName, fieldValue, null, maxLength);
+    }
+
+    /**
+     * Validates the field length and throws an appropriate exception if min or max constraints are exceeded.
+     */
+    private static void ValidateFieldLength(String fieldName, String fieldValue, Integer minLength, Integer maxLength)
+        throws Exception
+    {
+        Integer fieldLength = fieldValue.length();
+
+        if (minLength != null) {
+            if (fieldLength < minLength) {
+                throw new Exception(MessageFormat.format("Field name {0} is too short, minimum is {1} characters.", fieldName, minLength));
+            }
+        }
+
+        if (maxLength != null) {
+            if (fieldLength > maxLength) {
+                throw new Exception(MessageFormat.format("Field name {0} is too long, maximum is {1} characters.", fieldName, maxLength));
+            }
+        }
+    }
 }

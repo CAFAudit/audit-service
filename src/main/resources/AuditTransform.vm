@@ -109,10 +109,10 @@ public final class AuditLog
 
                     #if( "$!minLength" == "" )
                         ## minLength not specified.
-                        #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, null, $maxLength);$newline")                    #else
+                        #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, -1, $maxLength);$newline")                    #else
                         #if ("$!maxLength" == "")
                             ## maxLength not specified.
-                            #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $minLength, null);$newline")
+                            #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $minLength, -1);$newline")
                         #else
                             #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $minLength, $maxLength);$newline")
                         #end

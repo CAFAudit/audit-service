@@ -27,7 +27,8 @@ public final class AuditLog
         channel.declareApplication(APPLICATION_IDENTIFIER);
     }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
     /**
      * Audit the viewDocument event
      * @param channel Identifies the channel to be used for message queuing 
@@ -66,8 +67,7 @@ public final class AuditLog
         auditEventBuilder.setUser(userId);
         auditEventBuilder.setCorrelationId(correlationId);
         auditEventBuilder.setEventType("documentEvents", "viewDocument");
-        ValidateFieldLength("String_Param", String_Param, 1, 32);
-        auditEventBuilder.addEventParameter("String_Param", null, String_Param);
+        auditEventBuilder.addEventParameter("String_Param", null, String_Param, 1, 32);
         auditEventBuilder.addEventParameter("Int16_Param", null, Int16_Param);
         auditEventBuilder.addEventParameter("Int32_Param", null, Int32_Param);
         auditEventBuilder.addEventParameter("Int64_Param", null, Int64_Param);
@@ -77,44 +77,5 @@ public final class AuditLog
         auditEventBuilder.addEventParameter("Date_Param", null, Date_Param);
 
         auditEventBuilder.send();
-    }
-
-    /**
-     * Validates the field length and throws an appropriate exception if the min length constraint is exceeded.
-     */
-    private static void ValidateMinFieldLength(String fieldName, String fieldValue, Integer minLength)
-    throws Exception
-    {
-        ValidateFieldLength(fieldName, fieldValue, minLength, null);
-    }
-
-    /**
-     * Validates the field length and throws an appropriate exception if the max length constraint is exceeded.
-     */
-    private static void ValidateMaxFieldLength(String fieldName, String fieldValue, Integer maxLength)
-    throws Exception
-    {
-        ValidateFieldLength(fieldName, fieldValue, null, maxLength);
-    }
-
-    /**
-     * Validates the field length and throws an appropriate exception if min or max constraints are exceeded.
-     */
-    private static void ValidateFieldLength(String fieldName, String fieldValue, Integer minLength, Integer maxLength)
-        throws Exception
-    {
-        Integer fieldLength = fieldValue.length();
-
-        if (minLength != null) {
-            if (fieldLength < minLength) {
-                throw new Exception(MessageFormat.format("Field name {0} is too short, minimum is {1} characters.", fieldName, minLength));
-            }
-        }
-
-        if (maxLength != null) {
-            if (fieldLength > maxLength) {
-                throw new Exception(MessageFormat.format("Field name {0} is too long, maximum is {1} characters.", fieldName, maxLength));
-            }
-        }
     }
 }

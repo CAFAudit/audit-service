@@ -25,6 +25,15 @@ public interface AuditEventBuilder
         String value
     );
 
+    void addEventParameter
+    (
+        String name,
+        String columnName,
+        String value,
+        Integer minLength,
+        Integer maxLength
+    ) throws Exception;
+
     default void addEventParameter
     (
         String name,

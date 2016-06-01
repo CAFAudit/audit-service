@@ -6,6 +6,8 @@ import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditLogHelper;
 import org.apache.kafka.clients.producer.*;
 
+import java.text.MessageFormat;
+
 final class KafkaAuditEventBuilder implements AuditEventBuilder
 {
     private static final String processId = AuditLogHelper.getProcessId().toString();
@@ -75,6 +77,19 @@ final class KafkaAuditEventBuilder implements AuditEventBuilder
         final String value
     )
     {
+        jsonAuditMessage.put(getEventParamName(name, columnName), value);
+    }
+
+    @Override
+    public void addEventParameter
+            (
+                    final String name,
+                    final String columnName,
+                    final String value,
+                    final Integer minLength,
+                    final Integer maxLength
+            ) throws Exception {
+        ValidateFieldLength(name, value, minLength, maxLength);
         jsonAuditMessage.put(getEventParamName(name, columnName), value);
     }
 
@@ -174,4 +189,26 @@ final class KafkaAuditEventBuilder implements AuditEventBuilder
         // Send the record (synchronously)
         final RecordMetadata metadata = producer.send(auditEventRecord).get();
     }
+
+    /**
+     * Validates the field length and throws an appropriate exception if min or max constraints are exceeded.
+     */
+    private static void ValidateFieldLength(String fieldName, String fieldValue, Integer minLength, Integer maxLength)
+            throws Exception
+    {
+        Integer fieldLength = fieldValue.length();
+
+        if (minLength != null) {
+            if (fieldLength < minLength) {
+                throw new Exception(MessageFormat.format("Field name {0} is too short, minimum is {1} characters.", fieldName, minLength));
+            }
+        }
+
+        if (maxLength != null) {
+            if (fieldLength > maxLength) {
+                throw new Exception(MessageFormat.format("Field name {0} is too long, maximum is {1} characters.", fieldName, maxLength));
+            }
+        }
+    }
+
 }

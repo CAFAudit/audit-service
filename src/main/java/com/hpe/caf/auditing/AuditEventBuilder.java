@@ -1,5 +1,6 @@
 package com.hpe.caf.auditing;
 
+import java.text.MessageFormat;
 import java.util.Date;
 
 public interface AuditEventBuilder
@@ -25,14 +26,18 @@ public interface AuditEventBuilder
         String value
     );
 
-    void addEventParameter
+    default void addEventParameter
     (
         String name,
         String columnName,
         String value,
-        Integer minLength,
-        Integer maxLength
-    ) throws Exception;
+        int minLength,
+        int maxLength
+    )
+    {
+        AuditValidator.validateString(name, value, minLength, maxLength);
+        addEventParameter(name, columnName, value);
+    }
 
     default void addEventParameter
     (
@@ -105,4 +110,5 @@ public interface AuditEventBuilder
     }
 
     void send() throws Exception;
+
 }

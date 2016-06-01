@@ -4,7 +4,6 @@ package com.hpe.caf.auditing.plugins.unittest;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
 
-import java.text.MessageFormat;
 import java.util.Date;
 
 /**

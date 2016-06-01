@@ -25,7 +25,6 @@ package $package;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
 
-import java.text.MessageFormat;
 import java.util.Date;
 
 /**

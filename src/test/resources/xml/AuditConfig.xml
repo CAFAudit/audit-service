@@ -13,6 +13,10 @@
 				<Param>
 					<Name>String_Param</Name>
 					<Type>string</Type>
+					<Constraints>
+						<MinLength>1</MinLength>
+						<MaxLength>32</MaxLength>
+					</Constraints>
 					<Description>Description for String_Param</Description>
 				</Param>
 				<Param>

@@ -63,8 +63,18 @@ public final class AuditLog
         ## For each parameter specified, build up argument, javadoc and eventParams list.
         ##
         #foreach($param in $auditevent.getChild("Params",$namespace).getChildren("Param",$namespace))
+            ##
+            #set($name="")
+            #set($type="")
+            #set($minLength="")
+            #set($maxLength="")
+            #set($columnName="")
+            #set($desc="")
+            ##
             #set($name = $param.getChild("Name",$namespace).getText())
             #set($type = $param.getChild("Type",$namespace).getText())
+            #set($minLength = $param.getChild("Constraints",$namespace).getChild("MinLength",$namespace).getText())
+            #set($maxLength = $param.getChild("Constraints",$namespace).getChild("MaxLength",$namespace).getText())
             #set($columnName = $param.getChild("ColumnName",$namespace).getText())
             ##  Do not change case for supported primitive types.
             #if( $type == "short" || $type == "int" || $type == "long" || $type == "float" || $type == "double"|| $type == "boolean")
@@ -94,7 +104,21 @@ public final class AuditLog
             #else
                 #set($columnNameParam = """$columnName""")
             #end
-            #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name);$newline")
+            #if (( $type == "string" ) && ($minLength != "" || $maxLength != ""))
+
+                    #if( "$!minLength" == "" )
+                        ## minLength not specified.
+                        #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, -1, $maxLength);$newline")                    #else
+                        #if ("$!maxLength" == "")
+                            ## maxLength not specified.
+                            #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $minLength, -1);$newline")
+                        #else
+                            #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $minLength, $maxLength);$newline")
+                        #end
+                    #end
+            #else
+                #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name);$newline")
+            #end
             ##
             ## Build up javadoc list.
             ##
@@ -132,5 +156,4 @@ $eventParamsList
         auditEventBuilder.send();
     }
 #end
-
 }

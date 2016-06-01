@@ -29,6 +29,19 @@ public interface AuditEventBuilder
     (
         String name,
         String columnName,
+        String value,
+        int minLength,
+        int maxLength
+    )
+    {
+        AuditValidator.validateString(name, value, minLength, maxLength);
+        addEventParameter(name, columnName, value);
+    }
+
+    default void addEventParameter
+    (
+        String name,
+        String columnName,
         short value
     )
     {
@@ -96,4 +109,5 @@ public interface AuditEventBuilder
     }
 
     void send() throws Exception;
+
 }

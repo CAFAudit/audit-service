@@ -71,7 +71,7 @@ public class ApplicationAddPostTest {
     public void testAddPost_Success_RegisterApplication () throws Exception {
 
         //  Mock JAXB xml binding code.
-        AuditedApplication auditedApp = getAuditedApplication("TestApplication");
+        AuditedApplication auditedApp = TestUtil.getAuditedApplication("TestApplication");
         PowerMockito.mockStatic(JAXBUnmarshal.class);
         PowerMockito.when(JAXBUnmarshal.bindAuditEventsXml(Mockito.any()))
                 .thenReturn(auditedApp);
@@ -100,7 +100,7 @@ public class ApplicationAddPostTest {
     public void testAddPost_Success_ModifyApplication () throws Exception {
 
         //  Mock JAXB xml binding code.
-        AuditedApplication auditedApp = getAuditedApplication("TestApplication");
+        AuditedApplication auditedApp = TestUtil.getAuditedApplication("TestApplication");
         PowerMockito.mockStatic(JAXBUnmarshal.class);
         PowerMockito.when(JAXBUnmarshal.bindAuditEventsXml(Mockito.any()))
                 .thenReturn(auditedApp);
@@ -194,7 +194,7 @@ public class ApplicationAddPostTest {
     public void testAddPost_Failure_ApplicationIdNotFound () throws Exception {
 
         //  Mock JAXB xml binding code.
-        AuditedApplication auditedApp = getAuditedApplication("");
+        AuditedApplication auditedApp = TestUtil.getAuditedApplication("");
         PowerMockito.mockStatic(JAXBUnmarshal.class);
         PowerMockito.when(JAXBUnmarshal.bindAuditEventsXml(Mockito.any()))
                 .thenReturn(auditedApp);
@@ -231,29 +231,4 @@ public class ApplicationAddPostTest {
         Mockito.verify(mockDatabaseHelper, Mockito.times(0)).doesApplicationEventsRowExist(Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(0)).insertApplicationEventsRow(Mockito.anyString(),Mockito.anyString());
     }
-
-    private AuditedApplication getAuditedApplication (String applicationId) throws Exception {
-
-        AuditedApplication aa = new AuditedApplication();
-        aa.setApplicationId(applicationId);
-
-        AuditedApplication.AuditEvents aes = new AuditedApplication.AuditEvents();
-        AuditEvent ae = new AuditEvent();
-
-        AuditEventParam aep = new AuditEventParam();
-        aep.setName("StringType");
-        aep.setType(AuditEventParamType.STRING);
-        aep.setColumnName("StringType");
-        aep.setDescription("Description for StringType");
-
-        AuditEvent.Params params = new AuditEvent.Params();
-        params.getParam().add(aep);
-
-        ae.setParams(params);
-        aes.getAuditEvent().add(ae);
-        aa.setAuditEvents(aes);
-
-        return aa;
-    }
-
 }

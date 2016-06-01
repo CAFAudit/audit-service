@@ -67,6 +67,9 @@
 				<Param>
 					<Name>String_Param2</Name>
 					<Type>string</Type>
+					<Constraints>
+						<MaxLength>1000000</MaxLength>
+					</Constraints>
 					<ColumnName>String_Param2</ColumnName>
 					<Description>Description for String_Param2</Description>
 				</Param>
@@ -75,6 +78,21 @@
 					<Type>short</Type>
 					<ColumnName>Int16_Param2</ColumnName>
 					<Description>Description for Int16_Param2</Description>
+				</Param>
+			</Params>
+		</AuditEvent>
+		<AuditEvent>
+			<TypeId>viewDocument3</TypeId>
+			<CategoryId>documentEvents3</CategoryId>
+			<Params>
+				<Param>
+					<Name>String_Param2</Name>
+					<Type>string</Type>
+					<Constraints>
+						<MaxLength>32000000</MaxLength>
+					</Constraints>
+					<ColumnName>String_Param2</ColumnName>
+					<Description>Description for String_Param2</Description>
 				</Param>
 			</Params>
 		</AuditEvent>

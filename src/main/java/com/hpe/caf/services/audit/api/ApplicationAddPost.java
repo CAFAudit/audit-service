@@ -1,37 +1,32 @@
 package com.hpe.caf.services.audit.api;
 
+import com.hpe.caf.auditing.schema.AuditEvent;
+import com.hpe.caf.auditing.schema.AuditEventParam;
+import com.hpe.caf.auditing.schema.AuditEventParamType;
 import com.hpe.caf.services.audit.api.exceptions.BadRequestException;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.hpe.caf.auditing.schema.AuditedApplication;
-import com.hpe.caf.auditing.schema.AuditEvent;
-import com.hpe.caf.auditing.schema.AuditEventParam;
-import com.hpe.caf.auditing.schema.AuditEventParamType;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import java.io.*;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ApplicationAddPost is responsible for registering application defined audit event XML.
  */
 public class ApplicationAddPost {
 
-    private static final String TRANSFORM_XSD_FILEPATH = "schema/AuditedApplication.xsd";
-    private static final String TRANSFORM_TEMPLATE_NAME = "AuditTransform.vm";
-    private static final String CUSTOM_EVENT_PARAM_PREFIX = "eventParam";
-
+    private static final String AUDITED_APPLICATION_XSD_FILEPATH = "schema/AuditedApplication.xsd";
     private static final String ERR_MSG_XML_NOT_VALID = "The audit events XML configuration file does not conform to the schema.";
-    private static final String ERR_MSG_XML_READ_FAILURE = "Failed to bind the XML audit events file.";
     private static final String ERR_MSG_XML_APPID_VALUE_MISSING = "The application identifier has not been supplied in the XML audit events file.";
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationAddPost.class);
@@ -55,27 +50,19 @@ public class ApplicationAddPost {
                 //  Check validity of XML and throw error if invalid.
                 ByteArrayInputStream is = new ByteArrayInputStream(auditXMLConfigBytes);
                 LOG.debug("addApplication: Checking validity of audit events XML...");
-                boolean isValid = isXMLValid(is, TRANSFORM_XSD_FILEPATH);
+                boolean isValid = isXMLValid(is, AUDITED_APPLICATION_XSD_FILEPATH);
                 if (!isValid) {
                     LOG.error("addApplication: Error - '{}'", ERR_MSG_XML_NOT_VALID);
                     throw new BadRequestException(ERR_MSG_XML_NOT_VALID);
                 }
 
                 //  Read the application event data xml file - XML/Java binding.
-                AuditedApplication auditAppData;
-                try {
-                    ByteArrayInputStream bais = new ByteArrayInputStream(auditXMLConfigBytes);
-                    LOG.debug("addApplication: Binding audit events XML to AuditedApplication...");
-                    auditAppData = JAXBUnmarshal.bindAuditEventsXml(bais);
-                } catch (JAXBException e) {
-                    LOG.error("addApplication: Error - '{}'", ERR_MSG_XML_READ_FAILURE);
-                    throw new Exception(ERR_MSG_XML_READ_FAILURE);
-                }
+                AuditedApplication auditAppData = ApiServiceUtil.getAuditedApplication(auditXMLConfigBytes);
 
                 //  Get ApplicationId from the application event data object.
                 LOG.debug("addApplication: Getting ApplicationId from audit events XML...");
                 String application = auditAppData.getApplicationId();
-                if (isNotNullOrEmpty(application)) {
+                if (ApiServiceUtil.isNotNullOrEmpty(application)) {
                     LOG.info("addApplication: ApplicationId is '{}'...", application);
 
                     //  Get database helper instance.
@@ -95,7 +82,6 @@ public class ApplicationAddPost {
                         LOG.debug("addApplication: Creating new row in AuditManagement.ApplicationEvents for application '{}'...", application);
                         databaseHelper.insertApplicationEventsRow(application, auditXMLConfigString);
                     } else {
-
                         //  The application has already been registered. So update ApplicationEvents
                         //  table with audit events XML changes.
                         LOG.debug("addApplication: Updating row in AuditManagement.ApplicationEvents for application '{}'...", application);
@@ -105,12 +91,12 @@ public class ApplicationAddPost {
                         LOG.debug("addApplication: Getting list of tenants for application '{}'...", application);
                         List<String> tenants = databaseHelper.getTenantsForApp(application);
 
-                        //  For each tenant, modify table schema if necessary.
+                        //  For each tenant, modify existing table schema if necessary.
                         LOG.debug("addApplication: Modifying tenant auditing tables where necessary...");
                         for (String tenantId : tenants) {
                             String tableName = "Audit" + application;
                             String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
-                            boolean tableModified = ModifyDatabaseSchema(auditAppData, databaseHelper, tenantSchemaName, tableName);
+                            boolean tableModified = modifyDatabaseTable(auditAppData,databaseHelper,tenantSchemaName, tableName);
                             if (tableModified) {
                                 LOG.debug("addApplication: Table '{}' modified...", tenantSchemaName + "." + tableName);
                             } else {
@@ -131,52 +117,6 @@ public class ApplicationAddPost {
             LOG.error("addApplication: Error - {}", e.toString());
             throw e;
         }
-    }
-
-    /**
-     * Generate sql statements for column addition to the specified table and execute.
-     */
-    private static boolean ModifyDatabaseSchema(AuditedApplication auditApplicationData, DatabaseHelper databaseHelper, String schema, String tableName) throws Exception {
-
-        boolean tableModified = false;
-
-        //  Identify all audit event parameters.
-        List<AuditEvent> eventList = auditApplicationData.getAuditEvents().getAuditEvent();
-
-        ArrayList<AuditEventParam> paramsList = new ArrayList<>();
-        for (AuditEvent anEventList : eventList) {
-            List<AuditEventParam> params = anEventList.getParams().getParam();
-            paramsList.addAll(params);
-        }
-
-        //  Iterate through each parameter name and identify those missing from the
-        //  database table. Then modify the table to support the new parameter event data.
-        for (AuditEventParam aep : paramsList) {
-            String columnName = CUSTOM_EVENT_PARAM_PREFIX + (isNotNullOrEmpty(aep.getColumnName()) ? aep.getColumnName() : aep.getName());
-
-            // Check if column exists.
-            LOG.debug("ModifyDatabaseSchema: checking if column '{}' exists...", columnName);
-            boolean columnExists = databaseHelper.doesColumnExist(schema, tableName, columnName);
-
-            if (!columnExists) {
-                //  Get event param type.
-                AuditEventParamType paramType = aep.getType();
-
-                //  Generate 'ALTER TABLE ADD COLUMN' statement.
-                TransformHelper transform = new TransformHelper();
-                String addColumnSQL = transform.doModifyTableTransform(TRANSFORM_TEMPLATE_NAME, schema, tableName, columnName, paramType.value());
-
-                //  Execute SQL.
-                LOG.debug("ModifyDatabaseSchema: Column '{}' does not exist...", columnName);
-                databaseHelper.addColumn(addColumnSQL);
-                LOG.debug("ModifyDatabaseSchema: New column '{}' added ...", columnName);
-                tableModified = true;
-            } else {
-                LOG.debug("ModifyDatabaseSchema: Column '{}' already exists...", columnName);
-            }
-        }
-
-        return tableModified;
     }
 
     /**
@@ -203,7 +143,67 @@ public class ApplicationAddPost {
         return isValid;
     }
 
-    private static boolean isNotNullOrEmpty(String str) {
-        return str != null && !str.isEmpty();
+    /**
+     * Generates and executes ALTER TABLE SQL based on missing columns specified in the audited application data xml file.
+     */
+    private static boolean modifyDatabaseTable(AuditedApplication auditApplicationData, DatabaseHelper databaseHelper, String schemaName, String tableName) throws Exception {
+
+        boolean tableModified = false;
+
+        //  Identify all audit event parameters.
+        List<AuditEvent> eventList = auditApplicationData.getAuditEvents().getAuditEvent();
+
+        ArrayList<AuditEventParam> paramsList = new ArrayList<>();
+        for (AuditEvent anEventList : eventList) {
+            List<AuditEventParam> params = anEventList.getParams().getParam();
+            paramsList.addAll(params);
+        }
+
+        //  Iterate through each parameter name and identify those missing from the
+        //  database table. Then modify the table to support the new parameter event data.
+        for (AuditEventParam aep : paramsList) {
+            String columnName = ApiServiceUtil.CUSTOM_EVENT_PARAM_PREFIX + (ApiServiceUtil.isNotNullOrEmpty(aep.getColumnName()) ? aep.getColumnName() : aep.getName());
+
+            // Check if column exists.
+            LOG.debug("modifyDatabaseTable: checking if column '{}' exists...", columnName);
+            boolean columnExists = databaseHelper.doesColumnExist(schemaName, tableName, columnName);
+
+            if (!columnExists) {
+                //  Get event param type.
+                AuditEventParamType paramType = aep.getType();
+
+                //  Get max length constraint.
+                Integer maxLengthConstraint = null;
+                if (aep.getConstraints() != null) {
+                    maxLengthConstraint = aep.getConstraints().getMaxLength().intValue();
+                }
+
+                //  Generate 'ALTER TABLE ADD COLUMN' statement.
+                String addColumnSQL = getModifyTableSQL(schemaName, tableName, columnName, paramType.value(), maxLengthConstraint);
+
+                //  Execute SQL.
+                LOG.debug("modifyDatabaseTable: Column '{}' does not exist...", columnName);
+                databaseHelper.addColumn(addColumnSQL);
+                LOG.debug("modifyDatabaseTable: New column '{}' added ...", columnName);
+                tableModified = true;
+            } else {
+                LOG.debug("modifyDatabaseTable: Column '{}' already exists...", columnName);
+            }
+        }
+
+        return tableModified;
     }
+
+    /**
+     * Generates an ALTER TABLE sql statement for column addition.
+     */
+    private static String getModifyTableSQL(String schemaName, String tableName, String columnName, String columnType, Integer maxLengthConstraint) throws Exception {
+
+        //  Generate 'ALTER TABLE ADD COLUMN' sql statement.
+        StringBuilder modifyTableSQL = new StringBuilder();
+        modifyTableSQL.append("ALTER TABLE ").append(schemaName).append(".").append(tableName).append(" ADD COLUMN ").append(columnName).append(" ").append(ApiServiceUtil.getVerticaType(columnType, maxLengthConstraint));
+
+        return modifyTableSQL.toString();
+    }
+
 }

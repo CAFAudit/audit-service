@@ -1,6 +1,5 @@
 package com.hpe.caf.auditing;
 
-import java.text.MessageFormat;
 import java.util.Date;
 
 public interface AuditEventBuilder

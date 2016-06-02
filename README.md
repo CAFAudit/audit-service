@@ -40,55 +40,64 @@ In this example the Audit Event Definition file is in the `src/main/xml/` folder
 Using the sample audit events XML specified in the [Audit Event Definition File](https://github.hpe.com/caf/caf-audit-schema/blob/develop/README.md), the code generation plugin will auto-generate the following methods as part of the `AuditLog` class:
 
 	/**
-	     * Audit the viewDocument event
-	     * @param channel Identifies the channel to be used for message queuing 
-	     * @param userId Identifies the user who triggered the event 
-	     * @param docId Document identifier 
-	     */
-	    public static void auditViewDocument
-	    (
-	        final AuditChannel channel,
-	        final String userId,
-	        final long docId
-	    )
-	        throws Exception
-	    {
-	        final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
-	        auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
-	        auditEventBuilder.setUser(userId);
-	        auditEventBuilder.setEventType("documentEvents", "viewDocument");
-	        auditEventBuilder.addEventParameter("docId", null, docId);
+	 * Audit the viewDocument event
+	 * @param channel Identifies the channel to be used for message queuing 
+	 * @param tenantId Identifies the tenant that the user belongs to 
+	 * @param userId Identifies the user who triggered the event 
+	 * @param correlationId Identifies the same user action 
+	 * @param docId Document Identifier 
+	 */
+	public static void auditViewDocument
+	(
+	    final AuditChannel channel,
+	    final String tenantId,
+	    final String userId,
+	    final String correlationId,
+	    final long docId
+	)
+	    throws Exception
+	{
+	    final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
+	    auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
+	    auditEventBuilder.setTenant(tenantId);
+	    auditEventBuilder.setUser(userId);
+	    auditEventBuilder.setCorrelationId(correlationId);
+	    auditEventBuilder.setEventType("documentEvents", "viewDocument");
+	    auditEventBuilder.addEventParameter("docId", null, docId);
 	
-	        auditEventBuilder.send();
-	    }
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-	    /**
-	     * Audit the policyApplied event
-	     * @param channel Identifies the channel to be used for message queuing 
-	     * @param userId Identifies the user who triggered the event 
-	     * @param policyId Policy identifier 
-	     * @param policyName Policy Name 
-	     * @param policyDef Policy definition 
-	     */
-	    public static void auditPolicyApplied
-	    (
-	        final AuditChannel channel,
-	        final String userId,
-	        final long policyId,
-	        final String policyName,
-	        final String policyDef
-	    )
-	        throws Exception
-	    {
-	        final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
-	        auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
-	        auditEventBuilder.setUser(userId);
-	        auditEventBuilder.setEventType("policyEvents", "policyApplied");
-	        auditEventBuilder.addEventParameter("policyId", null, policyId);
-	        auditEventBuilder.addEventParameter("policyName", null, policyName);
-	        auditEventBuilder.addEventParameter("policyDef", "policyDefinition", policyDef);
+	    auditEventBuilder.send();
+	}
 	
-	        auditEventBuilder.send();
-	    }
+	/**
+	 * Audit the deleteDocument event
+	 * @param channel Identifies the channel to be used for message queuing 
+	 * @param tenantId Identifies the tenant that the user belongs to 
+	 * @param userId Identifies the user who triggered the event 
+	 * @param correlationId Identifies the same user action 
+	 * @param docId Document Identifier 
+	 * @param authorisedBy User who authorised the deletion 
+	 */
+	public static void auditDeleteDocument
+	(
+	    final AuditChannel channel,
+	    final String tenantId,
+	    final String userId,
+	    final String correlationId,
+	    final long docId,
+	    final String authorisedBy
+	)
+	    throws Exception
+	{
+	    final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
+	    auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
+	    auditEventBuilder.setTenant(tenantId);
+	    auditEventBuilder.setUser(userId);
+	    auditEventBuilder.setCorrelationId(correlationId);
+	    auditEventBuilder.setEventType("documentEvents", "deleteDocument");
+	    auditEventBuilder.addEventParameter("docId", null, docId);
+	    auditEventBuilder.addEventParameter("authorisedBy", null, authorisedBy, 1, 256);
+	
+	    auditEventBuilder.send();
+	}
 
-Calls to methods `auditViewDocument` and `auditPolicyApplied` would then be made to send document and policy event messages to Kafka.
+Calls to methods `auditViewDocument` and `auditDeleteDocument` would then be made to send document event messages to Kafka.

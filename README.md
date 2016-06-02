@@ -155,6 +155,10 @@ In order to make use of this no-op auditing library, modify the Maven coordinate
 
 Alternatively, you could do something more custom at runtime where you replace the standard auditing library jar with the no-op version if you prefer.
 
+### String Validation
+
+The standard auditing library, `caf-audit`, performs string validation on audit events through the `AuditValidator` object. This applies only to string data where the audit event parameter has been configured with minimum and/or maximum length constraints in the [Audit Event Definition File](https://github.hpe.com/caf/caf-audit-schema/blob/develop/README.md). Where a `MinLength` constraint has been defined, validation will fail if the length of the given string is less than this number. Where a `MaxLength` constraint has been defined, validation will fail if the length of the given string is greater than this number.
+
 ## Using a Client-side Auditing Library
 
 ### Dependencies

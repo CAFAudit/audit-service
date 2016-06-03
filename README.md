@@ -35,6 +35,10 @@ An example of an Audit Event Definition File is shown next:
 	        <Param>
 	          <Name>authorisedBy</Name>
 	          <Type>string</Type>
+			  <Constraints>
+				<MinLength>1</MinLength>
+				<MaxLength>256</MaxLength>
+			  </Constraints>
 	          <Description>User who authorised the deletion</Description>
 	        </Param>
 	      </Params>

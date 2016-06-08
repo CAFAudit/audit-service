@@ -12,6 +12,6 @@
 | Ports & Network Points | 8080 |
 | Dependencies | Vertica 7.2.x <br> Apache Kafka |
 | Scaling |   |
-| Marathon - JSON, Configuration & Properties | Read more here: [CAF Audit Management Service Marathon Properties Documentation](https://github.hpe.com/caf/caf-audit-management-service-container/configuration/marathon-properties.md) <br> ArtifactId: caf-audit-management-service-documentation, Version 1.0 |
-| Documentation | Configuration - [CAF Audit Management Service Configuration](https://github.hpe.com/caf/caf-audit-management-service-container/configuration/caf-audit-management-service-container.md) <br> API - [CAF Audit Management Service API](https://github.hpe.com/caf/caf-audit-management-service/caf-audit-management-service.md)
+| Documentation | Read more here: [CAF Audit Management Service Marathon Properties Documentation](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/configuration/marathon-properties.md) <br> ArtifactId: caf-audit-management-service-documentation, Version 1.0 |
+| Marathon - JSON, Configuration & Properties | Configuration - [CAF Audit Management Service Configuration](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/documentation/caf-audit-management-service-container.md) <br> API - [CAF Audit Management Service API](https://github.hpe.com/caf/caf-audit-management-service)
 | Known Issues	| None |

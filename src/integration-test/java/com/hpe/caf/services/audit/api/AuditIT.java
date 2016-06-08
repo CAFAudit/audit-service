@@ -57,8 +57,7 @@ public class AuditIT {
     private static final String VERTICA_HOST_USERNAME = "dbadmin";
     private static final String VERTICA_HOST_PASSWORD = "password";
 
-    private static final String AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH = "http://127.0.0.1:25080/caf-audit-management/v1";
-//    private static final String AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH = "http://127.0.0.1:9090/v1";
+    private static String AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH;
 
     private static final String AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS = "192.168.56.20:2181";
     private static final String AUDIT_MANAGEMENT_KAFKA_BROKERS = "192.168.56.20:9092";
@@ -204,6 +203,8 @@ public class AuditIT {
 
     @BeforeClass
     public static void setup() throws Exception {
+        AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH = System.getenv("webserviceurl");
+
         auditManagementApplicationsApi = new ApplicationsApi();
         auditManagementApplicationsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
 

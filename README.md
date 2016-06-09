@@ -14,10 +14,34 @@ The **POST /tenants** endpoint is used to add new tenants. One or more applicati
 
 This is available as a Docker container with Apache Tomcat - see [caf-audit-management-service-container](https://github.hpe.com/caf/caf-audit-management-service-container)
 
-## Usage
+## Using the Audit Management Web Service
 
 To start using the web service, the endpoints can be exercised by accessing the Web UI at the following URL:
 
 	http://<docker.ip.address>:<port>/caf-audit-management-ui
 
 Replace `<docker.ip.address>` and `<port>` as necessary.
+
+### Loading the XML Audit Events File
+
+Applications will define audit events that will occur in the system in an Audit Event Definition File. This file can then be registered using the /applications endpoint as shown in the screenshot below:
+
+![Overview](images/addApplication.png)
+
+#### Verification Instructions
+
+When the first application events file is registered, this operation will configure the Vertica database with audit management tables to record both the application specific audit events XML as well as tenants added through the service. See tables ApplicationEvents and TenantApplications under the AuditManagement schema in the Vertica database. An entry in the ApplicationEvents table will also be created to register the application events XML supplied.
+
+Any further calls to load other application events XML will result in additional rows being added to the ApplicationEvents table only.
+
+### Adding Tenants
+
+Once applications have been registered, tenants can then be added using the /tenants endpoint. The tenant and application identifiers need supplied in the call to this endpoint.
+
+![Overview](images/addTenant.png)
+
+#### Verification Instructions
+
+Every time a new tenant is added, a new row is inserted into the TenantApplications table under the AuditManagement database schema.
+
+Two new tenant specific database schemas are then created for the tenant in the Vertica database which comprise a number of tables. See [Auditing Database Tables](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/documentation/auditing-database-tables.md). If the client-side auditing library has sent audit events messages for this tenant through to the Kafka messaging service, this audit event data should start to arrive in the application specific audit events table under the tenant specific schema created as part of the add tenant web service call.

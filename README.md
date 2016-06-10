@@ -4,6 +4,12 @@ This docker image contains the [CAF Audit Management Web Service](https://github
 
 The supplied Marathon [properties](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/configuration/marathon-properties.json) can be used to deploy this container on Mesosphere’s [Marathon](https://mesosphere.github.io/marathon/) orchestration platform.
 
+To set up Apache Kafka click [here](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/documentation/apache-kafka.md).
+
+To see how the Audit Events File is used to create database schemas click [here](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/documentation/auditing-database-tables.md).
+
+For Audit Reporting click [here](https://github.hpe.com/caf/audit-reporting).
+
 ## Deploying the Audit Management Web Service
 
 ### Docker Images

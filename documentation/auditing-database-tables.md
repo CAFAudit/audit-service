@@ -1,5 +1,9 @@
 # Auditing Database Tables
 
+### Vertica Analytic Database
+
+A vagrant file is available for quickly provisioning a Vertica environment - see https://github.hpe.com/caf/vagrant-vertica
+
 ### Application Audit Events File
 
 When registering the audit events XML file using the Audit Management Web Service, the XML is recorded in a table named ApplicationEvents under the AuditManagement schema.

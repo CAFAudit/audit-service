@@ -2,9 +2,11 @@
 
 ![Overview](images/overview.png)
 
-Applications will define audit events that will occur in the system in an Audit Event Definition File.
+Applications will define audit events that will occur in the system in an [Audit Event Definition File](https://github.hpe.com/caf/caf-audit-schema/blob/develop/README.md).
 The Audit Event Definition File will be used to generate an application-specific client-side auditing library using a custom maven plugin. The client-side library is then used to send audit event messages to the Apache Kafka messaging service.
+
 The Audit Event Definition File will also be used to register the application with the Audit Management Web Service. The web service will set up Vertica to store the audit events.
+
 Vertica provides a high-performance loading mechanism for streaming the data from Apache Kafka into the Vertica database via Kafka Schedulers. This loading mechanism is configured and started when tenants are registered with the application using the Audit Management Web Service.
 
 For set-up:
@@ -15,6 +17,8 @@ For set-up:
 4. It is recommended, that you install and configure Vertica 7.2.x on a separate machine.
 5. Register the application and add tenant(s) with the Audit Management Web Service. This will create the necessary database schema in Vertica. It will also configure the Kafka integration feature in order to stream the data from the Kafka messaging service into the Vertica database.
 6. Use the client-side auditing library to send audit events to Kafka.
+
+Read below for more information.
 
 # Auditing Library
 

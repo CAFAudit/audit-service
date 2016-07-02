@@ -39,7 +39,7 @@ The marathon application loader is used to start the Audit Management Web Servic
 
 #### Configuration
 
-See the configuration for CAF Audit Management Service [here](https://github.hpe.com/caf/chateau/blob/develop/services/audit-management/properties.md).
+See the configuration for CAF Audit Management Service [here](https://github.hpe.com/caf/chateau/tree/develop/services/audit-management).
 
 ##### marathon-properties.json
 

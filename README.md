@@ -16,7 +16,7 @@ For Audit Reporting click [here](https://github.hpe.com/caf/audit-reporting).
 
 Download docker images for both the CAF Audit Management Service and the Audit Management utility for configuring/launching Vertica schedulers from Artifactory:
 
-docker pull rh7-artifactory.hpswlabs.hp.com:8443/caf/audit-management-service:1.3
+docker pull rh7-artifactory.hpswlabs.hp.com:8443/caf/audit-management-service:1.4
 
 docker pull rh7-artifactory.hpswlabs.hp.com:8443/caf/audit:1.0
 

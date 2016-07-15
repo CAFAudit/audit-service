@@ -1,6 +1,9 @@
 package com.hpe.caf.daemon;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.hpe.caf.services.audit.api.AppConfig;
+import java.lang.reflect.Type;
 import mesosphere.marathon.client.Marathon;
 import mesosphere.marathon.client.MarathonClient;
 import mesosphere.marathon.client.model.v2.*;
@@ -39,6 +42,7 @@ public final class MarathonDaemonLauncher implements DaemonLauncher {
         String marathonCPUs = properties.getMarathonCPUs();
         String marathonMem = properties.getMarathonMem();
         String marathonInstances = "1";
+        String marathonConstraints = properties.getMarathonConstraints();
         String marathonContainerType = "DOCKER";
         String marathonContainerDockerCredentials = properties.getMarathonContainerDockerCredentials();
         String marathonContainerDockerNetwork = properties.getMarathonContainerDockerNetwork();
@@ -79,6 +83,7 @@ public final class MarathonDaemonLauncher implements DaemonLauncher {
                 auditManagementApp.setCpus(Double.parseDouble(marathonCPUs));
                 auditManagementApp.setMem(Double.parseDouble(marathonMem));
                 auditManagementApp.setInstances(Integer.parseInt(marathonInstances));
+                auditManagementApp.setConstraints(parseConstraints(marathonConstraints));
 
                 List<String> uris = Arrays.asList(marathonContainerDockerCredentials);
                 auditManagementApp.setUris(uris);
@@ -110,6 +115,28 @@ public final class MarathonDaemonLauncher implements DaemonLauncher {
             throw new Exception(ERR_MSG_MARATHON_HOST_URL_NOT_SPECIFIED);
         }
 
+    }
+
+    /**
+     * Parses the specified JSON-encoded Marathon constraints string.
+     * @param constraintsString The string to be parsed.
+     * @return The constraints as a Java list of list of strings.
+     */
+    private static List<List<String>> parseConstraints(
+        final String constraintsString
+    ) {
+        // Check whether a constraint is actually specified
+        if (StringUtils.isEmpty(constraintsString)) {
+            return null;
+        }
+
+        // Construct an object for parsing the JSON-encoded constraints string
+        final Gson gson = new Gson();
+
+        // Parse the constraints string and return it
+        final Type listOfStringListsType = new TypeToken<List<List<String>>>(){}.getType();
+
+        return gson.fromJson(constraintsString, listOfStringListsType);
     }
 }
 

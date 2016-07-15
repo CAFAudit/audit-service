@@ -55,6 +55,10 @@ public class AppConfig {
 
     public String getMarathonMem(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_MEM"); }
 
+    public String getMarathonConstraints() {
+        return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_CONSTRAINTS");
+    }
+
     public String getMarathonUrl(){ return environment.getProperty("CAF_MARATHON_URL"); }
 
     public String getCAFAuditManagementDisable(){ return environment.getProperty("CAF_AUDIT_MANAGEMENT_DISABLE"); }

@@ -11,9 +11,9 @@
 
     <parent>
         <groupId>com.hpe.caf</groupId>
-        <artifactId>caf-latest-develop</artifactId>
+        <artifactId>caf-maven-latest</artifactId>
         <version>1-SNAPSHOT</version>
-        <relativePath>../caf-latest-develop</relativePath>
+        <relativePath>../caf-maven-latest</relativePath>
     </parent>
 
     <properties>
@@ -73,31 +73,37 @@
         <dependency>
             <groupId>com.hpe.caf.config</groupId>
             <artifactId>config-file</artifactId>
+            <version>10.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.codec</groupId>
             <artifactId>codec-json</artifactId>
+            <version>10.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.config</groupId>
             <artifactId>config-system</artifactId>
+            <version>10.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.cipher</groupId>
             <artifactId>cipher-null</artifactId>
+            <version>10.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.util</groupId>
             <artifactId>util-moduleloader</artifactId>
+            <version>1.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.util</groupId>
             <artifactId>util-naming</artifactId>
+            <version>1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

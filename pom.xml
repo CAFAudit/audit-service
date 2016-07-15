@@ -26,8 +26,6 @@
         <webserviceWarName>caf-audit-management</webserviceWarName>
         <swaggerUIWarName>caf-audit-management-ui</swaggerUIWarName>
         <webserviceBasePath>/v1</webserviceBasePath>
-        <deployFileUrl>${project.distributionManagement.snapshotRepository.url}</deployFileUrl>
-        <repositoryId>${project.distributionManagement.snapshotRepository.id}</repositoryId>
     </properties>
 
     <dependencies>

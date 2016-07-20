@@ -64,6 +64,12 @@
                             <build>
                                 <maintainer>Hewlett Packard Enterprise &lt;www.hpe.com&gt;</maintainer>
                                 <from>java:8</from>
+                                <labels>
+                                    <Build.Number>${caf-audit-management-cli.version}</Build.Number>
+                                    <Build.Date>${maven.build.timestamp}</Build.Date>
+                                    <Git.Branch>${git.branch}</Git.Branch>
+                                    <Git.Commit>${git.revision}</Git.Commit>
+                                </labels>
                                 <entryPoint>
                                     <exec>
                                         <args>/maven/tini-${tini.version}.exe</args>

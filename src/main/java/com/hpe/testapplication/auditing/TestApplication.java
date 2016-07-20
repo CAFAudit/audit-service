@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
 import java.util.*;
 
 public class TestApplication {
@@ -169,6 +170,7 @@ public class TestApplication {
                                 testEventMessageMap.put(param.getName(), Boolean.parseBoolean(param.getValue().toString()));
                             } else if (type.isAssignableFrom(Date.class)) {
                                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
                                 testMethodArgs.add(df.parse(param.getValue().toString()));
                                 testEventMessageMap.put(param.getName(), df.parse(param.getValue().toString()));
                             }
@@ -221,8 +223,8 @@ public class TestApplication {
                             //  Database returns timestamp objects and not java Date.
                             //  Convert and re-check before assuming dates are different.
                             if (actualvalue instanceof Timestamp) {
-                                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                                Date actualDate = df.parse(actualvalue.toString());
+                                Timestamp actualTimeStamp = (Timestamp) actualvalue;
+                                Date actualDate = Date.from(actualTimeStamp.toLocalDateTime().toInstant(ZoneOffset.UTC));
                                 if (!Objects.equals(actualDate,value)) {
                                     //  Date values still don't match.
                                     return false;

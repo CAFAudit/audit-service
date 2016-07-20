@@ -169,6 +169,7 @@ public class TestApplication {
                                 testEventMessageMap.put(param.getName(), Boolean.parseBoolean(param.getValue().toString()));
                             } else if (type.isAssignableFrom(Date.class)) {
                                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
                                 testMethodArgs.add(df.parse(param.getValue().toString()));
                                 testEventMessageMap.put(param.getName(), df.parse(param.getValue().toString()));
                             }

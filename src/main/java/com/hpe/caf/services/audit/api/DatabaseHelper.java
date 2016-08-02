@@ -146,22 +146,6 @@ public class DatabaseHelper {
     }
 
     /**
-     * Grant USAGE on the audit scheduler schema to the specified user.
-     */
-    public void grantUsageOnAuditSchedulerSchema(String schemaName, String userName) throws Exception {
-
-        String grantUsageOnSchemaSQL = "GRANT USAGE ON SCHEMA " + schemaName + " TO \"" + userName + "\"";
-
-        try (
-                Connection conn = getConnection(appConfig.getDatabaseLoaderAccount(), appConfig.getDatabaseLoaderAccountPassword());
-                Statement stmt = conn.createStatement()
-        ) {
-            //  Execute a statement to grant usage on the schema to the specified user.
-            stmt.execute(grantUsageOnSchemaSQL);
-        }
-    }
-
-    /**
      * Creates a new table in the database.
      */
     public void createTable(String createTableSQL) throws Exception {

@@ -57,8 +57,7 @@ public class TenantAddPostTest {
 
         //  Mock KafkaScheduler calls.
         PowerMockito.mockStatic(KafkaScheduler.class);
-        PowerMockito.doNothing().when(KafkaScheduler.class, "createScheduler", Mockito.any(), Mockito.anyString());
-        PowerMockito.doNothing().when(KafkaScheduler.class, "associateTopic", Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+        PowerMockito.doNothing().when(KafkaScheduler.class, "associateTopic", Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
 
         NewTenant newTenant = new NewTenant();
         newTenant.setTenantId("testtenant");
@@ -114,8 +113,7 @@ public class TenantAddPostTest {
 
         //  Mock KafkaScheduler calls.
         PowerMockito.mockStatic(KafkaScheduler.class);
-        PowerMockito.doNothing().when(KafkaScheduler.class, "createScheduler", Mockito.any(), Mockito.anyString());
-        PowerMockito.doNothing().when(KafkaScheduler.class, "associateTopic", Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+        PowerMockito.doNothing().when(KafkaScheduler.class, "associateTopic", Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
 
         NewTenant newTenant = new NewTenant();
         newTenant.setTenantId("testtenant");

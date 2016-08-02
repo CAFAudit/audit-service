@@ -8,7 +8,7 @@ The CAF Audit Management Web Service API provides a set of endpoints to facilita
 
 The **POST /applications** endpoint is used to register audit events used by each application defined in the Audit Event Definition File. This initializes the Vertica database with a set of management tables which are created under a schema named AuditManagement.
 
-The **POST /tenants** endpoint is used to add new tenants. One or more applications can be specified when adding a new tenant. This will result in application specific storage tables being created under tenant specific schemas in the Vertica database. The Vertica schedulers tasked with streaming the data from Apache Kafka into the Vertica database are also configured and launched as part of this operation.
+The **POST /tenants** endpoint is used to add new tenants. One or more applications can be specified when adding a new tenant. This will result in application specific storage tables being created under tenant specific schemas in the Vertica database. The Kafka topic representing the feed of audit event messages for the tenant is also associated with the pre-configured Vertica scheduler as part of this operation.
 
 ## Deployment
 

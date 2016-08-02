@@ -200,10 +200,7 @@ public class ApplicationAddPost {
     private static String getModifyTableSQL(String schemaName, String tableName, String columnName, String columnType, Integer maxLengthConstraint) throws Exception {
 
         //  Generate 'ALTER TABLE ADD COLUMN' sql statement.
-        StringBuilder modifyTableSQL = new StringBuilder();
-        modifyTableSQL.append("ALTER TABLE ").append(schemaName).append(".").append(tableName).append(" ADD COLUMN ").append(columnName).append(" ").append(ApiServiceUtil.getVerticaType(columnType, maxLengthConstraint));
-
-        return modifyTableSQL.toString();
+        return "ALTER TABLE " + schemaName + "." + tableName + " ADD COLUMN " + columnName + " " + ApiServiceUtil.getVerticaType(columnType, maxLengthConstraint);
     }
 
 }

@@ -93,46 +93,24 @@ public class TenantAddPost {
 
                                 LOG.info("addTenant: Database changes complete for tenant '{}', application '{}'...", tenantId, application);
 
-                                //  Create Kafka scheduler (per tenant) and associate a topic with that scheduler.
-                                String schedulerName = ApiServiceUtil.KAFKA_SCHEDULER_NAME_PREFIX + tenantId;
+                                //  Associate the Kafka topic with the Kafka Vertica scheduler for the specified tenant.
+                                String targetTable = tenantSchemaName +
+                                        "." +
+                                        ApiServiceUtil.KAFKA_TARGET_TABLE_PREFIX +
+                                        application;
 
-                                //  If the specified scheduler name already exists, then ignore creation step.
-                                LOG.debug("addTenant: Checking if Vertica scheduler '{}' has already been created...", schedulerName);
-                                boolean schemaExists = databaseHelper.doesSchemaExist(schedulerName);
-                                if (!schemaExists) {
-                                    LOG.info("addTenant: Creating Kafka scheduler...");
-                                    KafkaScheduler.createScheduler(properties, schedulerName);
+                                String rejectionTable = tenantSchemaName +
+                                        "." +
+                                        ApiServiceUtil.KAFKA_REJECT_TABLE;
 
-                                    LOG.info("addTenant: Launching Kafka scheduler...");
-                                    KafkaScheduler.launchScheduler(properties, tenantId, schedulerName);
-
-                                    // Granting USAGE on new schema to the web service account so they can check existence next time round.
-                                    databaseHelper.grantUsageOnAuditSchedulerSchema(schedulerName, properties.getDatabaseServiceAccount());
-                                }
-
-                                String targetTable = new StringBuilder()
-                                        .append(tenantSchemaName)
-                                        .append(".")
-                                        .append(ApiServiceUtil.KAFKA_TARGET_TABLE_PREFIX)
-                                        .append(application)
-                                        .toString();
-
-                                String rejectionTable = new StringBuilder()
-                                        .append(tenantSchemaName)
-                                        .append(".")
-                                        .append(ApiServiceUtil.KAFKA_REJECT_TABLE)
-                                        .toString();
-
-                                String targetTopic = new StringBuilder()
-                                        .append(ApiServiceUtil.KAFKA_TARGET_TOPIC_PREFIX)
-                                        .append(".")
-                                        .append(application)
-                                        .append(".")
-                                        .append(tenantId)
-                                        .toString();
+                                String targetTopic = ApiServiceUtil.KAFKA_TARGET_TOPIC_PREFIX +
+                                        "." +
+                                        application +
+                                        "." +
+                                        tenantId;
 
                                 LOG.info("addTenant: Associating Kafka topic with the scheduler...");
-                                KafkaScheduler.associateTopic(properties, schedulerName, targetTable, rejectionTable, targetTopic);
+                                KafkaScheduler.associateTopic(properties, targetTable, rejectionTable, targetTopic);
 
                             } catch (Exception ex) {
                                 //  Something unexpected has gone wrong. Delete tenant/application mapping to facilitate retry.
@@ -156,10 +134,7 @@ public class TenantAddPost {
      * Returns TRUE if the specified tenantId contains invalid characters, otherwise FALSE.
      */
     private static boolean containsInvalidCharacters(String tenantId) {
-        if (tenantId.matches(ApiServiceUtil.TENANTID_INVALID_CHARS_REGEX)) {
-            return false;
-        }
-        return true;
+        return !tenantId.matches(ApiServiceUtil.TENANTID_INVALID_CHARS_REGEX);
     }
 
 }

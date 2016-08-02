@@ -48,36 +48,27 @@ public class TenantUpdatePartitionsPost {
 
             // Build the names of the strings which are used to find the partition counts.
             //i.e. AuditEventTopic.MyDemo.tenant1
-            String topicName = new StringBuilder()
-                    .append(ApiServiceUtil.KAFKA_TARGET_TOPIC_PREFIX)
-                    .append(".")
-                    .append(applicationId)
-                    .append(".")
-                    .append(tenantId)
-                    .toString();
+            String topicName = ApiServiceUtil.KAFKA_TARGET_TOPIC_PREFIX +
+                    "." +
+                    applicationId +
+                    "." +
+                    tenantId;
 
             //i.e. account_tenant1.AuditMyDemo
-            String targetTable = new StringBuilder()
-                    .append(ApiServiceUtil.TENANTID_SCHEMA_PREFIX)
-                    .append(tenantId)
-                    .append(".")
-                    .append(ApiServiceUtil.KAFKA_TARGET_TABLE_PREFIX)
-                    .append(applicationId)
-                    .toString();
+            String targetTable = ApiServiceUtil.TENANTID_SCHEMA_PREFIX +
+                    tenantId +
+                    "." +
+                    ApiServiceUtil.KAFKA_TARGET_TABLE_PREFIX +
+                    applicationId;
 
             //i.e. account_tenant1.kafka_rej
-            String rejectionTable = new StringBuilder()
-                    .append(ApiServiceUtil.TENANTID_SCHEMA_PREFIX)
-                    .append(tenantId)
-                    .append(".")
-                    .append(ApiServiceUtil.KAFKA_REJECT_TABLE)
-                    .toString();
+            String rejectionTable = ApiServiceUtil.TENANTID_SCHEMA_PREFIX +
+                    tenantId +
+                    "." +
+                    ApiServiceUtil.KAFKA_REJECT_TABLE;
 
-            //i.e. auditScheduler_tenant1
-            String schedulerName = new StringBuilder()
-                    .append(ApiServiceUtil.KAFKA_SCHEDULER_NAME_PREFIX)
-                    .append(tenantId)
-                    .toString();
+            //i.e. auditScheduler
+            String schedulerName = ApiServiceUtil.KAFKA_SCHEDULER_NAME;
 
             // Get the number of partitions in Kafka
             final int numberOfPartitionsKafka = getNumberOfPartitionsKafka(properties, topicName);
@@ -231,10 +222,7 @@ public class TenantUpdatePartitionsPost {
      * Returns TRUE if the specified tenantId contains invalid characters, otherwise FALSE.
      */
     private static boolean containsInvalidCharacters(String tenantId) {
-        if (tenantId.matches(ApiServiceUtil.TENANTID_INVALID_CHARS_REGEX)) {
-            return false;
-        }
-        return true;
+        return !tenantId.matches(ApiServiceUtil.TENANTID_INVALID_CHARS_REGEX);
     }
 
 }

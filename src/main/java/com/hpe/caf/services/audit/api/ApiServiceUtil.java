@@ -19,7 +19,7 @@ public class ApiServiceUtil {
     public static final String CUSTOM_EVENT_PARAM_PREFIX = "eventParam";
     public static final String ERR_MSG_TENANTID_CONTAINS_INVALID_CHARS = "The tenantId contains invalid characters (allowed: lowercase letters and digits).";
     public static final String TENANTID_SCHEMA_PREFIX = "account_";
-    public static final String KAFKA_SCHEDULER_NAME_PREFIX = "auditscheduler_";
+    public static final String KAFKA_SCHEDULER_NAME = "auditscheduler";
     public static final String KAFKA_TARGET_TOPIC_PREFIX = "AuditEventTopic";
     public static final String KAFKA_REJECT_TABLE = "kafka_rej";
     public static final String KAFKA_TARGET_TABLE_PREFIX = "Audit";
@@ -115,7 +115,7 @@ public class ApiServiceUtil {
      * Returns a Vertica type declaration based on the audited application data xml parameter type.
      */
     public static String getVerticaType(String columnType, Integer maxLengthConstraint) throws BadRequestException {
-        String returnValue = null;
+        String returnValue;
 
         switch (columnType.toLowerCase()) {
             case "short":
@@ -147,7 +147,7 @@ public class ApiServiceUtil {
      * Returns a Vertica string type declaration based on max length column constraint.
      */
     private static String getVerticaStringType(Integer maxLengthConstraint) throws BadRequestException {
-        String returnValue = null;
+        String returnValue;
 
         if (maxLengthConstraint != null) {
             if (maxLengthConstraint <= 0) {

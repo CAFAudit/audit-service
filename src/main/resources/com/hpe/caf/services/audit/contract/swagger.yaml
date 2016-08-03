@@ -64,38 +64,13 @@ info:
 
     `CAF_KAFKA_BROKERS` - the address of the Kafka broker. E.g. 192.168.56.20:9092
 
-    ### Vertica Audit Schedulers
-
-    The API configures and launches Vertica audit schedulers. These schedulers can be launched using Docker or Marathon.
-    For launch using Docker, the following properties needs to be supplied:
-
-    `CAF_AUDIT_MANAGEMENT_CLI` - the Docker container used to launch the scheduler.
-
-    `DOCKER_HOST` - the machine on which the container runs.
-
-    For launch using Marathon, the following properties needs to be supplied:
-
-    `CAF_AUDIT_MANAGEMENT_CLI` - the Docker container used to launch the scheduler.
-
-    `CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_CREDENTIALS` - the docker credentials file.
-
-    `CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_FORCEPULLIMAGE` - the forcePullImage setting of each audit scheduler container.
-
-    `CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_NETWORK` - the network type of each audit scheduler container.
-
-    `CAF_AUDIT_SCHEDULER_MARATHON_CPUS` - the amount of CPU of each audit scheduler container.
-
-    `CAF_AUDIT_SCHEDULER_MARATHON_MEM` - the amount of RAM of each audit scheduler container.
-
-    `CAF_MARATHON_URL` - the endpoint of Marathon REST API.
-
     ### Disable Audit Management Web Service
 
     The Audit Management Web Service can be disabled by setting the following property to true:
 
     `CAF_AUDIT_MANAGEMENT_DISABLE`
 
-    Docker, Kafka, Marathon, Vertica and web service disablement properties can be provided through system environment variables or can be collectively
+    Kafka, Vertica and web service disablement properties can be provided through system environment variables or can be collectively
     initialized in a config.properties file with a new system environment variable created,
     `CAF_AUDIT_MANAGEMENT_API_CONFIG_PATH`, which points to the directory containing the properties
     file.

@@ -43,23 +43,5 @@ public class AppConfig {
         return environment.getProperty("CAF_KAFKA_BROKERS");
     }
 
-    public String getCAFAuditManagementCLI(){ return environment.getProperty("CAF_AUDIT_MANAGEMENT_CLI"); }
-
-    public String getMarathonCPUs(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_CPUS"); }
-
-    public String getMarathonContainerDockerCredentials(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_CREDENTIALS"); }
-
-    public String getMarathonContainerDockerNetwork(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_NETWORK"); }
-
-    public String getMarathonContainerDockerForcePullImage(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_CONTAINER_DOCKER_FORCEPULLIMAGE"); }
-
-    public String getMarathonMem(){ return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_MEM"); }
-
-    public String getMarathonConstraints() {
-        return environment.getProperty("CAF_AUDIT_SCHEDULER_MARATHON_CONSTRAINTS");
-    }
-
-    public String getMarathonUrl(){ return environment.getProperty("CAF_MARATHON_URL"); }
-
     public String getCAFAuditManagementDisable(){ return environment.getProperty("CAF_AUDIT_MANAGEMENT_DISABLE"); }
 }

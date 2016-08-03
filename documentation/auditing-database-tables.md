@@ -21,9 +21,9 @@ Created with the tenant identifier using the format account_&lt;tenantid&gt;, th
 | audit&lt;applicationid&gt; | Created with the application identifier using the format audit&lt;applicationid&gt;, this table is used to store the audit event message data sent to Apache Kafka from the client-side auditing library. |
 | kafka_rej | Vertica stores any rejections in the kafka_rej table |
 
-#### auditscheduler_&lt;tenantid&gt;
+#### auditscheduler
 
-Every time a new tenant is added, a scheduler is also configured and launched. A new schema for this scheduler is created using the format auditscheduler_&lt;tenantid&gt;. The schema has the following tables:
+A Kafka Vertica job scheduler should be configured and launched before new tenants are added to the system. It should be named 'auditscheduler'. The schema for the scheduler has the following tables:
 
 | Table | Description |
 |----------|--------------|

@@ -496,7 +496,6 @@
                                     <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
                                     <CAF_CONFIG_PATH>/config</CAF_CONFIG_PATH>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
-                                    <CAF_AUDIT_MANAGEMENT_CLI>rh7-artifactory.hpswlabs.hp.com:8443/caf/audit:1.0</CAF_AUDIT_MANAGEMENT_CLI>
                                 </env>
                                 <volumes>
                                     <from>

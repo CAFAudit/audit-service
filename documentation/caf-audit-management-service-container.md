@@ -28,27 +28,6 @@ The name of the Vertica database role that will be used for reporting users.
 ##### CAF\_KAFKA\_BROKERS
 The address (HOST:PORT) of the Kafka broker.
 
-##### CAF\_AUDIT\_MANAGEMENT\_CLI
-The Docker image that contains the Audit Management utility for configuring/launching Vertica schedulers. e.g. rh7-artifactory.hpswlabs.hp.com:8443/caf/audit:1.0
-
-##### CAF\_MARATHON\_URL
-The endpoint of Marathon REST API.
-
-##### CAF\_AUDIT\_SCHEDULER\_MARATHON\_CPUS
-The amount of CPU of each audit scheduler container.
-
-##### CAF\_AUDIT\_SCHEDULER\_MARATHON\_MEM
-The amount of RAM of each audit scheduler container.
-
-##### CAF\_AUDIT\_SCHEDULER\_MARATHON\_CONTAINER\_DOCKER\_CREDENTIALS
-This is the docker login credentials file.
-
-##### CAF\_AUDIT\_SCHEDULER\_MARATHON\_CONTAINER\_DOCKER\_FORCEPULLIMAGE
-The forcePullImage setting of each audit scheduler container.
-
-##### CAF\_AUDIT\_SCHEDULER\_MARATHON\_CONTAINER\_DOCKER\_NETWORK
-The network type of each audit scheduler container.
-
 ##### CAF\_AUDIT\_MANAGEMENT\_DISABLE
 This is used to disable the audit management web service.
 

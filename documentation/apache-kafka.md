@@ -65,4 +65,4 @@ where AuditEventTopic.[ApplicationName].[Tenantid] is the name of the topic of i
 
 Vertica 7.2.x provides an [Apache Kafka integration](http://my.vertica.com/docs/7.2.x/PDF/HP_Vertica_7.2.x_Integrating_Apache_Kafka.pdf) feature to automatically load data as it streams through Kafka. It does this through the Kafka job scheduler which continuously consumes data from the Kafka message bus into the database. This scheduler comes pre-packaged and installed with the Vertica 7.2.x rpm.
 
-The Audit Management Web Service automatically configures and launches job schedulers for tenants added to the system.
+The job scheduler should be configured and launched before new tenants are added to the system.

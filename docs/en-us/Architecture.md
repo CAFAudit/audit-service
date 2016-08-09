@@ -110,8 +110,12 @@ Registering a tenant with the Audit Management Web Service /tenants endpoint cre
 
 The above figure shows a row for the registered tenant; `tenantId` with an associated application's `applicationId`. The figure also shows the new tenant schema under `CAFAudit`.
 
-Registering a new tenant creates a new schema under the `CAFAudit` database for the tenant called `account_<tenantId>` where audit event data for the tenant's applications will be held.
+Registering a new tenant creates a new schema under the `CAFAudit` database for the tenant called `account_<tenantId>` where audit event data for the tenant's applications will be held. Audit Management will also create a `kafka_rej` table for holding the tenant's rejected audit events.
 
 ![CAF Audit Account 1 Sample App Table Columns](images/account_1AuditSampleAppColumns.png)
 
 The above figure shows an `account_1` schema with an `AuditSampleApp` table and the columns for audit event data for the application.
+
+![CAF Audit Account 1 Kafka Reject Table Columns](images/account_1RejectTable.png)
+
+The above figure shows the `account_1` schema with a `kafka_rej` table and columns for rejected audit event data.

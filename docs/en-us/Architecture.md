@@ -22,11 +22,9 @@ Apache Kafka receives Audit events for an application's tenant from the client-s
 
 ## Overview
 
-Audit Management is built upon Apache Kafka for messaging of audit events and HPE Vertica for storage of audit events. They both offer high availability, throughput, scalability and performance to the overall solution. Additionally Vertica offers data analytics capabilities and Kafka integration.
+CAF Auditing is built on Apache Kafka for the messaging of the audit events and HPE Vertica for the storage of the audit events. Both of these technologies offer high availability, throughput, scalability and performance to the overall solution. Additionally Vertica offers strong data analytics capabilities and comes with a pre-built Kafka integration which can be used to continually load data from Kafka.
 
-### Mesos/Marathon
-
-A Mesos/Marathon environment running the Audit Management Web Service and Kafka-Vertica Scheduler components offers redundancy.
+A Mesos/Marathon environment is used to run the Audit Management Web Service and Kafka-Vertica Scheduler components, and to provide redundancy for these services.
 
 ### Audit Management Component Architecture
 

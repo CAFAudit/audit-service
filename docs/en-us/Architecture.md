@@ -5,11 +5,18 @@ title: Architecture
 
 # Architecture
 
-Audit Management is a service for logging application events on a per tenant basis.
+In CAF Auditing, audit events are logged on a per application per tenant basis.  The Audit Management Web Service is used to facilitate the addition of new applications and new tenants.
 
-An application and its events are defined in an Audit Event Definition File that is used to generate an application-specific client-side auditing library. The generated client-side Java library is used to send audit event messages to the Apache Kafka messaging service.
+In order to use CAF Auditing with an application you must first specify the audit events that the application uses, and the parameters that are associated with each of the events. The events are specified in an XML file known as the Audit Event Definition File.
 
-On the server-side, with the use of the Audit Management Web Service API, the application's Audit Event Definition File is used to create an application's audit event schema within Vertica. The Web API is then used to register a tenant with one or more applications. It creates application audit event tables for the tenant and configures the Kafka-Vertica Scheduler to load the audit events into the tables.
+When the Audit Event Definition File has been authored it can be used in two ways:
+
+1. to generate an application-specific client-side auditing library
+2. to register the application with the Auditing Management Web Service
+
+As stated the Audit Event Definition File can be used to generate an application-specific client-side auditing library. The generated client-side Java library is used to send audit event messages to the Apache Kafka messaging service.
+
+On the server-side, with the use of the Audit Management Web Service API, the application's Audit Event Definition File is used to create an audit event schema for the application within Vertica. The Web Service API is then used to register a tenant with one or more applications. It creates application audit event tables for the tenant and configures the Kafka-Vertica Scheduler to load the audit events into the tables.
 
 Apache Kafka receives Audit events for an application's tenant from the client-side library and partitions them into per application per tenant topics. The Kafka-Vertica Scheduler listens to these topics and streams the events to the tenant's application audit table in Vertica.
 

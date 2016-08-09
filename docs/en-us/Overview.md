@@ -1,7 +1,6 @@
 ---
 layout: default
 title: Auditing Overview
-last_updated: Created and last modified by Connor Mulholland on August 3, 2016
 ---
 
 # Overview

@@ -32,7 +32,7 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-management-service</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5</version>
             <type>war</type>
         </dependency>
         <dependency>

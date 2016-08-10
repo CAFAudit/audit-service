@@ -32,7 +32,7 @@ The figure below illustrates the overall flow and relationship of components in 
 
 ![Architecture](images/AuditManagementArchitectureDraft.png)
 
-1. Setting up your application for Auditing requires defining an Audit Event Definition XML File. The file is used for: 
+1. Setting up your application for Auditing requires defining an Audit Event Definition XML File. The file is used for:
 	- Generation of the client-side audit library.
 	- Registration for auditing on the server-side.
 2. Using the caf-audit-maven-plugin the client-side Java library is generated from the Audit Event Definition XML File.
@@ -42,8 +42,8 @@ The figure below illustrates the overall flow and relationship of components in 
 	1. The Web Service creates tables for each application that the tenant is registered with in Vertica for storage of the tenant's application events.
 	2. The Web Service associates a topic for each application that the tenant is registered with in the Kafka-Vertica Scheduler.
 5. The audited application makes calls to the generated client-side library to send tenant audit events to Kafka messaging.
-	1. Kafka receives messages from the client-side library and stores them on per application per tenant topics.
-	2. Kafka-Vertica Scheduler listens to the per application per tenant topics that are registered with it and streams them into the tenant's application table in Vertica.
+	1. Kafka receives messages from the client-side library and stores them in per application per tenant topics.
+	2. Kafka-Vertica Scheduler listens to the topics that are registered with it and streams them into the tenant's application table in Vertica.
 
 ### Audit Event Definition File
 

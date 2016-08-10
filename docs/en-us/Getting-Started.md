@@ -7,20 +7,13 @@ title: Getting Started
 
 The high level steps involved in setting up the Audit Mangement Service are:
 
-//TODO: Shift these steps around for the flow of the getting started guide
-
-1. Define audit events in an Audit Event Definition File.
-2. Generate the client-side auditing library using the Audit Event Definition File and code generation plugin.
-3. Install and configure Apache Kafka on a system.
-4. It is recommended, that you install and configure Vertica 7.2.x on a separate machine.
-5. Create and launch the Apache Kafka scheduler in order to stream the data from the Kafka messaging service into the Vertica database.
-6. Register the application and add tenant(s) with the Audit Management Web Service. This will create the necessary database schema in Vertica. 
+1. Install and configure Vertica 7.2.x on a separate machine.
+2. It is recommended, that you install and configure Apache Kafka on a system.
+3. With the use of Chateau launch the Apache Kafka-Vertica scheduler and the Audit Management Web Service onto Mesos/Marathon.
+4. Define an application's audit events in an Audit Event Definition File.
+5. Register the application definition file and add tenant(s) with the Audit Management Web Service. This will create the necessary database schemas in Vertica.
+6. Generate the client-side auditing library using the Audit Event Definition File and code generation plugin. 
 7. Use the client-side auditing library to send audit events to Kafka.
-
-**// TODO There needs to be two types of guides:**
-
-1. **Enterprise setup; explaining that Kafka and Vertica can be setup in a clusters and suggest the official documentation to consult.**
-2. **Development setup; directing to the use of vagrant-vertica and vagrant-kafka VMs. Explain the security and clusterless caveats of this.**
 
 ## Deploying Vertica
 
@@ -30,7 +23,97 @@ Vertica is an SQL database designed for delivering speed, scalability and suppor
 
 For Enterprise deployments of Vertica it is recommended that you follow the official HP Vertica documentation as it covers cluster setup, configuration and backup. Integration of Vertica with your Kafka broker cluster is also covered: [Official HP Vertica Documentation](https://my.vertica.com/documentation/vertica/7-2-x/)
 
-**//TODO SHOULD I ADD OR MAKE REFERENCE TO THE audit-management/README.md HERE? IT CONTAINS COMMANDS REQUIRED TO CREATE THE READER ROLE AND THE DIFFERENT CAF AUDIT USERS?**
+#### Database, Role & Service Accounts
+
+Once Vertica is installed, you will need to create or use an existing database, role, and service accounts.
+
+These are the items which need to be created in order for Audit Management to work correctly.
+
+Once you have fulfilled the following criteria, for CAF Audit Management deployments with Chateau, please fill in the information within Chateau's environment/vertica.json file.
+
+Example commands for creating the users / roles / tables are listed in the correct order below:
+
+- Log onto the vertica machine, and run as the dbadmin user so you have access to create users / roles / tables.
+- Example properties which are defined for ease of understanding the commands:
+
+	<pre><code># Define user friendly properties. 
+	#Example install location of vertica 
+	VERTICA_INSTALL_DIR=/opt/vertica  
+	VERTICA_DATABASE_NAME="CAFAudit"  
+	VERTICA_DATABASE_PASSWORD=${VERTICA_DATABASE_NAME}
+	
+	# Database audit management web service user
+	VERTICA_CA_SERVICE_DATABASE_ACCOUNT=caf-audit-service
+	VERTICA_CA_SERVICE_DATABASE_ACCOUNT_PASSWORD="'c@Fa5eR51cE'"
+	
+	# Database audit management reporting role
+	VERTICA_CA_READER_DATABASE_ROLE=caf-audit-read
+	
+	# Database audit management reporting user
+	VERTICA_CA_READER_DATABASE_ACCOUNT=caf-audit-reader
+	VERTICA_CA_READER_DATABASE_ACCOUNT_PASSWORD="'c@FaR3aD3R'"
+	
+	# Database audit management user for kafka/vertica integration
+	VERTICA_CA_LOADER_DATABASE_ACCOUNT=caf-audit-loader
+	VERTICA_CA_LOADER_DATABASE_ACCOUNT_PASSWORD="'c@FaL0Ad3r'"
+	
+	# VSQL command line usage.
+	VSQL=${VERTICA_INSTALL_DIR}/bin/vsql
+	</code></pre>
+- To create a vertica database, if one has not already been created
+	<pre><code>"${VERTICA_INSTALL_DIR}/bin/admintools -t create_db -d ${VERTICA_DATABASE_NAME} -p ${VERTICA_DATABASE_PASSWORD} -s 127.0.0.1" >> vertica_db_creation.log
+	</code></pre>
+- To create the CAF Audit Reader Role
+	<pre><code>${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "CREATE ROLE \"${VERTICA_CA_READER_DATABASE_ROLE}\"" 
+	</code></pre>
+- To create the CAF Audit Reader User and assign role.
+	<pre><code>#Creating ${VERTICA_CA_READER_DATABASE_ACCOUNT} database user...
+	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "CREATE USER \"${VERTICA_CA_READER_DATABASE_ACCOUNT}\" IDENTIFIED BY ${VERTICA_CA_READER_DATABASE_ACCOUNT_PASSWORD}" 
+
+	#Granting caf-audit-read role to ${VERTICA_CA_READER_DATABASE_ACCOUNT}..."
+	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "GRANT \"${VERTICA_CA_READER_DATABASE_ROLE}\" TO \"${VERTICA_CA_READER_DATABASE_ACCOUNT}\"" 
+	
+	#Enabling caf-audit-read role by default to ${VERTICA_CA_READER_DATABASE_ROLE}..."
+	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "ALTER USER \"${VERTICA_CA_READER_DATABASE_ACCOUNT}\" DEFAULT ROLE \"${VERTICA_CA_READER_DATABASE_ROLE}\""
+	</code></pre>
+- To create the CAF Audit Service User
+	<pre><code>#Creating ${VERTICA_CA_SERVICE_DATABASE_ACCOUNT} database user..."
+	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "CREATE USER \"${VERTICA_CA_SERVICE_DATABASE_ACCOUNT}\" IDENTIFIED BY ${VERTICA_CA_SERVICE_DATABASE_ACCOUNT_PASSWORD}" 
+
+	#Granting CREATE on database ${VERTICA_DATABASE_NAME} to ${VERTICA_CA_SERVICE_DATABASE_ACCOUNT}..."
+	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "GRANT CREATE ON DATABASE ${VERTICA_DATABASE_NAME} TO \"${VERTICA_CA_SERVICE_DATABASE_ACCOUNT}\"" 
+	</code></pre>
+- To create the CAF Audit Loader User
+	<pre><code>#Creating ${VERTICA_CA_LOADER_DATABASE_ACCOUNT} database user..."
+	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "CREATE USER \"${VERTICA_CA_LOADER_DATABASE_ACCOUNT}\" IDENTIFIED BY ${VERTICA_CA_LOADER_DATABASE_ACCOUNT_PASSWORD}" 
+
+	#Granting PSEUDOSUPERUSER role to ${VERTICA_CA_LOADER_DATABASE_ACCOUNT}..."
+	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "GRANT PSEUDOSUPERUSER TO \"${VERTICA_CA_LOADER_DATABASE_ACCOUNT}\"" 
+	
+	#Enabling PSEUDOSUPERUSER role by default to ${VERTICA_CA_LOADER_DATABASE_ACCOUNT}..."
+	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "ALTER USER \"${VERTICA_CA_LOADER_DATABASE_ACCOUNT}\" DEFAULT ROLE PSEUDOSUPERUSER" 
+	</code></pre>
+
+#### Kafka Vertica Scheduler
+Ensure you have a Kafka Vertica scheduler created to handle all audit events. The vkconfig script, which comes pre-packaged and installed with the Vertica rpm, should be used with the *scheduler* sub-utility and *--add* option to do this:
+
+	/opt/vertica/packages/kafka/bin/vkconfig scheduler --add 
+		--config-schema auditscheduler 
+		--brokers [BROKERS] 
+		--username [USERNAME] 
+		--password [PASSWORD] 
+		--operator [OPERATOR]
+	
+where:
+
+* [BROKERS] - This specifies the kafka broker(s) to be used, it is formatted as a comma separated list of address:port endpoints.
+* [USERNAME] - This is the vertica database loader account name (e.g. caf-audit-loader).
+* [PASSWORD] - This is the password for the vertica database loader account name. (e.g. "c@FaL0Ad3r")
+* [OPERATOR] - This is the vertica database loader account name wrapped in double quotes(e.g. "\"caf-audit-loader\"").
+
+Example:
+
+	/opt/vertica/packages/kafka/bin/vkconfig scheduler --add --config-schema auditscheduler --brokers 192.168.56.20:9092 --username caf-audit-loader --password "c@FaL0Ad3r" --operator "\"caf-audit-loader\""
 
 ### Development Deployment
 
@@ -43,7 +126,7 @@ Vagrant-vertica is not recommended for production deployments, the caveats to us
 
 ## Deploying Kafka
 
-Apache Kafka is a distributed, partitioned, replicated commit log service that provides messaging system functionality for producers and consumers of messages. Kafka's role in the Audit Management Service is that it receives events from client-side applications (producers) as topic messages. On the server-side the Kafka-Vertica Scheduler (consumer) reads event messages from per application per tenant Kafka topics and streams the events into Vertica.
+Apache Kafka is a distributed, partitioned, replicated commit log service that provides messaging system functionality for producers and consumers of messages. Kafka's role in the Audit Management Service is that it receives tenant events from client-side applications (producers) as messages. On the server-side the Kafka-Vertica Scheduler (consumer) reads event messages from per application per tenant Kafka topics and streams the events into Vertica.
 
 ### Enterprise Deployment
 
@@ -63,7 +146,7 @@ Vagrant-kafka is not recommended for production deployments, the caveats to usin
 
 ### Audit Management Web Service
 
-The Audit Management Web Service offers a REST API for Audit Management users to register and prepare Vertica and the Kafka-Vertica Scheduler with their applications and tenants using their applications.
+The Audit Management Web Service offers a REST API for Audit Management users to register and prepare Vertica and the Kafka-Vertica Scheduler with their applications and tenants using those applications.
 
 ### Kafka-Vertica Scheduler
 
@@ -71,23 +154,25 @@ The Kafka-Vertica scheduler is responsible for consuming audit event messages, f
 
 ### Deployment with Chateau
 
-**[Chateau](https://github.hpe.com/caf/chateau)** can launch workers and services, such as the Audit Management Service and the Kafka-Vertica Scheduler.
+**[Chateau](https://github.hpe.com/caf/chateau)** can launch CAF workers and services, such as the Audit Management Service and the Kafka-Vertica Scheduler.
 
 - To download and set up Chateau, follow the instructions in the [README.md](https://github.hpe.com/caf/chateau/blob/develop/README.md). 
 
-- Follow the prerequisite instructions for the Audit Management Service [here](https://github.hpe.com/caf/chateau/blob/develop/services/audit-management/README.md). **!!!!(THIS README CONTAINS GOOD INFORMATION FOR REQUIRED VERTICA COMMANDS. IT MIGHT BE GOOD TO REFERENCE THIS DOCUMENT IN THE VERTICA ENTERPRISE DEPLOYMENT SECTION. FOR DEVELOPMENT DEPLOYMENT OF VERTICA THE ONLY COMMAND WITHIN THE DOCUMENT THAT IS REQUIRED TO BE RAN IS THE `vkconfig scheduler --add --config-schema auditscheduler command`.... PERHAPS ALL OF THE COMMANDS IN THE README SHOULD BE BROUGHT OUT INTO THIS DOCUMENT AND ADDED TO THEIR APPROPRIATE SECTIONS?)!!!!**
+- Follow the prerequisite instructions for the Audit Management Service [here](https://github.hpe.com/caf/chateau/blob/develop/services/audit-management/README.md).
 
-- To deploy the Audit Management Web Service and the Kafka-Vertica Scheduler, follow the [Service Deployment](https://github.hpe.com/caf/chateau/blob/develop/deployment.md) guide and use the following option with the deployment shell script.
+- To deploy the Audit Management Web Service and the Kafka-Vertica Scheduler, follow the [Service Deployment](https://github.hpe.com/caf/chateau/blob/develop/deployment.md) guide and use the following option with the deployment shell script:
 
   `./deploy-service.sh audit-management`
 
-**// TODO : Supply a figure that shows the audit management web service and kafka-vertica schedulers running in Marathon**
+The following figure shows a Marathon environment running the CAF Audit Management Service started with Chateau:
+
+![Marathon running CAF Audit Management Service](images/MarathonWithAuditManagementService.PNG)
 
 ## Writing an Application Audit Event Definition File
 
-An application for auditing requires the construction of Audit Event Definition XML file that defines the name of the application and its events. With the use of the caf-audit-maven-plugin, the application's definition file is used to generate a client-side library that the audited application calls to log tenant events. The definition file is then also used to register the application and its events for auditing with the server-side Audit Management Web Service.
+An application for auditing requires the construction of an Audit Event Definition XML file that defines the name of the application and its events. With the use of the caf-audit-maven-plugin, the application's definition file is used to generate a client-side library that the audited application calls to log tenant events. The definition file is then also used to register the application and its events for auditing with the server-side Audit Management Web Service.
 
-The figure below illustrates the Audit Event Definition XML File's schema.
+The following figure illustrates the Audit Event Definition XML File's schema.
 
 ![AuditEventDefinitionFileSchema](images/audit-event-definition-file-desc.png)
 
@@ -98,6 +183,24 @@ The figure below illustrates the Audit Event Definition XML File's schema.
 For each Audit Event defined, `TypeId` is a string identifier for the particular event (e.g. viewDocument) and `CategoryId` is a string identifier for the category of the event.
 
 A list of parameter elements are then defined for each Audit Event. This includes the `Name` of the parameter, the `Type` (i.e. string, short, int, long, float, double, boolean or date) and the `Description`. The `ColumnName` element is optional which can be used to force the use of a particular database column when storing the audit data. The `Constraints` element is also optional and this can be used to specify minimum and/or maximum length constraints for audit event parameters of `Type` string.
+
+### Using the Schema File
+
+If you reference the XML Schema file from your Audit Event Definition File then you should be able to use the Validate functionality that is built into most IDEs and XML Editors. This will allow you to easily check for syntax errors in your Audit Event Definition File. To do this add the standard `xsi:schemaLocation` attribute to the root `AuditedApplication` element.
+
+Change the `AuditedApplication` element from:
+
+	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd">
+
+to:
+
+	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release/com/hpe/caf/caf-audit-schema/1.0/caf-audit-schema-1.0.jar!/schema/AuditedApplication.xsd">
+
+Many IDEs and XML Editors will also use the schema file to provide IntelliSense and type-ahead when the definition file is being authored.
+
+### Example Audit Event Definition XML
 
 The following is an example of an Audit Event Definition File that is used to throughout this getting started guide:
 
@@ -149,15 +252,17 @@ Replace `<audit.web.service.host.address>` and `<port>` as necessary.
 
 ### Loading the XML Audit Events File
 
-Application audit events that will occur are defined within the Audit Event Definition File. This file is then used to register the application on the server-side using the /applications endpoint as shown in the screenshot below:
+Application audit events that will occur are defined within the Audit Event Definition File which is used to register the application on the server-side. The following screenshot shows the /applications endpoint for loading this file:
 
 ![Overview](images/addApplication.png)
 
 #### Verification Instructions
 
-When an application events file is registered, this operation configures the Vertica database with audit management tables to record both the application specific audit events XML as well as tenants added through the service. See tables ApplicationEvents and TenantApplications under the AuditManagement schema in the Vertica database. An entry in the ApplicationEvents table will also be created to register the application events XML supplied. **TODO CONFIRM THIS BY CHECKING VERTICA FOR THESE TABLES AFTER SUPPLYING THE DEFINITION FILE**
+When an application events file is registered this operation configures the Vertica database with audit management tables to record both the application specific audit events XML as well as tenants added through the service. See tables `ApplicationEvents` and `TenantApplications` under the `AuditManagement` schema in the Vertica database. An entry in the `ApplicationEvents` table will also be created to register the application events XML supplied. The following figure shows the `ApplicationEvents` table containing an entry for the SampleApp Audit Event Definition file:
 
-Any further calls to load other application events XML will result in additional rows being added to the ApplicationEvents table only. **TODO CONFIRM THIS BY SUPPLYING THE DEFINITION FILE BUT WITH AN ADDITIONAL EVENT DEFINED**
+![Audit Management Application Events Table With Sample Application](images/AuditManagementApplicationEventsWithSampleAppVertica.png)
+
+Further calls to load new application Audit Event Definition files will result in additional rows being added to the `ApplicationEvents` table.
 
 ### Adding Tenants
 
@@ -167,29 +272,116 @@ Once applications have been registered, tenants can then be added using the /ten
 
 #### Verification Instructions
 
-Every time a new tenant is added, a new row is inserted into the TenantApplications table under the AuditManagement database schema.
+Every time a new tenant is added, a new row is inserted into the `TenantApplications` table under the `AuditManagement` schema, the following figure illustrates this:
 
-Two new tenant specific database schemas are then created for the tenant in the Vertica database which comprise a number of tables. See [Auditing Database Tables](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/documentation/auditing-database-tables.md). If the client-side auditing library has sent audit events messages for this tenant through to the Kafka messaging service, this audit event data should start to arrive in the application specific audit events table under the tenant specific schema created as part of the add tenant web service call.
+![Audit Management Tenant Applications Table With Tenant ID](images/AuditManagementTenantApplicationsWithTenantApplication.png)
 
-## Generating the client-side Auditing Library
+A new tenant specific database schema is then created for the tenant in the Vertica database which comprise a number of tables. See [Auditing Database Tables](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/documentation/auditing-database-tables.md). If the client-side auditing library has sent audit events messages for this tenant through to the Kafka messaging service, this audit event data should start to arrive in the application specific audit events table under the tenant specific schema created as part of the add tenant web service call.
 
-**// TODO : Write about how to use the caf-audit-maven-plugin to generate the client-side audit library from the Audit Event Definition XML.**
+The following figure shows an `account_1` schema with an `AuditSampleApp` table and the columns for audit event data for the application:
 
-The CAF Audit plugin, a custom maven plugin, uses an application's Audit Event Definition XML file to auto-generate a client-side Java class named `AuditLog`. This auto-generated class is comprised of methods for sending audit event messages to the Apache Kafka messaging service.
+![CAF Audit Account 1 Sample App Table Columns](images/account_1AuditSampleAppColumns.png)
 
-**TODO - QUESTION: IS THE PLUGIN USED IN THE AUDITED APPLICATION'S POM? OR IS THE PLUGIN USED IN A GENERATOR PROJECT'S POM WHOSE SOLE PURPOSE IS FOR GENERATION THE JAVA LIBRARY FOR THE PURPOSE OF THEN BEING USED IN THE AUDITED APPLICATION'S CODE? MY GUESS IS THE FORMER**
+The following figure shows the `account_1` schema with a `kafka_rej` table and columns for rejected audit event data:
 
-### Application POM 
+![CAF Audit Account 1 Kafka Reject Table Columns](images/account_1RejectTable.png)
 
-The application will need to include the custom plugin in the `<plugins>` section of the application’s POM file. It needs to 
-reference the XML audit event file as shown below:
+## Generating a client-side Auditing Library
+
+In order to use CAF Auditing you must first define the audit events in an Audit Event Definition File. After you have created the definition file you can use it to generate a client-side library to make it easier to raise the defined audit events.
+
+Technically you do not need to generate a client-side library in order to use CAF Auditing; you could use the caf-audit module directly, but generating a client-side library should make it easier and safer to raise events, as it should mean that each event can be raised with a single type-safe call.
+Here is a sample Maven project file that generates a client-side auditing library:
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	    <modelVersion>4.0.0</modelVersion>
+	
+	    <groupId>com.hpe.sampleapp</groupId>
+	    <artifactId>sampleapp-audit</artifactId>
+	    <version>1.0-SNAPSHOT</version>
+	
+	    <properties>
+	        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	        <maven.compiler.source>1.8</maven.compiler.source>
+	        <maven.compiler.target>1.8</maven.compiler.target>
+	    </properties>
+	
+	    <dependencies>
+	        <dependency>
+	            <groupId>com.hpe.caf</groupId>
+	            <artifactId>caf-audit</artifactId>
+	            <version>1.2</version>
+	        </dependency>
+	    </dependencies>
+	
+	    <build>
+	        <plugins>
+	            <plugin>
+	                <groupId>com.hpe.caf</groupId>
+	                <artifactId>caf-audit-maven-plugin</artifactId>
+	                <version>1.1</version>
+	                <executions>
+	                    <execution>
+	                        <id>generate-code</id>
+	                        <phase>generate-sources</phase>
+	                        <goals>
+	                            <goal>xmltojava</goal>
+	                        </goals>
+	                    </execution>
+	                </executions>
+	                <configuration>
+	                    <auditXMLConfig>src/main/xml/sampleapp-auditevents.xml</auditXMLConfig>
+	                    <packageName>${project.groupId}.auditing</packageName>
+	                </configuration>
+	            </plugin>
+	        </plugins>
+	    </build>
+	
+	    <pluginRepositories>
+	        <pluginRepository>
+	            <id>cmbg-maven-releases</id>
+	            <name>Cambridge Nexus Releases</name>
+	            <url>http://cmbg-maven.autonomy.com/nexus/content/repositories/releases</url>
+	            <snapshots>
+	                <enabled>false</enabled>
+	            </snapshots>
+	        </pluginRepository>
+	    </pluginRepositories>
+	</project>
+
+### Maven Coordinates
+
+Like any other Maven project, the client-side auditing library must be assigned unique coordinates that can by used to reference it.
+
+	<groupId>com.hpe.sampleapp</groupId>
+	<artifactId>sampleapp-audit</artifactId>
+	<version>1.0-SNAPSHOT</version>
+
+### Dependencies
+
+The generated library will have a dependency on caf-audit, which the generated code will use to raise the audit events. This dependency of course may introduce indirect transitive dependencies; these dependencies don't need to be directly referenced as the generated code only uses types defined in the caf-audit library.
+
+	<dependencies>
+	    <dependency>
+	        <groupId>com.hpe.caf</groupId>
+	        <artifactId>caf-audit</artifactId>
+	        <version>1.2</version>
+	    </dependency>
+	</dependencies>
+
+### Code Generation Plugin
+
+The `xmltojava` goal of the code generation plugin is used to generate the Java auditing code that will make up the library. The `auditXMLConfig` setting can be used to define the path to the Audit Event Definition file, and the `packageName` setting can be used to set the package in which the auditing code should be generated.
 
 	<build>
 	    <plugins>
 	        <plugin>
 	            <groupId>com.hpe.caf</groupId>
 	            <artifactId>caf-audit-maven-plugin</artifactId>
-	            <version>1.0</version>
+	            <version>1.1</version>
 	            <executions>
 	                <execution>
 	                    <id>generate-code</id>
@@ -207,16 +399,170 @@ reference the XML audit event file as shown below:
 	    </plugins>
 	</build>
 
+In this example the Audit Event Definition file is in the `src/main/xml/` folder, though of course it could be read from any folder. The name of the package to use is being built up by appending ".auditing" the project's group identifier (i.e. "com.hpe.sampleapp" in this example).
 
-The `xmltojava` goal of the plugin is used to generate the Java auditing code that will make up the library. The `auditXMLConfig` setting can be used to define the path to the Audit Event Definition file, and the `packageName` setting can be used to set the package in which the auditing code should be generated.
+### Plugin Repositories
 
-In this example the Audit Event Definition file is in the `src/main/xml/` folder, though of course it could be read from any folder. The name of the package to use is being built up by appending `.auditing` to the project's group identifier (i.e. `com.hpe.sampleapp` in this example).
+Depending on how your Maven settings.xml file is configured, the pluginRepositories section may or may not be required in order to locate the code generation plugin.
 
-## Using the client-side Auditing Library
+	<pluginRepositories>
+	    <pluginRepository>
+	        <id>cmbg-maven-releases</id>
+	        <name>Cambridge Nexus Releases</name>
+	        <url>http://cmbg-maven.autonomy.com/nexus/content/repositories/releases</url>
+	        <snapshots>
+	            <enabled>false</enabled>
+	        </snapshots>
+	    </pluginRepository>
+	</pluginRepositories>
 
-**// TODO: Write about how to call the generated client-side library that passes the event messages onto Kafka.**
+In this example the URL is set to [http://cmbg-maven.autonomy.com/nexus/content/repositories/releases](http://cmbg-maven.autonomy.com/nexus/content/repositories/releases), but if that location is inaccessible then you could try one of the following URLs instead:
 
-Using the sample audit events XML specified in the [Audit Event Definition File](https://github.hpe.com/caf/caf-audit-schema/blob/develop/README.md), the code generation plugin will auto-generate the following methods as part of the `AuditLog` class:
+- [http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release](http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release)
+- [http://16.26.25.50/nexus/content/repositories/releases](http://16.26.25.50/nexus/content/repositories/releases)
+- [http://16.103.3.109:8081/artifactory/policyengine-release](http://16.103.3.109:8081/artifactory/policyengine-release)
+
+### No-op Auditing Library
+
+A dummy implementation of the standard auditing library, `caf-audit`, is provided to support developers without any Apache Kafka infrastructure. It has the same interface as the standard auditing library but does not send anything to Kafka. This will allow developers to continue to work with their application without the need to install and configure Apache Kafka.
+
+In order to make use of this no-op auditing library, simply modify the Maven Coordinates for the `caf-audit` dependency and specify `1.1-NOOP` as the version rather than just `1.1`:
+
+	<dependencies>
+	    <dependency>
+	        <groupId>com.hpe.caf</groupId>
+	        <artifactId>caf-audit</artifactId>
+	        <version>1.1-NOOP</version>
+	    </dependency>
+	</dependencies>
+
+Alternatively, you could do something more custom at runtime where you replace the standard auditing library jar with the no-op version if you prefer.
+
+## Using the Client-side Auditing Library
+
+### Dependencies
+
+A generated client-side library should be referenced in the normal way in the application's POM file. You shouldn't need to manually add a dependency on `caf-audit` as it will be a transitive dependency of the generated library.
+
+	<dependency>
+	    <groupId>com.hpe.sampleapp</groupId>
+	    <artifactId>sampleapp-audit</artifactId>
+	    <version>1.0-SNAPSHOT</version>
+	</dependency>
+
+### Audit Connection
+
+Regardless of whether you choose to use a generated client-side library, or to use `caf-audit` directly, you must first create an `AuditConnection` object.
+
+This object represents a logical connection to the persistent storage (i.e. to Kafka in the current implementation). It is a thread-safe object. It should be considered that this object takes some time to construct, so the application should hold on to it and re-use it rather than constantly re-constructing it.
+
+The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a `ConfigurationSource` parameter, which is the standard method of configuration in CAF.
+
+#### Configuration in CAF
+
+You may already have a CAF Configuration Source in your application. It is a general framework that abstracts away the source of the configuration, allowing it to come from environment variables, files, a REST service, or potentially a custom source which better integrates with the host application.
+
+If you're not already using CAF's Configuration mechanism, then here is some sample code to generate a `ConfigurationSource` object.
+
+	import com.hpe.caf.api.*;
+	import com.hpe.caf.cipher.NullCipherProvider;
+	import com.hpe.caf.config.system.SystemBootstrapConfiguration;
+	import com.hpe.caf.naming.ServicePath;
+	import com.hpe.caf.util.ModuleLoader;
+	
+	public static ConfigurationSource createCafConfigSource() throws Exception
+	{
+	    System.setProperty("CAF_CONFIG_PATH", "/etc/sampleapp/config");
+	    System.setProperty("CAF_APPNAME", "sampleappgroup/sampleapp");
+	
+	    BootstrapConfiguration bootstrap = new SystemBootstrapConfiguration();
+	    Cipher cipher = ModuleLoader.getService(CipherProvider.class, NullCipherProvider.class).getCipher(bootstrap);
+	    ServicePath path = bootstrap.getServicePath();
+	    Codec codec = ModuleLoader.getService(Codec.class);
+	    return ModuleLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, path, codec);
+	}
+
+To compile the above sample code you will need to add the following dependencies to your POM:
+
+	<dependency>
+	    <groupId>com.hpe.caf</groupId>
+	    <artifactId>caf-api</artifactId>
+	    <version>11.2</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.hpe.caf.cipher</groupId>
+	    <artifactId>cipher-null</artifactId>
+	    <version>10.0</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.hpe.caf.config</groupId>
+	    <artifactId>config-system</artifactId>
+	    <version>10.0</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.hpe.caf.util</groupId>
+	    <artifactId>util-moduleloader</artifactId>
+	    <version>1.1</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.hpe.caf.util</groupId>
+	    <artifactId>util-naming</artifactId>
+	    <version>1.0</version>
+	</dependency>
+
+To use JSON-encoded files for your configuration you will need to add the following additional dependencies to your POM:
+
+	<!-- Runtime-only Dependencies -->
+	<dependency>
+	    <groupId>com.hpe.caf.config</groupId>
+	    <artifactId>config-file</artifactId>
+	    <version>10.0</version>
+	    <scope>runtime</scope>
+	</dependency>
+	<dependency>
+	    <groupId>com.hpe.caf.codec</groupId>
+	    <artifactId>codec-json</artifactId>
+	    <version>10.1</version>
+	    <scope>runtime</scope>
+	</dependency>
+	<dependency>
+	    <groupId>io.dropwizard</groupId>
+	    <artifactId>dropwizard-core</artifactId>
+	    <version>0.8.4</version>
+	    <scope>runtime</scope>
+	</dependency>
+
+#### Configuration Required to create the AuditConnection
+
+In the above sample CAF Configuration is using JSON-encoded files with the following parameters:
+
+- `CAF_CONFIG_PATH: /etc/sampleapp/config`
+- `CAF_APPNAME: sampleappgroup/sampleapp`
+
+Given this configuration, to configure CAF Auditing you should create a file named `cfg_sampleappgroup_sampleapp_KafkaAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
+
+	{
+	    "bootstrapServers": "192.168.56.20:9092",
+	    "acks": "all",
+	    "retries": "0"
+	}
+
+`bootstrapServers` refers to one or more of the nodes of the Kafka cluster.
+`acks` is the number of nodes in the cluster which must acknowledge an audit event when it is sent.
+
+### Audit Channel
+
+After you have successfully constructed an `AuditConnection` object you must construct an `AuditChannel` object.
+
+This object represents a logical channel to the persistent storage (i.e. to Kafka in the current implementation). It is NOT a thread-safe object so it must not be shared across threads without synchronisation. However there is no issue constructing multiple `AuditChannel` objects simultaneously on different threads, and the objects are lightweight so caching them is not that important.
+
+The `AuditChannel` object can be constructed using the `createChannel()` method on the `AuditConnectionn` object. It does not take any parameters.
+
+### Audit Log
+
+The generated library contains an `AuditLog` class which contains static methods which can be used to log audit events.
+
+Here is an example for a the SampleApp's `viewDocument` event which takes a single document identifier parameter:
 
 	/**
 	 * Audit the viewDocument event
@@ -246,249 +592,23 @@ Using the sample audit events XML specified in the [Audit Event Definition File]
 	
 	    auditEventBuilder.send();
 	}
-	
-	/**
-	 * Audit the deleteDocument event
-	 * @param channel Identifies the channel to be used for message queuing 
-	 * @param tenantId Identifies the tenant that the user belongs to 
-	 * @param userId Identifies the user who triggered the event 
-	 * @param correlationId Identifies the same user action 
-	 * @param docId Document Identifier 
-	 * @param authorisedBy User who authorised the deletion 
-	 */
-	public static void auditDeleteDocument
-	(
-	    final AuditChannel channel,
-	    final String tenantId,
-	    final String userId,
-	    final String correlationId,
-	    final long docId,
-	    final String authorisedBy
-	)
-	    throws Exception
-	{
-	    final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
-	    auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
-	    auditEventBuilder.setTenant(tenantId);
-	    auditEventBuilder.setUser(userId);
-	    auditEventBuilder.setCorrelationId(correlationId);
-	    auditEventBuilder.setEventType("documentEvents", "deleteDocument");
-	    auditEventBuilder.addEventParameter("docId", null, docId);
-	    auditEventBuilder.addEventParameter("authorisedBy", null, authorisedBy, 1, 256);
-	
-	    auditEventBuilder.send();
-	}
 
-Calls to methods `auditViewDocument` and `auditDeleteDocument` would then be made to send document event messages to Kafka.
+The name of the event is included in the generated method name. In addition to the custom parameters (document id in this case), the caller must pass the `AuditChannel` object to be used, as well as the tenant id, user id, and correlation id.
+
+The method will throw an Exception if the audit event could not be stored for some reason (e.g. network failure).
 
 ### Verification Instructions
 
-// TODO: Write about how to verify that the client-side library's calls actually end up with event data in Vertica.
+Every time an `AuditLog` method is called a new row will be entered into the tenant's audit application table. The following figure shows the a tenant's `account_1` schema's `AuditSampleApp` table with an audit event entry with data for an audit event:
 
+![Tenant 1 with AuditSampleApp audit event entry](images/account_1AuditSampleAppData.png)
 
-
-
-
------------------------
-
-### Adding a Job
-
-1. Expand the PUT /jobs/{jobId} method. 
-2. Enter a value for jobId. 
-3. Click on the example value box on the right to fill in the new job body. 
-4. Edit these fields with your own details:
- 
- `name`: name of the job <br>
-  `description`: description of the job <br>
-  `externalData`: external data <br>
-  `taskClassifier`: classifier of the task <br>
-  `taskApiVersion`: API version of the task <br>
-  `taskData`: data of the task (include a batch definition if sending to the batch worker) <br>
-  `taskDataEncoding`: encoding of the task data, for example, `utf8` <br>
-  `taskPipe`: name of the RabbitMQ queue feeding messages to the first worker <br>
-  `targetPipe`: name of the final worker's output queue where tracking will stop
-
-5. Press `Try it out!`. The resulting code will show whether the addition of the job succeeds or not. 
-   - 201, if the job is successfully added
-   - 204, if the job is successfully updated
-
-![Add Job](images/JobServiceUIAddJob.PNG)
-
-### Getting Jobs
-
-1. Expand the GET /jobs method. 
-2. Press `Try it out!`. The list of jobs in the system appears in the response body, including the job you just created.
-
-![Add Job](images/JobServiceUIGet.PNG)
-
-## Deploying an End-To-End System
-
-In order to test an end-to-end Job Service system, you need to deploy and run:
-
-- the Job Service (see _Deploying the Job Service with Chateau_)
-- a job tracking worker (see _Deploying the Job Service with Chateau_)
-- a batch worker 
-- another service to send the tasks to, in this case, the example worker.
-
-### Batch Worker
-
-You can deploy the batch worker with Chateau.
-
-Prerequisites for running the batch worker can be found [here](https://github.hpe.com/caf/chateau/blob/develop/services/batch-worker/README.md).
-
-The following command with the deployment script deploys a batch worker:
-
-`./deploy-service.sh batch-worker`
-
-### Example Worker
-
-You can deploy the example worker using Chateau.
-
-Prerequisites for running the example worker can be found [here](https://github.hpe.com/caf/chateau/blob/develop/services/example-worker/README.md).
-
-The following command with the deployment script deploys an example worker:
-
-`./deploy-service.sh example-worker`
-
-You can view the status of the services on Marathon at the following URL:
-
-`<marathon-endpoint>/ui/#`
-
-The figure shows you the health of the workers and services:
-
-![Marathon Health](images/MarathonAllHealthy.png)
-
-You also need dummy data in a datastore and a storage reference to this data. Dummy data can be uploaded from the document-generator. For more information on using the document generator, see the README.md.
-
-### Send a Job
-
-Open the Swagger user interface as explained under _Using the Job Service Web User Interface_.
-
-Add a job with the new job body following this template:
-
-```
-{
-  "name": "Job_1",
-  "description": "end-to-end",
-  "externalData": "string",
-  "task": {
-    "taskClassifier": "BatchWorker",
-    "taskApiVersion": 1,
-    "taskData": "{\"batchDefinition\":\"[\\\"2f0e1a924d954ed09966f91d726e4960/fda3cf959a1d456b8d54800ba9e9b2f5\\\",\\\"02f0e1a924d954ed09966f91d726e4960/fda3cf959a1d456b8d54800ba9e9b2f5\\\"]\",\"batchType\":\"AssetIdBatchPlugin\",\"taskMessageType\":\"ExampleWorkerTaskBuilder\",\"taskMessageParams\":{\"datastorePartialReference\":\"2f0e1a924d954ed09966f91d726e4960\",\"action\":\"REVERSE\"},\"targetPipe\":\"demo-example-in\"}",
-    "taskDataEncoding": "utf8",
-    "taskPipe": "demo-batch-in",
-    "targetPipe": "demo-example-out"
-  }
-}
-```
-
-Note the following:
-
-* `TaskClassifier` must be set to `BatchWorker` as you are sending the job to the batch worker.
-* Set the `taskApiVersion` to 1.
-* For the `taskData`, we are adding a batch definition with a storage reference and the `datastorePartialReference` is the container ID. This storage reference is the reference to the dummy data stored using document generator.
-* Set `taskPipe` to the queue consumed by the first worker to which you want to send the work, in this case, the batch worker `demo-batch-in`. The batch can then be broken down into task items.
-* Set `targetPipe` to the name of the final worker where tracking will stop, in this case, `demo-example-out`.
-
-### Verification of correct setup
-
-The message output to the example worker output queue, demo-example-out, contains no tracking information. The payload for the messages sent to RabbitMQ will look similar to the following. Notice that `tracking` is `null`.
-
-```
-{"version":3,"taskId":"j_demo_1.1","taskClassifier":"ExampleWorker","taskApiVersion":1,"taskData":"eyJ3b3JrZXJTdGF0dXMiOiJDT01QTEVURUQiLCJ0ZXh0RGF0YSI6eyJyZWZlcmVuY2UiOm51bGwsImRhdGEiOiJBQUFBQUFEdnY3MEFBQUR2djcwQUF3QURBQUFBQUFZRlMxQjBlSFF1TTJOdlpIUnpaWFFBQUFCa0FBQUFJQUFCQUFBQUFBQUFBQXdBQUFBSUFBQUFDQlB2djczdnY3MGFTQ2hhVkFBQUFBQUFGQUFVQWdGTFVIUjRkQzR5WTI5a2RITmxkQUFBQURJQUFBQWdBQUVBQUFBQUFBQUFEQUFBQUFnQUFBQUlaTysvdmUrL3ZlKy92VWdvV2swQUFBQUFBQlFBRkFJQlMxQjBlSFF1TVdOdlpIUnpaWFFBQUFBQUFBQUFJQUFCQUFBQUFBQUFBQXdBQUFBSUFBQUFDTysvdmM2VE5rZ29Xa1VBQUFBQUFCUUFGQUlCUzFBelkyOWtkSE5sZEhSNGRDNHpZMjlrZEhObGRBQUFBQXdBQUFBSUFBQUFDQlB2djczdnY3MGFTQ2hhVkFBQUFBQUFGQVFEUzFBeVkyOWtkSE5sZEhSNGRDNHlZMjlrZEhObGRBQUFBQXdBQUFBSUFBQUFDR1R2djczdnY3M3Z2NzFJS0ZwTkFBQUFBQUFVQkFOTFVERmpiMlIwYzJWMGRIaDBMakZqYjJSMGMyVjBBQUFBREFBQUFBZ0FBQUFJNzcrOXpwTTJTQ2hhUlFBQUFBQUFGQVFEUzFBPSJ9fQ==","taskStatus":"RESULT_SUCCESS","context":{},"to":"demo-example-out","tracking":null,"sourceInfo":{"name":"ExampleWorker","version":"1.0-SNAPSHOT"}}
-```
-
-The figure shows how to locate the stdout output for the job tracking worker, after clicking on the job tracking application in Marathon.
-
-![Jobtracking Stdout](images/Jobtracking_stdout.png)
-
-Open the stdout log file for the job tracking worker and verify the following:
-
-* Message is registered and split into separate tasks by the batch worker.
-* Separate messages are forwarded to the example worker input queue.
-* Job status check returns Active for separated messages.
-* Single message forwarded to the batch worker output queue.
-* Job status check returns Completed for separated messages.
-* Separate messages forwarded to the example worker output queue.
-* Tracking information is removed from separate messages.
-
-The output log should look something like this:
-
-```
-DEBUG [2016-06-29 16:21:44,765] com.hpe.caf.worker.queue.rabbit.WorkerQueueConsumerImpl: Registering new message 22
-DEBUG [2016-06-29 16:21:44,766] com.hpe.caf.worker.core.WorkerCore: Received task j_demo_1.1 (message id: 22)
-DEBUG [2016-06-29 16:21:44,766] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.1 active status is not being checked - it is not yet time for the status check to be performed: status check due at Wed Jun 29 16:21:49 UTC 2016
-DEBUG [2016-06-29 16:21:44,766] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.1 (message id: 22) is not intended for this worker: input queue demo-jobtracking-in does not match message destination queue demo-example-in
-DEBUG [2016-06-29 16:21:44,766] com.hpe.caf.worker.jobtracking.JobTrackingWorkerReporter: Connecting to database jdbc:postgresql://16.49.191.34:5432/jobservice ...
-INFO  [2016-06-29 16:21:44,793] com.hpe.caf.worker.jobtracking.JobTrackingWorkerReporter: Reporting progress of job task j_demo_1.1 with status Active ...
-DEBUG [2016-06-29 16:21:44,999] com.hpe.caf.worker.jobtracking.JobTrackingWorkerFactory: Forwarding task j_demo_1.1
-DEBUG [2016-06-29 16:21:44,999] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.1 (message id: 22) being forwarded to queue demo-example-in
-DEBUG [2016-06-29 16:21:45,001] com.hpe.caf.worker.queue.rabbit.WorkerPublisherImpl: Publishing message with ack id 22
-DEBUG [2016-06-29 16:21:45,001] com.hpe.caf.worker.queue.rabbit.WorkerConfirmListener: Listening for confirmation of publish sequence 22 (ack message: 22)
-DEBUG [2016-06-29 16:21:45,002] com.hpe.caf.worker.queue.rabbit.WorkerQueueConsumerImpl: Registering new message 23
-DEBUG [2016-06-29 16:21:45,002] com.hpe.caf.worker.core.WorkerCore: Received task j_demo_1.2 (message id: 23)
-DEBUG [2016-06-29 16:21:45,002] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.2 active status is not being checked - it is not yet time for the status check to be performed: status check due at Wed Jun 29 16:21:49 UTC 2016
-DEBUG [2016-06-29 16:21:45,003] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.2 (message id: 23) is not intended for this worker: input queue demo-jobtracking-in does not match message destination queue demo-example-in
-DEBUG [2016-06-29 16:21:45,003] com.hpe.caf.worker.jobtracking.JobTrackingWorkerReporter: Connecting to database jdbc:postgresql://16.49.191.34:5432/jobservice ...
-DEBUG [2016-06-29 16:21:45,006] com.hpe.caf.worker.queue.rabbit.WorkerConfirmListener: RabbitMQ broker ACKed published sequence id 22 (multiple: false)
-INFO  [2016-06-29 16:21:45,029] com.hpe.caf.worker.jobtracking.JobTrackingWorkerReporter: Reporting progress of job task j_demo_1.2* with status Active ...
-DEBUG [2016-06-29 16:21:45,069] com.hpe.caf.worker.jobtracking.JobTrackingWorkerFactory: Forwarding task j_demo_1.2
-DEBUG [2016-06-29 16:21:45,069] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.2 (message id: 23) being forwarded to queue demo-example-in
-DEBUG [2016-06-29 16:21:45,071] com.hpe.caf.worker.queue.rabbit.WorkerQueueConsumerImpl: Acknowledging message 22
-DEBUG [2016-06-29 16:21:45,072] com.hpe.caf.worker.queue.rabbit.WorkerPublisherImpl: Publishing message with ack id 23
-DEBUG [2016-06-29 16:21:45,072] com.hpe.caf.worker.queue.rabbit.WorkerConfirmListener: Listening for confirmation of publish sequence 23 (ack message: 23)
-DEBUG [2016-06-29 16:21:45,076] com.hpe.caf.worker.queue.rabbit.WorkerQueueConsumerImpl: Registering new message 24
-DEBUG [2016-06-29 16:21:45,077] com.hpe.caf.worker.core.WorkerCore: Received task ec9c4556-4753-478b-a714-bd57fde837b5 (message id: 24)
-DEBUG [2016-06-29 16:21:45,077] com.hpe.caf.worker.core.WorkerCore: Task ec9c4556-4753-478b-a714-bd57fde837b5 active status is not being checked - it is not yet time for the status check to be performed: status check due at Wed Jun 29 16:21:49 UTC 2016
-DEBUG [2016-06-29 16:21:45,077] com.hpe.caf.worker.core.WorkerCore: Task ec9c4556-4753-478b-a714-bd57fde837b5 (message id: 24) is not intended for this worker: input queue demo-jobtracking-in does not match message destination queue demo-batch-out
-DEBUG [2016-06-29 16:21:45,077] com.hpe.caf.worker.jobtracking.JobTrackingWorkerReporter: Connecting to database jdbc:postgresql://16.49.191.34:5432/jobservice ...
-DEBUG [2016-06-29 16:21:45,078] com.hpe.caf.worker.queue.rabbit.WorkerConfirmListener: RabbitMQ broker ACKed published sequence id 23 (multiple: false)
-INFO  [2016-06-29 16:21:45,108] com.hpe.caf.worker.jobtracking.JobTrackingWorkerReporter: Reporting progress of job task j_demo_1 with status Active ...
-DEBUG [2016-06-29 16:21:45,124] com.hpe.caf.worker.jobtracking.JobTrackingWorkerFactory: Forwarding task ec9c4556-4753-478b-a714-bd57fde837b5
-DEBUG [2016-06-29 16:21:45,124] com.hpe.caf.worker.core.WorkerCore: Task ec9c4556-4753-478b-a714-bd57fde837b5 (message id: 24) being forwarded to queue demo-batch-out
-DEBUG [2016-06-29 16:21:45,130] com.hpe.caf.worker.queue.rabbit.WorkerPublisherImpl: Publishing message with ack id 24
-DEBUG [2016-06-29 16:21:45,130] com.hpe.caf.worker.queue.rabbit.WorkerConfirmListener: Listening for confirmation of publish sequence 24 (ack message: 24)
-DEBUG [2016-06-29 16:21:45,130] com.hpe.caf.worker.queue.rabbit.WorkerQueueConsumerImpl: Acknowledging message 23
-DEBUG [2016-06-29 16:21:45,132] com.hpe.caf.worker.queue.rabbit.WorkerConfirmListener: RabbitMQ broker ACKed published sequence id 24 (multiple: false)
-DEBUG [2016-06-29 16:21:45,133] com.hpe.caf.worker.queue.rabbit.WorkerQueueConsumerImpl: Acknowledging message 24
-DEBUG [2016-06-29 16:21:47,955] com.hpe.caf.worker.queue.rabbit.WorkerQueueConsumerImpl: Registering new message 25
-DEBUG [2016-06-29 16:21:47,957] com.hpe.caf.worker.core.WorkerCore: Received task j_demo_1.1 (message id: 25)
-DEBUG [2016-06-29 16:21:47,957] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.1 active status is not being checked - it is not yet time for the status check to be performed: status check due at Wed Jun 29 16:21:49 UTC 2016
-DEBUG [2016-06-29 16:21:47,958] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.1 (message id: 25) is not intended for this worker: input queue demo-jobtracking-in does not match message destination queue demo-example-out
-DEBUG [2016-06-29 16:21:47,959] com.hpe.caf.worker.jobtracking.JobTrackingWorkerReporter: Connecting to database jdbc:postgresql://16.49.191.34:5432/jobservice ...
-INFO  [2016-06-29 16:21:47,989] com.hpe.caf.worker.jobtracking.JobTrackingWorkerReporter: Reporting progress of job task j_demo_1.1 with status Completed ...
-DEBUG [2016-06-29 16:21:48,020] com.hpe.caf.worker.jobtracking.JobTrackingWorkerFactory: Forwarding task j_demo_1.1
-DEBUG [2016-06-29 16:21:48,020] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.1 (message id: 25) being forwarded to queue demo-example-out
-DEBUG [2016-06-29 16:21:48,020] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.1 (message id: 25): removing tracking info from this message as tracking ends on publishing to the queue demo-example-out.
-DEBUG [2016-06-29 16:21:48,024] com.hpe.caf.worker.queue.rabbit.WorkerPublisherImpl: Publishing message with ack id 25
-DEBUG [2016-06-29 16:21:48,024] com.hpe.caf.worker.queue.rabbit.WorkerConfirmListener: Listening for confirmation of publish sequence 25 (ack message: 25)
-DEBUG [2016-06-29 16:21:48,026] com.hpe.caf.worker.queue.rabbit.WorkerConfirmListener: RabbitMQ broker ACKed published sequence id 25 (multiple: false)
-DEBUG [2016-06-29 16:21:48,027] com.hpe.caf.worker.queue.rabbit.WorkerQueueConsumerImpl: Acknowledging message 25
-DEBUG [2016-06-29 16:21:49,246] com.hpe.caf.worker.queue.rabbit.WorkerQueueConsumerImpl: Registering new message 26
-DEBUG [2016-06-29 16:21:49,247] com.hpe.caf.worker.core.WorkerCore: Received task j_demo_1.2 (message id: 26)
-DEBUG [2016-06-29 16:21:49,247] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.2 active status is not being checked - it is not yet time for the status check to be performed: status check due at Wed Jun 29 16:21:49 UTC 2016
-DEBUG [2016-06-29 16:21:49,247] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.2 (message id: 26) is not intended for this worker: input queue demo-jobtracking-in does not match message destination queue demo-example-out
-DEBUG [2016-06-29 16:21:49,247] com.hpe.caf.worker.jobtracking.JobTrackingWorkerReporter: Connecting to database jdbc:postgresql://16.49.191.34:5432/jobservice ...
-INFO  [2016-06-29 16:21:49,274] com.hpe.caf.worker.jobtracking.JobTrackingWorkerReporter: Reporting progress of job task j_demo_1.2* with status Completed ...
-DEBUG [2016-06-29 16:21:49,298] com.hpe.caf.worker.jobtracking.JobTrackingWorkerFactory: Forwarding task j_demo_1.2
-DEBUG [2016-06-29 16:21:49,298] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.2 (message id: 26) being forwarded to queue demo-example-out
-DEBUG [2016-06-29 16:21:49,298] com.hpe.caf.worker.core.WorkerCore: Task j_demo_1.2 (message id: 26): removing tracking info from this message as tracking ends on publishing to the queue demo-example-out.
-DEBUG [2016-06-29 16:21:49,301] com.hpe.caf.worker.queue.rabbit.WorkerPublisherImpl: Publishing message with ack id 26
-DEBUG [2016-06-29 16:21:49,301] com.hpe.caf.worker.queue.rabbit.WorkerConfirmListener: Listening for confirmation of publish sequence 26 (ack message: 26)
-DEBUG [2016-06-29 16:21:49,306] com.hpe.caf.worker.queue.rabbit.WorkerConfirmListener: RabbitMQ broker ACKed published sequence id 26 (multiple: false)
-DEBUG [2016-06-29 16:21:49,306] com.hpe.caf.worker.queue.rabbit.WorkerQueueConsumerImpl: Acknowledging message 26
-```
+---
 
 ## Links
 
 For more information on Chateau, go [here](https://github.hpe.com/caf/chateau).
 
-For more information on Job Service templates, and configuration and property files, see [here](https://github.hpe.com/caf/chateau/blob/develop/services/job-service/README.md).
+For more information on Vertica, go [here](https://my.vertica.com/).
 
-For more information on batch worker templates, and configuration and property files, see [here](https://github.hpe.com/caf/chateau/blob/develop/services/batch-worker/README.md).
-
-
-
-# NOTES:
-
-- AUDIT EVENT DEFINITION FILE DUPLICATION BETWEEN THIS DOCUMENT AND THE ARTCHITECTURE; WHICH ONE SHOULD EXIST? MAYBE IT WOULD BE BETTER FOR THE SCHEMA DEFINITION TO EXIST IN THE ARCHITECTURE DOC WHEREAS THE EXAMPLE OF A DEFINITION FILE WOULD EXIST IN THIS GETTING STARTED GUIDE.
+For more information on Apache Kafka, go [here](http://kafka.apache.org/).

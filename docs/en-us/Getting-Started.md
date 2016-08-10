@@ -5,19 +5,19 @@ title: Getting Started
 
 # Getting Started
 
-The high level steps involved in setting up the Audit Mangement Service are:
+These are the high level steps involved in setting up the Audit Management Service; they are explained in detail in this guide:
 
-1. Install and configure Vertica 7.2.x on a separate machine.
-2. It is recommended, that you install and configure Apache Kafka on a system.
-3. With the use of Chateau launch the Apache Kafka-Vertica scheduler and the Audit Management Web Service onto Mesos/Marathon.
+1. Install and configure Vertica 7.2.x on a dedicated machine.
+2. Install and configure Apache Kafka on a dedicated machine.
+3. With the use of the Chateau deployment toolset launch the Apache Kafka-Vertica scheduler and the Audit Management Web Service in Mesos/Marathon.
 4. Define an application's audit events in an Audit Event Definition File.
-5. Register the application definition file and add tenant(s) with the Audit Management Web Service. This will create the necessary database schemas in Vertica.
-6. Generate the client-side auditing library using the Audit Event Definition File and code generation plugin. 
-7. Use the client-side auditing library to send audit events to Kafka.
+5. Register the Audit Event Definition File and add tenant(s) with the Audit Management Web Service. This will create the necessary database tables in Vertica.
+6. Generate the client-side auditing library using the Audit Event Definition File and the code generation plugin. 
+7. Use the client-side auditing library to send audit events to Kafka. The Audit Scheduler will automatically load the events from Kafka into Vertica.
 
 ## Deploying Vertica
 
-Vertica is an SQL database designed for delivering speed, scalability and support for analytics. The Audit Management Service uses Vertica for the storage of streamed applications' tenants' audit events from a Kafka message bus. Analysis tools can then be used on the data to gather metrics of the use of audited applications.
+Vertica is a SQL database designed for delivering speed, scalability and support for analytics. In CAF Auditing Vertica is ultimately used for storing the audit events.  The events are stored on a per-application per-tenant basis. Analysis tools can be used on the data to gather metrics with regard to the use of the audited applications.
 
 ### Enterprise Deployment
 
@@ -25,19 +25,22 @@ For Enterprise deployments of Vertica it is recommended that you follow the offi
 
 #### Database, Role & Service Accounts
 
+[DH: Don't like this sentence]
 Once Vertica is installed, you will need to create or use an existing database, role, and service accounts.
 
 These are the items which need to be created in order for Audit Management to work correctly.
 
+[DH: Reword - what is this trying to say?]
 Once you have fulfilled the following criteria, for CAF Audit Management deployments with Chateau, please fill in the information within Chateau's environment/vertica.json file.
 
+[DH: Voice keeps switching here - all bullet points should be informative or instructive]
 Example commands for creating the users / roles / tables are listed in the correct order below:
 
-- Log onto the vertica machine, and run as the dbadmin user so you have access to create users / roles / tables.
+- Log onto the Vertica machine, and run as the dbadmin user so you have access to create users / roles / tables.
 - Example properties which are defined for ease of understanding the commands:
 
 	<pre><code># Define user friendly properties. 
-	#Example install location of vertica 
+	# Example install location of Vertica 
 	VERTICA_INSTALL_DIR=/opt/vertica  
 	VERTICA_DATABASE_NAME="CAFAudit"  
 	VERTICA_DATABASE_PASSWORD=${VERTICA_DATABASE_NAME}
@@ -53,20 +56,24 @@ Example commands for creating the users / roles / tables are listed in the corre
 	VERTICA_CA_READER_DATABASE_ACCOUNT=caf-audit-reader
 	VERTICA_CA_READER_DATABASE_ACCOUNT_PASSWORD="'c@FaR3aD3R'"
 	
-	# Database audit management user for kafka/vertica integration
+	# Database audit management user for Kafka/Vertica integration
 	VERTICA_CA_LOADER_DATABASE_ACCOUNT=caf-audit-loader
 	VERTICA_CA_LOADER_DATABASE_ACCOUNT_PASSWORD="'c@FaL0Ad3r'"
 	
 	# VSQL command line usage.
 	VSQL=${VERTICA_INSTALL_DIR}/bin/vsql
 	</code></pre>
-- To create a vertica database, if one has not already been created
+
+
+[DH: Rework all of these instructions to use DbVisualizer.  That should simplify them (removing escaping), and possibly mean that you can include screenshots.]
+
+- To create a Vertica database, if one has not already been created.  [DH: It should be noted that Audit Events normally go into a database that is shared and therefore you wouldn't be creating it.]
 	<pre><code>"${VERTICA_INSTALL_DIR}/bin/admintools -t create_db -d ${VERTICA_DATABASE_NAME} -p ${VERTICA_DATABASE_PASSWORD} -s 127.0.0.1" >> vertica_db_creation.log
 	</code></pre>
 - To create the CAF Audit Reader Role
 	<pre><code>${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "CREATE ROLE \"${VERTICA_CA_READER_DATABASE_ROLE}\"" 
 	</code></pre>
-- To create the CAF Audit Reader User and assign role.
+- To create the CAF Audit Reader User and assign role. [DH: Need to explain that this role should be given to any user that needs access to read the audit data.  For example, if the Search & Analytics service is being used to access audit data then the user that this service is using will need to be given the role.  There is no need to have an audit-reader user and it sort of defeats the purpose of the role.]
 	<pre><code>#Creating ${VERTICA_CA_READER_DATABASE_ACCOUNT} database user...
 	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "CREATE USER \"${VERTICA_CA_READER_DATABASE_ACCOUNT}\" IDENTIFIED BY ${VERTICA_CA_READER_DATABASE_ACCOUNT_PASSWORD}" 
 
@@ -107,9 +114,9 @@ Ensure you have a Kafka Vertica scheduler created to handle all audit events. Th
 where:
 
 * [BROKERS] - This specifies the kafka broker(s) to be used, it is formatted as a comma separated list of address:port endpoints.
-* [USERNAME] - This is the vertica database loader account name (e.g. caf-audit-loader).
-* [PASSWORD] - This is the password for the vertica database loader account name. (e.g. "c@FaL0Ad3r")
-* [OPERATOR] - This is the vertica database loader account name wrapped in double quotes(e.g. "\"caf-audit-loader\"").
+* [USERNAME] - This is the Vertica database loader account name (e.g. caf-audit-loader).
+* [PASSWORD] - This is the password for the Vertica database loader account name. (e.g. "c@FaL0Ad3r")
+* [OPERATOR] - This is the Vertica database loader account name wrapped in double quotes(e.g. "\"caf-audit-loader\"").
 
 Example:
 

@@ -77,15 +77,13 @@ public class ApplicationAddPost {
                     auditXMLConfigString = auditXMLConfigString.replaceAll(">\\s*<", "><").replace("\r\n", "");
 
                     LOG.debug("addApplication: Checking if AuditManagement.ApplicationEvents row already exists for application '{}'...", application);
-                    boolean rowExists = databaseHelper.doesApplicationEventsRowExist(application);
-                    if (!rowExists) {
+                    String existingAuditConfigXMLString = databaseHelper.getEventsXMLForApp(application);
+                    if (existingAuditConfigXMLString == null || existingAuditConfigXMLString == "") {
+                        //  Given no XML has been returned, then we can assume that the row does not yet exist.
                         LOG.debug("addApplication: Creating new row in AuditManagement.ApplicationEvents for application '{}'...", application);
                         databaseHelper.insertApplicationEventsRow(application, auditXMLConfigString);
                     } else {
-                        //  The application has already been registered. Retrieve the existing stored XML for it.
-                        String existingAuditConfigXMLString = databaseHelper.getEventsXMLForApp(application);
-
-                        //  Only proceed with schema updates if application XML has changed from before.
+                        //  Application already registered. Only proceed with schema updates if application XML has changed from before.
                         if (!existingAuditConfigXMLString.equals(auditXMLConfigString)) {
 
                             //  Update ApplicationEvents table with audit events XML changes.

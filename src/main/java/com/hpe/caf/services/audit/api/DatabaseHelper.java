@@ -397,32 +397,6 @@ public class DatabaseHelper {
     }
 
     /**
-     * Check if the application defined audit events XML has already been registered.
-     */
-    public boolean doesApplicationEventsRowExist(String applicationId) throws Exception {
-
-        boolean exists = false;
-
-        String rowExistsSQL = "select 1 as rowExists from AuditManagement.ApplicationEvents where applicationId = ?";
-
-        try (
-                Connection conn = getConnection();
-                PreparedStatement stmt = conn.prepareStatement(rowExistsSQL)
-        ) {
-            stmt.setString(1,applicationId);
-
-            //  Execute a query to determine if the specified table column exists.
-            LOG.debug("doesApplicationEventsRowExist: Checking if ApplicationEvents row already exists...");
-            ResultSet rs = stmt.executeQuery();
-            if(rs.next()){
-                exists = rs.getInt("rowExists") > 0;
-            }
-        }
-
-        return exists;
-    }
-
-    /**
      * Check if tenant/application mapping has already been registered.
      */
     public boolean doesTenantApplicationsRowExist(String tenantId, String applicationId) throws Exception {

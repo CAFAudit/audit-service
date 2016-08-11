@@ -77,30 +77,34 @@ public class ApplicationAddPost {
                     auditXMLConfigString = auditXMLConfigString.replaceAll(">\\s*<", "><").replace("\r\n", "");
 
                     LOG.debug("addApplication: Checking if AuditManagement.ApplicationEvents row already exists for application '{}'...", application);
-                    boolean rowExists = databaseHelper.doesApplicationEventsRowExist(application);
-                    if (!rowExists) {
+                    String existingAuditConfigXMLString = databaseHelper.getEventsXMLForApp(application);
+                    if (existingAuditConfigXMLString == null || existingAuditConfigXMLString == "") {
+                        //  Given no XML has been returned, then we can assume that the row does not yet exist.
                         LOG.debug("addApplication: Creating new row in AuditManagement.ApplicationEvents for application '{}'...", application);
                         databaseHelper.insertApplicationEventsRow(application, auditXMLConfigString);
                     } else {
-                        //  The application has already been registered. So update ApplicationEvents
-                        //  table with audit events XML changes.
-                        LOG.debug("addApplication: Updating row in AuditManagement.ApplicationEvents for application '{}'...", application);
-                        databaseHelper.updateApplicationEventsRow(application, auditXMLConfigString);
+                        //  Application already registered. Only proceed with schema updates if application XML has changed from before.
+                        if (!existingAuditConfigXMLString.equals(auditXMLConfigString)) {
 
-                        //  Identify all tenants currently associated with the application.
-                        LOG.debug("addApplication: Getting list of tenants for application '{}'...", application);
-                        List<String> tenants = databaseHelper.getTenantsForApp(application);
+                            //  Update ApplicationEvents table with audit events XML changes.
+                            LOG.debug("addApplication: Updating row in AuditManagement.ApplicationEvents for application '{}'...", application);
+                            databaseHelper.updateApplicationEventsRow(application, auditXMLConfigString);
 
-                        //  For each tenant, modify existing table schema if necessary.
-                        LOG.debug("addApplication: Modifying tenant auditing tables where necessary...");
-                        for (String tenantId : tenants) {
-                            String tableName = "Audit" + application;
-                            String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
-                            boolean tableModified = modifyDatabaseTable(auditAppData,databaseHelper,tenantSchemaName, tableName);
-                            if (tableModified) {
-                                LOG.debug("addApplication: Table '{}' modified...", tenantSchemaName + "." + tableName);
-                            } else {
-                                LOG.debug("addApplication: Table schema for '{}' is up to date...", tenantSchemaName + "." + tableName);
+                            //  Identify all tenants currently associated with the application.
+                            LOG.debug("addApplication: Getting list of tenants for application '{}'...", application);
+                            List<String> tenants = databaseHelper.getTenantsForApp(application);
+
+                            //  For each tenant, modify existing table schema if necessary.
+                            LOG.debug("addApplication: Modifying tenant auditing tables where necessary...");
+                            for (String tenantId : tenants) {
+                                String tableName = "Audit" + application;
+                                String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
+                                boolean tableModified = modifyDatabaseTable(auditAppData,databaseHelper,tenantSchemaName, tableName);
+                                if (tableModified) {
+                                    LOG.debug("addApplication: Table '{}' modified...", tenantSchemaName + "." + tableName);
+                                } else {
+                                    LOG.debug("addApplication: Table schema for '{}' is up to date...", tenantSchemaName + "." + tableName);
+                                }
                             }
                         }
                     }

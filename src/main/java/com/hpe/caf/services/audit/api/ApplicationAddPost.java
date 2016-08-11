@@ -82,25 +82,31 @@ public class ApplicationAddPost {
                         LOG.debug("addApplication: Creating new row in AuditManagement.ApplicationEvents for application '{}'...", application);
                         databaseHelper.insertApplicationEventsRow(application, auditXMLConfigString);
                     } else {
-                        //  The application has already been registered. So update ApplicationEvents
-                        //  table with audit events XML changes.
-                        LOG.debug("addApplication: Updating row in AuditManagement.ApplicationEvents for application '{}'...", application);
-                        databaseHelper.updateApplicationEventsRow(application, auditXMLConfigString);
+                        //  The application has already been registered. Retrieve the existing stored XML for it.
+                        String existingAuditConfigXMLString = databaseHelper.getEventsXMLForApp(application);
 
-                        //  Identify all tenants currently associated with the application.
-                        LOG.debug("addApplication: Getting list of tenants for application '{}'...", application);
-                        List<String> tenants = databaseHelper.getTenantsForApp(application);
+                        //  Only proceed with schema updates if application XML has changed from before.
+                        if (!existingAuditConfigXMLString.equals(auditXMLConfigString)) {
 
-                        //  For each tenant, modify existing table schema if necessary.
-                        LOG.debug("addApplication: Modifying tenant auditing tables where necessary...");
-                        for (String tenantId : tenants) {
-                            String tableName = "Audit" + application;
-                            String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
-                            boolean tableModified = modifyDatabaseTable(auditAppData,databaseHelper,tenantSchemaName, tableName);
-                            if (tableModified) {
-                                LOG.debug("addApplication: Table '{}' modified...", tenantSchemaName + "." + tableName);
-                            } else {
-                                LOG.debug("addApplication: Table schema for '{}' is up to date...", tenantSchemaName + "." + tableName);
+                            //  Update ApplicationEvents table with audit events XML changes.
+                            LOG.debug("addApplication: Updating row in AuditManagement.ApplicationEvents for application '{}'...", application);
+                            databaseHelper.updateApplicationEventsRow(application, auditXMLConfigString);
+
+                            //  Identify all tenants currently associated with the application.
+                            LOG.debug("addApplication: Getting list of tenants for application '{}'...", application);
+                            List<String> tenants = databaseHelper.getTenantsForApp(application);
+
+                            //  For each tenant, modify existing table schema if necessary.
+                            LOG.debug("addApplication: Modifying tenant auditing tables where necessary...");
+                            for (String tenantId : tenants) {
+                                String tableName = "Audit" + application;
+                                String tenantSchemaName = ApiServiceUtil.TENANTID_SCHEMA_PREFIX + tenantId;
+                                boolean tableModified = modifyDatabaseTable(auditAppData,databaseHelper,tenantSchemaName, tableName);
+                                if (tableModified) {
+                                    LOG.debug("addApplication: Table '{}' modified...", tenantSchemaName + "." + tableName);
+                                } else {
+                                    LOG.debug("addApplication: Table schema for '{}' is up to date...", tenantSchemaName + "." + tableName);
+                                }
                             }
                         }
                     }

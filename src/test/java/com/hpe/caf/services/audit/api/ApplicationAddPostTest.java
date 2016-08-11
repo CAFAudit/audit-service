@@ -115,6 +115,7 @@ public class ApplicationAddPostTest {
         tenants.add("tenant2");
         Mockito.when(mockDatabaseHelper.getTenantsForApp(Mockito.anyString())).thenReturn(tenants);
         Mockito.when(mockDatabaseHelper.doesColumnExist(Mockito.anyString(),Mockito.anyString(),Mockito.anyString())).thenReturn(false);
+        Mockito.when(mockDatabaseHelper.getEventsXMLForApp(Mockito.anyString())).thenReturn("");
         Mockito.doNothing().when(mockDatabaseHelper).addColumn(Mockito.anyString());
         PowerMockito.whenNew(DatabaseHelper.class).withArguments(Mockito.any()).thenReturn(mockDatabaseHelper);
 
@@ -128,6 +129,7 @@ public class ApplicationAddPostTest {
 
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).createAuditManagementSchema(Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).doesApplicationEventsRowExist(Mockito.anyString());
+        Mockito.verify(mockDatabaseHelper, Mockito.times(1)).getEventsXMLForApp(Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).updateApplicationEventsRow(Mockito.anyString(),Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(1)).getTenantsForApp(Mockito.anyString());
         Mockito.verify(mockDatabaseHelper, Mockito.times(2)).doesColumnExist(Mockito.anyString(),Mockito.anyString(),Mockito.anyString());

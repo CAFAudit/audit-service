@@ -21,7 +21,7 @@
         <version.major>1-SNAPSHOT</version.major>
         <version.major.minor>${project.version}</version.major.minor>
         <swagger-contract-artifactId>caf-audit-management-contract</swagger-contract-artifactId>
-        <swagger-contract-version>1.0-SNAPSHOT</swagger-contract-version>
+        <swagger-contract-version>1.0.2-SNAPSHOT</swagger-contract-version>
         <swagger-codegen-inputSpec>/com/hpe/caf/services/audit/contract/swagger.yaml</swagger-codegen-inputSpec>
         <swagger-codegen-modelPackage>com.hpe.caf.services.audit.client.model</swagger-codegen-modelPackage>
         <swagger-codegen-apiPackage>com.hpe.caf.services.audit.client.api</swagger-codegen-apiPackage>

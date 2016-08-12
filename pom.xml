@@ -26,6 +26,20 @@
         <webserviceWarName>caf-audit-management</webserviceWarName>
         <swaggerUIWarName>caf-audit-management-ui</swaggerUIWarName>
         <webserviceBasePath>/v1</webserviceBasePath>
+        
+        <vertica.database.name>CAFAudit</vertica.database.name>
+        
+        <vertica-image.url>${docker.dev.repo}/caf/vertica-image:1.0-SNAPSHOT</vertica-image.url>
+        
+        <!-- This config is used from the tesing machine, as such we need the docker host address and dynamically exported port, of course you can make 
+        both this config, and the config for the container point to your own DB by passing in the properties manually.
+        The default setup, which creates a new linked container from scratch for each test run uses the vertica container and its dynamic ports -->
+        <vertica.connectionstring>jdbc:vertica://${docker.host.address}:${vertica-image.port}/${vertica.database.name}</vertica.connectionstring>
+        
+        <!-- The reason behind having 2 here connection strings, is that we also connect to the DB from inside the containers.  It doesn't use 
+        dnslookup, as its on a private network, it instead uses a fixed name of the container image, which you can map to anything you want. -->
+        <internal.vertica.connectionstring>jdbc:vertica://integrationtests-vertica-image:5433/AuditIT</internal.vertica.connectionstring>
+        
     </properties>
 
     <dependencies>
@@ -243,6 +257,8 @@
             <id>use-default-fixed-ports</id>
             <properties>
                 <webservice.adminport>25080</webservice.adminport>
+                <vertica.image.port>5433</vertica.image.port>
+                <vertica.image.ssh.port>6722</vertica.image.ssh.port>
             </properties>
         </profile>
     </profiles>
@@ -336,9 +352,13 @@
                     <systemPropertyVariables>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
                         <docker.host.address>${docker.host.address}</docker.host.address>
+                        <vertica.database.name>${vertica.database.name}</vertica.database.name>
+                        <vertica.host.address>${docker.host.address}</vertica.host.address>
+                        <vertica.image.port>${vertica.image.port}</vertica.image.port>
+                        <vertica.image.ssh.port>${vertica.image.ssh.port}</vertica.image.ssh.port>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <CAF_DATABASE_URL>jdbc:vertica://192.168.56.30:5433/AuditIT</CAF_DATABASE_URL>
+                        <CAF_DATABASE_URL>${vertica.connectionstring}</CAF_DATABASE_URL>
                         <CAF_DATABASE_SERVICE_ACCOUNT>caf-audit-service</CAF_DATABASE_SERVICE_ACCOUNT>
                         <CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>service</CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>
                         <CAF_DATABASE_LOADER_ACCOUNT>caf-audit-loader</CAF_DATABASE_LOADER_ACCOUNT>
@@ -349,6 +369,8 @@
                         <CAF_CONFIG_PATH>${project.basedir}/test-config</CAF_CONFIG_PATH>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}${webserviceBasePath}</webserviceurl>
                     </environmentVariables>
+                    <!-- to auto debug, the forked failsafe integration tests, will wait for you to attach -->
+                    <debugForkedProcess>true</debugForkedProcess>
                 </configuration>
             </plugin>
 
@@ -486,7 +508,7 @@
                                 </ports>
                                 <env>
                                     <!-- When the container is deployed in Marathon it will use the environment variable values specified in the container json. -->
-                                    <CAF_DATABASE_URL>jdbc:vertica://192.168.56.30:5433/AuditIT</CAF_DATABASE_URL>
+                                    <CAF_DATABASE_URL>${internal.vertica.connectionstring}</CAF_DATABASE_URL>
                                     <CAF_DATABASE_SERVICE_ACCOUNT>caf-audit-service</CAF_DATABASE_SERVICE_ACCOUNT>
                                     <CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>service</CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>
                                     <CAF_DATABASE_LOADER_ACCOUNT>caf-audit-loader</CAF_DATABASE_LOADER_ACCOUNT>
@@ -502,7 +524,9 @@
                                         <image>config</image>
                                     </from>
                                 </volumes>
-                                <links></links>
+                                <links>
+                                    <link>integrationtests-vertica-image</link>
+                                </links>
                                 <log>
                                     <enabled>true</enabled>
                                 </log>
@@ -515,6 +539,68 @@
                                     <time>120000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
+                            </run>
+                        </image>
+                        
+                        <image>
+                            <alias>vertica-config</alias>
+                            <name>${project.artifactId}-vertica-test-config:${project.version}</name>
+                            <build>
+                                <assembly>
+                                    <basedir>/scripts</basedir>
+                                     <inline>
+                                        <fileSets>
+                                            <fileSet>
+                                                <directory>scripts</directory>
+                                                <outputDirectory>/</outputDirectory>
+                                                <includes />
+                                            </fileSet>
+                                        </fileSets>
+                                    </inline>
+                                </assembly>
+                            </build>
+                        </image>
+                        
+                        <image>
+                            <alias>integrationtests-vertica-ssh-access</alias>
+                            <name>jeroenpeeters/docker-ssh</name>
+                            <run>
+                                <ports>
+                                    <port>${vertica.image.ssh.port}:22</port>
+                                </ports>
+                                <volumes>
+                                    <bind>
+                                        <volume>/var/run/docker.sock:/var/run/docker.sock</volume>
+                                  </bind>
+                                </volumes>
+                                <env>
+                                    <CONTAINER>integrationtests-vertica-image</CONTAINER>
+                                    <AUTH_MECHANISM>noAuth</AUTH_MECHANISM>
+                                </env>
+                            </run>
+                        </image>
+                        
+                        <!-- vertica image for running intragration tests-->
+                        <image>
+                            <alias>integrationtests-vertica-image</alias>
+                            <name>${vertica-image.url}</name>
+                            <run>
+                                <namingStrategy>alias</namingStrategy>
+                                <env>
+                                    <VERTICA_CONFIG_PATH>/scripts/install_vertica_users.sh</VERTICA_CONFIG_PATH>
+                                    <VERTICA_DATABASE_NAME>${vertica.database.name}</VERTICA_DATABASE_NAME>
+                                </env>
+                                <ports>
+                                    <port>${vertica.image.port}:5433</port>
+                                </ports>
+                                <volumes>
+                                    <from>
+                                        <image>vertica-config</image>
+                                    </from>
+                                </volumes>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
                             </run>
                         </image>
                     </images>

@@ -16,6 +16,7 @@ import com.hpe.caf.util.ModuleLoader;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.Session;
 import kafka.admin.AdminOperationException;
 import kafka.admin.AdminUtils;
@@ -53,7 +54,8 @@ import java.util.*;
 
 public class AuditIT {
 
-    private static final String VERTICA_HOST = "192.168.56.30";
+    private static String VERTICA_HOST = "192.168.56.30";
+    private static String VERTICA_SSH_PORT;
     private static final String VERTICA_HOST_USERNAME = "dbadmin";
     private static final String VERTICA_HOST_PASSWORD = "password";
 
@@ -62,10 +64,12 @@ public class AuditIT {
     private static final String AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS = "192.168.56.20:2181";
     private static final String AUDIT_MANAGEMENT_KAFKA_BROKERS = "192.168.56.20:9092";
 
-    private static final String CAF_AUDIT_DATABASE_NAME = "CAFAudit";
-    private static final String AUDIT_IT_DATABASE_NAME = "AuditIT";
-    private static final String AUDIT_IT_DATABASE_PORT = "5433";
-
+    //Default database already created 
+    private static String CAF_AUDIT_DATABASE_NAME = "CAFAudit";
+    
+    //New database to be created by tests
+    private static String AUDIT_IT_DATABASE_NAME = "AuditIT";
+    private static String AUDIT_IT_DATABASE_PORT = "5433";
 
     private static final String AUDIT_IT_DATABASE_LOADER_USER = "caf-audit-loader";
     private static final String AUDIT_IT_DATABASE_LOADER_USER_PASSWORD = "'loader'";
@@ -91,15 +95,15 @@ public class AuditIT {
         config.put("StrictHostKeyChecking", "no");
 
         JSch jsch = new JSch();
-        Session session = jsch.getSession(VERTICA_HOST_USERNAME, VERTICA_HOST);
-        session.setPassword(VERTICA_HOST_PASSWORD);
+        Session session = jsch.getSession("dbadmin", VERTICA_HOST, Integer.parseInt(VERTICA_SSH_PORT));
+        session.setPassword("password");
         session.setConfig(config);
         session.connect();
 
         try {
             Channel channel = session.openChannel("exec");
 
-            ((ChannelExec)channel).setCommand(command);
+            ((ChannelExec)channel).setCommand("su dbadmin " + command);
             ((ChannelExec)channel).setErrStream(System.err);
 
             InputStream in = channel.getInputStream();
@@ -203,7 +207,13 @@ public class AuditIT {
 
     @BeforeClass
     public static void setup() throws Exception {
+        
         AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH = System.getenv("webserviceurl");
+
+        VERTICA_HOST = System.getProperty("vertica.host.address", VERTICA_HOST);
+        VERTICA_SSH_PORT = System.getProperty("vertica.image.ssh.port");
+        AUDIT_IT_DATABASE_PORT = System.getProperty("vertica.image.port", AUDIT_IT_DATABASE_PORT);
+        CAF_AUDIT_DATABASE_NAME = System.getProperty("vertica.database.name", CAF_AUDIT_DATABASE_NAME);
 
         auditManagementApplicationsApi = new ApplicationsApi();
         auditManagementApplicationsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
@@ -211,7 +221,7 @@ public class AuditIT {
         auditManagementTenantsApi = new TenantsApi();
         auditManagementTenantsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
 
-        stopDatabase(CAF_AUDIT_DATABASE_NAME, false);
+        stopDatabase(CAF_AUDIT_DATABASE_NAME, true);
     }
 
 

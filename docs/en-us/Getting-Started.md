@@ -25,84 +25,73 @@ For Enterprise deployments of Vertica it is recommended that you follow the offi
 
 #### Database, Role & Service Accounts
 
-[DH: Don't like this sentence]
-Once Vertica is installed, you will need to create or use an existing database, role, and service accounts.
+Once Vertica has been installed you will need to create a database, service accounts and a reader role. The creation of these are needed for Audit Management to work correctly.
 
-These are the items which need to be created in order for Audit Management to work correctly.
+Example commands for creating the database, users and roles are as follows:
 
-[DH: Reword - what is this trying to say?]
-Once you have fulfilled the following criteria, for CAF Audit Management deployments with Chateau, please fill in the information within Chateau's environment/vertica.json file.
+##### Create Database
 
-[DH: Voice keeps switching here - all bullet points should be informative or instructive]
-Example commands for creating the users / roles / tables are listed in the correct order below:
+Log onto the Vertica machine as the dbadmin user.
 
-- Log onto the Vertica machine, and run as the dbadmin user so you have access to create users / roles / tables.
-- Example properties which are defined for ease of understanding the commands:
+If you do not have an existing shared Vertica database to you can create a new database with the admintools command utility:
 
-	<pre><code># Define user friendly properties. 
-	# Example install location of Vertica 
-	VERTICA_INSTALL_DIR=/opt/vertica  
-	VERTICA_DATABASE_NAME="CAFAudit"  
-	VERTICA_DATABASE_PASSWORD=${VERTICA_DATABASE_NAME}
-	
-	# Database audit management web service user
-	VERTICA_CA_SERVICE_DATABASE_ACCOUNT=caf-audit-service
-	VERTICA_CA_SERVICE_DATABASE_ACCOUNT_PASSWORD="'c@Fa5eR51cE'"
-	
-	# Database audit management reporting role
-	VERTICA_CA_READER_DATABASE_ROLE=caf-audit-read
-	
-	# Database audit management reporting user
-	VERTICA_CA_READER_DATABASE_ACCOUNT=caf-audit-reader
-	VERTICA_CA_READER_DATABASE_ACCOUNT_PASSWORD="'c@FaR3aD3R'"
-	
-	# Database audit management user for Kafka/Vertica integration
-	VERTICA_CA_LOADER_DATABASE_ACCOUNT=caf-audit-loader
-	VERTICA_CA_LOADER_DATABASE_ACCOUNT_PASSWORD="'c@FaL0Ad3r'"
-	
-	# VSQL command line usage.
-	VSQL=${VERTICA_INSTALL_DIR}/bin/vsql
-	</code></pre>
+	/opt/vertica/bin/admintools -t create_db -d "CAFAudit" -p "CAFAudit" -s 127.0.0.1
 
+##### Create CAF Audit Read-Only User Role
 
-[DH: Rework all of these instructions to use DbVisualizer.  That should simplify them (removing escaping), and possibly mean that you can include screenshots.]
+A read-only role is required for users of search and anayltics services that wish to query the audit data in Vertica.
 
-- To create a Vertica database, if one has not already been created.  [DH: It should be noted that Audit Events normally go into a database that is shared and therefore you wouldn't be creating it.]
-	<pre><code>"${VERTICA_INSTALL_DIR}/bin/admintools -t create_db -d ${VERTICA_DATABASE_NAME} -p ${VERTICA_DATABASE_PASSWORD} -s 127.0.0.1" >> vertica_db_creation.log
-	</code></pre>
-- To create the CAF Audit Reader Role
-	<pre><code>${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "CREATE ROLE \"${VERTICA_CA_READER_DATABASE_ROLE}\"" 
-	</code></pre>
-- To create the CAF Audit Reader User and assign role. [DH: Need to explain that this role should be given to any user that needs access to read the audit data.  For example, if the Search & Analytics service is being used to access audit data then the user that this service is using will need to be given the role.  There is no need to have an audit-reader user and it sort of defeats the purpose of the role.]
-	<pre><code>#Creating ${VERTICA_CA_READER_DATABASE_ACCOUNT} database user...
-	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "CREATE USER \"${VERTICA_CA_READER_DATABASE_ACCOUNT}\" IDENTIFIED BY ${VERTICA_CA_READER_DATABASE_ACCOUNT_PASSWORD}" 
+- To create a CAF Audit Reader Role:
 
-	#Granting caf-audit-read role to ${VERTICA_CA_READER_DATABASE_ACCOUNT}..."
-	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "GRANT \"${VERTICA_CA_READER_DATABASE_ROLE}\" TO \"${VERTICA_CA_READER_DATABASE_ACCOUNT}\"" 
-	
-	#Enabling caf-audit-read role by default to ${VERTICA_CA_READER_DATABASE_ROLE}..."
-	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "ALTER USER \"${VERTICA_CA_READER_DATABASE_ACCOUNT}\" DEFAULT ROLE \"${VERTICA_CA_READER_DATABASE_ROLE}\""
-	</code></pre>
-- To create the CAF Audit Service User
-	<pre><code>#Creating ${VERTICA_CA_SERVICE_DATABASE_ACCOUNT} database user..."
-	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "CREATE USER \"${VERTICA_CA_SERVICE_DATABASE_ACCOUNT}\" IDENTIFIED BY ${VERTICA_CA_SERVICE_DATABASE_ACCOUNT_PASSWORD}" 
+![Create Audit Reader Role SQL](images/CreateAuditReaderRoleSQL.PNG)
 
-	#Granting CREATE on database ${VERTICA_DATABASE_NAME} to ${VERTICA_CA_SERVICE_DATABASE_ACCOUNT}..."
-	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "GRANT CREATE ON DATABASE ${VERTICA_DATABASE_NAME} TO \"${VERTICA_CA_SERVICE_DATABASE_ACCOUNT}\"" 
-	</code></pre>
-- To create the CAF Audit Loader User
-	<pre><code>#Creating ${VERTICA_CA_LOADER_DATABASE_ACCOUNT} database user..."
-	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "CREATE USER \"${VERTICA_CA_LOADER_DATABASE_ACCOUNT}\" IDENTIFIED BY ${VERTICA_CA_LOADER_DATABASE_ACCOUNT_PASSWORD}" 
+- Note that the following command example shows how to create a new user in Vertica, however in your environment you would grant an existing user that wishes to query data in Vertica, for search and analytics purposes, the read-only role. To create a new user:
 
-	#Granting PSEUDOSUPERUSER role to ${VERTICA_CA_LOADER_DATABASE_ACCOUNT}..."
-	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "GRANT PSEUDOSUPERUSER TO \"${VERTICA_CA_LOADER_DATABASE_ACCOUNT}\"" 
-	
-	#Enabling PSEUDOSUPERUSER role by default to ${VERTICA_CA_LOADER_DATABASE_ACCOUNT}..."
-	${VSQL} -d ${VERTICA_DATABASE_NAME} -w ${VERTICA_DATABASE_PASSWORD} -c "ALTER USER \"${VERTICA_CA_LOADER_DATABASE_ACCOUNT}\" DEFAULT ROLE PSEUDOSUPERUSER" 
-	</code></pre>
+![Create Audit Reader User SQL](images/CreateAuditReaderUserSQL.PNG)
 
-#### Kafka Vertica Scheduler
-Ensure you have a Kafka Vertica scheduler created to handle all audit events. The vkconfig script, which comes pre-packaged and installed with the Vertica rpm, should be used with the *scheduler* sub-utility and *--add* option to do this:
+- To grant the user CAF Audit Reader Role:
+
+![Grant Reader Role to Audit Reader User SQL](images/GrantAuditReaderUserReaderRoleSQL.PNG)
+
+- Enable the user with the CAF Audit Reader Role:
+
+![Enable the Audit Reader User's Reader Role SQL](images/EnableAuditReaderUserReaderRoleSQL.PNG)
+
+##### Create CAF Audit Service User
+
+A service account is required for the Audit Management Web Service to create database tables for registered applications and their tenants.
+
+- To create the CAF Audit Service User:
+
+![Create the Audit Service User SQL](images/CreateAuditServiceUserSQL.PNG)
+
+- To grant the CAF Audit Service User database CREATE permission:
+
+![Grant the Audit Service User CREATE permissions on CAFAudit SQL](images/GrantAuditServiceUserCreatePermissionSQL.PNG)
+
+##### Create CAF Audit Loader User
+
+A loader account is required for the Kafka-Vertica Scheduler for loading messages streamed from Kafka into Vertica.
+
+- To create the CAF Audit Loader User:
+
+![Create the Audit Loader User SQL](images/CreateAuditLoaderUserSQL.PNG)
+
+- To grant the CAF Audit Loader User pseudo super user role:
+
+![Grant PSEUDOSUPERUSER Role to Audit Loader User SQL](images/GrantAuditLoaderUserSudoRoleSQL.PNG)
+
+- To enable the CAF Audit Loader User with the pseudo super user role:
+
+![Enable Audit Loader User with PSEUDOSUPERUSER Role SQL](images/EnableAuditServiceUserSudoRoleSQL.PNG)
+
+##### Modify Vertica Chateau properties
+
+For CAF Audit Management deployments with Chateau add the Vertica host and user account details to environment/vertica.json file.
+
+#### Prepare Vertica with Kafka-Vertica Scheduler schema
+
+The vkconfig script, which comes pre-packaged and installed with the Vertica rpm, should be used with the *scheduler* sub-utility and *--add* option to add a schema for the Kafka-Vertica scheduler to keep track of application tenant topics:
 
 	/opt/vertica/packages/kafka/bin/vkconfig scheduler --add 
 		--config-schema auditscheduler 
@@ -121,6 +110,12 @@ where:
 Example:
 
 	/opt/vertica/packages/kafka/bin/vkconfig scheduler --add --config-schema auditscheduler --brokers 192.168.56.20:9092 --username caf-audit-loader --password "c@FaL0Ad3r" --operator "\"caf-audit-loader\""
+
+##### Verification
+
+The following figure shows the CAFAudit database with a new schema for tracking application tenant topics after running the `vkconfig scheduler --add` command:
+
+![CAFAudit DB with auditscheduler schema](images/CAFAuditAuditSchedulerSchema.PNG)
 
 ### Development Deployment
 
@@ -141,6 +136,10 @@ For Enterprise deployments of Kafka it is recommended that you follow the offici
 
 Integration of Vertica with your Kafka broker cluster is covered in the [Official HP Vertica Documentation](https://my.vertica.com/documentation/vertica/7-2-x/)
 
+#### Modify Kafka Chateau properties
+
+For CAF Audit Management deployments with Chateau the Kafka broker details will need to be filled into the environment/kafka.json file.
+
 ### Development Deployment
 
 For Development deployments of Vertica it is recommended that you use [vagrant-kafka](https://github.hpe.com/caf/vagrant-kafka) and follow its supporting documentation to start a guest VM running Kafka with Vagrant.
@@ -149,11 +148,11 @@ Vagrant-kafka is not recommended for production deployments, the caveats to usin
 
 - It's a standalone single node setup only; provisioning scripts do not support multiple machine clustered configurations.
 
-## Deploying the Audit Management Service
+## Deploying CAF Audit Web Service and Kafka-Vertica scheduler
 
 ### Audit Management Web Service
 
-The Audit Management Web Service offers a REST API for Audit Management users to register and prepare Vertica and the Kafka-Vertica Scheduler with their applications and tenants using those applications.
+The Audit Management Web Service offers a REST API for CAF Audit users to register and prepare Vertica and the Kafka-Vertica Scheduler with their applications and tenants using those applications.
 
 ### Kafka-Vertica Scheduler
 
@@ -161,17 +160,13 @@ The Kafka-Vertica scheduler is responsible for consuming audit event messages, f
 
 ### Deployment with Chateau
 
-**[Chateau](https://github.hpe.com/caf/chateau)** can launch CAF workers and services, such as the Audit Management Service and the Kafka-Vertica Scheduler.
+**[Chateau](https://github.hpe.com/caf/chateau)** can launch CAF workers and services such as the Audit Management Web Service and the Kafka-Vertica Scheduler.
 
-- To download and set up Chateau, follow the instructions in the [README.md](https://github.hpe.com/caf/chateau/blob/develop/README.md). 
+- To download and set up Chateau, follow the instructions in the [README.md](https://github.hpe.com/caf/chateau/blob/develop/README.md).
 
-- Follow the prerequisite instructions for the Audit Management Service [here](https://github.hpe.com/caf/chateau/blob/develop/services/audit-management/README.md).
+- To deploy the Audit Management Web Service and the Kafka-Vertica Scheduler, follow the [Service Deployment](https://github.hpe.com/caf/chateau/blob/develop/deployment.md) guide and use the following option with the deployment shell script: `./deploy-service.sh audit-management`
 
-- To deploy the Audit Management Web Service and the Kafka-Vertica Scheduler, follow the [Service Deployment](https://github.hpe.com/caf/chateau/blob/develop/deployment.md) guide and use the following option with the deployment shell script:
-
-  `./deploy-service.sh audit-management`
-
-The following figure shows a Marathon environment running the CAF Audit Management Service started with Chateau:
+The following figure shows a Marathon environment running the CAF Audit services started with Chateau:
 
 ![Marathon running CAF Audit Management Service](images/MarathonWithAuditManagementService.PNG)
 
@@ -193,17 +188,11 @@ A list of parameter elements are then defined for each Audit Event. This include
 
 ### Using the Schema File
 
-If you reference the XML Schema file from your Audit Event Definition File then you should be able to use the Validate functionality that is built into most IDEs and XML Editors. This will allow you to easily check for syntax errors in your Audit Event Definition File. To do this add the standard `xsi:schemaLocation` attribute to the root `AuditedApplication` element.
-
-Change the `AuditedApplication` element from:
-
-	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd">
-
-to:
+If you reference the XML Schema file from your Audit Event Definition File then you should be able to use the Validate functionality that is built into most IDEs and XML Editors. This will allow you to easily check for syntax errors in your Audit Event Definition File. To do this add the standard `xsi:schemaLocation` attribute to the root `AuditedApplication` element. i.e:
 
 	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release/com/hpe/caf/caf-audit-schema/1.0/caf-audit-schema-1.0.jar!/schema/AuditedApplication.xsd">
+	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release/com/hpe/caf/caf-audit-schema/1.1/caf-audit-schema-1.1.jar!/schema/AuditedApplication.xsd">
 
 Many IDEs and XML Editors will also use the schema file to provide IntelliSense and type-ahead when the definition file is being authored.
 
@@ -212,7 +201,9 @@ Many IDEs and XML Editors will also use the schema file to provide IntelliSense 
 The following is an example of an Audit Event Definition File that is used to throughout this getting started guide:
 
 	<?xml version="1.0" encoding="UTF-8"?>
-	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd">
+	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release/com/hpe/caf/caf-audit-schema/1.1/caf-audit-schema-1.1.jar!/schema/AuditedApplication.xsd">
 	  <ApplicationId>SampleApp</ApplicationId>
 	  <AuditEvents>
 	    <AuditEvent>
@@ -361,7 +352,7 @@ Here is a sample Maven project file that generates a client-side auditing librar
 
 ### Maven Coordinates
 
-Like any other Maven project, the client-side auditing library must be assigned unique coordinates that can by used to reference it.
+Like any other Maven project, the client-side auditing library must be assigned unique groupId, artifactId and version that can by used to reference it.
 
 	<groupId>com.hpe.sampleapp</groupId>
 	<artifactId>sampleapp-audit</artifactId>
@@ -554,7 +545,7 @@ Given this configuration, to configure CAF Auditing you should create a file nam
 	    "retries": "0"
 	}
 
-`bootstrapServers` refers to one or more of the nodes of the Kafka cluster.
+`bootstrapServers` refers to one or more of the nodes of the Kafka cluster as a comma-separated list.
 `acks` is the number of nodes in the cluster which must acknowledge an audit event when it is sent.
 
 ### Audit Channel

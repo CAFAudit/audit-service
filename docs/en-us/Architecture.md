@@ -49,7 +49,7 @@ The figure below illustrates the overall flow and relationship of components in 
 
 In order to use CAF Auditing in an application, the events for auditing that the application uses must be specified along with the parameters that are associated with each of the events. These events are specified in an Audit Event Definition File. You can read more about the Audit Event Definition File and its XML schema in the [Getting Started Guide](https://github.hpe.com/caf/caf-audit/blob/develop/docs/en-us/Getting-Started.md).
 
-#### Vertica Database Schema and Tables
+### Vertica Database Schema and Tables
 
 Providing the Audit Management Web Service /applications endpoint with the example Audit Event Definition XML will create schemas and tables in the `CAFAudit` database for the application.
 

@@ -19,6 +19,15 @@ These are the high level steps involved in setting up the Audit Management Servi
 
 Vertica is a SQL database designed for delivering speed, scalability and support for analytics. In CAF Auditing Vertica is ultimately used for storing the audit events.  The events are stored on a per-application per-tenant basis. Analysis tools can be used on the data to gather metrics with regard to the use of the audited applications.
 
+### Development Deployment
+
+For Development deployments of Vertica it is recommended that you use [vagrant-vertica](https://github.hpe.com/caf/vagrant-vertica) and follow its supporting documentation to start a guest VM running Vertica with Vagrant. As part of this deployment the provisioning scripts will create the service user, loader user, reader user and reader role.
+
+Vagrant-vertica is not recommended for production deployments. The caveats to using it are that:
+
+- Vertica DB usernames and passwords, used during automated installation, are held as plain text within the VM's provisioning scripts.
+- It's a standalone single node setup only; provisioning scripts do not support clustered configurations.
+
 ### Enterprise Deployment
 
 For Enterprise deployments of Vertica it is recommended that you follow the official HP Vertica documentation as it covers cluster setup, configuration and backup. Integration of Vertica with your Kafka broker cluster is also covered: [Official HP Vertica Documentation](https://my.vertica.com/documentation/vertica/7-2-x/)
@@ -45,53 +54,67 @@ A read-only role is required for users of search and anayltics services that wis
 
 ![Create Audit Reader Role SQL](images/CreateAuditReaderRoleSQL.PNG)
 
-- Note that the following command example shows how to create a new user in Vertica, however in your environment you would grant an existing user that wishes to query data in Vertica, for search and analytics purposes, the read-only role. To create a new user:
+	CREATE ROLE "caf-audit-read";
+
+- Note that the following command example shows how to create a new user in Vertica, however in your environment you would grant an existing user that wishes to query data in Vertica, for search and analytics purposes, the read-only role. To create a new user and assign them a password with IDENTIFIED BY:
 
 ![Create Audit Reader User SQL](images/CreateAuditReaderUserSQL.PNG)
+
+	CREATE USER "caf-audit-reader" IDENTIFIED BY 'c@FaR3aD3R';
 
 - To grant the user CAF Audit Reader Role:
 
 ![Grant Reader Role to Audit Reader User SQL](images/GrantAuditReaderUserReaderRoleSQL.PNG)
 
+	GRANT "caf-audit-read" TO "caf-audit-reader";
+
 - Enable the user with the CAF Audit Reader Role:
 
 ![Enable the Audit Reader User's Reader Role SQL](images/EnableAuditReaderUserReaderRoleSQL.PNG)
+
+	ALTER USER "caf-audit-reader" DEFAULT ROLE "caf-audit-read";
 
 ##### Create CAF Audit Service User
 
 A service account is required for the Audit Management Web Service to create database tables for registered applications and their tenants.
 
-- To create the CAF Audit Service User:
+- To create the CAF Audit Service User and assign them a password with IDENTIFIED BY:
 
 ![Create the Audit Service User SQL](images/CreateAuditServiceUserSQL.PNG)
+
+	CREATE USER "caf-audit-service" IDENTIFIED BY 'c@Fa5eR51cE';
 
 - To grant the CAF Audit Service User database CREATE permission:
 
 ![Grant the Audit Service User CREATE permissions on CAFAudit SQL](images/GrantAuditServiceUserCreatePermissionSQL.PNG)
 
+	GRANT CREATE ON DATABASE "CAFAudit" TO "caf-audit-service";
+
 ##### Create CAF Audit Loader User
 
 A loader account is required for the Kafka-Vertica Scheduler for loading audit events from Kafka into Vertica.
 
-- To create the CAF Audit Loader User:
+- To create the CAF Audit Loader User and assign them a password with IDENTIFIED BY:
 
 ![Create the Audit Loader User SQL](images/CreateAuditLoaderUserSQL.PNG)
+
+	CREATE USER "caf-audit-loader" IDENTIFIED BY 'c@FaL0Ad3r';
 
 - To grant the CAF Audit Loader User pseudo super user role:
 
 ![Grant PSEUDOSUPERUSER Role to Audit Loader User SQL](images/GrantAuditLoaderUserSudoRoleSQL.PNG)
 
+	GRANT PSEUDOSUPERUSER TO "caf-audit-loader";
+
 - To enable the CAF Audit Loader User with the pseudo super user role:
 
 ![Enable Audit Loader User with PSEUDOSUPERUSER Role SQL](images/EnableAuditServiceUserSudoRoleSQL.PNG)
 
-##### Modify Vertica Chateau properties
-
-For CAF Audit Management deployments with Chateau add the Vertica host and user account details to environment/vertica.json file.
+	ALTER USER "caf-audit-loader" DEFAULT ROLE PSEUDOSUPERUSER;
 
 #### Prepare Vertica with Kafka-Vertica Scheduler schema
 
-The vkconfig script, which comes pre-packaged and installed with the Vertica rpm, should be used with the *scheduler* sub-utility and *--add* option to add a schema for the Kafka-Vertica scheduler to keep track of application tenant topics:
+The vkconfig script, which comes pre-packaged and installed with the Vertica rpm, should be used with the *scheduler* sub-utility and *--add* option to add a schema for the Kafka-Vertica scheduler to keep track of application tenant topics. The command needs to be ran as the root or dbadmin user:
 
 	/opt/vertica/packages/kafka/bin/vkconfig scheduler --add 
 		--config-schema auditscheduler 
@@ -117,28 +140,9 @@ The following figure shows the CAFAudit database with a new schema for tracking 
 
 ![CAFAudit DB with auditscheduler schema](images/CAFAuditAuditSchedulerSchema.PNG)
 
-### Development Deployment
-
-For Development deployments of Vertica it is recommended that you use [vagrant-vertica](https://github.hpe.com/caf/vagrant-vertica) and follow its supporting documentation to start a guest VM running Vertica with Vagrant.
-
-Vagrant-vertica is not recommended for production deployments. The caveats to using it are that:
-
-- Vertica DB usernames and passwords, used during automated installation, are held as plain text within the VM's provisioning scripts.
-- It's a standalone single node setup only; provisioning scripts do not support clustered configurations.
-
 ## Deploying Kafka
 
 Apache Kafka is a distributed, partitioned, replicated commit log service that provides messaging system functionality for producers and consumers of messages. Kafka's role in the Audit Management Service is that it receives tenant events from client-side applications (producers) as messages. On the server-side the Kafka-Vertica Scheduler (consumer) reads event messages from per application per tenant Kafka topics and streams the events into Vertica.
-
-### Enterprise Deployment
-
-For Enterprise deployments of Kafka it is recommended that you follow the official Apache Kafka documentation as it covers clustered deployments and topic partitioning: [Apache Kafka Documentation](http://kafka.apache.org/documentation.html)
-
-Integration of Vertica with your Kafka broker cluster is covered in the [Official HP Vertica Documentation](https://my.vertica.com/documentation/vertica/7-2-x/)
-
-#### Modify Kafka Chateau properties
-
-For CAF Audit Management deployments with Chateau the Kafka broker details will need to be filled into the environment/kafka.json file.
 
 ### Development Deployment
 
@@ -147,6 +151,12 @@ For Development deployments of Vertica it is recommended that you use [vagrant-k
 Vagrant-kafka is not recommended for production deployments. The caveats to using it are that:
 
 - It's a standalone single node setup only; provisioning scripts do not support multiple machine clustered configurations.
+
+### Enterprise Deployment
+
+For Enterprise deployments of Kafka it is recommended that you follow the official Apache Kafka documentation as it covers clustered deployments and topic partitioning: [Apache Kafka Documentation](http://kafka.apache.org/documentation.html)
+
+Integration of Vertica with your Kafka broker cluster is covered in the [Official HP Vertica Documentation](https://my.vertica.com/documentation/vertica/7-2-x/)
 
 ## Deploying CAF Audit Web Service and Kafka-Vertica scheduler
 
@@ -163,6 +173,10 @@ The Kafka-Vertica scheduler is responsible for consuming audit event messages, f
 **[Chateau](https://github.hpe.com/caf/chateau)** can launch CAF workers and services such as the Audit Management Web Service and the Kafka-Vertica Scheduler.
 
 - To download and set up Chateau, follow the instructions in the [README.md](https://github.hpe.com/caf/chateau/blob/develop/README.md).
+
+- For Enterprise deployments of Vertica add the details of your Vertica host and user accounts to Chateau's environment/vertica.json file.
+
+- For Enterprise deployments of Kafka add the details of your Kafka brokers to Chateau's environment/kafka.json file.
 
 - To deploy the Audit Management Web Service and the Kafka-Vertica Scheduler, follow the [Service Deployment](https://github.hpe.com/caf/chateau/blob/develop/deployment.md) guide and use the following option with the deployment shell script: `./deploy-service.sh audit`
 
@@ -264,7 +278,7 @@ Further calls to load new application Audit Event Definition files will result i
 
 ### Adding Tenants
 
-Once applications have been registered, tenants can then be added using the /tenants endpoint. The tenant and application identifiers need to be supplied in the call to this endpoint. It is possible to associate a tenant with more than one application by passing multiple application identifiers as a comma-separated list.
+Once applications have been registered, tenants can then be added using the /tenants endpoint. The tenant and application identifiers need to be supplied in the call to this endpoint. It is possible to associate a tenant with more than one application by passing multiple application identifiers as a JSON array of strings.
 
 ![Overview](images/addTenant.png)
 
@@ -280,7 +294,7 @@ The following figure shows an `account_1` schema with an `AuditSampleApp` table 
 
 ![CAF Audit Account 1 Sample App Table Columns](images/account_1AuditSampleAppColumns.png)
 
-The following figure shows the `account_1` schema with a `kafka_rej` table and columns for rejected audit event data:
+In the case that malformed audit events are passed to auditing there is a reject table for holding these. The following figure shows the `account_1` schema with a `kafka_rej` table and columns for rejected audit event data:
 
 ![CAF Audit Account 1 Kafka Reject Table Columns](images/account_1RejectTable.png)
 
@@ -424,13 +438,13 @@ In this example the URL is set to [http://cmbg-maven.autonomy.com/nexus/content/
 
 A dummy implementation of the standard auditing library, `caf-audit`, is provided to support developers without any Apache Kafka infrastructure. It has the same interface as the standard auditing library but does not send anything to Kafka. This will allow developers to continue to work with their application without the need to install and configure Apache Kafka.
 
-In order to make use of this no-op auditing library, simply modify the Maven Coordinates for the `caf-audit` dependency and specify `1.1-NOOP` as the version rather than just `1.1`:
+In order to make use of this no-op auditing library, simply modify the Maven Coordinates for the `caf-audit` dependency and specify `1.2-NOOP` as the version rather than just `1.2`:
 
 	<dependencies>
 	    <dependency>
 	        <groupId>com.hpe.caf</groupId>
 	        <artifactId>caf-audit</artifactId>
-	        <version>1.1-NOOP</version>
+	        <version>1.2-NOOP</version>
 	    </dependency>
 	</dependencies>
 
@@ -452,7 +466,7 @@ A generated client-side library should be referenced in the normal way in the ap
 
 Regardless of whether you choose to use a generated client-side library, or to use `caf-audit` directly, you must first create an `AuditConnection` object.
 
-This object represents a logical connection to the persistent storage (i.e. to Kafka in the current implementation). It is a thread-safe object. It should be considered that this object takes some time to construct, so the application should hold on to it and re-use it rather than constantly re-constructing it.
+This object represents a logical connection to the persistent storage (i.e. to Kafka in the current implementation). It is a thread-safe object. ***It should be considered that this object takes some time to construct, so the application should hold on to it and re-use it rather than constantly re-constructing it.***
 
 The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a `ConfigurationSource` parameter, which is the standard method of configuration in CAF.
 

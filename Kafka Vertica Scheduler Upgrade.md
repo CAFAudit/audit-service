@@ -70,16 +70,18 @@ Some of the upgrade steps require the use of a database tool that can connect to
 	####### 5.2.1 Audit Scheduler Rows.
 	Existing audit scheduler schemas can be identified by the *auditscheduler_* prefix followed by the tenantId. 
 
-	For each of the tenants recorded in step 5.1 and using DbVisualizer, remove each audit scheduler schema by right clicking on the schema name under Schemas in the object tree and select the *Drop Schema...* option. Make sure you check *Cascade Objects* on the resulting dialog before clicking on Execute. Then click *Yes* to confirm.
+	For each of the tenants that has a schema with the *auditscheduler_* prefix, use DbVisualizer to remove each schema by right clicking on the schema name under Schemas in the object tree and select the *Drop Schema...* option. Make sure you check *Cascade Objects* on the resulting dialog before clicking on *Execute*. Then click *Yes* to confirm.
 
 	####### 5.2.2 Tenant Rows.
 	Existing tenant related schemas can be identified by the *account_* prefix followed by the tenantId. 
 
-	####### 5.2.2.1 Schemas.
-	For each of the tenants recorded in step 5.1 and using DbVisualizer, remove each tenant related schema by right clicking on the schema name under Schemas in the object tree and select the *Drop Schema...* option. Make sure you check *Cascade Objects* on the resulting popup before clicking on Execute. Then click *Yes* to confirm.
+	####### 5.2.2.1 Tenant Tables.
+	Each tenant related schema will comprise a number of tables. These include one or more application specific audit tables for storing audit event information as well as a table for storing rejection events. The application audit tables are identified by a *Audit* prefix and appended with the application name. The rejection table is named kafka_rej.
+
+	For each of the tenants recorded in step 5.1, both their application audit and kafka rejection tables need removed. Using DbVisualizer, right click on the table under the tenant related schema and select the *Drop Table...* option. Click on *Execute* and then *Yes* to confirm.
 
 	####### 5.2.2.2 Tenant per Application Rows.
-	Tenant per application rows also need removed as part of the clean-up task for all tenants recorded in step 5.1. Using DbVisualizer, right click on the *tenantApplications* table under the *AuditManagement* schema in the object tree and select the *Empty Table...* option. Then click *Execute* on the resulting dialog followed by *Yes* to confirm.
+	Tenant per application rows also need removed as part of the clean-up task for all tenants recorded in step 5.1. Using DbVisualizer, right click on the *TenantApplications* table under the *AuditManagement* schema in the object tree and select the *Empty Table...* option. Then click *Execute* on the resulting dialog followed by *Yes* to confirm.
 	
 6. Register tenants.
 
@@ -90,15 +92,15 @@ Some of the upgrade steps require the use of a database tool that can connect to
 		  "application": [
 		    "[APPLICATION]"
 		  ]
-		}' 'http://[IP]:[SERVICEPORT]/caf-audit-management/v1/tenants'
+		}' 'http://[HOSTNAME]:[SERVICEPORT]/caf-audit-management/v1/tenants'
 
 	where:
 
 	* [TENANTID] - This identifies the tenant identifier as recorded in step 5.1.
 	* [APPLICATION] - This identifies the application name to use for tenant registration.
-	* [IP] - This identifies the host machine.
+	* [HOSTNAME] - This identifies the host machine.
 	* [SERVICEPORT] - This property specifies the external port number on the host machine that will be forwarded to the containers internal 8080 port. This port is used to call the CAF Audit Management Service web service.
 
 	Note that this steps requires the cURL executable.
 
-	To verify, make sure a new row has been added to the *tenantApplications* table under the *AuditManagement* schema in the object tree for the specified tenant identifier and application. Further an additional schema, *account_<tenantid>*, with tables to store the audit event information and rejected kakfa events will also be created at this stage.
+	To verify, make sure a new row has been added to the *tenantApplications* table under the *AuditManagement* schema in the object tree for the specified tenant identifier and application. Further,  additional application specific audit and kafka rejection tables will be created under the existing tenant related schema for the specified tenant.

@@ -71,7 +71,7 @@ A service account is required for the Audit Management Web Service to create dat
 
 ##### Create CAF Audit Loader User
 
-A loader account is required for the Kafka-Vertica Scheduler for loading messages streamed from Kafka into Vertica.
+A loader account is required for the Kafka-Vertica Scheduler for loading audit events from Kafka into Vertica.
 
 - To create the CAF Audit Loader User:
 
@@ -121,7 +121,7 @@ The following figure shows the CAFAudit database with a new schema for tracking 
 
 For Development deployments of Vertica it is recommended that you use [vagrant-vertica](https://github.hpe.com/caf/vagrant-vertica) and follow its supporting documentation to start a guest VM running Vertica with Vagrant.
 
-Vagrant-vertica is not recommended for production deployments, the caveats to using it are that:
+Vagrant-vertica is not recommended for production deployments. The caveats to using it are that:
 
 - Vertica DB usernames and passwords, used during automated installation, are held as plain text within the VM's provisioning scripts.
 - It's a standalone single node setup only; provisioning scripts do not support clustered configurations.
@@ -144,7 +144,7 @@ For CAF Audit Management deployments with Chateau the Kafka broker details will 
 
 For Development deployments of Vertica it is recommended that you use [vagrant-kafka](https://github.hpe.com/caf/vagrant-kafka) and follow its supporting documentation to start a guest VM running Kafka with Vagrant.
 
-Vagrant-kafka is not recommended for production deployments, the caveats to using it are that:
+Vagrant-kafka is not recommended for production deployments. The caveats to using it are that:
 
 - It's a standalone single node setup only; provisioning scripts do not support multiple machine clustered configurations.
 
@@ -164,7 +164,7 @@ The Kafka-Vertica scheduler is responsible for consuming audit event messages, f
 
 - To download and set up Chateau, follow the instructions in the [README.md](https://github.hpe.com/caf/chateau/blob/develop/README.md).
 
-- To deploy the Audit Management Web Service and the Kafka-Vertica Scheduler, follow the [Service Deployment](https://github.hpe.com/caf/chateau/blob/develop/deployment.md) guide and use the following option with the deployment shell script: `./deploy-service.sh audit-management`
+- To deploy the Audit Management Web Service and the Kafka-Vertica Scheduler, follow the [Service Deployment](https://github.hpe.com/caf/chateau/blob/develop/deployment.md) guide and use the following option with the deployment shell script: `./deploy-service.sh audit`
 
 The following figure shows a Marathon environment running the CAF Audit services started with Chateau:
 
@@ -270,11 +270,11 @@ Once applications have been registered, tenants can then be added using the /ten
 
 #### Verification Instructions
 
-Every time a new tenant is added, a new row is inserted into the `TenantApplications` table under the `AuditManagement` schema, the following figure illustrates this:
+Every time a new tenant is added, a new row is inserted into the `TenantApplications` table under the `AuditManagement` schema. The following figure illustrates this:
 
 ![Audit Management Tenant Applications Table With Tenant ID](images/AuditManagementTenantApplicationsWithTenantApplication.png)
 
-A new tenant specific database schema is then created for the tenant in the Vertica database which comprise a number of tables. See [Auditing Database Tables](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/documentation/auditing-database-tables.md). If the client-side auditing library has sent audit events messages for this tenant through to the Kafka messaging service, this audit event data should start to arrive in the application specific audit events table under the tenant specific schema created as part of the add tenant web service call.
+A new tenant specific database schema is then created for the tenant in the Vertica database which comprises of a number of tables. See [Auditing Database Tables](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/documentation/auditing-database-tables.md). If the client-side auditing library has sent audit events for this tenant through to the Kafka messaging service, this audit event data should start to arrive in the application specific audit events table under the tenant specific schema created as part of the add tenant web service call.
 
 The following figure shows an `account_1` schema with an `AuditSampleApp` table and the columns for audit event data for the application:
 
@@ -286,7 +286,7 @@ The following figure shows the `account_1` schema with a `kafka_rej` table and c
 
 ## Generating a client-side Auditing Library
 
-In order to use CAF Auditing you must first define the audit events in an Audit Event Definition File. After you have created the definition file you can use it to generate a client-side library to make it easier to raise the defined audit events.
+As discussed above, in order to use CAF Auditing you must first define the audit events in an Audit Event Definition File. After you have created the definition file you can use it to generate a client-side library to make it easier to raise the defined audit events.
 
 Technically you do not need to generate a client-side library in order to use CAF Auditing; you could use the caf-audit module directly, but generating a client-side library should make it easier and safer to raise events, as it should mean that each event can be raised with a single type-safe call.
 Here is a sample Maven project file that generates a client-side auditing library:

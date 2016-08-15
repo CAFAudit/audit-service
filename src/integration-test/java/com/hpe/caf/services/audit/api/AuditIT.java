@@ -84,28 +84,30 @@ public class AuditIT {
 
     //The audit events XML file in the test case directory must be the same events XML file used in the caf-audit-maven-plugin, see pom.xml property auditXMLConfigFile.
     private static final String testCaseDirectory = "./test-case";
-    
-    private static final String RUN_AS_DBADBMIN_COMMMAND_PREFIX = "su - dbadmin -c \"%s\"";
 
     private static ApplicationsApi auditManagementApplicationsApi;
     private static TenantsApi auditManagementTenantsApi;
 
     private static final Logger LOG = LoggerFactory.getLogger(AuditIT.class);
 
-    private static void issueVerticaSshCommand(final String command) throws Exception {
+    private static void issueVerticaSshCommand(final String command, boolean useDbadmin) throws Exception {
         java.util.Properties config = new java.util.Properties();
         config.put("StrictHostKeyChecking", "no");
 
         JSch jsch = new JSch();
-        Session session = jsch.getSession("dbadmin", VERTICA_HOST, Integer.parseInt(VERTICA_SSH_PORT));
-        session.setPassword("password");
+        Session session = jsch.getSession("root", VERTICA_HOST, Integer.parseInt(VERTICA_SSH_PORT));
+        session.setPassword("password"); // possible rem
         session.setConfig(config);
         session.connect();
+        
+        final String execCmd = useDbadmin
+                ? "su - dbadmin -c \"" + command.replace("\"","\\\"") + "\""
+                : command;
 
         try {
             Channel channel = session.openChannel("exec");
 
-            ((ChannelExec)channel).setCommand(String.format(RUN_AS_DBADBMIN_COMMMAND_PREFIX, command));
+            ((ChannelExec)channel).setCommand(execCmd);
             ((ChannelExec)channel).setErrStream(System.err);
 
             InputStream in = channel.getInputStream();
@@ -142,55 +144,56 @@ public class AuditIT {
 
     private static void createDatabase(final String databaseName) throws Exception {
         String command = MessageFormat.format("/opt/vertica/bin/admintools -t create_db -d {0} -p {0} -s 127.0.0.1", databaseName);
-        issueVerticaSshCommand(command);
+        issueVerticaSshCommand(command, true);
     }
 
 
     private static void startDatabase(final String databaseName) throws Exception {
         String command = MessageFormat.format("/opt/vertica/bin/admintools -t start_db -d {0} -p {0}", databaseName);
-        issueVerticaSshCommand(command);
+        issueVerticaSshCommand(command, true);
     }
 
 
     private static void stopDatabase(final String databaseName, final boolean force) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/admintools -t stop_db -d {0} -p {0}" + (force ? " -F" : ""), databaseName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format( 
+            "/opt/vertica/bin/admintools -t stop_db -d {0} -p {0}" + (force ? " -F" : ""), databaseName);
+        issueVerticaSshCommand(command, true);
     }
 
 
     private static void dropDatabase(final String databaseName) throws Exception {
         String command = MessageFormat.format("/opt/vertica/bin/admintools -t drop_db -d {0}", databaseName);
-        issueVerticaSshCommand(command);
+        issueVerticaSshCommand(command, true);
     }
 
     private static void createDatabaseRole(final String databaseName, final String roleName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"CREATE ROLE \\\"{1}\\\" \"", databaseName, roleName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"CREATE ROLE \\\"{1}\\\" \"", databaseName, roleName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void grantDatabaseRole(final String databaseName, final String roleName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT \\\"{1}\\\" TO \\\"{2}\\\"\"", databaseName, roleName, userName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"GRANT \\\"{1}\\\" TO \\\"{2}\\\"\"", databaseName, roleName, userName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void enableDatabaseRole(final String databaseName, final String roleName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"ALTER USER \\\"{1}\\\" DEFAULT ROLE \\\"{2}\\\"\"", databaseName, userName, roleName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"ALTER USER \\\"{1}\\\" DEFAULT ROLE \\\"{2}\\\"\"", databaseName, userName, roleName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void createDatabaseUser(final String databaseName, final String userName, final String userPassword) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"CREATE USER \\\"{1}\\\" IDENTIFIED BY {2}\"", databaseName, userName, userPassword);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"CREATE USER \\\"{1}\\\" IDENTIFIED BY {2}\"", databaseName, userName, userPassword);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void grantCreateOnDBPrivilege(final String databaseName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT CREATE ON DATABASE {0} TO \\\"{1}\\\" \"", databaseName, userName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"GRANT CREATE ON DATABASE {0} TO \\\"{1}\\\" \"", databaseName, userName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void grantPseudoSuperUserRole(final String databaseName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT PSEUDOSUPERUSER TO \\\"{1}\\\" \"", databaseName, userName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"GRANT PSEUDOSUPERUSER TO \\\"{1}\\\" \"", databaseName, userName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static String getAuditEventsXmlApplicationId(File auditEventsXml) throws Exception {

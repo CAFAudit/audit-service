@@ -84,6 +84,8 @@ public class AuditIT {
 
     //The audit events XML file in the test case directory must be the same events XML file used in the caf-audit-maven-plugin, see pom.xml property auditXMLConfigFile.
     private static final String testCaseDirectory = "./test-case";
+    
+    private static final String RUN_AS_DBADBMIN_COMMMAND_PREFIX = "su - dbadmin -c \"%s\"";
 
     private static ApplicationsApi auditManagementApplicationsApi;
     private static TenantsApi auditManagementTenantsApi;
@@ -103,7 +105,7 @@ public class AuditIT {
         try {
             Channel channel = session.openChannel("exec");
 
-            ((ChannelExec)channel).setCommand("su dbadmin " + command);
+            ((ChannelExec)channel).setCommand(String.format(RUN_AS_DBADBMIN_COMMMAND_PREFIX, command));
             ((ChannelExec)channel).setErrStream(System.err);
 
             InputStream in = channel.getInputStream();
@@ -151,8 +153,7 @@ public class AuditIT {
 
 
     private static void stopDatabase(final String databaseName, final boolean force) throws Exception {
-        String command = MessageFormat.format(
-            "/opt/vertica/bin/admintools -t stop_db -d {0} -p {0}" + (force ? " -F" : ""), databaseName);
+        String command = MessageFormat.format("/opt/vertica/bin/admintools -t stop_db -d {0} -p {0}" + (force ? " -F" : ""), databaseName);
         issueVerticaSshCommand(command);
     }
 
@@ -221,7 +222,7 @@ public class AuditIT {
         auditManagementTenantsApi = new TenantsApi();
         auditManagementTenantsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
 
-        stopDatabase(CAF_AUDIT_DATABASE_NAME, true);
+        stopDatabase(CAF_AUDIT_DATABASE_NAME, false);
     }
 
 

@@ -26,6 +26,7 @@
         <webserviceWarName>caf-audit-management</webserviceWarName>
         <swaggerUIWarName>caf-audit-management-ui</swaggerUIWarName>
         <webserviceBasePath>/v1</webserviceBasePath>
+        <caf-audit-scheduler.container.name>${docker.dev.repo}/caf/audit:1.0</caf-audit-scheduler.container.name>
     </properties>
 
     <dependencies>
@@ -199,6 +200,17 @@
             <artifactId>kafka_2.9.2</artifactId>
             <version>0.8.2.2</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vertica</groupId>
+            <artifactId>vertica-kafka-scheduler</artifactId>
+            <version>7.2.1-0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hpe.caf.externals</groupId>
+            <artifactId>docker-java</artifactId>
+            <version>0.10-ALT</version>
         </dependency>
     </dependencies>
 
@@ -404,6 +416,10 @@
                                     </inline>
                                 </assembly>
                             </build>
+                        </image>
+                        <image>
+                            <alias>auditScheduler</alias>
+                            <name>${caf-audit-scheduler.container.name}</name>
                         </image>
                         <image>
                             <alias>auditManagementWebService</alias>

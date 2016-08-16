@@ -360,6 +360,7 @@
                         <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
                         <CAF_CONFIG_PATH>${project.basedir}/test-config</CAF_CONFIG_PATH>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}${webserviceBasePath}</webserviceurl>
+                        <auditschedulerimagename>${caf-audit-scheduler.container.name}</auditschedulerimagename>
                     </environmentVariables>
                 </configuration>
             </plugin>

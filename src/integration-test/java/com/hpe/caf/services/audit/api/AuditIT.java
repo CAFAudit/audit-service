@@ -54,7 +54,7 @@ import java.util.*;
 
 public class AuditIT {
 
-    private static String VERTICA_HOST = "192.168.56.30";
+    private static String VERTICA_HOST;
     private static String VERTICA_SSH_PORT;
     private static final String VERTICA_HOST_USERNAME = "dbadmin";
     private static final String VERTICA_HOST_PASSWORD = "password";
@@ -68,8 +68,8 @@ public class AuditIT {
     private static final String CAF_AUDIT_DATABASE_NAME = "CAFAudit";
     
     // New database to be created by tests
-    private static String AUDIT_IT_DATABASE_NAME = "AuditIT";
-    private static String AUDIT_IT_DATABASE_PORT = "5433";
+    private static final String AUDIT_IT_DATABASE_NAME = "AuditIT";
+    private static String AUDIT_IT_DATABASE_PORT;
 
     private static final String AUDIT_IT_DATABASE_LOADER_USER = "caf-audit-loader";
     private static final String AUDIT_IT_DATABASE_LOADER_USER_PASSWORD = "'loader'";
@@ -213,9 +213,9 @@ public class AuditIT {
         
         AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH = System.getenv("webserviceurl");
 
-        VERTICA_HOST = System.getProperty("vertica.host.address", VERTICA_HOST);
+        VERTICA_HOST = System.getProperty("vertica.host.address");
         VERTICA_SSH_PORT = System.getProperty("vertica.image.ssh.port");
-        AUDIT_IT_DATABASE_PORT = System.getProperty("vertica.image.port", AUDIT_IT_DATABASE_PORT);
+        AUDIT_IT_DATABASE_PORT = System.getProperty("vertica.image.port");
 
         auditManagementApplicationsApi = new ApplicationsApi();
         auditManagementApplicationsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);

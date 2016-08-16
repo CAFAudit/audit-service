@@ -96,7 +96,6 @@ public class AuditIT {
 
         JSch jsch = new JSch();
         Session session = jsch.getSession("root", VERTICA_HOST, Integer.parseInt(VERTICA_SSH_PORT));
-        session.setPassword("password"); // possible rem
         session.setConfig(config);
         session.connect();
         

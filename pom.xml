@@ -26,20 +26,13 @@
         <webserviceWarName>caf-audit-management</webserviceWarName>
         <swaggerUIWarName>caf-audit-management-ui</swaggerUIWarName>
         <webserviceBasePath>/v1</webserviceBasePath>
-        
-        <vertica.database.name>CAFAudit</vertica.database.name>
-        
+
         <vertica-image.url>${docker.dev.repo}/caf/vertica-image:1.0-SNAPSHOT</vertica-image.url>
-        
-        <!-- This config is used from the tesing machine, as such we need the docker host address and dynamically exported port, of course you can make 
-        both this config, and the config for the container point to your own DB by passing in the properties manually.
-        The default setup, which creates a new linked container from scratch for each test run uses the vertica container and its dynamic ports -->
-        <vertica.connectionstring>jdbc:vertica://${docker.host.address}:${vertica-image.port}/${vertica.database.name}</vertica.connectionstring>
-        
+
         <!-- The reason behind having 2 here connection strings, is that we also connect to the DB from inside the containers.  It doesn't use 
         dnslookup, as its on a private network, it instead uses a fixed name of the container image, which you can map to anything you want. -->
-        <internal.vertica.connectionstring>jdbc:vertica://integrationtests-vertica-image:5433/AuditIT</internal.vertica.connectionstring>
-        
+        <vertica.connectionstring>jdbc:vertica://integrationtests-vertica-image:5433/AuditIT</vertica.connectionstring>
+
     </properties>
 
     <dependencies>
@@ -352,13 +345,11 @@
                     <systemPropertyVariables>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
                         <docker.host.address>${docker.host.address}</docker.host.address>
-                        <vertica.database.name>${vertica.database.name}</vertica.database.name>
                         <vertica.host.address>${docker.host.address}</vertica.host.address>
                         <vertica.image.port>${vertica.image.port}</vertica.image.port>
                         <vertica.image.ssh.port>${vertica.image.ssh.port}</vertica.image.ssh.port>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <CAF_DATABASE_URL>${vertica.connectionstring}</CAF_DATABASE_URL>
                         <CAF_DATABASE_SERVICE_ACCOUNT>caf-audit-service</CAF_DATABASE_SERVICE_ACCOUNT>
                         <CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>service</CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>
                         <CAF_DATABASE_LOADER_ACCOUNT>caf-audit-loader</CAF_DATABASE_LOADER_ACCOUNT>
@@ -508,7 +499,7 @@
                                 </ports>
                                 <env>
                                     <!-- When the container is deployed in Marathon it will use the environment variable values specified in the container json. -->
-                                    <CAF_DATABASE_URL>${internal.vertica.connectionstring}</CAF_DATABASE_URL>
+                                    <CAF_DATABASE_URL>${vertica.connectionstring}</CAF_DATABASE_URL>
                                     <CAF_DATABASE_SERVICE_ACCOUNT>caf-audit-service</CAF_DATABASE_SERVICE_ACCOUNT>
                                     <CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>service</CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>
                                     <CAF_DATABASE_LOADER_ACCOUNT>caf-audit-loader</CAF_DATABASE_LOADER_ACCOUNT>
@@ -568,7 +559,7 @@
                             <run>
                                 <namingStrategy>alias</namingStrategy>
                                 <env>
-                                    <VERTICA_DATABASE_NAME>${vertica.database.name}</VERTICA_DATABASE_NAME>
+                                    <VERTICA_DATABASE_NAME>CAFAudit</VERTICA_DATABASE_NAME>
                                 </env>
                                 <ports>
                                     <port>${vertica.image.port}:5433</port>

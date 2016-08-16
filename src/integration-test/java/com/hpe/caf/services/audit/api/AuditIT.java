@@ -64,10 +64,10 @@ public class AuditIT {
     private static final String AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS = "192.168.56.20:2181";
     private static final String AUDIT_MANAGEMENT_KAFKA_BROKERS = "192.168.56.20:9092";
 
-    //Default database already created 
-    private static String CAF_AUDIT_DATABASE_NAME = "CAFAudit";
+    // Default database already created
+    private static final String CAF_AUDIT_DATABASE_NAME = "CAFAudit";
     
-    //New database to be created by tests
+    // New database to be created by tests
     private static String AUDIT_IT_DATABASE_NAME = "AuditIT";
     private static String AUDIT_IT_DATABASE_PORT = "5433";
 
@@ -216,7 +216,6 @@ public class AuditIT {
         VERTICA_HOST = System.getProperty("vertica.host.address", VERTICA_HOST);
         VERTICA_SSH_PORT = System.getProperty("vertica.image.ssh.port");
         AUDIT_IT_DATABASE_PORT = System.getProperty("vertica.image.port", AUDIT_IT_DATABASE_PORT);
-        CAF_AUDIT_DATABASE_NAME = System.getProperty("vertica.database.name", CAF_AUDIT_DATABASE_NAME);
 
         auditManagementApplicationsApi = new ApplicationsApi();
         auditManagementApplicationsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);

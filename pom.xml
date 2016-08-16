@@ -541,26 +541,7 @@
                                 </wait>
                             </run>
                         </image>
-                        
-                        <image>
-                            <alias>vertica-config</alias>
-                            <name>${project.artifactId}-vertica-test-config:${project.version}</name>
-                            <build>
-                                <assembly>
-                                    <basedir>/scripts</basedir>
-                                     <inline>
-                                        <fileSets>
-                                            <fileSet>
-                                                <directory>scripts</directory>
-                                                <outputDirectory>/</outputDirectory>
-                                                <includes />
-                                            </fileSet>
-                                        </fileSets>
-                                    </inline>
-                                </assembly>
-                            </build>
-                        </image>
-                        
+
                         <image>
                             <alias>integrationtests-vertica-ssh-access</alias>
                             <name>jeroenpeeters/docker-ssh</name>
@@ -587,17 +568,11 @@
                             <run>
                                 <namingStrategy>alias</namingStrategy>
                                 <env>
-                                    <VERTICA_CONFIG_PATH>/scripts/install_vertica_users.sh</VERTICA_CONFIG_PATH>
                                     <VERTICA_DATABASE_NAME>${vertica.database.name}</VERTICA_DATABASE_NAME>
                                 </env>
                                 <ports>
                                     <port>${vertica.image.port}:5433</port>
                                 </ports>
-                                <volumes>
-                                    <from>
-                                        <image>vertica-config</image>
-                                    </from>
-                                </volumes>
                                 <log>
                                     <enabled>true</enabled>
                                 </log>

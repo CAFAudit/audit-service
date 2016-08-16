@@ -8,9 +8,9 @@ info:
   title: CAF Audit Management Service
   description: |
     The CAF Audit Managament Service will facilitate the registration of both
-    application defined audit events XML and new tenants.
+    application defined Audit Event Definition file and new tenants.
 
-    The applications endpoint should be used to register the audit events XML
+    The applications endpoint should be used to register the Audit Event Definition
     file defined for each application. The XML along with the application mapping
     will be stored in the Vertica database.
 
@@ -19,10 +19,10 @@ info:
     in application specific storage tables being created under tenant specific
     schemas in the Vertica database.
 
-    ### XML Audit Events File
+    ### Audit Event Definition File
 
     Applications will define audit events that will occur in the system in an
-    XML audit event file. A sample XML is included [here.](https://rndwiki.corp.hpecorp.net/confluence/pages/viewpage.action?title=Auditing&spaceKey=CAF)
+    Audit Event Definition file. A sample XML file is included [here.](Getting-Started)
 
 
     `AuditedApplication` is the root element. `ApplicationId` identifies the name
@@ -40,41 +40,6 @@ info:
     API for audit event parameters is taken from either the `ColumnName` or `Name`.
     Each is also prefixed with 'eventParam'.
 
-    ### Vertica Database Connection
-
-    The API connects to the Vertica analytical database server via JDBC. The following connection
-    properties need to be supplied:
-
-    `CAF_DATABASE_URL` - the Vertica database connection string URL with format:
-    jdbc:vertica://VerticaHost:portNumber/databaseName
-
-    `CAF_DATABASE_SERVICE_ACCOUNT` - the name of the Vertica database account used by the CAF Audit Management Service to access the Vertica database. E.g. caf-audit-service
-
-    `CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD` - the password of the Vertica database account used by the CAF Audit Management Service to access the Vertica database.
-
-    `CAF_DATABASE_LOADER_ACCOUNT` - the name of the Vertica database account used to configure the loading of data from Kafka into Vertica. E.g. caf-audit-loader
-
-    `CAF_DATABASE_LOADER_ACCOUNT_PASSWORD` - the password of the Vertica database account used to configure the loading of data from Kafka into Vertica.
-
-    `CAF_DATABASE_READER_ROLE` - the name of the Vertica database role that will be used for reporting users. E.g. caf-audit-read
-
-    ### Kafka Connection
-
-    The API connects to the Kafka server. The following property needs to be supplied:
-
-    `CAF_KAFKA_BROKERS` - the address of the Kafka broker. E.g. 192.168.56.20:9092
-
-    ### Disable Audit Management Web Service
-
-    The Audit Management Web Service can be disabled by setting the following property to true:
-
-    `CAF_AUDIT_MANAGEMENT_DISABLE`
-
-    Kafka, Vertica and web service disablement properties can be provided through system environment variables or can be collectively
-    initialized in a config.properties file with a new system environment variable created,
-    `CAF_AUDIT_MANAGEMENT_API_CONFIG_PATH`, which points to the directory containing the properties
-    file.
-
 basePath: /caf-audit-management/v1
 produces:
   - application/json
@@ -85,7 +50,7 @@ produces:
 paths:
   /applications:
     post:
-      description: Used to register application defined audit events XML in the Vertica database.
+      description: Used to register application specific Audit Event Definition file.
       tags:
         - Applications
       summary: Adds a new application
@@ -96,7 +61,7 @@ paths:
           type: file
           in: formData
           required: true
-          description: XML file which defines the audit events in use by the application.
+          description: XML file which defines the audit events in use by the application
       responses:
         200:
           description: Ok
@@ -114,7 +79,7 @@ paths:
         - name: NewTenant
           in: body
           required: true
-          description: Identifies the tenant and the application(s) that the tenant is to be registered with.
+          description: Identifies the tenant and the application(s) that the tenant is to be registered with
           schema:
             $ref: '#/definitions/NewTenant'
       responses:
@@ -126,7 +91,7 @@ paths:
           description: Internal server error
   /tenants/{tenantId}/updatePartitionCount:
     post:
-      description: Used to check the number of partitions registered with a topic in Vertica and equate this with the actual number of partitions in Kafka.
+      description: Must be called after extra partitions have been added to a topic in Kafka so that the new partitions are consumed.
       tags:
         - Tenants
       summary: Keeps Vertica topic configuration and Kafka topic partitions consistent
@@ -135,12 +100,12 @@ paths:
           type: string
           in: path
           required: true
-          description: Identifies the tenant.
+          description: Identifies the tenant
         - name: applicationId
           type: string
           in: query
           required: true
-          description: Identifies the application.
+          description: Identifies the application
       responses:
         200:
           description: Ok

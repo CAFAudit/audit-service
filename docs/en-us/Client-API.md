@@ -11,12 +11,13 @@ The `caf-audit` library offers a convenient set of classes for creating a connec
 
 This section will cover the use of `caf-audit` library classes and how to use them as objects within your application.
 
-The order of instantiation and use of these objects for sending audit events to storage are as follows:
+The order of instantiation and use of these objects for sending audit events are as follows:
 
-1. If you do not have an existing [`ConfigurationSource`](#ConfigurationSource) object create one for retrieving and holding configuration details about event storage.
+1. If you do not have an existing [`ConfigurationSource`](#ConfigurationSource) object create one for retrieving and holding configuration details.
 2. Create an [`AuditConnection`](#AuditConnection) object by passing the `AuditConnectionFactory` the [`ConfigurationSource`](#ConfigurationSource).
+3. Use the `AuditConnectionFactory` to create the [`AuditConnection`](#AuditConnection) object. You will need to pass it the [`ConfigurationSource`](#ConfigurationSource).
 3. Create an [`AuditChannel`](#AuditChannel) object from the [`AuditConnection`](#AuditConnection) object.
-4. Use the [`AuditEventBuilder`](#AuditEventBuilder) object to construct audit events and send them to Kafka with the use of the [`AuditChannel`](#AuditChannel)` object.
+4. Use the [`AuditEventBuilder`](#AuditEventBuilder) object to construct audit events and send them to Kafka.
 
 ### ConfigurationSource
 
@@ -148,9 +149,9 @@ The `AuditChannel` object can be constructed using the `createChannel()` method 
 
 An `AuditEventBuilder` object can be constructed from the [`AuditChannel`](#AuditChannel) object.
 
-This object offers production of an event to the persistent storage (i.e. to Kafka in the current implementation). There should be one [`AuditEventBuilder`](#AuditEventBuilder) object created for each audit Event Type.
+It is used to construct and send an audit event. There should be one [`AuditEventBuilder`](#AuditEventBuilder) object created for each event to be audited.
 
-The `AuditEventBuilder` object can be constructed using the `createEventBuilder()` method on the [`AuditChannel`](#AuditChannel) object. It does not take any parameters:
+The `AuditEventBuilder` object is created using the `createEventBuilder()` method on the [`AuditChannel`](#AuditChannel) object. It does not take any parameters.
 	
 	/*
 	  The following code constructs an application event for a tenant who has deleted a document. It then sends the event to storage.
@@ -176,3 +177,4 @@ The `AuditEventBuilder` object can be constructed using the `createEventBuilder(
 	// Send the constructed event to storage
 	auditEventBuilder.send();
 
+Typically this object is only used indirectly as you would normally generate a type-safe client-side auditing library using the code generation plugin. Internally the auto-generated code will make use of the `AuditEventBuilder` object.

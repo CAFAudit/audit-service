@@ -370,7 +370,7 @@
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}${webserviceBasePath}</webserviceurl>
                     </environmentVariables>
                     <!-- to auto debug, the forked failsafe integration tests, will wait for you to attach -->
-                    <debugForkedProcess>true</debugForkedProcess>
+                    <!--<debugForkedProcess>true</debugForkedProcess> -->
                 </configuration>
             </plugin>
 

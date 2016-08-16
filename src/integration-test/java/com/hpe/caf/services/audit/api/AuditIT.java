@@ -16,7 +16,6 @@ import com.hpe.caf.util.ModuleLoader;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.ProxyHTTP;
 import com.jcraft.jsch.Session;
 import kafka.admin.AdminOperationException;
 import kafka.admin.AdminUtils;

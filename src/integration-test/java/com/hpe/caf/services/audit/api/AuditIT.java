@@ -59,7 +59,8 @@ import java.util.*;
 
 public class AuditIT {
 
-    private static final String VERTICA_HOST = "192.168.56.30";
+    private static String VERTICA_HOST;
+    private static String VERTICA_SSH_PORT;
     private static final String VERTICA_HOST_USERNAME = "dbadmin";
     private static final String VERTICA_HOST_PASSWORD = "password";
 
@@ -68,10 +69,12 @@ public class AuditIT {
     private static final String AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS = "192.168.56.20:2181";
     private static final String AUDIT_MANAGEMENT_KAFKA_BROKERS = "192.168.56.20:9092";
 
+    // Default database already created
     private static final String CAF_AUDIT_DATABASE_NAME = "CAFAudit";
+    
+    // New database to be created by tests
     private static final String AUDIT_IT_DATABASE_NAME = "AuditIT";
-    private static final String AUDIT_IT_DATABASE_PORT = "5433";
-
+    private static String AUDIT_IT_DATABASE_PORT;
 
     private static final String AUDIT_IT_DATABASE_LOADER_USER = "caf-audit-loader";
     private static final String AUDIT_IT_DATABASE_LOADER_USER_PASSWORD = "loader";
@@ -96,20 +99,23 @@ public class AuditIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuditIT.class);
 
-    private static void issueVerticaSshCommand(final String command) throws Exception {
+    private static void issueVerticaSshCommand(final String command, boolean useDbadmin) throws Exception {
         java.util.Properties config = new java.util.Properties();
         config.put("StrictHostKeyChecking", "no");
 
         JSch jsch = new JSch();
-        Session session = jsch.getSession(VERTICA_HOST_USERNAME, VERTICA_HOST);
-        session.setPassword(VERTICA_HOST_PASSWORD);
+        Session session = jsch.getSession("root", VERTICA_HOST, Integer.parseInt(VERTICA_SSH_PORT));
         session.setConfig(config);
         session.connect();
+        
+        final String execCmd = useDbadmin
+                ? "su - dbadmin -c \"" + command.replace("\"","\\\"") + "\""
+                : command;
 
         try {
             Channel channel = session.openChannel("exec");
 
-            ((ChannelExec)channel).setCommand(command);
+            ((ChannelExec)channel).setCommand(execCmd);
             ((ChannelExec)channel).setErrStream(System.err);
 
             InputStream in = channel.getInputStream();
@@ -146,61 +152,61 @@ public class AuditIT {
 
     private static void createDatabase(final String databaseName) throws Exception {
         String command = MessageFormat.format("/opt/vertica/bin/admintools -t create_db -d {0} -p {0} -s 127.0.0.1", databaseName);
-        issueVerticaSshCommand(command);
+        issueVerticaSshCommand(command, true);
     }
 
 
     private static void startDatabase(final String databaseName) throws Exception {
         String command = MessageFormat.format("/opt/vertica/bin/admintools -t start_db -d {0} -p {0}", databaseName);
-        issueVerticaSshCommand(command);
+        issueVerticaSshCommand(command, true);
     }
 
 
     private static void stopDatabase(final String databaseName, final boolean force) throws Exception {
-        String command = MessageFormat.format(
+        String command = MessageFormat.format( 
             "/opt/vertica/bin/admintools -t stop_db -d {0} -p {0}" + (force ? " -F" : ""), databaseName);
-        issueVerticaSshCommand(command);
+        issueVerticaSshCommand(command, true);
     }
 
 
     private static void dropDatabase(final String databaseName) throws Exception {
         String command = MessageFormat.format("/opt/vertica/bin/admintools -t drop_db -d {0}", databaseName);
-        issueVerticaSshCommand(command);
+        issueVerticaSshCommand(command, true);
     }
 
     private static void createDatabaseRole(final String databaseName, final String roleName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"CREATE ROLE \\\"{1}\\\" \"", databaseName, roleName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"CREATE ROLE \\\"{1}\\\" \"", databaseName, roleName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void grantDatabaseRole(final String databaseName, final String roleName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT \\\"{1}\\\" TO \\\"{2}\\\"\"", databaseName, roleName, userName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"GRANT \\\"{1}\\\" TO \\\"{2}\\\"\"", databaseName, roleName, userName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void enableDatabaseRole(final String databaseName, final String roleName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"ALTER USER \\\"{1}\\\" DEFAULT ROLE \\\"{2}\\\"\"", databaseName, userName, roleName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"ALTER USER \\\"{1}\\\" DEFAULT ROLE \\\"{2}\\\"\"", databaseName, userName, roleName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void createDatabaseUser(final String databaseName, final String userName, final String userPassword) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"CREATE USER \\\"{1}\\\" IDENTIFIED BY {2}\"", databaseName, userName, userPassword);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"CREATE USER \\\"{1}\\\" IDENTIFIED BY {2}\"", databaseName, userName, userPassword);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void grantCreateOnDBPrivilege(final String databaseName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT CREATE ON DATABASE {0} TO \\\"{1}\\\" \"", databaseName, userName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"GRANT CREATE ON DATABASE {0} TO \\\"{1}\\\" \"", databaseName, userName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void grantPseudoSuperUserRole(final String databaseName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT PSEUDOSUPERUSER TO \\\"{1}\\\" \"", databaseName, userName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"GRANT PSEUDOSUPERUSER TO \\\"{1}\\\" \"", databaseName, userName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static void grantUsageOnScheduler(final String databaseName, final String userName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -w {0} -c \"GRANT USAGE ON SCHEMA " + AUDIT_KAFKA_SCHEDULER_NAME + " TO \\\"{1}\\\" \"", databaseName, userName);
-        issueVerticaSshCommand(command);
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"GRANT USAGE ON SCHEMA " + AUDIT_KAFKA_SCHEDULER_NAME + " TO \\\"{1}\\\" \"", databaseName, userName);
+        issueVerticaSshCommand(command, false);
     }
 
     private static String getAuditEventsXmlApplicationId(File auditEventsXml) throws Exception {
@@ -218,8 +224,13 @@ public class AuditIT {
 
     @BeforeClass
     public static void setup() throws Exception {
+        
         AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH = System.getenv("webserviceurl");
         AUDIT_KAFKA_SCHEDULER_IMAGE = System.getenv("auditschedulerimagename");
+
+        VERTICA_HOST = System.getProperty("vertica.host.address");
+        VERTICA_SSH_PORT = System.getProperty("vertica.image.ssh.port");
+        AUDIT_IT_DATABASE_PORT = System.getProperty("vertica.image.port");
 
         auditManagementApplicationsApi = new ApplicationsApi();
         auditManagementApplicationsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);

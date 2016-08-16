@@ -26,13 +26,7 @@
         <webserviceWarName>caf-audit-management</webserviceWarName>
         <swaggerUIWarName>caf-audit-management-ui</swaggerUIWarName>
         <webserviceBasePath>/v1</webserviceBasePath>
-
         <vertica-image.url>${docker.dev.repo}/caf/vertica-image:1.0-SNAPSHOT</vertica-image.url>
-
-        <!-- The reason behind having 2 here connection strings, is that we also connect to the DB from inside the containers.  It doesn't use 
-        dnslookup, as its on a private network, it instead uses a fixed name of the container image, which you can map to anything you want. -->
-        <vertica.connectionstring>jdbc:vertica://integrationtests-vertica-image:5433/AuditIT</vertica.connectionstring>
-
     </properties>
 
     <dependencies>
@@ -499,7 +493,7 @@
                                 </ports>
                                 <env>
                                     <!-- When the container is deployed in Marathon it will use the environment variable values specified in the container json. -->
-                                    <CAF_DATABASE_URL>${vertica.connectionstring}</CAF_DATABASE_URL>
+                                    <CAF_DATABASE_URL>jdbc:vertica://integrationtests-vertica-image:5433/AuditIT</CAF_DATABASE_URL>
                                     <CAF_DATABASE_SERVICE_ACCOUNT>caf-audit-service</CAF_DATABASE_SERVICE_ACCOUNT>
                                     <CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>service</CAF_DATABASE_SERVICE_ACCOUNT_PASSWORD>
                                     <CAF_DATABASE_LOADER_ACCOUNT>caf-audit-loader</CAF_DATABASE_LOADER_ACCOUNT>

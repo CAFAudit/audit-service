@@ -2,6 +2,11 @@ package com.hpe.caf.services.audit.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.client.model.HostConfig;
+import com.github.dockerjava.client.model.RestartPolicy;
+import com.github.dockerjava.jaxrs1.JaxRs1Client;
 import com.hpe.caf.api.*;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionFactory;
@@ -17,6 +22,7 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.vertica.solutions.kafka.cli.SchedulerConfigurationCLI;
 import kafka.admin.AdminOperationException;
 import kafka.admin.AdminUtils;
 import kafka.common.TopicExistsException;
@@ -71,7 +77,7 @@ public class AuditIT {
     private static String AUDIT_IT_DATABASE_PORT;
 
     private static final String AUDIT_IT_DATABASE_LOADER_USER = "caf-audit-loader";
-    private static final String AUDIT_IT_DATABASE_LOADER_USER_PASSWORD = "'loader'";
+    private static final String AUDIT_IT_DATABASE_LOADER_USER_PASSWORD = "loader";
     private static final String AUDIT_IT_DATABASE_READER_ROLE = "caf-audit-read";
     private static final String AUDIT_IT_DATABASE_READER_USER = "caf-audit-reader";
     private static final String AUDIT_IT_DATABASE_READER_USER_PASSWORD = "'reader'";
@@ -80,6 +86,10 @@ public class AuditIT {
     private static final String AUDIT_IT_DATABASE_PSEUDOSUPERUSER_ROLE = "PSEUDOSUPERUSER";
 
     private static final String AUDIT_IT_DATABASE_SCHEMA_PREFIX = "account_";
+
+    private static final String AUDIT_KAFKA_SCHEDULER_ID = "caf-audit-scheduler-it";
+    private static String AUDIT_KAFKA_SCHEDULER_IMAGE;
+    private static final String AUDIT_KAFKA_SCHEDULER_NAME = "auditscheduler";
 
     //The audit events XML file in the test case directory must be the same events XML file used in the caf-audit-maven-plugin, see pom.xml property auditXMLConfigFile.
     private static final String testCaseDirectory = "./test-case";
@@ -194,6 +204,11 @@ public class AuditIT {
         issueVerticaSshCommand(command, false);
     }
 
+    private static void grantUsageOnScheduler(final String databaseName, final String userName) throws Exception {
+        String command = MessageFormat.format("/opt/vertica/bin/vsql -d {0} -U dbadmin -w {0} -c \"GRANT USAGE ON SCHEMA " + AUDIT_KAFKA_SCHEDULER_NAME + " TO \\\"{1}\\\" \"", databaseName, userName);
+        issueVerticaSshCommand(command, false);
+    }
+
     private static String getAuditEventsXmlApplicationId(File auditEventsXml) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setValidating(false);
@@ -211,6 +226,7 @@ public class AuditIT {
     public static void setup() throws Exception {
         
         AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH = System.getenv("webserviceurl");
+        AUDIT_KAFKA_SCHEDULER_IMAGE = System.getenv("auditschedulerimagename");
 
         VERTICA_HOST = System.getProperty("vertica.host.address");
         VERTICA_SSH_PORT = System.getProperty("vertica.image.ssh.port");
@@ -222,7 +238,8 @@ public class AuditIT {
         auditManagementTenantsApi = new TenantsApi();
         auditManagementTenantsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
 
-        stopDatabase(CAF_AUDIT_DATABASE_NAME, false);
+        Thread.sleep(10000);
+        stopDatabase(CAF_AUDIT_DATABASE_NAME, true);
     }
 
 
@@ -238,6 +255,12 @@ public class AuditIT {
 
         AuditTestCase testCase = getTestCase();
         try (TestCaseDb testCaseDb = new TestCaseDb(AUDIT_IT_DATABASE_NAME)) {
+
+            //  Make sure Kafka scheduler is created and started for test.
+            DockerClient docker = new JaxRs1Client();
+            createKafkaScheduler(AUDIT_IT_DATABASE_NAME);
+            String schedulerContainerId = startKafkaScheduler(docker, AUDIT_IT_DATABASE_NAME);
+
             String applicationId = registerApplicationInDatabase(testCase);
             for (Path eventsYaml : testCase.getYaml()) {
                 AuditEventMessages messagesToSend = getTestMessages(eventsYaml);
@@ -250,6 +273,8 @@ public class AuditIT {
 
                 verifyResults(applicationId, tenantId, expectedResultSet);
             }
+
+            stopKafkaScheduler(docker, schedulerContainerId);
         }
 
         LOG.info("*** Completed Audit tests ***");
@@ -275,8 +300,16 @@ public class AuditIT {
      */
     private void partitionTester(boolean createTopicWithMultiplePartitions) throws Exception {
 
+        String schedulerContainerId="";
+        DockerClient docker = new JaxRs1Client();
+
         AuditTestCase testCase = getTestCase();
         try (TestCaseDb testCaseDb = new TestCaseDb(AUDIT_IT_DATABASE_NAME)) {
+
+            //  Make sure Kafka scheduler is created and started for test.
+            createKafkaScheduler(AUDIT_IT_DATABASE_NAME);
+            schedulerContainerId = startKafkaScheduler(docker,AUDIT_IT_DATABASE_NAME);
+
             String applicationId = registerApplicationInDatabase(testCase);
             for (Path eventsYaml : testCase.getYaml()) {
                 AuditEventMessages messagesToSend = getTestMessages(eventsYaml);
@@ -359,8 +392,12 @@ public class AuditIT {
 
                 verifyMultiplePartitionResults(applicationId, tenantId, expectedResultSet);
             }
+
+            stopKafkaScheduler(docker, schedulerContainerId);
+
         } catch(Exception e){
             System.out.println(e.getMessage());
+            stopKafkaScheduler(docker, schedulerContainerId);
             throw e;
         }
 
@@ -653,6 +690,76 @@ public class AuditIT {
                 actualResultSet.size()));
     }
 
+    private static void createKafkaScheduler(String databaseName) throws Exception {
+        LOG.info("createKafkaScheduler: Creating Scheduler ...");
+        String dbURL = MessageFormat.format("jdbc:vertica://{0}:{1}/{2}", Objects.requireNonNull(VERTICA_HOST), Objects.requireNonNull(AUDIT_IT_DATABASE_PORT), Objects.requireNonNull(databaseName));
+
+        //  Create a scheduler configuration.
+        String[] args = new String[]{"-Dscheduler", "--add",
+                "--config-schema", AUDIT_KAFKA_SCHEDULER_NAME,
+                "--brokers", AUDIT_MANAGEMENT_KAFKA_BROKERS,
+                "--username", AUDIT_IT_DATABASE_LOADER_USER,
+                "--password", AUDIT_IT_DATABASE_LOADER_USER_PASSWORD,
+                "--jdbc-url", dbURL};
+        try {
+            SchedulerConfigurationCLI.run(args);
+        } catch (Exception e) {
+            LOG.error("createKafkaScheduler: Scheduler could not be created. ");
+            throw e;
+        }
+
+        //  Grant usage on scheduler schema to audit service account.
+        grantUsageOnScheduler(databaseName,AUDIT_IT_DATABASE_SERVICE_USER);
+
+        LOG.info("createKafkaScheduler: Scheduler created...");
+    }
+
+    private static String startKafkaScheduler(DockerClient docker, String databaseName) throws Exception {
+
+        LOG.info("startKafkaScheduler: Launching Scheduler via Docker...");
+
+        final String dbURL = MessageFormat.format("jdbc:vertica://{0}:{1}/{2}", Objects.requireNonNull(VERTICA_HOST), Objects.requireNonNull(AUDIT_IT_DATABASE_PORT), Objects.requireNonNull(databaseName));
+        final String[] args = new String[]{
+                "launch",
+                "--config-schema", AUDIT_KAFKA_SCHEDULER_NAME,
+                "--jdbc-url", dbURL,
+                "--username", AUDIT_IT_DATABASE_LOADER_USER,
+                "--password", AUDIT_IT_DATABASE_LOADER_USER_PASSWORD
+        };
+
+        final HostConfig hostConfig = new HostConfig();
+        hostConfig.setRestartPolicy(RestartPolicy.unlessStopped());
+
+        String auditSchedulerName = AUDIT_KAFKA_SCHEDULER_ID + "-" + UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
+
+        final CreateContainerResponse newContainer = docker
+                .createContainerCmd(AUDIT_KAFKA_SCHEDULER_IMAGE)
+                .withName(auditSchedulerName)
+                .withAttachStdout(true)
+                .withAttachStderr(true)
+                .withHostConfig(hostConfig)
+                .withCmd(args)
+                .exec();
+
+        final String schedulerContainerId = newContainer.getId();
+
+        docker.startContainerCmd(schedulerContainerId).exec();
+
+        LOG.info("startKafkaScheduler: Scheduler launched via Docker...");
+
+        return schedulerContainerId;
+    }
+
+    private static void stopKafkaScheduler(DockerClient docker, String schedulerContainerId) throws Exception {
+
+        LOG.info("stopKafkaScheduler: Stopping Scheduler via Docker...");
+
+        docker.stopContainerCmd(schedulerContainerId).exec();
+        docker.removeContainerCmd(schedulerContainerId).exec();
+
+        LOG.info("stopKafkaScheduler: Scheduler stopped via Docker...");
+    }
+
     class AuditTestCase {
         private Collection<Path> yaml;
         private Path xml;
@@ -706,7 +813,7 @@ public class AuditIT {
             createDatabaseUser(testDbName,AUDIT_IT_DATABASE_SERVICE_USER,AUDIT_IT_DATABASE_SERVICE_USER_PASSWORD);
             grantCreateOnDBPrivilege(testDbName,AUDIT_IT_DATABASE_SERVICE_USER);
 
-            createDatabaseUser(testDbName,AUDIT_IT_DATABASE_LOADER_USER,AUDIT_IT_DATABASE_LOADER_USER_PASSWORD);
+            createDatabaseUser(testDbName,AUDIT_IT_DATABASE_LOADER_USER, "'" + AUDIT_IT_DATABASE_LOADER_USER_PASSWORD + "'");
             grantPseudoSuperUserRole(testDbName,AUDIT_IT_DATABASE_LOADER_USER);
             enableDatabaseRole(testDbName,AUDIT_IT_DATABASE_PSEUDOSUPERUSER_ROLE,AUDIT_IT_DATABASE_LOADER_USER);
 

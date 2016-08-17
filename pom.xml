@@ -27,6 +27,8 @@
         <swaggerUIWarName>caf-audit-management-ui</swaggerUIWarName>
         <webserviceBasePath>/v1</webserviceBasePath>
         <vertica-image.url>${docker.dev.repo}/caf/vertica-image:1.0-SNAPSHOT</vertica-image.url>
+        <caf-audit-scheduler.container.name>${docker.dev.repo}/caf/audit:1.0</caf-audit-scheduler.container.name>        
+        <vertica.image.port>5433</vertica.image.port>
     </properties>
 
     <dependencies>
@@ -201,6 +203,17 @@
             <version>0.8.2.2</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.vertica</groupId>
+            <artifactId>vertica-kafka-scheduler</artifactId>
+            <version>7.2.1-0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hpe.caf.externals</groupId>
+            <artifactId>docker-java</artifactId>
+            <version>0.10-ALT</version>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -353,6 +366,7 @@
                         <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
                         <CAF_CONFIG_PATH>${project.basedir}/test-config</CAF_CONFIG_PATH>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}${webserviceBasePath}</webserviceurl>
+                        <auditschedulerimagename>${caf-audit-scheduler.container.name}</auditschedulerimagename>
                     </environmentVariables>
                 </configuration>
             </plugin>
@@ -409,6 +423,10 @@
                                     </inline>
                                 </assembly>
                             </build>
+                        </image>
+                        <image>
+                            <alias>auditScheduler</alias>
+                            <name>${caf-audit-scheduler.container.name}</name>
                         </image>
                         <image>
                             <alias>auditManagementWebService</alias>

@@ -755,6 +755,7 @@ public class AuditIT {
         LOG.info("stopKafkaScheduler: Stopping Scheduler via Docker...");
 
         docker.stopContainerCmd(schedulerContainerId).exec();
+        docker.removeContainerCmd(schedulerContainerId).exec();
 
         LOG.info("stopKafkaScheduler: Scheduler stopped via Docker...");
     }

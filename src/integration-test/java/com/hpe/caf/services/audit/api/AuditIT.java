@@ -238,7 +238,8 @@ public class AuditIT {
         auditManagementTenantsApi = new TenantsApi();
         auditManagementTenantsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
 
-        stopDatabase(CAF_AUDIT_DATABASE_NAME, false);
+        Thread.sleep(10000);
+        stopDatabase(CAF_AUDIT_DATABASE_NAME, true);
     }
 
 

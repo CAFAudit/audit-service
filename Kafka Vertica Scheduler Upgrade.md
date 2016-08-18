@@ -51,14 +51,14 @@ Some of the upgrade steps require the use of a database tool that can connect to
 	
 4. Deploy the AMWS and Kafka-Vertica Audit scheduler using the [Chateau](https://github.hpe.com/caf/chateau/blob/develop/deployment.md) deployment tool set.
 
-		./deploy-service.sh audit-management
+		./deploy-service.sh audit
 
 5. Perform database clean-up.
  
-	In order for all tenants to be managed by the new Kafka-Vertica scheduler, existing audit scheduler and tenant related rows need removed from the Vertica database. Tenants can then be registered via the AMWS afterwards.
+	In order for all tenants to be managed by the new Kafka-Vertica scheduler, existing audit scheduler and tenant related rows need to be removed from the Vertica database. Tenants can then be registered via the AMWS afterwards.
 
 	###### 5.1 Make a record of all tenants in the system
-	Make a record of all tenant identfiers registered in the system. Run the following SQL against the Vertica database to do this:
+	Make a record of all tenant identifiers registered in the system. Run the following SQL against the Vertica database to do this:
 
 		SELECT REPLACE(schema_name,'account_','') as TenantId 
 		FROM schemata 

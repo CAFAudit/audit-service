@@ -2,7 +2,7 @@
 
 The CAF Audit Management Web Service (AMWS) has been modified to use a single Kafka-Vertica scheduler for all tenants. See [CAF-1377](https://jira.autonomy.com/browse/CAF-1377) for further details. The purpose of this document is to provide a set of upgrade instructions for both the AMWS as well as any existing Audit scheduler entries in Vertica. The upgrade steps are relevant to AMWS version 1.4 or earlier.
 
-Some of the upgrade steps require the use of a database tool that can connect to the Vertica database to run SQL and drop schema objects. It has been assumed that DbVisualizer will be used for these steps. 
+Some of the upgrade steps require the use of a database tool that can connect to the Vertica database to run SQL and drop schema objects. It has been assumed that *[DbVisualizer Free For Vertica](https://saas.hpe.com/marketplace/big-data/dbvisualizer-free-vertica)* will be used for these steps. 
 
 ## Upgrade Steps
 

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> Common Application Framework - Auditing Overview</title>
+  <meta name="description" content="Audit Description">
+
+  <link rel='shortcut icon' href='/documentation/caf-templates/favicon.ico' type='image/x-icon'/>
+  <link rel="stylesheet" href="/documentation/caf-templates/assets/main.css">
+  <link rel="stylesheet" href="/documentation/caf-templates/assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/documentation/caf-templates/assets/css/HPEElements.css">
+  <link rel="canonical" href="/documentation/pages/en-us/overview.html">
+</head>
+
+
+  <body ng-app="caf" disable-animation>
+
+    
+<header class="top-header" ng-controller="TopNavCtrl as tnc" header-scroll>
+    <div class="container">
+        <a href="{{ tnc.logo_url }}" class="logo"></a>
+        <ul class="menu">
+                <li class="menu-item" ng-repeat="(key, value) in tnc.top_nav_data.navigation_items">
+                    <a localize-all="value"></a>
+                </li>
+        </ul>
+    </div>
+    <div class="menu-toggle" menu-toggle>
+      <span class="hpe-icon hpe-menu"></span>
+    </div>
+</header>
+
+
+<script type="application/json" id="top-nav-localization">
+    {"navigation_items":[{"title":{"en-us":"Overview"},"url":{"en-us":"pages/en-us/overview"},"icon":"","primary":false},{"title":{"en-us":"Team"},"url":{"en-us":"pages/en-us/team"},"icon":"","primary":false},{"title":{"en-us":"Blog"},"url":{"en-us":"pages/en-us/blog/"},"icon":"","primary":false}]}
+</script>
+
+
+    <div class="content-container">
+
+      <div class="container">
+        <div class="row">
+          <div class="wrapper-content">
+            <div class="col-md-9">
+              <div class="docs-content">
+                <h1 id="overview">Overview</h1>
+
+<p>The Audit service provides applications with a reliable, high-performance solution for recording events pertaining to user and system applications.</p>
+
+<p>This documented audit trail of user and system activity has many uses. It provides traceability and individual accountability. Audit records can also be used for analytical purposes, including security violation detection and abnormal usage patterns. Audit trails have legal standing and can help protect the organization with a proven record of user and system activity. Audit records can also be exported for archival and reporting purposes.</p>
+
+<h2 id="introduction">Introduction</h2>
+<p>The Audit service allows you to audit user and system actions by defining the required events and the information associated with each event. This definition is registered with the Audit Management web service and is also used to create a Java SDK to record the audited events. The Audit service is multi-tenant aware, which requires an application producing events to register each new tenant. Applications send events using the generated Java SDK to Apache Kafka, which in turn uses Vertica integration to load the audit event messages into a table for the tenant of the application-producing messages.</p>
+
+<h2 id="user-and-system-actions">User and System Actions</h2>
+<p>Applications define user and system actions in an audit event definition file. This definition is registered using the Audit Management web service API to create the Vertica database schema for storing the audit event messages. The definition is also utilized to generate a Java SDK, which raises the defined audit events.</p>
+
+<p>For more details on the audit events definition schema, see <a href="Getting-Started">Getting Started</a>.</p>
+
+<h2 id="java-sdk">Java SDK</h2>
+<p>The audit events definition file is used by a code generation plugin to auto-generate a Java library, which sends audit event messages to the Apache Kafka messaging service.</p>
+
+<p>For more details on the Auditing Java SDK, see <a href="https://github.hpe.com/caf/caf-audit-management-service/blob/develop/docs/en-us/Client-API.md">Client-API</a>.</p>
+
+<h2 id="apache-kafka">Apache Kafka</h2>
+<p>Apache Kafka is a distributed, partitioned, replicated commit log service that provides the functionality of a messaging system. The Auditing Java SDK sends user and system audit events to Apache Kafka. These event messages are then streamed from Apache Kafka into the Vertica database schema.</p>
+
+<p>For more details on the Apache Kafka deployment, see <a href="Getting-Started">Getting Started</a>.</p>
+
+<h2 id="vertica">Vertica</h2>
+<p>User and system audit events are stored in Vertica. The database schema for these events is created when each new tenant is registered using the Audit Management web service API. Vertica provides a high-performance loading mechanism for streaming the data from Apache Kafka into the Vertica database.</p>
+
+<p>For more details on the Vertica deployment, see <a href="Getting-Started">Getting Started</a>.</p>
+
+<h2 id="management-web-api">Management Web API</h2>
+<p>The Audit Management web service API is a RESTful web service that makes it easy for you to register application audit events and new tenants.</p>
+
+<p>To see the web methods in the Audit Management web service API, see <a href="Server-API">Server-API</a>.</p>
+
+<p>For more details on the architecture of the Audit Management web service API, see <a href="Architecture">Architecture</a>.</p>
+
+<p>For instructions on deploying and using the Audit Management web service API, see <a href="Getting-Started">Getting Started</a>.</p>
+
+
+
+
+                <div class="footer">
+                  
+                  <a class="pull-right" href=""><span class="hpe-icon hpe-contact-us align-text-bottom"></span> <span localize-text="'Submit Feedback'"></span></a>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              
+<div ng-controller="SideNavCtrl as snc">
+    <nav role="navigation" class="sidebar" ng-class="{ 'expanded': snc.side_nav_expanded }">
+
+        <div class="header">
+            <p class="title">CAF Documentation</p>
+            <div class="close-button" ng-click="snc.side_nav_expanded = false">
+                <i class="hpe-icon hpe-close"></i>
+            </div>
+        </div>
+
+        <ul class="nav sidenav" side-menu>
+            <li ng-repeat="(key, firstlevel) in snc.side_nav_data.navigation_items">
+                <a localize-all="firstlevel" class="root-section" default-url="firstlevel.url" ng-class="{ 'hover-effect': firstlevel.url }"></a>
+                <ul class="nav">
+                    <li ng-repeat="(key, secondlevel) in firstlevel.children">
+                        <a class="nav-item" localize-all="secondlevel" ng-if="secondlevel.url"></a>     
+                        <a ng-if="secondlevel.children" default-url="secondlevel.children[0].url">
+                            <span localize-all="secondlevel"></span>
+                        </a>
+                        <ul class="nav" ng-if="secondlevel.children">
+                            <li ng-repeat="(key, thirdlevel) in secondlevel.children">
+                                <a localize-all="thirdlevel" ng-if="thirdlevel.url"></a>
+                                <a ng-if="thirdlevel.children">
+                                    <span localize-all="thirdlevel"></span>
+                                </a>
+                                <ul class="nav" ng-if="thirdlevel.children">
+                                    <li ng-repeat="(key, fourthlevel) in thirdlevel.children">
+                                        <a localize-all="fourthlevel" ng-if="fourthlevel.url"></a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>               
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+    </nav>
+
+    <div class="side-nav-expand-btn visible-sm-block visible-xs-block" ng-click="snc.side_nav_expanded = true">
+        <i class="hpe-icon hpe-app"></i>
+    </div>
+</div>
+
+
+
+<script type="application/json" id="side-nav-localization">
+    {"navigation_items":[{"title":{"en-us":"CAF Auditing"},"url":{"en-us":"pages/en-us/overview"},"children":[{"title":{"en-us":"Features"},"url":{"en-us":"pages/en-us/Features"}},{"title":{"en-us":"Getting Started"},"url":{"en-us":"pages/en-us/Getting-Started"}},{"title":{"en-us":"Architecture"},"url":{"en-us":"pages/en-us/Architecture"}},{"title":{"en-us":"Server-side API"},"url":{"en-us":"pages/en-us/Server-API"}},{"title":{"en-us":"Client-side API"},"url":{"en-us":"pages/en-us/Client-API"}},{"title":{"en-us":"Blog"},"url":{"en-us":"pages/en-us/blog/index"}}]}]}
+</script>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    
+<footer class="link-footer container" ng-controller="FooterCtrl as ftc">
+    <div class="footer-container">
+      <ul class="footer-list">
+        <li class="footer-item" ng-repeat="(key, value) in ftc.footer_data.navigation_items">
+        	<a class="footer-link" localize-all="value"></a>
+    	</li>
+        <li class="footer-item">
+          <localize-button></localize-button>
+        </li>
+      </ul>
+    </div>
+</footer>
+
+
+<!-- Language modal here -->
+<div ng-controller="LocalizeModalCtrl as lmc" class="modal fade" id="language-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg square-modal-window" role="document">
+    <div class="modal-content">
+      <div class="modal-body language-modal">
+        <h1 class="language-title"><span localize-text="'Choose A Region'"></span> <span class="hpe-icon hpe-close" data-dismiss="modal"></span></h1>
+
+        <div class="continent" ng-repeat="(continent, continent_data) in lmc.continents">
+          <p class="continent-title" ng-bind="continent"></p>
+          <div class="region-list">
+            <div class="region" ng-repeat="region in continent_data.countries" ng-click="lmc.select_region(region.abbreviation)">
+              <p class="region-name" ng-class="{ 'active': region.abbreviation === lmc.selected_language }">
+                <span ng-bind="region.country"></span>
+              </p>
+              <p class="region-language"><span ng-bind="region.language"></span> <span class="region-abbreviation">(<span ng-bind="region.abbreviation"></span>)</span></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script type="application/json" id="footer-localization">
+	{"navigation_items":[],"feedback_url":""}
+</script>
+
+<script type="application/json" id="current-page-urls">
+  null
+</script>
+
+
+    <!-- Get the required JSON files and give them and ID so we may use them in our directive -->
+    <script type="application/json" id="supported-languages">
+      {"en-us":{"country":"United States","language":"English","continent":"North America"}}
+    </script>
+
+    <script type="application/json" id="documentation-localization">
+      {"Accept":{"en-us":"Accept"},"Access Token":{"en-us":"Access Token"},"API Key":{"en-us":"API Key"},"API Key Authentication":{"en-us":"API Key Authentication"},"Authenticate":{"en-us":"Authenticate"},"Authorization URL":{"en-us":"Authorization URL"},"Cancel":{"en-us":"Cancel"},"Close":{"en-us":"Close"},"Code":{"en-us":"Code"},"Choose A Region":{"en-us":"Choose A Region"},"Contact information":{"en-us":"Contact information"},"Content-Type":{"en-us":"Content-Type"},"Contribute":{"en-us":"Contribute"},"Description":{"en-us":"Description"},"Details":{"en-us":"Details"},"Examples":{"en-us":"Examples"},"false":{"en-us":"false"},"Filter by tags":{"en-us":"Filter by tags"},"Flow":{"en-us":"Flow"},"Header Preview":{"en-us":"Header Preview"},"Headers":{"en-us":"Headers"},"HTTP Basic Authentication":{"en-us":"HTTP Basic Authentication"},"In":{"en-us":"In"},"License":{"en-us":"License"},"Location":{"en-us":"Location"},"Models":{"en-us":"Models"},"Name":{"en-us":"Name"},"OAuth 2.0 Authentication":{"en-us":"OAuth 2.0 Authentication"},"Parameters":{"en-us":"Parameters"},"Password":{"en-us":"Password"},"Paths":{"en-us":"Paths"},"Please follow OAuth flow, copy access token from OAuth and paste it here.":{"en-us":"Please follow OAuth flow, copy access token from OAuth and paste it here."},"Request":{"en-us":"Request"},"Required":{"en-us":"Required"},"Responses":{"en-us":"Responses"},"Schema":{"en-us":"Schema"},"Scheme":{"en-us":"Scheme"},"Scopes":{"en-us":"Scopes"},"Security":{"en-us":"Security"},"Security Schema":{"en-us":"Security Schema"},"Send Request":{"en-us":"Send Request"},"Submit Feedback":{"en-us":"Submit Feedback"},"Summary":{"en-us":"Summary"},"Terms of service":{"en-us":"Terms of service"},"Terms of Service":{"en-us":"Terms of Service"},"Token URL":{"en-us":"Token URL"},"true":{"en-us":"true"},"Try this operation":{"en-us":"Try this operation"},"User Name":{"en-us":"User Name"},"Version":{"en-us":"Version"},"Warning: Deprecated":{"en-us":"Warning: Deprecated"}}
+    </script>
+
+    <script src="/documentation/caf-templates/assets/js/third-party/jquery.min.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/bootstrap.min.js"></script>
+    <script src="/documentation/caf-templates/assets/js/polyfills.js"></script>
+    <!-- Formatter Plugins -->
+    <script src="/documentation/caf-templates/assets/js/third-party/jsonformatter.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/schemaview.min.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/ref-parser.js"></script>
+
+    <script src="/documentation/caf-templates/assets/js/third-party/angular.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/angular-recursion.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/moment.min.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/jquery.dotdotdot.min.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/lodash.min.js"></script>
+    <script src="/documentation/caf-templates/assets/js/elements/hpe-elements-angular.min.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/md2html.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/yaml2js.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/json-editor.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/schema-form.min.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/marked.js"></script>
+    <script src="/documentation/caf-templates/assets/js/third-party/angular-marked.min.js"></script>
+
+    <script src="/documentation/caf-templates/assets/js/app.js"></script>
+    <script src="/documentation/caf-templates/assets/js/localization.js"></script>
+    <script src="/documentation/caf-templates/assets/js/swagger.js"></script>
+    <script src="/documentation/caf-templates/assets/js/swagger_try.js"></script>
+
+    <script type="text/javascript">
+      var baseUrl = '/documentation';
+    </script>
+
+  </body>
+
+</html>

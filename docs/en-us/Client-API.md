@@ -21,7 +21,7 @@ The order of instantiation and use of these objects for sending audit events is 
 
 ### ConfigurationSource
 
-You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from:
+You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from any of the following:
 - environment variables
 - files
 - a REST service

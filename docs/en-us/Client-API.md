@@ -21,7 +21,11 @@ The order of instantiation and use of these objects for sending audit events is 
 
 ### ConfigurationSource
 
-You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from environment variables, files, a REST service, or, potentially, a custom source, which better integrates with the host application.
+You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from:
+- environment variables
+- files
+- a REST service
+- a custom source that better integrates with the host application.
 
 A `ConfigurationSource` object is required for the [`AuditConnectionFactory`](#AuditConnectionFactory) object to produce an [`AuditConnection`](#AuditConnection) object.
 

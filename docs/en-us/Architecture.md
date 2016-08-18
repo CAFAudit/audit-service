@@ -14,7 +14,7 @@ After you author the audit event definition file, you can use it in two ways:
 1. To generate an application-specific, client-side auditing library
 2. To register the application with the Auditing Management web service
 
-When used to generate an application-specific, client-side auditing library, the generated Java library sends audit event messages to the Apache Kafka messaging service.
+After you generate an application-specific, client-side auditing library, the application uses the Java library to send audit event messages to the Apache Kafka messaging service.
 
 On the server-side, with the Audit Management web service API, the application's audit event definition file is used to create an audit event schema for the application within Vertica. The web service API can then register a tenant with one or more applications. It creates application audit event tables for the tenant and associates application tenant topics with the Kafka-Vertica Scheduler.
 

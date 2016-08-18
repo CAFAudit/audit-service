@@ -31,6 +31,7 @@ module.exports = function(grunt) {
             options: {
                 dir: '.',
                 commit: true,
+                connectCommits: false,
                 push: true,
                 message: 'Built %sourceName% from commit %sourceCommit% on branch %sourceBranch%'
             },

@@ -13,7 +13,6 @@ highlighter: rouge
 gems: ['jekyll-coffeescript', 'jekyll-watch', 'jekyll-assets', 'jekyll-paginate']
 
 layouts_dir:  caf-templates/_layouts
-data_dir:     caf-templates/_data
 includes_dir: caf-templates/_includes
 
 paginate: 5

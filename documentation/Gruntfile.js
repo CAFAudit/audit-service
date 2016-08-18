@@ -55,5 +55,5 @@ module.exports = function(grunt) {
     grunt.registerTask('serve', ['jekyll:serve']);
     grunt.registerTask('update', ['exec:bower_uninstall', 'exec:bower_install']);
 
-    grunt.registerTask('publish', ['exec:bower_uninstall', 'exec:bower_install', 'buildcontrol:pages']);
+    grunt.registerTask('publish', ['buildcontrol:pages']);
 };

@@ -20,7 +20,7 @@ For more details on the audit events definition schema, see [Getting Started](Ge
 ## Java SDK
 The audit events definition file is used by a code generation plugin to auto-generate a Java library, which sends audit event messages to the Apache Kafka messaging service.
 
-For more details on the Auditing Java SDK, see [Client-API](https://github.hpe.com/caf/caf-audit-management-service/blob/develop/docs/en-us/Client-API.md).
+For more details on the Auditing Java SDK, see [Client-API](Client-API).
 
 ## Apache Kafka
 Apache Kafka is a distributed, partitioned, replicated commit log service that provides the functionality of a messaging system. The Auditing Java SDK sends user and system audit events to Apache Kafka. These event messages are then streamed from Apache Kafka into the Vertica database schema.

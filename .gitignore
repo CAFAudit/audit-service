@@ -3,3 +3,5 @@
 **/*.bak
 **/target/
 /target/
+.idea/
+documentation/node_modules/

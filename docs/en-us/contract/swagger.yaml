@@ -5,33 +5,35 @@ swagger: "2.0"
 # Provides metadata about the API.
 info:
   version: v1
-  title: CAF Audit Management Service
+  title: Audit Management Service
   description: |
-    The CAF Audit Managament Service will facilitate the registration of both
-    application defined Audit Event Definition file and new tenants.
+    The Audit Managament service facilitates the registration of both
+    application-defined audit event definition files and new tenants.
 
-    The applications endpoint should be used to register the Audit Event Definition
-    file defined for each application. The XML along with the application mapping
-    will be stored in the Vertica database.
+    The application endpoint is used to register the audit event definition
+    file for each application. The XML along with the application mapping
+    is stored in the HPE Vertica database.
 
-    The tenants endpoint should be used to add new tenants. One or more
-    applications can be specified when adding a new tenant. This will result
-    in application specific storage tables being created under tenant specific
-    schemas in the Vertica database.
+    The tenant endpoint is used to add new tenants. You can specify one or more
+    applications when adding a new tenant. This results
+    in application-specific storage tables being created under tenant-specific
+    schemas in the HPE Vertica database.
 
     ### Audit Event Definition File
 
-    Applications will define audit events that will occur in the system in an
-    Audit Event Definition file. A sample XML file is included [here.](Getting-Started)
+    Applications define audit events for the system in an
+    audit event definition file. You can see a sample XML file [here.](Getting-Started)
 
 
-    `AuditedApplication` is the root element. `ApplicationId` identifies the name
-    of the application that the audit event type is associated with. The database
-    table created by the tenants API endpoint will derive it's name from this
-    `ApplicationId` and will be created in a database schema named after the tenant.
+    `AuditedApplication` is the root element. 
+    `ApplicationId` identifies the name of the application with which the audit event 
+    type is associated. The database table created by the tenant API endpoint derives 
+    it's name from this `ApplicationId` and is created in a database schema named 
+    after the tenant.
     For each audit event defined, `TypeId` is a string identifier for the
-    particular event (e.g. viewDocument) and `CategoryId` is a string identifier
-    for the category of event. A list of parameter elements are then defined for
+    particular event (for example, viewDocument).
+  * CategoryId` is a string identifier for the category of event. 
+  * A list of parameter elements are defined for
     each audit event. This includes the name of the parameter, the type (i.e.
     string, short, int, long, float, double, boolean or date), description and
     an optional `ColumnName` element which identifies an alternative database
@@ -50,10 +52,10 @@ produces:
 paths:
   /applications:
     post:
-      description: Used to register application specific Audit Event Definition file.
+      description: Registers an application-specific audit event definition file.
       tags:
         - Applications
-      summary: Adds a new application
+      summary: Adds a new application.
       consumes:
         - multipart/form-data
       parameters:
@@ -61,60 +63,59 @@ paths:
           type: file
           in: formData
           required: true
-          description: XML file which defines the audit events in use by the application
+          description: An XML file that defines the audit events in use by the application.
       responses:
         200:
           description: Ok
         400:
-          description: Bad Request (missing database connection properties or unexpected/invalid XML)
+          description: Bad Request (missing database connection properties or unexpected/invalid XML).
         500:
-          description: Internal server error
+          description: Internal server error.
   /tenants:
     post:
-      description: Used to register and create the Vertica database schema for a new tenant.
+      description: Used to register and create the HPE Vertica database schema for a new tenant.
       tags:
         - Tenants
-      summary: Adds a new tenant
+      summary: Adds a new tenant.
       parameters:
         - name: NewTenant
           in: body
           required: true
-          description: Identifies the tenant and the application(s) that the tenant is to be registered with
-          schema:
+          description: Identifies the tenant and the application(s) with which to register the tenant in the schema:
             $ref: '#/definitions/NewTenant'
       responses:
         200:
           description: Ok
         400:
-          description: Bad Request (missing database connection properties or the `tenantId` parameter contains invalid characters)
+          description: Bad Request (missing database connection properties or the `tenantId` parameter contains invalid characters).
         500:
-          description: Internal server error
+          description: Internal server error.
   /tenants/{tenantId}/updatePartitionCount:
     post:
-      description: Must be called after extra partitions have been added to a topic in Kafka so that the new partitions are consumed.
+      description: Must call after extra partitions have been added to a topic in Kafka so that the new partitions are consumed.
       tags:
         - Tenants
-      summary: Keeps Vertica topic configuration and Kafka topic partitions consistent
+      summary: Keeps HPE Vertica topic configuration and Kafka topic partitions consistent.
       parameters:
         - name: tenantId
           type: string
           in: path
           required: true
-          description: Identifies the tenant
+          description: Identifies the tenant.
         - name: applicationId
           type: string
           in: query
           required: true
-          description: Identifies the application
+          description: Identifies the application.
       responses:
         200:
           description: Ok
         400:
-          description: Bad Request (missing database connection properties or the `tenantId` parameter contains invalid characters)
+          description: Bad Request (missing database connection properties or the `tenantId` parameter contains invalid characters).
         404:
-          description: Not Found (`tenantId` or `applicationId` not found)
+          description: Not Found (`tenantId` or `applicationId` not found).
         500:
-          description: Internal server error
+          description: Internal server error.
 definitions:
   NewTenant:
     required:

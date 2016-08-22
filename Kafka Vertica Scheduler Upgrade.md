@@ -21,13 +21,15 @@ Some of the upgrade steps require the use of a database tool that can connect to
 				--username "[LOADER-USERNAME]" 
 				--password [LOADER-PASSWORD] 
 				--operator "\"[OPERATOR]\""
+				--frame-duration [FRAME-DURATION]
 	
 	where:
 	
 	* [BROKERS] - This specifies the kafka broker(s) to be used, it is formatted as a comma separated list of address:port endpoints.
 	* [LOADER-USERNAME] - This is the vertica database loader account name recorded in step 1 (e.g. caf-audit-loader).
 	* [LOADER-PASSWORD] - This is the password for the vertica database loader account recorded in step 1.
-	* [OPERATOR] - This is the vertica database loader account name recorded in step 1 (e.g. caf-audit-loader). 
+	* [OPERATOR] - This is the vertica database loader account name recorded in step 1 (e.g. caf-audit-loader).
+	* [FRAME-DURATION] - Configure in accordance with expected throughput and acceptable latency.
 	
 	Example:
 	
@@ -37,6 +39,7 @@ Some of the upgrade steps require the use of a database tool that can connect to
 				--username "caf-audit-loader" 
 				--password c@FaL0Ad3r 
 				--operator "\"caf-audit-loader\""
+				--frame-duration 00:05:00
 
 	Note: This step assumes you have followed the pre-requisite steps after Vertica installation for AMWS usage. See [here](https://github.hpe.com/caf/chateau/blob/develop/services/audit-management/README.md) for further details which describes the database role and service accounts to be created.
 

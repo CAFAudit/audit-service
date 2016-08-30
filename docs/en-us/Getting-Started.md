@@ -5,15 +5,31 @@ title: Getting Started
 
 # Getting Started
 
-You need to perform the following steps to set up the Audit Management service. These steps are explained in more detail in  subsequent sections.
+You need to perform the following steps to set up the Audit Management service.
 
-1. Install and configure Vertica 7.2.x on a dedicated machine.
+1. Install and configure HPE Vertica 7.2.x on a dedicated machine.
 2. Install and configure Apache Kafka on a dedicated machine.
 3. Using the Chateau deployment toolset, launch the Apache Kafka-Vertica scheduler and the Audit Management web service in Mesos/Marathon.
 4. Define an application's audit events in an Audit Event Definition File.
 5. Register the audit event definition file and add tenant(s) with the Audit Management web service. This creates the necessary database tables in Vertica.
 6. Generate the client-side auditing library using the audit event definition file and the code generation plugin. 
-7. In your application, use the client-side auditing library to send audit events to Kafka. The Audit Scheduler will automatically load the events from Kafka into Vertica.
+7. In your application, use the client-side auditing library to send audit events to Kafka. The Audit Scheduler will automatically load the events from Kafka into HPE Vertica.
+
+These steps are explained in more detail in  subsequent sections:
+
+- [Deploying HPE Vertica](deploying-hpe-vertica)
+- [Deploying Kafka](#deploying-kafka)
+- [Deploying Audit Web Service and Kafka-Vertica Scheduler](#deploying-audit-web-service-and-kafka-vertica-scheduler)
+- [Writing an Application Audit Event Definition File](#writing-an-application-audit-event-definition-file)
+- [Using the Audit Management Web Service](#using-the-audit-management-web-service)
+- [Generating a Client-side Auditing Library](#generating-a-client-side-auditing-library)
+- [Using the Client-side Auditing Library](#using-the-client-side-auditing-library)
+
+For more information on Chateau, go [here](https://github.hpe.com/caf/chateau).
+
+For more information on Vertica, go [here](https://my.vertica.com/).
+
+For more information on Apache Kafka, go [here](http://kafka.apache.org/).
 
 ## Deploying HPE Vertica
 
@@ -300,12 +316,11 @@ In the case of malformed audit events being passed to auditing, there is a rejec
 
 ![CAF Audit Account 1 Kafka Reject Table Columns](images/account_1RejectTable.png)
 
-## Generating a client-side Auditing Library
+## Generating a Client-side Auditing Library
 
-As discussed above, in order to use CAF Auditing you must first define the audit events in an Audit Event Definition File. After you have created the definition file you can use it to generate a client-side library to make it easier to raise the defined audit events.
+As previously mentioned, in order to use Auditing, you must first define the audit events in an audit event definition file. After you create the definition file, you use it to generate a client-side library. Technically, you do not need to generate a client-side library to use Auditing; you could use the `caf-audit` module directly. However, generating a client-side library should make it easier and safer to raise events because each event can be raised with a single type-safe call.
 
-Technically you do not need to generate a client-side library in order to use CAF Auditing; you could use the caf-audit module directly, but generating a client-side library should make it easier and safer to raise events, as it should mean that each event can be raised with a single type-safe call.
-Here is a sample Maven project file that generates a client-side auditing library:
+The following sample Maven project file generates a client-side auditing library:
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -368,7 +383,7 @@ Here is a sample Maven project file that generates a client-side auditing librar
 
 ### Maven Coordinates
 
-Like any other Maven project, the client-side auditing library must be assigned unique groupId, artifactId and version that can by used to reference it.
+Like any other Maven project, the client-side auditing library must be assigned a unique groupId, artifactId, and version, which are used to reference it.
 
 	<groupId>com.hpe.sampleapp</groupId>
 	<artifactId>sampleapp-audit</artifactId>
@@ -376,7 +391,7 @@ Like any other Maven project, the client-side auditing library must be assigned 
 
 ### Dependencies
 
-The generated library will have a dependency on caf-audit, which the generated code will use to raise the audit events. This dependency of course may introduce indirect transitive dependencies; these dependencies don't need to be directly referenced as the generated code only uses types defined in the caf-audit library.
+The generated library has a dependency on `caf-audit`, which the generated code uses to raise the audit events. This dependency, of course, may introduce indirect, transitive dependencies; these dependencies don't need to be directly referenced as the generated code only uses types defined in the `caf-audit` library.
 
 	<dependencies>
 	    <dependency>
@@ -388,7 +403,7 @@ The generated library will have a dependency on caf-audit, which the generated c
 
 ### Code Generation Plugin
 
-The `xmltojava` goal of the code generation plugin is used to generate the Java auditing code that will make up the library. The `auditXMLConfig` setting can be used to define the path to the Audit Event Definition file, and the `packageName` setting can be used to set the package in which the auditing code should be generated.
+The `xmltojava` goal of the code generation plugin is used to generate the Java auditing code that makes up the library. The `auditXMLConfig` setting defines the path to the audit event definition file, and the `packageName` setting sets the package in which the auditing code should be generated.
 
 	<build>
 	    <plugins>
@@ -413,11 +428,11 @@ The `xmltojava` goal of the code generation plugin is used to generate the Java 
 	    </plugins>
 	</build>
 
-In this example the Audit Event Definition file is in the `src/main/xml/` folder, though of course it could be read from any folder. The name of the package to use is being built up by appending ".auditing" the project's group identifier (i.e. "com.hpe.sampleapp" in this example).
+In this example, the audit event definition file is in the `src/main/xml/` folder, though, it could be read from any folder. The name of the package to use is built up by appending ".auditing" to the project's group identifier (that is, "com.hpe.sampleapp" in this example).
 
 ### Plugin Repositories
 
-Depending on how your Maven settings.xml file is configured, the pluginRepositories section may or may not be required in order to locate the code generation plugin.
+Depending on how your Maven settings.xml file is configured, the `pluginRepositories` section may or may not be required to locate the code generation plugin.
 
 	<pluginRepositories>
 	    <pluginRepository>
@@ -430,7 +445,7 @@ Depending on how your Maven settings.xml file is configured, the pluginRepositor
 	    </pluginRepository>
 	</pluginRepositories>
 
-In this example the URL is set to [http://cmbg-maven.autonomy.com/nexus/content/repositories/releases](http://cmbg-maven.autonomy.com/nexus/content/repositories/releases), but if that location is inaccessible then you could try one of the following URLs instead:
+In this example, the URL is set to [http://cmbg-maven.autonomy.com/nexus/content/repositories/releases](http://cmbg-maven.autonomy.com/nexus/content/repositories/releases), but, if that location is inaccessible, you could try one of the following URLs instead:
 
 - [http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release](http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release)
 - [http://16.26.25.50/nexus/content/repositories/releases](http://16.26.25.50/nexus/content/repositories/releases)
@@ -438,7 +453,7 @@ In this example the URL is set to [http://cmbg-maven.autonomy.com/nexus/content/
 
 ### No-op Auditing Library
 
-A dummy implementation of the standard auditing library, `caf-audit`, is provided to support developers without any Apache Kafka infrastructure. It has the same interface as the standard auditing library but does not send anything to Kafka. This will allow developers to continue to work with their application without the need to install and configure Apache Kafka.
+A dummy implementation of the standard auditing library, `caf-audit`, is provided to support developers without any Apache Kafka infrastructure. It has the same interface as the standard auditing library but does not send anything to Kafka. This library allows you to continue to work with your application without installing and configuring Apache Kafka.
 
 In order to make use of this no-op auditing library, simply modify the Maven Coordinates for the `caf-audit` dependency and specify `1.2-NOOP` as the version rather than just `1.2`:
 
@@ -450,9 +465,11 @@ In order to make use of this no-op auditing library, simply modify the Maven Coo
 	    </dependency>
 	</dependencies>
 
-Alternatively, you could do something more custom at runtime where you replace the standard auditing library jar with the no-op version if you prefer.
+Alternatively, you could do something custom at runtime, where you replace the standard auditing library jar with the no-op version.
 
 ## Using the Client-side Auditing Library
+
+Once you have your auditing library (generated or `caf-audit`), you use it to send audit events to Kafka.
 
 ### Dependencies
 
@@ -468,15 +485,20 @@ A generated client-side library should be referenced in the normal way in the ap
 
 Regardless of whether you choose to use a generated client-side library, or to use `caf-audit` directly, you must first create an `AuditConnection` object.
 
-This object represents a logical connection to the persistent storage (i.e. to Kafka in the current implementation). It is a thread-safe object. ***It should be considered that this object takes some time to construct, so the application should hold on to it and re-use it rather than constantly re-constructing it.***
+This object represents a logical connection to persistent storage (that is, Kafka in the current implementation). It is a thread-safe object. ***Please take into account that this object requires some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
 
 The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a `ConfigurationSource` parameter, which is the standard method of configuration in CAF.
 
-#### Configuration in CAF
+#### ConfigurationSource
 
-You may already have a CAF Configuration Source in your application. It is a general framework that abstracts away the source of the configuration, allowing it to come from environment variables, files, a REST service, or potentially a custom source which better integrates with the host application.
+You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from any of the following:
 
-If you're not already using CAF's Configuration mechanism, then here is some sample code to generate a `ConfigurationSource` object.
+* environment variables
+* files
+* a REST service
+* a custom source that better integrates with the host application.
+
+If you're not already using CAF's configuration mechanism, this sample code illustrates the generation of a ConfigurationSource object.
 
 	import com.hpe.caf.api.*;
 	import com.hpe.caf.cipher.NullCipherProvider;
@@ -496,7 +518,7 @@ If you're not already using CAF's Configuration mechanism, then here is some sam
 	    return ModuleLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, path, codec);
 	}
 
-To compile the above sample code you will need to add the following dependencies to your POM:
+To compile the above sample code, add the following dependencies to your POM:
 
 	<dependency>
 	    <groupId>com.hpe.caf</groupId>
@@ -524,7 +546,7 @@ To compile the above sample code you will need to add the following dependencies
 	    <version>1.0</version>
 	</dependency>
 
-To use JSON-encoded files for your configuration you will need to add the following additional dependencies to your POM:
+To use JSON-encoded files for your configuration, add the following additional dependencies to your POM:
 
 	<!-- Runtime-only Dependencies -->
 	<dependency>
@@ -546,14 +568,14 @@ To use JSON-encoded files for your configuration you will need to add the follow
 	    <scope>runtime</scope>
 	</dependency>
 
-#### Configuration Required to create the AuditConnection
+#### Configuration Required for the AuditConnection
 
-In the above sample CAF Configuration is using JSON-encoded files with the following parameters:
+In the `ConfigurationSource` above, we used JSON-encoded files with the following parameters:
 
 - `CAF_CONFIG_PATH: /etc/sampleapp/config`
 - `CAF_APPNAME: sampleappgroup/sampleapp`
 
-Given this configuration, to configure CAF Auditing you should create a file named `cfg_sampleappgroup_sampleapp_KafkaAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
+Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_KafkaAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
 	    "bootstrapServers": "192.168.56.20:9092",
@@ -561,22 +583,24 @@ Given this configuration, to configure CAF Auditing you should create a file nam
 	    "retries": "0"
 	}
 
-`bootstrapServers` refers to one or more of the nodes of the Kafka cluster as a comma-separated list.
-`acks` is the number of nodes in the cluster which must acknowledge an audit event when it is sent.
+where:
+
+- `bootstrapServers` refers to one or more of the nodes of the Kafka cluster as a comma-separated list.
+- `acks` is the number of nodes in the cluster which must acknowledge an audit event when it is sent.
 
 ### Audit Channel
 
-After you have successfully constructed an `AuditConnection` object you must construct an `AuditChannel` object.
+After you successfully construct an `AuditConnection` object, you must construct an `AuditChannel` object.
 
-This object represents a logical channel to the persistent storage (i.e. to Kafka in the current implementation). It is NOT a thread-safe object so it must not be shared across threads without synchronisation. However there is no issue constructing multiple `AuditChannel` objects simultaneously on different threads, and the objects are lightweight so caching them is not that important.
+This object represents a logical channel to the persistent storage (that is, Kafka in this implementation). **It is NOT a thread-safe object and must not be shared across threads without synchronization.** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
 
 The `AuditChannel` object can be constructed using the `createChannel()` method on the `AuditConnectionn` object. It does not take any parameters.
 
 ### Audit Log
 
-The generated library contains an `AuditLog` class which contains static methods which can be used to log audit events.
+The generated library contains an `AuditLog` class, which contains static methods used to log audit events.
 
-Here is an example for a the SampleApp's `viewDocument` event which takes a single document identifier parameter:
+Following is an example for a SampleApp's `viewDocument` event, which takes a single document identifier parameter:
 
 	/**
 	 * Audit the viewDocument event
@@ -609,20 +633,12 @@ Here is an example for a the SampleApp's `viewDocument` event which takes a sing
 
 The name of the event is included in the generated method name. In addition to the custom parameters (document id in this case), the caller must pass the `AuditChannel` object to be used, as well as the tenant id, user id, and correlation id.
 
-The method will throw an Exception if the audit event could not be stored for some reason (e.g. network failure).
+The method will throw an exception if the audit event could not be stored for some reason (for example, network failure).
 
 ### Verification Instructions
 
-Every time an `AuditLog` method is called a new row will be entered into the tenant's audit application table. The following figure shows the a tenant's `account_1` schema's `AuditSampleApp` table with an audit event entry with data for an audit event:
+Every time an `AuditLog` method is called, a new row is entered into the tenant's audit application table. The following figure shows a tenant's `account_1` schema's `AuditSampleApp` table with an audit event entry with data for an audit event:
 
 ![Tenant 1 with AuditSampleApp audit event entry](images/account_1AuditSampleAppData.png)
 
 ---
-
-## Links
-
-For more information on Chateau, go [here](https://github.hpe.com/caf/chateau).
-
-For more information on Vertica, go [here](https://my.vertica.com/).
-
-For more information on Apache Kafka, go [here](http://kafka.apache.org/).

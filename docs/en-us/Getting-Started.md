@@ -91,6 +91,7 @@ A read-only role is required for users of search and anayltics services that wis
 
 	![Enable the Audit Reader User's Reader Role SQL](images/EnableAuditReaderUserReaderRoleSQL.PNG)
 
+The `caf-audit-read` role is granted its privileges internally by the Audit Management Web Service during tenant registration. When a new tenant is added, the database schema and corresponding tables for that tenant is created. It is during this stage that the `caf-audit-read` role is granted USAGE on the schema and SELECT on the relevant table.
 
 ##### Create CAF Audit Service User
 
@@ -490,6 +491,8 @@ This object represents a logical connection to persistent storage (that is, Kafk
 The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a `ConfigurationSource` parameter, which is the standard method of configuration in CAF.
 
 #### ConfigurationSource
+
+[comment]: <> (The caf-audit Client-API.md documentation content contains duplication of the ConfigurationSource section. It is important that any changes here must also be included within the Client-API.md content.)
 
 You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from any of the following:
 

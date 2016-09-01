@@ -55,3 +55,6 @@ java -jar marathon-loader-2.1-jar-with-dependencies.jar -m "./marathon-template-
 where -e is used to specify the Marathon endpoint
 
 This will launch the container which includes both the Web Service and UI.
+
+## Feature Testing
+The testing for Auditing is defined [here](testcases)

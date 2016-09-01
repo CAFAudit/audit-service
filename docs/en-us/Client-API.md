@@ -21,6 +21,8 @@ The order of instantiation and use of these objects for sending audit events is 
 
 ### ConfigurationSource
 
+[comment]: <> (The caf-audit Getting-Started.md documentation content contains duplication of the ConfigurationSource section. It is important that any changes here must also be included within the Getting-Started.md content.)
+
 You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from any of the following:
 - environment variables
 - files

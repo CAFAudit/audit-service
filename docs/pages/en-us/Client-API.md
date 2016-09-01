@@ -3,17 +3,17 @@ layout: default
 title: Client-side API
 ---
 
-# CAF Audit Client-side library
+# Audit Client
 
 The `caf-audit` library offers a convenient set of classes for creating a connection and sending audit events to persistent storage.
 
-## Using CAF Auditing Objects
+## Using Auditing Objects
 
-This section will cover the use of `caf-audit` library classes and how to use them as objects within your application.
+This section covers `caf-audit` library classes and how to use them as objects within your application.
 
-The order of instantiation and use of these objects for sending audit events are as follows:
+The order of instantiation and use of these objects for sending audit events is as follows:
 
-1. If you do not have an existing [`ConfigurationSource`](#ConfigurationSource) object create one for retrieving and holding configuration details.
+1. If you do not have an existing [`ConfigurationSource`](#ConfigurationSource) object, create one for retrieving and holding configuration details.
 2. Create an [`AuditConnection`](#AuditConnection) object by passing the `AuditConnectionFactory` the [`ConfigurationSource`](#ConfigurationSource).
 3. Use the `AuditConnectionFactory` to create the [`AuditConnection`](#AuditConnection) object. You will need to pass it the [`ConfigurationSource`](#ConfigurationSource).
 3. Create an [`AuditChannel`](#AuditChannel) object from the [`AuditConnection`](#AuditConnection) object.
@@ -21,11 +21,17 @@ The order of instantiation and use of these objects for sending audit events are
 
 ### ConfigurationSource
 
-You may already have a CAF Configuration Source in your application. It is a general framework that abstracts away the source of the configuration, allowing it to come from environment variables, files, a REST service, or potentially a custom source which better integrates with the host application.
+[comment]: <> (The caf-audit Getting-Started.md documentation content contains duplication of the ConfigurationSource section. It is important that any changes here must also be included within the Getting-Started.md content.)
+
+You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from any of the following:
+- environment variables
+- files
+- a REST service
+- a custom source that better integrates with the host application.
 
 A `ConfigurationSource` object is required for the [`AuditConnectionFactory`](#AuditConnectionFactory) object to produce an [`AuditConnection`](#AuditConnection) object.
 
-If you're not already using CAF's Configuration mechanism, then here is some sample code to generate a `ConfigurationSource` object.
+If you're not already using CAF's configuration mechanism, this sample code illustrates the generation of a `ConfigurationSource` object.
 
 	import com.hpe.caf.api.*;
 	import com.hpe.caf.cipher.NullCipherProvider;
@@ -45,7 +51,7 @@ If you're not already using CAF's Configuration mechanism, then here is some sam
 	    return ModuleLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, path, codec);
 	}
 
-To compile the above sample code you will need to add the following dependencies to your POM:
+To compile the above sample code, add the following dependencies to your POM:
 
 	<dependency>
 	    <groupId>com.hpe.caf</groupId>
@@ -73,7 +79,7 @@ To compile the above sample code you will need to add the following dependencies
 	    <version>1.0</version>
 	</dependency>
 
-To use JSON-encoded files for your configuration you will need to add the following additional dependencies to your POM:
+To use JSON-encoded files for your configuration, add the following additional dependencies to your POM:
 
 	<!-- Runtime-only Dependencies -->
 	<dependency>
@@ -95,14 +101,14 @@ To use JSON-encoded files for your configuration you will need to add the follow
 	    <scope>runtime</scope>
 	</dependency>
 
-#### KafkaAuditConfiguration, a ConfigurationSource Example
+#### Example
 
-The above outlined [`ConfigurationSource`](#ConfigurationSource) is using JSON-encoded files with the following parameters:
+In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded files with the following parameters:
 
 - `CAF_CONFIG_PATH: /etc/sampleapp/config`
 - `CAF_APPNAME: sampleappgroup/sampleapp`
 
-Given this configuration, to configure CAF Auditing you should create a file named `cfg_sampleappgroup_sampleapp_KafkaAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
+Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_KafkaAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
 	    "bootstrapServers": "192.168.56.20:9092",
@@ -110,12 +116,14 @@ Given this configuration, to configure CAF Auditing you should create a file nam
 	    "retries": "0"
 	}
 
-`bootstrapServers` refers to one or more of the nodes of the Kafka cluster as a comma-separated list.
-`acks` is the number of nodes in the cluster which must acknowledge an audit event when it is sent.
+
+where:
+* `bootstrapServers` refers to one or more of the nodes of the Kafka cluster as a comma-separated list.
+* `acks` is the number of nodes in the cluster which must acknowledge an audit event when it is sent.
 
 ### AuditConnection
 
-This object represents a logical connection to the persistent storage (i.e. to Kafka in the current implementation). It is a thread-safe object. ***It should be considered that this object takes some time to construct, so the application should hold on to it and re-use it rather than constantly re-constructing it.***
+The `AuditConnection` object represents a logical connection to the persistent storage (that is, Kafka in this implementation). It is a thread-safe object. ***You should expect this object to take some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
 
 The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a [`ConfigurationSource`](#ConfigurationSource) parameter, which is the standard method of configuration in CAF:
 
@@ -130,9 +138,9 @@ The `AuditConnection` object can be constructed using the static `createConnecti
 
 ### AuditChannel
 
-An `AuditChannel` object can be constructed from the [`AuditConnection`](#AuditConnection) object.
+An `AuditChannel` object is constructed from the [`AuditConnection`](#AuditConnection) object.
 
-This object represents a logical channel to the persistent storage (i.e. to Kafka in the current implementation). ***It is NOT a thread-safe object so it must not be shared across threads without synchronisation.*** However there is no issue constructing multiple `AuditChannel` objects simultaneously on different threads, and the objects are lightweight so caching them is not that important.
+This object represents a logical channel to the persistent storage (that is, Kafka in this implementation). ***It is NOT a thread-safe object and must not be shared across threads without synchronization.*** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
 
 The `AuditChannel` object can be constructed using the `createChannel()` method on the [`AuditConnection`](#AuditConnection) object. It does not take any parameters:
 
@@ -147,9 +155,9 @@ The `AuditChannel` object can be constructed using the `createChannel()` method 
 
 ### AuditEventBuilder
 
-An `AuditEventBuilder` object can be constructed from the [`AuditChannel`](#AuditChannel) object.
+An `AuditEventBuilder` object is constructed from the [`AuditChannel`](#AuditChannel) object.
 
-It is used to construct and send an audit event. There should be one [`AuditEventBuilder`](#AuditEventBuilder) object created for each event to be audited.
+It constructs and sends an audit event. You should have one [`AuditEventBuilder`](#AuditEventBuilder) object for each audit event.
 
 The `AuditEventBuilder` object is created using the `createEventBuilder()` method on the [`AuditChannel`](#AuditChannel) object. It does not take any parameters.
 	
@@ -168,7 +176,7 @@ The `AuditEventBuilder` object is created using the `createEventBuilder()` metho
 	auditEventBuilder.setCorrelationId(correlationId);
 	// Set the Event Category and Type
 	auditEventBuilder.setEventType("documentEvents", "deleteDocument");
-	// Add an Event Parameters
+	// Add Event Parameters
 		// Add an Event Parameter for holding the Document ID that was deleted
 	auditEventBuilder.addEventParameter("docId", null, docId);
 		// Add an Event Parameter for holding the User who authorised the deletion of the document. Add length constraints for this parameter as it is of type String
@@ -177,4 +185,4 @@ The `AuditEventBuilder` object is created using the `createEventBuilder()` metho
 	// Send the constructed event to storage
 	auditEventBuilder.send();
 
-Typically this object is only used indirectly as you would normally generate a type-safe client-side auditing library using the code generation plugin. Internally the auto-generated code will make use of the `AuditEventBuilder` object.
+Typically, this object is only used indirectly. Normally, you generate a type-safe client-side auditing library using the code generation plugin. Internally, the auto-generated code makes use of the `AuditEventBuilder` object.

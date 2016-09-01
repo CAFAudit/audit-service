@@ -91,7 +91,7 @@ A read-only role is required for users of search and anayltics services that wis
 
 	![Enable the Audit Reader User's Reader Role SQL](images/EnableAuditReaderUserReaderRoleSQL.PNG)
 
-The `caf-audit-read` role is granted its privileges internally by the Audit Management Web Service during tenant registration. When a new tenant is added, the database schema and corresponding tables for that tenant is created. It is during this stage that the `caf-audit-read` role is granted USAGE on the schema and SELECT on the relevant table.
+The `caf-audit-read` role is granted its privileges internally by the Audit Management Web Service during tenant registration. When a new tenant is added, the database schema and corresponding tables for that tenant are created. It is during this stage that the `caf-audit-read` role is granted USAGE on the schema and SELECT on the relevant table.
 
 ##### Create CAF Audit Service User
 

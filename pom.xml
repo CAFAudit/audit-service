@@ -6,7 +6,7 @@
 
     <groupId>com.hpe.caf</groupId>
     <artifactId>caf-audit-management-service-container</artifactId>
-    <version>1.7-SNAPSHOT</version>
+    <version>1.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -20,8 +20,6 @@
         <!-- Must be the same events XML file used in the test code, see AuditIT.auditXMLConfigFile -->
         <auditXMLConfigFile>./test-case/events.xml</auditXMLConfigFile>
         <caf-audit-management-service.container.name>${docker.dev.repo}/caf/audit-management-service:${project.version}</caf-audit-management-service.container.name>
-        <version.major>1-SNAPSHOT</version.major>
-        <version.major.minor>${project.version}</version.major.minor>
         <tomcatBaseImage>tomcat:jre8</tomcatBaseImage>
         <webserviceWarName>caf-audit-management</webserviceWarName>
         <swaggerUIWarName>caf-audit-management-ui</swaggerUIWarName>
@@ -434,13 +432,7 @@
                             <build>
                                 <maintainer>philip.crooks@hpe.com</maintainer>
                                 <from>${tomcatBaseImage}</from>
-                                <tags>
-                                    <tag>${version.major}</tag>
-                                    <tag>${version.major.minor}</tag>
-                                    <tag>latest</tag>
-                                </tags>
                                 <labels>
-                                    <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
                                     <Git.Branch>${git.branch}</Git.Branch>
                                     <Git.Commit>${git.revision}</Git.Commit>

@@ -6,7 +6,7 @@
 
     <groupId>com.hpe.caf</groupId>
     <artifactId>caf-audit-management-cli-container</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -19,7 +19,7 @@
     <properties>
         <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <caf-audit-management-cli.version>1.0</caf-audit-management-cli.version>
+        <caf-audit-management-cli.version>1.1-SNAPSHOT</caf-audit-management-cli.version>
     </properties>
 
     <dependencies>
@@ -60,7 +60,7 @@
                 <configuration>
                     <images>
                         <image>
-                            <name>${docker.dev.repo}/caf/audit:${caf-audit-management-cli.version}</name>
+                            <name>${docker.dev.repo}/caf/audit:${project.version}</name>
                             <build>
                                 <maintainer>Hewlett Packard Enterprise &lt;www.hpe.com&gt;</maintainer>
                                 <from>java:8</from>

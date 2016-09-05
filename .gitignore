@@ -6,3 +6,7 @@
 .idea/
 docs/_site
 docs/node_modules
+docs/.sass-cache
+docs/.jekyll-metadata
+docs/Gemfile.lock
+docs/caf-templates

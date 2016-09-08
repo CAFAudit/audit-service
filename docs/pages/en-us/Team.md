@@ -19,4 +19,20 @@ team_members:
         - title: Email
           icon: hpe-social-email
           url: mailto:dermot.hardy@hpe.com
+
+    - name: Christopher Comac
+      email: christopher.jam.comac@hpe.com
+      avatar: /assets/img/user.png
+      social:
+        - title: Email
+          icon: hpe-social-email
+          url: mailto:christopher.jam.comac@hpe.com
+
+    - name: Conal Smith
+      email: conal.smith@hpe.com
+      avatar: /assets/img/user.png
+      social:
+        - title: Email
+          icon: hpe-social-email
+          url: mailto:conal.smith@hpe.com
 ---

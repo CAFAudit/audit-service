@@ -37,13 +37,13 @@ social:
             url: http://twitter.com
         - icon: hpe-social-github
           title: GitHub
-          subtitle: Fork My Service on GitHub and submit a pull request to help contribute to the project! Or if you have discovered an issue, report it to us.
+          subtitle: Fork CAF Auditing on GitHub and submit a pull request to help contribute to the project! Or if you have discovered an issue, report it to us.
           link:
-            title: Fork My Service
-            url: https://github.hpe.com/caf
+            title: Fork CAF Auditing
+            url: https://github.hpe.com/caf/caf-audit
         - icon: hpe-chat
           title: Blog
-          subtitle: Follow our blog to find out all of the exciting news and announcements regarding My Service.
+          subtitle: Follow our blog to find out all of the exciting news and announcements regarding CAF Auditing.
           link:
             title: Read More Here
             url: pages/en-us/blog/index

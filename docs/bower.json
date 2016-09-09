@@ -1,6 +1,6 @@
 {
   "name": "caf-audit",
-  "description": "CAF caf-audit Documentation Jekyll Project",
+  "description": "CAF Audit Documentation Jekyll Project",
   "main": "",
   "authors": [
     "Christopher Comac <christopher.jam.comac@hpe.com>"
@@ -11,6 +11,7 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    ".",
     "test",
     "tests"
   ],

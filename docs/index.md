@@ -2,7 +2,7 @@
 layout: landing
 
 logo: assets/img/caflogo.png
-title: CAF Auditing <br><small>from the Big Data group at Hewlett Packard Enterprise</small>
+title: CAF Auditing <br><small>From the Information Management and Governance Research and Development Team at Hewlett Packard Enterprise</small>
 slogan: Traceability, accountability, analytics, archiving and reporting of application tenant events.
 button:
     title: Learn More

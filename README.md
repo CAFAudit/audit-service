@@ -22,7 +22,7 @@ docker pull rh7-artifactory.hpswlabs.hp.com:8443/caf/audit-management-service:1.
 
 Download the marathon-loader artifact from Nexus or Artifactory:
 
-repository: [http://cmbg-maven.autonomy.com/nexus/content/repositories/releases/](http://cmbg-maven.autonomy.com/nexus/content/repositories/releases/)
+repository: [http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases/](http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases/)
 
 repository mirror: http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release/
 

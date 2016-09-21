@@ -374,7 +374,7 @@ The following sample Maven project file generates a client-side auditing library
 	        <pluginRepository>
 	            <id>cmbg-maven-releases</id>
 	            <name>Cambridge Nexus Releases</name>
-	            <url>http://cmbg-maven.autonomy.com/nexus/content/repositories/releases</url>
+	            <url>http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases</url>
 	            <snapshots>
 	                <enabled>false</enabled>
 	            </snapshots>
@@ -439,14 +439,14 @@ Depending on how your Maven settings.xml file is configured, the `pluginReposito
 	    <pluginRepository>
 	        <id>cmbg-maven-releases</id>
 	        <name>Cambridge Nexus Releases</name>
-	        <url>http://cmbg-maven.autonomy.com/nexus/content/repositories/releases</url>
+	        <url>http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases</url>
 	        <snapshots>
 	            <enabled>false</enabled>
 	        </snapshots>
 	    </pluginRepository>
 	</pluginRepositories>
 
-In this example, the URL is set to [http://cmbg-maven.autonomy.com/nexus/content/repositories/releases](http://cmbg-maven.autonomy.com/nexus/content/repositories/releases), but, if that location is inaccessible, you could try one of the following URLs instead:
+In this example, the URL is set to [http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases](http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases), but, if that location is inaccessible, you could try one of the following URLs instead:
 
 - [http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release](http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release)
 - [http://16.26.25.50/nexus/content/repositories/releases](http://16.26.25.50/nexus/content/repositories/releases)

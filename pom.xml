@@ -54,7 +54,7 @@
 
     <ciManagement>
         <system>hudson</system>
-        <url>http://cafbuilder.hpswlabs.hp.com:8080/job/caf-audit-management-cli/</url>
+        <url>http://cafbuilder.hpeswlab.net:8080/job/caf-audit-management-cli/</url>
     </ciManagement>
 
 </project>

@@ -209,7 +209,7 @@
 
   <ciManagement>
     <system>hudson</system>
-    <url>http://cafbuilder.hpswlabs.hp.com:8080/job/caf-audit-management-service/</url>
+    <url>http://cafbuilder.hpeswlab.net:8080/job/caf-audit-management-service/</url>
   </ciManagement>
 
 </project>

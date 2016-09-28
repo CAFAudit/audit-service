@@ -16,7 +16,7 @@ For Audit Reporting click [here](https://github.hpe.com/caf/audit-reporting).
 
 Download docker image for the CAF Audit Management Service from Artifactory:
 
-docker pull rh7-artifactory.hpswlabs.hp.com:8443/caf/audit-management-service:1.4
+docker pull rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-management-service:1.4
 
 ### Marathon Loader
 
@@ -24,7 +24,7 @@ Download the marathon-loader artifact from Nexus or Artifactory:
 
 repository: [http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases/](http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases/)
 
-repository mirror: http://rh7-artifactory.hpswlabs.hp.com:8081/artifactory/policyengine-release/
+repository mirror: http://rh7-artifactory.svs.hpeswlab.net:8081/artifactory/policyengine-release/
 
 groupId: com.hpe.caf
 artifactId: marathon-loader

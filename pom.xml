@@ -26,6 +26,7 @@
         <vertica-image.url>${docker.dev.repo}/caf/vertica-image:1.0.0-SNAPSHOT</vertica-image.url>
         <caf-audit-scheduler.container.name>${docker.dev.repo}/caf/audit:1.0</caf-audit-scheduler.container.name>        
         <vertica.image.port>5433</vertica.image.port>
+        <istfTopicName>AuditManagementService</istfTopicName>
     </properties>
 
     <dependencies>

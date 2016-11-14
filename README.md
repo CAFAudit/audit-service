@@ -13,7 +13,7 @@ The client-side auditing library will need to include the code generation plugin
 	        <plugin>
 	            <groupId>com.hpe.caf</groupId>
 	            <artifactId>caf-audit-maven-plugin</artifactId>
-	            <version>1.0</version>
+	            <version>1.1.0</version>
 	            <executions>
 	                <execution>
 	                    <id>generate-code</id>

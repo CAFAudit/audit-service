@@ -6,7 +6,7 @@ header: The CAF Auditing Team
 team_members:
     - name: Connor Mulholland
       email: connor.mulholland@hpe.com
-      avatar: /assets/img/user.png
+      avatar: /assets/img/connor.png
       social:
         - title: Email
           icon: hpe-social-email
@@ -14,7 +14,7 @@ team_members:
 
     - name: Dermot Hardy
       email: dermot.hardy@hpe.com
-      avatar: /assets/img/user.png
+      avatar: /assets/img/dermot.png
       social:
         - title: Email
           icon: hpe-social-email
@@ -22,7 +22,7 @@ team_members:
 
     - name: Christopher Comac
       email: christopher.jam.comac@hpe.com
-      avatar: /assets/img/user.png
+      avatar: /assets/img/christopher.png
       social:
         - title: Email
           icon: hpe-social-email
@@ -30,7 +30,7 @@ team_members:
 
     - name: Conal Smith
       email: conal.smith@hpe.com
-      avatar: /assets/img/user.png
+      avatar: /assets/img/conal.png
       social:
         - title: Email
           icon: hpe-social-email

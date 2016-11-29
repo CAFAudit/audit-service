@@ -232,9 +232,9 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.jolokia</groupId>
+                        <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
-                        <version>${docker.maven.version}</version>
+                        <version>${fabric8.docker.maven.version}</version>
                         <executions>
                             <execution>
                                 <id>start</id>
@@ -385,9 +385,9 @@
             </plugin>
 
             <plugin>
-                <groupId>org.jolokia</groupId>
+                <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>${docker.maven.version}</version>
+                <version>${fabric8.docker.maven.version}</version>
                 <executions>
                     <execution>
                         <id>upload-docker-container</id>
@@ -403,7 +403,7 @@
                 </executions>
                 <configuration>
                     <verbose>true</verbose>
-                    <autoPull>on</autoPull>
+                    <autoPull>always</autoPull>
                     <logDate>default</logDate>
                     <watchInterval>500</watchInterval>
                     <images>

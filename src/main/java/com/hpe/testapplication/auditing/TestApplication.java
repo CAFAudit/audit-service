@@ -63,7 +63,13 @@ public class TestApplication {
         sendAuditEventMessages(config, messageArrayList);
 
         //  Pause to allow messages to be sent through to Kafka and onto Vertica.
-        Thread.sleep(10000);
+        try {
+            int messagesSleepTime = Integer.parseInt(System.getProperty("AUDIT_MESSAGE_SLEEP_TIME_MS", System.getenv("AUDIT_MESSAGE_SLEEP_TIME")));
+            Thread.sleep(messagesSleepTime);
+        } catch (NumberFormatException e) {
+            LOG.debug("Unable to convert AUDIT_MESSAGE_SLEEP_TIME_MS System variable to Integer: " + e.getMessage());
+            Thread.sleep(10000);
+        }
 
         //  Write resultset to disk.
         LOG.debug("Writing database rows to disk...");

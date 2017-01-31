@@ -215,7 +215,6 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.9.13.6</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -225,8 +224,7 @@
             <id>integration-test</id>
             <activation>
                 <property>
-                    <name>CAF_BUILD_TYPE</name>
-                    <value>official</value>
+                    <name>RE_BUILD_TYPE</name>
                 </property>
             </activation>
             <build>

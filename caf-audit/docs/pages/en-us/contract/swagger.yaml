@@ -1,0 +1,132 @@
+swagger: "2.0"
+################################################################################
+#                              API Information                                 #
+################################################################################
+# Provides metadata about the API.
+info:
+  version: v1
+  title: Audit Management Service
+  description: |
+    The Audit Managament service facilitates the registration of both
+    application-defined audit event definition files and new tenants.
+
+    The application endpoint is used to register the audit event definition
+    file for each application. The XML along with the application mapping
+    is stored in the HPE Vertica database.
+
+    The tenant endpoint is used to add new tenants. You can specify one or more
+    applications when adding a new tenant. This results
+    in application-specific storage tables being created under tenant-specific
+    schemas in the HPE Vertica database.
+
+    ### Audit Event Definition File
+
+    Applications define audit events for the system in an
+    audit event definition file. You can see a sample XML file [here.](Getting-Started)
+
+    `AuditedApplication` is the root element. 
+    
+    `ApplicationId` identifies the application with which the audit events are associated.
+    
+    For each audit event, `TypeId` is a string identifier for the particular event (for
+    example, viewDocument) and `CategoryId` is a string identifier for the category of event. 
+    
+    A list of parameter elements are defined for each audit event, including the following:
+    
+    - `Name`
+    - `Type` (string, short, int, long, float, double, boolean or date)
+    - `Description`
+    - `ColumnName` (optional) can be used to force the use of a particular database column to
+    store the audit data.
+    - `Constraints` (optional) can be used to specify minimum and/or maximum length constraints
+    for audit event parameters of `Type` string.
+    
+    ___
+
+basePath: /caf-audit-management/v1
+produces:
+  - application/json
+################################################################################
+#                                   Paths                                      #
+################################################################################
+# The available paths and operations for the API.
+paths:
+  /applications:
+    post:
+      description: Registers an application-specific audit event definition file.
+      tags:
+        - Applications
+      summary: Adds a new application.
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: file
+          type: file
+          in: formData
+          required: true
+          description: An XML file that defines the audit events in use by the application.
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Bad Request (missing database connection properties or unexpected/invalid XML).
+        500:
+          description: Internal server error.
+  /tenants:
+    post:
+      description: Used to register and create the HPE Vertica database schema for a new tenant.
+      tags:
+        - Tenants
+      summary: Adds a new tenant.
+      parameters:
+        - name: NewTenant
+          in: body
+          required: true
+          description: Identifies the tenant and the application(s) with which to register the tenant with.
+          schema:
+            $ref: '#/definitions/NewTenant'
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Bad Request (missing database connection properties or the `tenantId` parameter contains invalid characters).
+        500:
+          description: Internal server error.
+  /tenants/{tenantId}/updatePartitionCount:
+    post:
+      description: Must call after extra partitions have been added to a topic in Kafka so that the new partitions are consumed.
+      tags:
+        - Tenants
+      summary: Keeps HPE Vertica topic configuration and Kafka topic partitions consistent.
+      parameters:
+        - name: tenantId
+          type: string
+          in: path
+          required: true
+          description: Identifies the tenant.
+        - name: applicationId
+          type: string
+          in: query
+          required: true
+          description: Identifies the application.
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Bad Request (missing database connection properties or the `tenantId` parameter contains invalid characters).
+        404:
+          description: Not Found (`tenantId` or `applicationId` not found).
+        500:
+          description: Internal server error.
+definitions:
+  NewTenant:
+    required:
+      - tenantId
+      - application
+    properties:
+      tenantId:
+        type: string
+      application:
+        type: array
+        items:
+          type: string

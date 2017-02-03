@@ -1,0 +1,6 @@
+{
+    "databaseURL": "jdbc:vertica://192.168.56.30:5433/CAFAudit",
+    "table": "account_tenant1.AuditCAFStorageService",
+    "username": "dbadmin",
+    "password": "CAFAudit"
+}

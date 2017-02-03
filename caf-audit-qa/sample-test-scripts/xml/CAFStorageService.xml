@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuditedApplication
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+        xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+>
+<ApplicationId>CAFStorageService</ApplicationId>
+    <AuditEvents>
+        <AuditEvent>
+            <TypeId>apiRequest</TypeId>
+            <CategoryId>apiEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>realmId</Name>
+                    <Type>string</Type>
+                    <Constraints>
+                        <MinLength>1</MinLength>
+                        <MaxLength>32</MaxLength>
+                    </Constraints>
+                    <Description>Realm identifier</Description>
+                </Param>
+                <Param>
+                    <Name>containerId</Name>
+                    <Type>string</Type>
+                    <Constraints>
+                        <MaxLength>32</MaxLength>
+                    </Constraints>
+                    <Description>Asset Container identifier</Description>
+                </Param>
+                <Param>
+                    <Name>assetId</Name>
+                    <Type>string</Type>
+                    <Constraints>
+                        <MinLength></MinLength>
+                        <MaxLength></MaxLength>
+                    </Constraints>
+                    <Description>Asset identifier</Description>
+                </Param>
+                <Param>
+                    <Name>revId</Name>
+                    <Type>string</Type>
+                    <Description>Asset Revision identifier</Description>
+                </Param>
+                <Param>
+                    <Name>requestId</Name>
+                    <Type>string</Type>
+                    <Description>Request identifier</Description>
+                </Param>
+                <Param>
+                    <Name>requestType</Name>
+                    <Type>int</Type>
+                    <Description>Request type</Description>
+                </Param>
+                <Param>
+                    <Name>requestUri</Name>
+                    <Type>string</Type>
+                    <Description>Request URI</Description>
+                </Param>
+            </Params>
+        </AuditEvent>
+        <AuditEvent>
+            <TypeId>apiResponse</TypeId>
+            <CategoryId>apiEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>realmId</Name>
+                    <Type>string</Type>
+                    <Constraints>
+                        <MinLength>1</MinLength>
+                    </Constraints>
+                    <Description>Realm identifier</Description>
+                </Param>
+                <Param>
+                    <Name>requestId</Name>
+                    <Type>string</Type>
+                    <Constraints>
+                        <MaxLength>32</MaxLength>
+                    </Constraints>
+                    <Description>Request identifier</Description>
+                </Param>
+                <Param>
+                    <Name>statusCode</Name>
+                    <Type>int</Type>
+                    <Description>Request status code</Description>
+                </Param>
+                <Param>
+                    <Name>errorMessage</Name>
+                    <Type>string</Type>
+                    <Constraints>
+                        <MaxLength>32000000</MaxLength>
+                    </Constraints>
+                    <Description>Error message, if applicable</Description>
+                </Param>
+            </Params>
+        </AuditEvent>
+        <AuditEvent>
+            <TypeId>blockPurged</TypeId>
+            <CategoryId>internalEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>realmId</Name>
+                    <Type>string</Type>
+                    <Constraints>
+                        <MaxLength>32</MaxLength>
+                    </Constraints>
+                    <Description>Realm identifier</Description>
+                </Param>
+                <Param>
+                    <Name>rawSignature</Name>
+                    <Type>string</Type>
+                    <Constraints>
+                        <MinLength></MinLength>
+                        <MaxLength></MaxLength>
+                    </Constraints>
+                    <Description>Raw block signature</Description >
+                </Param>
+                <Param>
+                    <Name>referenceLocation</Name>
+                    <Type>string</Type>
+                    <Constraints>
+                        <MinLength></MinLength>
+                        <MaxLength></MaxLength>
+                    </Constraints>
+                    <Description>Reference location for stored block</Description >
+                </Param>
+                <Param>
+                    <Name>storageDeviceId</Name>
+                    <Type>long</Type>
+                    <Description>Storage device identifier</Description >
+                </Param>
+            </Params>
+        </AuditEvent>
+    </AuditEvents>
+</AuditedApplication>

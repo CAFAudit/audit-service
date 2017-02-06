@@ -6,20 +6,17 @@
 
     <groupId>com.hpe.caf</groupId>
     <artifactId>caf-audit-management-cli-container</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>com.github.cafapi</groupId>
-        <artifactId>caf-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <groupId>com.hpe.caf</groupId>
+        <artifactId>audit-service-aggregator</artifactId>
+        <version>1.8.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
-        <caf-audit-management-cli.version>1.1.0</caf-audit-management-cli.version>
     </properties>
 
     <dependencies>
@@ -31,7 +28,7 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-management-cli</artifactId>
-            <version>${caf-audit-management-cli.version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -66,7 +63,7 @@
                                 <maintainer>Hewlett Packard Enterprise &lt;www.hpe.com&gt;</maintainer>
                                 <from>java:8</from>
                                 <labels>
-                                    <Build.Number>${caf-audit-management-cli.version}</Build.Number>
+                                    <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
                                     <Git.Branch>${git.branch}</Git.Branch>
                                     <Git.Commit>${git.revision}</Git.Commit>
@@ -77,7 +74,7 @@
                                         <args>--</args>
                                         <args>java</args>
                                         <args>-jar</args>
-                                        <args>/maven/caf-audit-management-cli-${caf-audit-management-cli.version}.jar</args>
+                                        <args>/maven/caf-audit-management-cli-${project.version}.jar</args>
                                     </exec>
                                 </entryPoint>
                                 <assembly>
@@ -91,10 +88,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <ciManagement>
-        <system>hudson</system>
-        <url>http://cafbuilder.hpeswlab.net:8080/job/caf-audit-management-cli-container/</url>
-    </ciManagement>
 
 </project>

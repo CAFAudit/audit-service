@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hpe.caf</groupId>
+    <artifactId>audit-service-aggregator</artifactId>
+    <version>1.8.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>com.github.cafapi</groupId>
+        <artifactId>caf-parent</artifactId>
+        <version>1.7.0-SNAPSHOT</version>
+        <relativePath />
+    </parent>
+
+    <properties>
+        <caf.worker-framework.version>1.5.0-SNAPSHOT</caf.worker-framework.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.github.workerframework</groupId>
+                <artifactId>worker-framework</artifactId>
+                <version>${caf.worker-framework.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.vertica</groupId>
+                <artifactId>vertica-kafka-scheduler</artifactId>
+                <version>7.2.1-0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>0.9.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.vertica</groupId>
+                <artifactId>vertica-jdbc</artifactId>
+                <version>7.1.2-0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.3</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hpe.caf.externals</groupId>
+                <artifactId>docker-java</artifactId>
+                <version>0.10-ALT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.6.3</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-yaml</artifactId>
+                <version>2.6.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jdom</groupId>
+                <artifactId>jdom</artifactId>
+                <version>1.1.3</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>caf-audit-schema</module>
+        <module>caf-audit-maven-plugin</module>
+        <module>caf-audit</module>
+        <module>caf-audit-management-contract</module>
+        <module>caf-audit-management-ui</module>
+        <module>caf-audit-management-client</module>
+        <module>caf-audit-management-html</module>
+        <module>caf-audit-management-cli</module>
+        <module>caf-audit-management-cli-container</module>
+        <module>caf-audit-management-service</module>
+        <module>caf-audit-management-service-container</module>
+        <module>caf-audit-qa</module>
+    </modules>
+
+    <ciManagement>
+        <system>hudson</system>
+        <url>http://cafbuilder.hpeswlab.net:8080/job/audit-service/</url>
+    </ciManagement>
+
+</project>

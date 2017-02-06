@@ -6,22 +6,19 @@
     <groupId>com.hpe.caf</groupId>
     <artifactId>caf-audit-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.1.1-SNAPSHOT</version>
 
     <description>
         This project provides an XML to Java transformation plugin.
     </description>
 
     <parent>
-        <groupId>com.github.cafapi</groupId>
-        <artifactId>caf-parent</artifactId>
-        <version>1.0.0</version>
-        <relativePath />
+        <groupId>com.hpe.caf</groupId>
+        <artifactId>audit-service-aggregator</artifactId>
+        <version>1.8.0-SNAPSHOT</version>
     </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <caf-audit-schema-version>1.1</caf-audit-schema-version>
     </properties>
 
     <dependencies>
@@ -74,7 +71,7 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-schema</artifactId>
-            <version>${caf-audit-schema-version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -91,7 +88,7 @@
                         </goals>
                         <configuration>
                             <resourceBundles>
-                                <resourceBundle>com.hpe.caf:caf-audit-schema:${caf-audit-schema-version}</resourceBundle>
+                                <resourceBundle>com.hpe.caf:caf-audit-schema:${project.version}</resourceBundle>
                             </resourceBundles>
                         </configuration>
                     </execution>
@@ -143,10 +140,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <ciManagement>
-        <system>hudson</system>
-        <url>http://cafbuilder.hpeswlab.net:8080/job/caf-audit-maven-plugin/</url>
-    </ciManagement>
 
 </project>

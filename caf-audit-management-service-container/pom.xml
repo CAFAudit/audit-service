@@ -6,13 +6,12 @@
 
     <groupId>com.hpe.caf</groupId>
     <artifactId>caf-audit-management-service-container</artifactId>
-    <version>1.8.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>com.github.cafapi</groupId>
-        <artifactId>caf-parent</artifactId>
-        <version>1.6.0-30</version>
+        <groupId>com.hpe.caf</groupId>
+        <artifactId>audit-service-aggregator</artifactId>
+        <version>1.8.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -23,7 +22,7 @@
         <swaggerUIWarName>caf-audit-management-ui</swaggerUIWarName>
         <webserviceBasePath>/v1</webserviceBasePath>
         <vertica-image.url>${docker.dev.repo}/caf/vertica-image:1.0.0</vertica-image.url>
-        <caf-audit-scheduler.container.name>${docker.dev.repo}/caf/audit:1.0</caf-audit-scheduler.container.name>        
+        <caf-audit-scheduler.container.name>${docker.dev.repo}/caf/audit:${project.version}</caf-audit-scheduler.container.name>
         <vertica.image.port>5433</vertica.image.port>
         <!--<istfTopicName>AuditManagementService</istfTopicName>-->
     </properties>
@@ -32,7 +31,7 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-management-service</artifactId>
-            <version>1.7.0</version>
+            <version>${project.version}</version>
             <type>war</type>
         </dependency>
         <dependency>
@@ -59,49 +58,43 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit</artifactId>
-            <version>1.2.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-management-client</artifactId>
-            <version>1.1.0</version>
+            <version>${project.version}</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.config</groupId>
+            <groupId>com.github.cafapi.config</groupId>
             <artifactId>config-file</artifactId>
-            <version>10.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.codec</groupId>
+            <groupId>com.github.cafapi.codec</groupId>
             <artifactId>codec-json</artifactId>
-            <version>10.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.config</groupId>
+            <groupId>com.github.cafapi.config</groupId>
             <artifactId>config-system</artifactId>
-            <version>10.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.cipher</groupId>
+            <groupId>com.github.cafapi.cipher</groupId>
             <artifactId>cipher-null</artifactId>
-            <version>10.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.util</groupId>
+            <groupId>com.github.cafapi.util</groupId>
             <artifactId>util-moduleloader</artifactId>
-            <version>1.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.hpe.caf.util</groupId>
+            <groupId>com.github.cafapi.util</groupId>
             <artifactId>util-naming</artifactId>
-            <version>1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -124,7 +117,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.6.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -136,13 +128,11 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.6.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.vertica</groupId>
             <artifactId>vertica-jdbc</artifactId>
-            <version>7.1.2-0</version>
             <scope>test</scope>
         </dependency>
 
@@ -151,14 +141,12 @@
             <!--Required at runtime for log4j output-->
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <!--Required at runtime for log4j output-->
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -189,7 +177,7 @@
         <dependency>
             <groupId>com.hpe.caf</groupId>
             <artifactId>caf-audit-management-ui</artifactId>
-            <version>1.0.1</version>
+            <version>${project.version}</version>
             <type>war</type>
         </dependency>
 
@@ -204,12 +192,10 @@
         <dependency>
             <groupId>com.vertica</groupId>
             <artifactId>vertica-kafka-scheduler</artifactId>
-            <version>7.2.1-0</version>
         </dependency>
         <dependency>
             <groupId>com.hpe.caf.externals</groupId>
             <artifactId>docker-java</artifactId>
-            <version>0.10-ALT</version>
         </dependency>
         
         <dependency>
@@ -270,7 +256,7 @@
             <plugin>
                 <groupId>com.hpe.caf</groupId>
                 <artifactId>caf-audit-maven-plugin</artifactId>
-                <version>1.0</version>
+                <version>${project.version}</version>
                 <executions>
                     <execution>
                         <id>generate-code</id>
@@ -582,10 +568,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <ciManagement>
-        <system>hudson</system>
-        <url>http://cafbuilder.hpeswlab.net:8080/job/caf-audit-management-service-container/</url>
-    </ciManagement>
 
 </project>

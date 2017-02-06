@@ -8,7 +8,7 @@
     <artifactId>caf-audit-management-client</artifactId>
     <packaging>jar</packaging>
     <name>caf-audit-management-client</name>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.8.0-SNAPSHOT</version>
 
     <parent>
         <groupId>com.hpe.caf</groupId>
@@ -80,10 +80,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <ciManagement>
-        <system>hudson</system>
-        <url>http://cafbuilder.hpeswlab.net:8080/job/caf-audit-management-client/</url>
-    </ciManagement>
 
 </project>

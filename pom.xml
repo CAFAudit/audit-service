@@ -92,9 +92,4 @@
         <module>caf-audit-qa</module>
     </modules>
 
-    <ciManagement>
-        <system>hudson</system>
-        <url>http://cafbuilder.hpeswlab.net:8080/job/audit-service/</url>
-    </ciManagement>
-
 </project>

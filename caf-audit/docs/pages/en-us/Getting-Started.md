@@ -307,7 +307,7 @@ Every time you add a new tenant, a new row is inserted into the `TenantApplicati
 
 ![Audit Management Tenant Applications Table With Tenant ID](images/AuditManagementTenantApplicationsWithTenantApplication.png)
 
-A new tenant-specific database schema is then created for the tenant in the HPE Vertica database, which is comprised of a number of tables. See [Auditing Database Tables](https://github.hpe.com/caf/caf-audit-management-service-container/blob/develop/documentation/auditing-database-tables.md). If the client-side auditing library sent audit events for this tenant through to the Kafka messaging service, this audit event data should start to arrive in the application-specific audit events table under the tenant-specific schema created as part of the add tenant web service call.
+A new tenant-specific database schema is then created for the tenant in the HPE Vertica database, which is comprised of a number of tables. See [Auditing Database Tables](https://github.hpe.com/caf/audit-service/blob/develop/caf-audit-management-service-container/documentation/auditing-database-tables.md). If the client-side auditing library sent audit events for this tenant through to the Kafka messaging service, this audit event data should start to arrive in the application-specific audit events table under the tenant-specific schema created as part of the add tenant web service call.
 
 The following figure shows an `account_1` schema with an `AuditSampleApp` table and the columns for audit event data for the application:
 

@@ -1,6 +1,6 @@
 # Audit Management Web Service Client
 
-This project is a Java library to communicate with the [CAF Audit Management Web Service](https://github.hpe.com/caf/caf-audit-management-service). It allows callers to register application specific audit event definitions and register new tenants for applications.
+This project is a Java library to communicate with the [CAF Audit Management Web Service](https://github.hpe.com/caf/audit-service/tree/develop/caf-audit-management-service). It allows callers to register application specific audit event definitions and register new tenants for applications.
 
 ## Usage
 

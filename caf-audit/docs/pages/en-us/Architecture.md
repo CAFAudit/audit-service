@@ -47,7 +47,7 @@ The figure below illustrates the overall flow and relationship of components in 
 
 ### Audit Event Definition File
 
-In order to use Auditing in an application, the application's auditing events must be specified along with the parameters that are associated with each of the events. These events are specified in an audit event definition file. You can read more about the audit event definition file and its XML schema in the [Getting Started Guide](https://github.hpe.com/caf/caf-audit/blob/develop/docs/en-us/Getting-Started.md).
+In order to use Auditing in an application, the application's auditing events must be specified along with the parameters that are associated with each of the events. These events are specified in an audit event definition file. You can read more about the audit event definition file and its XML schema in the [Getting Started Guide](https://github.hpe.com/caf/audit-service/blob/develop/caf-audit/docs/pages/en-us/Getting-Started.md).
 
 ### Vertica Database Schema and Tables
 

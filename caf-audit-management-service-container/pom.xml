@@ -24,7 +24,7 @@
         <vertica-image.url>${docker.dev.repo}/caf/vertica-image:1.0.0</vertica-image.url>
         <caf-audit-scheduler.container.name>${docker.dev.repo}/caf/audit:${project.version}</caf-audit-scheduler.container.name>
         <vertica.image.port>5433</vertica.image.port>
-        <!--<istfTopicName>AuditManagementService</istfTopicName>-->
+        <istfTopicName>AuditManagementService</istfTopicName>
     </properties>
 
     <dependencies>
@@ -324,6 +324,27 @@
                 </executions>
             </plugin>
 
+            <!-- This plugin is required to reserve a port for the Kafka container before it starts otherwise its
+            ADVERTISED_PORT environment variable will not get set -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>reserve-ports</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>reserve-network-port</goal>
+                        </goals>
+                        <configuration>
+                            <portNames>
+                                <portName>kafka.image.kafka.port</portName>
+                            </portNames>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${maven.failsafe.version}</version>
@@ -337,13 +358,15 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <skipTests>true</skipTests>
                     <systemPropertyVariables>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
                         <docker.host.address>${docker.host.address}</docker.host.address>
                         <vertica.host.address>${docker.host.address}</vertica.host.address>
                         <vertica.image.port>${vertica.image.port}</vertica.image.port>
                         <vertica.image.ssh.port>${vertica.image.ssh.port}</vertica.image.ssh.port>
+                        <kafka.host.address>${docker.host.address}</kafka.host.address>
+                        <kafka.image.kafka.port>${kafka.image.kafka.port}</kafka.image.kafka.port>
+                        <kafka.image.zookeeper.port>${kafka.image.zookeeper.port}</kafka.image.zookeeper.port>
                     </systemPropertyVariables>
                     <environmentVariables>
                         <CAF_DATABASE_SERVICE_ACCOUNT>caf-audit-service</CAF_DATABASE_SERVICE_ACCOUNT>
@@ -351,7 +374,7 @@
                         <CAF_DATABASE_LOADER_ACCOUNT>caf-audit-loader</CAF_DATABASE_LOADER_ACCOUNT>
                         <CAF_DATABASE_LOADER_ACCOUNT_PASSWORD>loader</CAF_DATABASE_LOADER_ACCOUNT_PASSWORD>
                         <CAF_DATABASE_READER_ROLE>caf-audit-read</CAF_DATABASE_READER_ROLE>
-                        <CAF_KAFKA_BROKERS>192.168.56.20:9092</CAF_KAFKA_BROKERS>
+                        <CAF_KAFKA_BROKERS>${docker.host.address}:${kafka.image.kafka.port}</CAF_KAFKA_BROKERS>
                         <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
                         <CAF_CONFIG_PATH>${project.basedir}/test-config</CAF_CONFIG_PATH>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}${webserviceBasePath}</webserviceurl>
@@ -392,6 +415,20 @@
                     <logDate>default</logDate>
                     <watchInterval>500</watchInterval>
                     <images>
+                        <image>
+                            <alias>integrationtests-kafka-image</alias>
+                            <name>spotify/kafka</name>
+                            <run>
+                                <ports>
+                                    <port>${kafka.image.zookeeper.port}:2181</port>
+                                    <port>${kafka.image.kafka.port}:9092</port>
+                                </ports>
+                                <env>
+                                    <ADVERTISED_HOST>${docker.host.address}</ADVERTISED_HOST>
+                                    <ADVERTISED_PORT>${kafka.image.kafka.port}</ADVERTISED_PORT>
+                                </env>
+                            </run>
+                        </image>
                         <image>
                             <alias>config</alias>
                             <name>${project.artifactId}-test-config:${project.version}</name>
@@ -499,7 +536,7 @@
                                     <CAF_DATABASE_LOADER_ACCOUNT>caf-audit-loader</CAF_DATABASE_LOADER_ACCOUNT>
                                     <CAF_DATABASE_LOADER_ACCOUNT_PASSWORD>loader</CAF_DATABASE_LOADER_ACCOUNT_PASSWORD>
                                     <CAF_DATABASE_READER_ROLE>caf-audit-read</CAF_DATABASE_READER_ROLE>
-                                    <CAF_KAFKA_BROKERS>192.168.56.20:9092</CAF_KAFKA_BROKERS>
+                                    <CAF_KAFKA_BROKERS>${docker.host.address}:${kafka.image.kafka.port}</CAF_KAFKA_BROKERS>
                                     <CAF_APPNAME>caf/audit-management-service</CAF_APPNAME>
                                     <CAF_CONFIG_PATH>/config</CAF_CONFIG_PATH>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>

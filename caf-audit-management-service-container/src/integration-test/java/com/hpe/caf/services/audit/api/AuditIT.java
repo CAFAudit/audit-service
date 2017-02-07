@@ -10,6 +10,7 @@ import com.github.dockerjava.jaxrs1.JaxRs1Client;
 import com.hpe.caf.api.*;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionFactory;
+import com.hpe.caf.auditing.kafka.KafkaAuditConfiguration;
 import com.hpe.caf.cipher.NullCipherProvider;
 import com.hpe.caf.config.system.SystemBootstrapConfiguration;
 import com.hpe.caf.naming.ServicePath;
@@ -66,8 +67,8 @@ public class AuditIT {
 
     private static String AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH;
 
-    private static final String AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS = "192.168.56.20:2181";
-    private static final String AUDIT_MANAGEMENT_KAFKA_BROKERS = "192.168.56.20:9092";
+    private static String auditManagementZookeeperAddress;
+    private static String auditManagementKafkaBrokers;
 
     // Default database already created
     private static final String CAF_AUDIT_DATABASE_NAME = "CAFAudit";
@@ -228,9 +229,14 @@ public class AuditIT {
         AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH = System.getenv("webserviceurl");
         AUDIT_KAFKA_SCHEDULER_IMAGE = System.getenv("auditschedulerimagename");
 
-        VERTICA_HOST = System.getProperty("vertica.host.address");
-        VERTICA_SSH_PORT = System.getProperty("vertica.image.ssh.port");
-        AUDIT_IT_DATABASE_PORT = System.getProperty("vertica.image.port");
+        VERTICA_HOST = System.getProperty("vertica.host.address", System.getenv("vertica.host.address"));
+        VERTICA_SSH_PORT = System.getProperty("vertica.image.ssh.port", System.getenv("vertica.image.ssh.port"));
+        AUDIT_IT_DATABASE_PORT = System.getProperty("vertica.image.port", System.getenv("vertica.image.port"));
+
+        String kafkaHostAddress = System.getProperty("kafka.host.address", System.getenv("kafka.host.address"));
+
+        auditManagementZookeeperAddress = kafkaHostAddress + ":" + System.getProperty("kafka.image.zookeeper.port", System.getenv("kafka.image.zookeeper.port"));
+        auditManagementKafkaBrokers = kafkaHostAddress + ":" + System.getProperty("kafka.image.kafka.port", System.getenv("kafka.image.kafka.port"));
 
         auditManagementApplicationsApi = new ApplicationsApi();
         auditManagementApplicationsApi.getApiClient().setBasePath(AUDIT_MANAGEMENT_WEBSERVICE_BASE_PATH);
@@ -317,7 +323,7 @@ public class AuditIT {
 
                 // Create a Kafka Producer
                 Properties props = new Properties();
-                props.put("bootstrap.servers", AUDIT_MANAGEMENT_KAFKA_BROKERS);
+                props.put("bootstrap.servers", auditManagementKafkaBrokers);
                 props.put("acks", "all");
                 props.put("retries", 0);
                 props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -340,7 +346,7 @@ public class AuditIT {
                     int numPartitions = 2;
 
                     // creating a zookeeper client to interact with zookeeper service running on kafka server.
-                    ZkClient zkClient = new ZkClient(AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS, 10000, 10000, ZKStringSerializer$.MODULE$);
+                    ZkClient zkClient = new ZkClient(auditManagementZookeeperAddress, 10000, 10000, ZKStringSerializer$.MODULE$);
 
                     // Make sure the topic does not exist then create it with multiple partitions
                     try {
@@ -367,7 +373,7 @@ public class AuditIT {
                     int numPartitions = 2;
 
                     // creating a zookeeper client to interact with zookeeper service running on kafka server.
-                    ZkClient zkClient = new ZkClient(AUDIT_MANAGEMENT_ZOOKEEPER_ADDRESS, 10000, 10000, ZKStringSerializer$.MODULE$);
+                    ZkClient zkClient = new ZkClient(auditManagementZookeeperAddress, 10000, 10000, ZKStringSerializer$.MODULE$);
 
                     // Make sure the topic does not exist then create it with multiple partitions
                     if (AdminUtils.topicExists(zkClient, topicName)) {
@@ -479,7 +485,16 @@ public class AuditIT {
 
         LOG.info("Obtaining Kafka connection and channel...");
         try (
-                AuditConnection connection = AuditConnectionFactory.createConnection(config);
+                AuditConnection connection = AuditConnectionFactory.createConnection(new ConfigurationSource() {
+                    @Override
+                    public <T> T getConfiguration(Class<T> aClass) {
+                        KafkaAuditConfiguration kafkaAuditConfiguration = new KafkaAuditConfiguration();
+                        kafkaAuditConfiguration.setBootstrapServers(auditManagementKafkaBrokers);
+                        kafkaAuditConfiguration.setAcks("all");
+                        kafkaAuditConfiguration.setRetries(0);
+                        return (T) kafkaAuditConfiguration;
+                    }
+                });
                 com.hpe.caf.auditing.AuditChannel channel = connection.createChannel()
         ) {
             Class<?> auditLog;
@@ -697,7 +712,7 @@ public class AuditIT {
         //  Create a scheduler configuration.
         String[] args = new String[]{"-Dscheduler", "--add",
                 "--config-schema", AUDIT_KAFKA_SCHEDULER_NAME,
-                "--brokers", AUDIT_MANAGEMENT_KAFKA_BROKERS,
+                "--brokers", auditManagementKafkaBrokers,
                 "--username", AUDIT_IT_DATABASE_LOADER_USER,
                 "--password", AUDIT_IT_DATABASE_LOADER_USER_PASSWORD,
                 "--jdbc-url", dbURL};

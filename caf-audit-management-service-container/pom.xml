@@ -411,7 +411,7 @@
                 </executions>
                 <configuration>
                     <verbose>true</verbose>
-                    <autoPull>always</autoPull>
+                    <autoPull>on</autoPull>
                     <logDate>default</logDate>
                     <watchInterval>500</watchInterval>
                     <images>

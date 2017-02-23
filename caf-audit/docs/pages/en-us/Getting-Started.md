@@ -590,6 +590,7 @@ where:
 
 - `bootstrapServers` refers to one or more of the nodes of the Kafka cluster as a comma-separated list.
 - `acks` is the number of nodes in the cluster which must acknowledge an audit event when it is sent.
+- `retries` is the number of additional attempts in case of issues communicating with the Kafka cluster.
 
 ### Audit Channel
 

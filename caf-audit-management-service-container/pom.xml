@@ -21,7 +21,7 @@
         <webserviceWarName>caf-audit-management</webserviceWarName>
         <swaggerUIWarName>caf-audit-management-ui</swaggerUIWarName>
         <webserviceBasePath>/v1</webserviceBasePath>
-        <vertica-image.url>${docker.dev.repo}/caf/vertica-image:1.0.0</vertica-image.url>
+        <vertica-image.url>${corporateDockerReleaseRegistry}/caf/vertica-image:1.0.0</vertica-image.url>
         <caf-audit-scheduler.container.name>${docker.dev.repo}/caf/audit:${project.version}</caf-audit-scheduler.container.name>
         <vertica.image.port>5433</vertica.image.port>
         <istfTopicName>AuditManagementService</istfTopicName>
@@ -190,10 +190,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.vertica</groupId>
-            <artifactId>vertica-kafka-scheduler</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.hpe.caf.externals</groupId>
             <artifactId>docker-java</artifactId>
         </dependency>
@@ -220,20 +216,39 @@
                         <artifactId>docker-maven-plugin</artifactId>
                         <version>${fabric8.docker.maven.version}</version>
                         <executions>
+                            <!-- This execution will start this image before it run build and start on the next execution start-testing-containers -->
                             <execution>
-                                <id>start</id>
+                                <id>reserve-network-port-for-kafka-container</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
-                                    <goal>build</goal>
                                     <goal>start</goal>
                                 </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <image>integrationtests-reserve-port-for-kafka</image>
+                                </configuration>
                             </execution>
                             <execution>
-                                <id>stop</id>
+                                <id>start-testing-containers</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <image>auditManagementWebService,integrationtests-kafka-image,config,auditScheduler,integrationtests-vertica-ssh-access,integrationtests-vertica-image</image>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>stop-testing-containers</id>
                                 <phase>post-integration-test</phase>
                                 <goals>
                                     <goal>stop</goal>
                                 </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <image>integrationtests-reserve-port-for-kafka,auditManagementWebService,integrationtests-kafka-image,config,auditScheduler,integrationtests-vertica-ssh-access,integrationtests-vertica-image</image>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -324,27 +339,6 @@
                 </executions>
             </plugin>
 
-            <!-- This plugin is required to reserve a port for the Kafka container before it starts otherwise its
-            ADVERTISED_PORT environment variable will not get set -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>reserve-ports</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>reserve-network-port</goal>
-                        </goals>
-                        <configuration>
-                            <portNames>
-                                <portName>kafka.image.kafka.port</portName>
-                            </portNames>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${maven.failsafe.version}</version>
@@ -398,6 +392,17 @@
                 <version>${fabric8.docker.maven.version}</version>
                 <executions>
                     <execution>
+                        <id>build-docker-container</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <image>auditManagementWebService,config</image>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>upload-docker-container</id>
                         <phase>deploy</phase>
                         <goals>
@@ -410,11 +415,38 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <!-- By default we don't want the (default) execution to run, only our new explicit execution.
+                    Within the integration-test profile the following executions exist:
+                    - reserve-network-port-for-kafka-container - starts kafka port reservation image on its own.
+                    - start-testing-containers - pre-integration-test - starts rest of the images except the kafka
+                        reservation image.
+                    - stop-testing-contianers - post-integration-test - stops all containers required for integration
+                        testing -->
+                    <skip>true</skip>
                     <verbose>true</verbose>
                     <autoPull>on</autoPull>
                     <logDate>default</logDate>
                     <watchInterval>500</watchInterval>
                     <images>
+                        <!-- This container is required to reserve a port for the Kafka container before it starts
+                        otherwise ADVERTISED_PORT environment variable will not get set -->
+                        <image>
+                            <alias>integrationtests-reserve-port-for-kafka</alias>
+                            <name>java:8</name>
+                            <run>
+                                <ports>
+                                    <port>${kafka.image.kafka.port}:8080</port>
+                                </ports>
+                                <cmd>echo "Port Reserved"; sleep 1s</cmd>
+                                <log>
+                                    <enabled>true</enabled>
+                                </log>
+                                <wait>
+                                    <log>Port Reserved</log>
+                                    <time>1000</time>
+                                </wait>
+                            </run>
+                        </image>
                         <image>
                             <alias>integrationtests-kafka-image</alias>
                             <name>spotify/kafka</name>
@@ -588,6 +620,7 @@
                             <alias>integrationtests-vertica-image</alias>
                             <name>${vertica-image.url}</name>
                             <run>
+                                <hostname>integrationtests-vertica-image</hostname>
                                 <namingStrategy>alias</namingStrategy>
                                 <env>
                                     <VERTICA_DATABASE_NAME>CAFAudit</VERTICA_DATABASE_NAME>
@@ -598,6 +631,10 @@
                                 <log>
                                     <enabled>true</enabled>
                                 </log>
+                                <wait>
+                                    <log>Vertica is now running</log>
+                                    <time>120000</time>
+                                </wait>
                             </run>
                         </image>
                     </images>

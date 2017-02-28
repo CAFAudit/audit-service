@@ -5,6 +5,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.client.model.HostConfig;
+import com.github.dockerjava.client.model.Link;
+import com.github.dockerjava.client.model.Links;
 import com.github.dockerjava.client.model.RestartPolicy;
 import com.github.dockerjava.jaxrs1.JaxRs1Client;
 import com.hpe.caf.api.*;
@@ -23,7 +25,6 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
-import com.vertica.solutions.kafka.cli.SchedulerConfigurationCLI;
 import kafka.admin.AdminOperationException;
 import kafka.admin.AdminUtils;
 import kafka.common.TopicExistsException;
@@ -60,6 +61,8 @@ import java.util.*;
 
 public class AuditIT {
 
+    private static final String INTEGRATIONTESTS_VERTICA_IMAGE = "integrationtests-vertica-image";
+    private static final String INTEGRATIONTESTS_VERTICA_IMAGE_PORT = "5433";
     private static String VERTICA_HOST;
     private static String VERTICA_SSH_PORT;
     private static final String VERTICA_HOST_USERNAME = "dbadmin";
@@ -152,7 +155,7 @@ public class AuditIT {
 
 
     private static void createDatabase(final String databaseName) throws Exception {
-        String command = MessageFormat.format("/opt/vertica/bin/admintools -t create_db -d {0} -p {0} -s 127.0.0.1", databaseName);
+        String command = MessageFormat.format("/opt/vertica/bin/admintools -t create_db -d {0} -p {0} -s 127.0.0.1 --skip-fs-checks", databaseName);
         issueVerticaSshCommand(command, true);
     }
 
@@ -635,10 +638,13 @@ public class AuditIT {
                                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                                 Date actualDate = df.parse(actualvalue.toString());
                                 if (!Objects.equals(actualDate,value)) {
+                                    LOG.warn(String.format("Expected Time Value: %s mismatched against Actual Time Value: %s", ((Date) value).getTime(),actualDate.getTime()));
                                     //  Date values still don't match.
                                     return false;
                                 }
                             } else {
+                                LOG.warn("Expected Object: " + value + " mismatched against Actual Object: " + actualvalue);
+                                LOG.warn("Expected Object toString: " + value.toString() + " mismatched against Actual Object toString: " + actualvalue.toString());
                                 return false;
                             }
                         }
@@ -707,19 +713,16 @@ public class AuditIT {
 
     private static void createKafkaScheduler(String databaseName) throws Exception {
         LOG.info("createKafkaScheduler: Creating Scheduler ...");
-        String dbURL = MessageFormat.format("jdbc:vertica://{0}:{1}/{2}", Objects.requireNonNull(VERTICA_HOST), Objects.requireNonNull(AUDIT_IT_DATABASE_PORT), Objects.requireNonNull(databaseName));
+        String dbURL = MessageFormat.format("jdbc:vertica://{0}:{1}/{2}", Objects.requireNonNull(INTEGRATIONTESTS_VERTICA_IMAGE), Objects.requireNonNull(INTEGRATIONTESTS_VERTICA_IMAGE_PORT), Objects.requireNonNull(databaseName));
 
-        //  Create a scheduler configuration.
-        String[] args = new String[]{"-Dscheduler", "--add",
-                "--config-schema", AUDIT_KAFKA_SCHEDULER_NAME,
-                "--brokers", auditManagementKafkaBrokers,
-                "--username", AUDIT_IT_DATABASE_LOADER_USER,
-                "--password", AUDIT_IT_DATABASE_LOADER_USER_PASSWORD,
-                "--jdbc-url", dbURL};
+        LOG.info("Vertica DB URL : " + dbURL);
+
         try {
-            SchedulerConfigurationCLI.run(args);
+            String command = MessageFormat.format("/opt/vertica/packages/kafka/bin/vkconfig scheduler --add --config-schema {0} --brokers {1} --username {2} --password {3} --jdbc-url {4}", AUDIT_KAFKA_SCHEDULER_NAME, auditManagementKafkaBrokers, AUDIT_IT_DATABASE_LOADER_USER, AUDIT_IT_DATABASE_LOADER_USER_PASSWORD, dbURL);
+            LOG.info(command);
+            issueVerticaSshCommand(command, false);
         } catch (Exception e) {
-            LOG.error("createKafkaScheduler: Scheduler could not be created. ");
+            LOG.error("createKafkaScheduler: Scheduler could not be created. ", e);
             throw e;
         }
 
@@ -733,7 +736,7 @@ public class AuditIT {
 
         LOG.info("startKafkaScheduler: Launching Scheduler via Docker...");
 
-        final String dbURL = MessageFormat.format("jdbc:vertica://{0}:{1}/{2}", Objects.requireNonNull(VERTICA_HOST), Objects.requireNonNull(AUDIT_IT_DATABASE_PORT), Objects.requireNonNull(databaseName));
+        final String dbURL = MessageFormat.format("jdbc:vertica://{0}:{1}/{2}", Objects.requireNonNull(INTEGRATIONTESTS_VERTICA_IMAGE), Objects.requireNonNull(INTEGRATIONTESTS_VERTICA_IMAGE_PORT), Objects.requireNonNull(databaseName));
         final String[] args = new String[]{
                 "launch",
                 "--config-schema", AUDIT_KAFKA_SCHEDULER_NAME,
@@ -742,8 +745,11 @@ public class AuditIT {
                 "--password", AUDIT_IT_DATABASE_LOADER_USER_PASSWORD
         };
 
+        LOG.info("Vertica DB URL : " + dbURL);
+
         final HostConfig hostConfig = new HostConfig();
         hostConfig.setRestartPolicy(RestartPolicy.unlessStopped());
+        hostConfig.setLinks(new Links(new Link(INTEGRATIONTESTS_VERTICA_IMAGE, INTEGRATIONTESTS_VERTICA_IMAGE)));
 
         String auditSchedulerName = AUDIT_KAFKA_SCHEDULER_ID + "-" + UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
 

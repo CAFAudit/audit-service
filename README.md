@@ -1,4 +1,4 @@
-# Audit Service [![Build Status](http://sou-jenkins2.hpeswlab.net:8080/job/caf/job/caf~job-service~develop~CI/badge/icon)](http://sou-jenkins2.hpeswlab.net:8080/job/caf/job/caf~job-service~develop~CI/)
+# Audit Service
 
 Manifest of the components which make up the Audit Service:
 * [caf-audit](caf-audit)

@@ -20,16 +20,7 @@ docker pull rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-management-service:1
 
 ### Marathon Loader
 
-Download the marathon-loader artifact from Nexus or Artifactory:
-
-repository: [http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases/](http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases/)
-
-repository mirror: http://rh7-artifactory.svs.hpeswlab.net:8081/artifactory/policyengine-release/
-
-groupId: com.hpe.caf
-artifactId: marathon-loader
-version: 2.1
-classifier: jar-with-dependencies
+Download the marathon-loader artifact from [Artifactory](http://rh7-artifactory.svs.hpeswlab.net:8081/artifactory/libs-release-local/com/hpe/caf/marathon-loader/2.8.0-5/marathon-loader-2.8.0-5-jar-with-dependencies.jar).
 
 The marathon application loader is used to start the Audit Management Web Service docker container.
 
@@ -50,7 +41,7 @@ Copy the container configuration marathon template folder (i.e. [marathon-templa
 
 To start the Audit Management Web Service container, run the marathon application loader with:
 
-java -jar marathon-loader-2.1-jar-with-dependencies.jar -m "./marathon-template-json" -v "./marathon-properties.json" -e http://localhost:8080 -mo "./marathon-config"
+java -jar marathon-loader-2.8.0-5-jar-with-dependencies.jar -m "./marathon-template-json" -v "./marathon-properties.json" -e http://localhost:8080 -mo "./marathon-config"
 
 where -e is used to specify the Marathon endpoint
 

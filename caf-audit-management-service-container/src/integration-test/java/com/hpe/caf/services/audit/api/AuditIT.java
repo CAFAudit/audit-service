@@ -272,6 +272,7 @@ public class AuditIT {
 
             String applicationId = registerApplicationInDatabase(testCase);
             for (Path eventsYaml : testCase.getYaml()) {
+                LOG.info("Verifying testCase yaml file: " + eventsYaml.getFileName());
                 AuditEventMessages messagesToSend = getTestMessages(eventsYaml);
                 String tenantId = "tenant" + UUID.randomUUID().toString().replaceAll("-", "").toLowerCase();
                 addTenantInDatabase(tenantId, applicationId);
@@ -572,6 +573,7 @@ public class AuditIT {
                                 testEventMessageMap.put(param.getName(), Boolean.parseBoolean(param.getValue().toString()));
                             } else if (type.isAssignableFrom(Date.class)) {
                                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
                                 testMethodArgs.add(df.parse(param.getValue().toString()));
                                 testEventMessageMap.put(param.getName(), df.parse(param.getValue().toString()));
                             }
@@ -630,12 +632,14 @@ public class AuditIT {
                     HashMap<String, Object> actualHashMap = actual.get(hashMapIndex);
                     Object actualvalue = actualHashMap.get(key);
                     if (!key.equals("tenantId")) {
+                        LOG.info("Comparing expected key value: " + key + "=" + value + " with actual key value: " + key + "=" + actualvalue);
                         if (!Objects.equals(actualvalue,value)) {
 
                             //  Database returns timestamp objects and not java Date.
                             //  Convert and re-check before assuming dates are different.
                             if (actualvalue instanceof Timestamp) {
                                 DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
                                 Date actualDate = df.parse(actualvalue.toString());
                                 if (!Objects.equals(actualDate,value)) {
                                     LOG.warn(String.format("Expected Time Value: %s mismatched against Actual Time Value: %s", ((Date) value).getTime(),actualDate.getTime()));

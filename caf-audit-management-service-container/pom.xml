@@ -443,7 +443,7 @@
                                 </log>
                                 <wait>
                                     <log>Port Reserved</log>
-                                    <time>1000</time>
+                                    <time>10000</time>
                                 </wait>
                             </run>
                         </image>

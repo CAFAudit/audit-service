@@ -393,7 +393,7 @@
                 <executions>
                     <execution>
                         <id>build-docker-container</id>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>build</goal>
                         </goals>

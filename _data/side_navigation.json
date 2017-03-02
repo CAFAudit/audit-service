@@ -1,0 +1,58 @@
+{
+    "navigation_items": [{
+        "title": {
+            "en-us": "CAF Auditing"
+        },
+        "url": {
+                "en-us": "pages/en-us/overview"
+        },
+        "children": [{
+            "title": {
+                "en-us": "Features"
+            },
+            "url": {
+                "en-us": "pages/en-us/Features"
+            }
+        },
+        {
+            "title": {
+                "en-us": "Getting Started"
+            },
+            "url": {
+                "en-us": "pages/en-us/Getting-Started"
+            }
+        },
+        {
+            "title": {
+                "en-us": "Architecture"
+            },
+            "url": {
+                "en-us": "pages/en-us/Architecture"
+            }
+        },
+        {
+            "title": {
+                "en-us": "Server-side API"
+            },
+            "url": {
+                "en-us": "pages/en-us/Server-API"
+            }
+        },
+        {
+            "title": {
+                "en-us": "Client-side API"
+            },
+            "url": {
+                "en-us": "pages/en-us/Client-API"
+            }
+        },
+        {
+            "title": {
+                "en-us": "Blog"
+            },
+            "url": {
+                "en-us": "pages/en-us/blog/index"
+            }
+        }]
+    }]
+}

@@ -53,9 +53,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.util.*;
 
 
@@ -572,10 +570,18 @@ public class AuditIT {
                                 testMethodArgs.add(Boolean.parseBoolean(param.getValue().toString()));
                                 testEventMessageMap.put(param.getName(), Boolean.parseBoolean(param.getValue().toString()));
                             } else if (type.isAssignableFrom(Date.class)) {
-                                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                                testMethodArgs.add(df.parse(param.getValue().toString()));
-                                testEventMessageMap.put(param.getName(), df.parse(param.getValue().toString()));
+                                DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSX");
+                                String sourceTime = param.getValue().toString();
+                                // Attempt to parse date that may have a timezone specified
+                                Date parsedDate = df.parse(sourceTime, new ParsePosition(0));
+                                if (parsedDate == null) {
+                                    df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                    // This will throw a ParseException if a date cannot be parsed from the sourceTime
+                                    parsedDate = df.parse(sourceTime);
+                                }
+                                testMethodArgs.add(parsedDate);
+                                testEventMessageMap.put(param.getName(), parsedDate);
                             }
                         }
                     }

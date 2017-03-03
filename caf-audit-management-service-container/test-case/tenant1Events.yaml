@@ -23,7 +23,7 @@ messages:
   - name: "BooleanType"
     value: true
   - name: "DateType"
-    value: 2016-01-14 12:45:26.319
+    value: 2016-01-14 07:45:26.319-0500
   auditLogMethod: "auditTestEvent1"
 - auditLogMethodParams:
   - name: "tenantId"

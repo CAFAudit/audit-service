@@ -524,44 +524,44 @@ If you're not already using CAF's configuration mechanism, this sample code illu
 To compile the above sample code, add the following dependencies to your POM:
 
 	<dependency>
-	    <groupId>com.hpe.caf</groupId>
+	    <groupId>com.github.cafapi</groupId>
 	    <artifactId>caf-api</artifactId>
-	    <version>11.2</version>
+	    <version>1.6.0-176</version>
 	</dependency>
 	<dependency>
-	    <groupId>com.hpe.caf.cipher</groupId>
+	    <groupId>com.github.cafapi.cipher</groupId>
 	    <artifactId>cipher-null</artifactId>
-	    <version>10.0</version>
+	    <version>1.6.0-176</version>
 	</dependency>
 	<dependency>
-	    <groupId>com.hpe.caf.config</groupId>
+	    <groupId>com.github.cafapi.config</groupId>
 	    <artifactId>config-system</artifactId>
-	    <version>10.0</version>
+	    <version>1.6.0-176</version>
 	</dependency>
 	<dependency>
-	    <groupId>com.hpe.caf.util</groupId>
+	    <groupId>com.github.cafapi.util</groupId>
 	    <artifactId>util-moduleloader</artifactId>
-	    <version>1.1</version>
+	    <version>1.6.0-176</version>
 	</dependency>
 	<dependency>
-	    <groupId>com.hpe.caf.util</groupId>
+	    <groupId>com.github.cafapi.util</groupId>
 	    <artifactId>util-naming</artifactId>
-	    <version>1.0</version>
+	    <version>1.6.0-176</version>
 	</dependency>
 
 To use JSON-encoded files for your configuration, add the following additional dependencies to your POM:
 
 	<!-- Runtime-only Dependencies -->
 	<dependency>
-	    <groupId>com.hpe.caf.config</groupId>
+	    <groupId>com.github.cafapi.config</groupId>
 	    <artifactId>config-file</artifactId>
-	    <version>10.0</version>
+	    <version>1.6.0-176</version>
 	    <scope>runtime</scope>
 	</dependency>
 	<dependency>
-	    <groupId>com.hpe.caf.codec</groupId>
+	    <groupId>com.github.cafapi.code</groupId>
 	    <artifactId>codec-json</artifactId>
-	    <version>10.1</version>
+	    <version>1.6.0-176</version>
 	    <scope>runtime</scope>
 	</dependency>
 	<dependency>

@@ -4,14 +4,6 @@
 
 ## Deployment
 
-Apache Kafka can be deployed manually or with a vagrant file:
-
-#### Deploying Kafka with Vagrant
-
-A vagrant file is available for quickly provisioning a Kafka environment - see [https://github.hpe.com/caf/vagrant-kafka](https://github.hpe.com/caf/vagrant-kafka)
-
-#### Deploying Kafka Manually
-
 [Apache Kafka Quick Start Guidelines](http://kafka.apache.org/082/documentation.html#quickstart) provides a detailed set of instructions for installation and start-up. A summary of these steps have been captured below using the current stable version release (i.e. 0.8.2.2).
 
 [Download and install Java](http://openjdk.java.net/install/).

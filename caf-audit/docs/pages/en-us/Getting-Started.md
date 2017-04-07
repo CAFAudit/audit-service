@@ -35,18 +35,9 @@ For more information on Apache Kafka, go [here](http://kafka.apache.org/).
 
 HPE Vertica is a SQL database designed for delivering speed, scalability and support for analytics. In the Auditing service, Vertica ultimately stores the audit events on a per-application, per-tenant basis. You can then use analysis tools on the data to gather metrics about the audited applications.
 
-### HPE Vertica Development Deployment
+### HPE Vertica Enterprise Deployment
 
-For development deployments of HPE Vertica, we recommend that you use [vagrant-vertica](https://github.hpe.com/caf/vagrant-vertica) and follow its supporting documentation to start a guest VM running HPE Vertica with Vagrant. As part of this deployment, the provisioning scripts create the service user, loader user, reader user, and reader role.
-
-Vagrant-vertica is not recommended for production deployments. Please make note of the following caveats:
-
-- Vertica DB usernames and passwords, used during automated installation, are held as plain text within the VM's provisioning scripts.
-- Vagrant-vertica is a standalone, single-node setup only; provisioning scripts do not support clustered configurations.
-
-### HPE Enterprise Deployment
-
-For an enterprise deployments of HPE Vertica, please follow the official HPE Vertica documentation as it covers cluster setup, configuration and backup. Integration of HPE Vertica with your Kafka broker cluster is also covered: [Official HPE Vertica Documentation](https://my.vertica.com/documentation/vertica/7-2-x/)
+For an enterprise deployment of HPE Vertica, please follow the official HPE Vertica documentation as it covers cluster setup, configuration and backup. Integration of HPE Vertica with your Kafka broker cluster is also covered: [Official HPE Vertica Documentation](https://my.vertica.com/documentation/vertica/7-2-x/)
 
 #### Database, Role & Service Accounts
 
@@ -146,7 +137,7 @@ where:
 
 **Example:**
 
-	/opt/vertica/packages/kafka/bin/vkconfig scheduler --add --config-schema auditscheduler --brokers 192.168.56.20:9092 --username caf-audit-loader --password "c@FaL0Ad3r" --operator "\"caf-audit-loader\""
+	/opt/vertica/packages/kafka/bin/vkconfig scheduler --add --config-schema auditscheduler --brokers <broker address>:<port> --username caf-audit-loader --password "c@FaL0Ad3r" --operator "\"caf-audit-loader\""
 
 ##### Verification
 
@@ -157,12 +148,6 @@ The following figure shows the CAFAudit database with a new schema for tracking 
 ## Deploying Kafka
 
 Apache Kafka is a distributed, partitioned, replicated commit log service that provides messaging system functionality for producers and consumers of messages. Kafka's role in the Audit Management service is to receive tenant events from client-side applications (producers) as messages. On the server-side, the Kafka-Vertica Scheduler (consumer) reads event messages from per application, per tenant Kafka topics and streams the events into HPE Vertica.
-
-### Apache Kafka Development Deployment
-
-We recommend that you use [vagrant-kafka](https://github.hpe.com/caf/vagrant-kafka) and follow its supporting documentation to start a guest VM running Kafka with Vagrant.
-
-Vagrant-kafka is not recommended for production deployments. It's a standalone single node setup only; provisioning scripts do not support multiple machine clustered configurations.
 
 ### Apache Kafka Enterprise Deployment
 
@@ -446,11 +431,7 @@ Depending on how your Maven settings.xml file is configured, the `pluginReposito
 	    </pluginRepository>
 	</pluginRepositories>
 
-In this example, the URL is set to [http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases](http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases), but, if that location is inaccessible, you could try one of the following URLs instead:
-
-- [http://rh7-artifactory.svs.hpeswlab.net:8081/artifactory/policyengine-release](http://rh7-artifactory.svs.hpeswlab.net:8081/artifactory/policyengine-release)
-- [http://16.26.25.50/nexus/content/repositories/releases](http://16.26.25.50/nexus/content/repositories/releases)
-- [http://16.103.3.109:8081/artifactory/policyengine-release](http://16.103.3.109:8081/artifactory/policyengine-release)
+In this example, the URL is set to [http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases](http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases).
 
 ### No-op Auditing Library
 
@@ -581,7 +562,7 @@ In the `ConfigurationSource` above, we used JSON-encoded files with the followin
 Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_KafkaAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
-	    "bootstrapServers": "192.168.56.20:9092",
+	    "bootstrapServers": "<kafka broker>:<port number>",
 	    "acks": "all",
 	    "retries": "0"
 	}

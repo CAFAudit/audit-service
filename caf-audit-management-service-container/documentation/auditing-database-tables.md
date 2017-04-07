@@ -2,7 +2,7 @@
 
 ### Vertica Analytic Database
 
-A vagrant file is available for quickly provisioning a Vertica environment - see https://github.hpe.com/caf/vagrant-vertica
+See the [Deploying HPE Vertica](../../caf-audit/docs/pages/en-us/Getting-Started.md) section in the Getting Started guide for setting up a HPE Vertica Database environment. 
 
 ### Application Audit Events File
 

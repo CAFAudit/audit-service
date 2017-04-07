@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.hpe.caf.services.audit.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -675,9 +690,6 @@ public class AuditIT {
     private void verifyResults(final String applicationId, final String tenantId, List<HashMap<String, Object>> expectedResultSet) throws Exception {
         DBUtil dbUtil = new DBUtil(VERTICA_HOST, AUDIT_IT_DATABASE_NAME, AUDIT_IT_DATABASE_PORT, AUDIT_IT_DATABASE_SCHEMA_PREFIX + tenantId, applicationId, VERTICA_HOST_USERNAME, AUDIT_IT_DATABASE_NAME);
 
-        LOG.info("Writing database table rows to disk...");
-        dbUtil.writeTableRowsToDisk();
-
         LOG.info("Getting database table rows as a list...");
         List<HashMap<String,Object>> actualResultSet;
         actualResultSet = dbUtil.getTableRowsAsList();
@@ -698,9 +710,6 @@ public class AuditIT {
 
     private void verifyMultiplePartitionResults(final String applicationId, final String tenantId, List<HashMap<String, Object>> expectedResultSet) throws Exception{
         DBUtil dbUtil = new DBUtil(VERTICA_HOST, AUDIT_IT_DATABASE_NAME, AUDIT_IT_DATABASE_PORT, AUDIT_IT_DATABASE_SCHEMA_PREFIX + tenantId, applicationId, VERTICA_HOST_USERNAME, AUDIT_IT_DATABASE_NAME);
-
-        LOG.info("Writing database table rows to disk...");
-        dbUtil.writeTableRowsToDisk();
 
         LOG.info("Getting database table rows as a list...");
         List<HashMap<String,Object>> actualResultSet;

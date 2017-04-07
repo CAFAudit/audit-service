@@ -16,7 +16,7 @@ For Audit Reporting click [here](https://github.hpe.com/caf/audit-reporting).
 
 Download docker image for the CAF Audit Management Service from Artifactory:
 
-docker pull rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-management-service:1.4
+docker pull rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-management-service:2.0.0
 
 ### Marathon Loader
 

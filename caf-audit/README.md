@@ -155,11 +155,7 @@ Depending on how your Maven settings.xml file is configured, the pluginRepositor
 	    </pluginRepository>
 	</pluginRepositories>
 
-In this example the URL is set to [http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases](http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases), but if that location is inaccessible then you could try one of the following URLs instead:
-
-- [http://rh7-artifactory.svs.hpeswlab.net:8081/artifactory/policyengine-release](http://rh7-artifactory.svs.hpeswlab.net:8081/artifactory/policyengine-release)
-- [http://16.26.25.50/nexus/content/repositories/releases](http://16.26.25.50/nexus/content/repositories/releases)
-- [http://16.103.3.109:8081/artifactory/policyengine-release](http://16.103.3.109:8081/artifactory/policyengine-release)
+In this example the URL is set to [http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases](http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases).
 
 ### No-op Auditing Library
 
@@ -284,7 +280,7 @@ In the above sample CAF Configuration is using JSON-encoded files with the follo
 Given this configuration, to configure CAF Auditing you should create a file named `cfg_sampleappgroup_sampleapp_KafkaAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
-	    "bootstrapServers": "192.168.56.20:9092",
+	    "bootstrapServers": "<kafka broker>:<port number>",
 	    "acks": "all",
 	    "retries": "0"
 	}

@@ -11,9 +11,9 @@ Verify that Vertica automatically picks up new partitions in the Kafka auditing 
 5. Add tenant and register with Application
 6. Send messages and verify that they are received by your scheduler and taken into your vertica database. 
 7. Increment the number of partitions in kafka by the following command: 
-/opt/kafka/bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic AuditEventTopic.MyApp.tenant1 --partitions 3 
+`/opt/kafka/bin/kafka-topics.sh --zookeeper localhost:2181 --alter --topic AuditEventTopic.MyApp.tenant1 --partitions 3` 
 8. Send messages to kafka. Keep sending until you observe messages not getting received. This will be because the messages are in a different partition. (you can verify that messages are in a specific partition with the following command: 
-/opt/kafka/bin/kafka-run-class.sh kafka.tools.SimpleConsumerShell --broker-list 192.168.56.20:9092 --topic AuditEventTopic.MyDemo.tenant1 --partition 0 )
+`/opt/kafka/bin/kafka-run-class.sh kafka.tools.SimpleConsumerShell --broker-list <broker address>:<port> --topic AuditEventTopic.MyDemo.tenant1 --partition 0` )
 9. Call the UpdatePartitions web method from swagger UI with your application and tenant IDs
 
 **Test Data**

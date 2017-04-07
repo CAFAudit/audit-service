@@ -1,5 +1,5 @@
 {
-    "bootstrapServers": "192.168.56.20:9092",
+    "bootstrapServers": "<kafka broker>:<port number>",
     "acks": "all",
     "retries": "0"
 }

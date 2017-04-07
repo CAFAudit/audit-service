@@ -35,7 +35,7 @@ Some of the upgrade steps require the use of a database tool that can connect to
 	
 			sudo /opt/vertica/packages/kafka/bin/vkconfig scheduler --add 
 				--config-schema auditscheduler 
-				--brokers 192.168.56.20:9092 
+				--brokers <kafka broker>:<port number> 
 				--username "caf-audit-loader" 
 				--password c@FaL0Ad3r 
 				--operator "\"caf-audit-loader\""

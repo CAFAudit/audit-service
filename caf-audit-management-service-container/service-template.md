@@ -6,9 +6,9 @@
 | Service Type | Web API |
 | Image Name | caf/audit-management-service |
 | Service Description | RESTful Web Service API providing endpoints for the registration of new applications and tenants for auditing |
-| Current Version | 1.0 |
+| Current Version | 2.0.0 |
 | Owner | Belfast |
-| Image Components | Ubuntu 14.04 <br> Oracle JDK 8 <br> TINI v0.9.0 <br> jackson-databind 2.3.0 <br> caf-audit-management-service 1.0 |
+| Image Components | Ubuntu 14.04 <br> Oracle JDK 8 <br> TINI v0.9.0 <br> jackson-databind 2.3.0 <br> caf-audit-management-service 2.0.0 |
 | Ports & Network Points | 8080 |
 | Dependencies | Vertica 7.2.x <br> Apache Kafka |
 | Scaling |   |

@@ -12,7 +12,7 @@ The following instructions assume a Vertica database named CAFAudit is available
 - Test table creation:
 - Create a file named config.properties - for example
 	- **AuditEventsDatabaseUtility required inputs**
-	- **Vertica database connection string url:** databaseURL=jdbc:vertica://192.168.56.50:5433/CAFAudit
+	- **Vertica database connection string url:** databaseURL=jdbc:vertica://<vertica host>:<port number>/CAFAudit
 	- **Database schema name:** schema=public
 	- **Username of a database user account:** username=dbadmin
 	- **Password of the database user account:** password=CAFAudit

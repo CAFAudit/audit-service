@@ -175,10 +175,13 @@ The audit event message test data should be defined in a yaml file named `caf-au
 In this example, 3 messages will be sent to Kafka for the tenant with id `tenant1` i.e. 2 for audit event `TestEvent1` and 1 for audit event `TestEvent2`.
 
 ## Apache Kafka Configuration
-Kafka details should be provided in the `cfg_caf_audit-qa_KafkaAuditConfigurationfile` config file which can be found in the `sample-test-scripts\config\` folder. This needs to include the ip address of the Kafka broker.
+Kafka details should be provided in the `cfg_caf_audit-qa_KafkaAuditConfigurationfile` config file which can be found in the `sample-test-scripts\config\` folder. 
+This needs to include the ip address and port number of the Kafka broker. Placeholders for `<kafka broker>` and `<port number>` will therefore need replaced in this configuration file.
 
 ## Vertica Configuration
-Vertica database details should be provided in the `cfg_caf_audit-qa_VerticaAuditConfiguration` config file which can be found in the `sample-test-scripts\config\` folder. This needs to include the database connection url, username and password for the Vertica database as well as the target database table that the audit event message data will be loaded into.
+Vertica database details should be provided in the `cfg_caf_audit-qa_VerticaAuditConfiguration` config file which can be found in the `sample-test-scripts\config\` folder. 
+This needs to include the database connection url, username and password for the Vertica database as well as the target database table that the audit event message data will be loaded into.
+Placeholders for `<vertica host>` and `<port number>` will need replaced in this configuration file.
 
 ## Database Set-up 
 The project assumes that the necessary database schema has been created in Vertica for both the application defined audit events XML and the tenant specified in the test data file. The [CAF Audit Management Web Service](https://github.hpe.com/caf/audit-service/tree/develop/caf-audit-management-service) should be used beforehand to register the application audit events XML and create the tenant within the application.

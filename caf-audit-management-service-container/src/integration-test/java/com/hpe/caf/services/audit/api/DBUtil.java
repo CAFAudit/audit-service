@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.hpe.caf.services.audit.api;
 
 import org.slf4j.Logger;
@@ -14,7 +29,6 @@ import java.util.*;
 public class DBUtil {
 
     private static final String JDBC_DRIVER = "com.vertica.jdbc.Driver";
-    private static final String OUTPUT_FILENAME = "./test-case/output.txt";
 
     private static String user;     // username of the database user account
     private static String passw;    // password of the user
@@ -30,40 +44,6 @@ public class DBUtil {
         user = Objects.requireNonNull(databaseUsername);
         passw = Objects.requireNonNull(databasePassword);
     }
-
-
-    public void writeTableRowsToDisk() throws Exception {
-
-        String getTableRowsSQL = "SELECT * FROM " + dbTable;
-
-        try (
-                PrintWriter writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(OUTPUT_FILENAME)), "UTF-8"));
-                Connection conn = getConnection();
-                Statement stmt = conn.createStatement()
-        ) {
-            ResultSet rs = stmt.executeQuery(getTableRowsSQL);
-            ResultSetMetaData rsmd = rs.getMetaData();
-
-            int numberOfColumns = rsmd.getColumnCount();
-
-            for (int i = 1; i <= numberOfColumns; i++) {
-                if (i > 1) writer.append(",  ");
-                String columnName = rsmd.getColumnName(i);
-                writer.append(columnName);
-            }
-            writer.println();
-
-            while (rs.next()) {
-                for (int i = 1; i <= numberOfColumns; i++) {
-                    if (i > 1) writer.append(",  ");
-                    String columnValue = rs.getString(i);
-                    writer.append(columnValue);
-                }
-                writer.println();
-            }
-        }
-    }
-
 
     public List<HashMap<String,Object>> getTableRowsAsList() throws Exception {
 

@@ -111,7 +111,7 @@ In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded
 Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_KafkaAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
-	    "bootstrapServers": "192.168.56.20:9092",
+	    "bootstrapServers": "<kafka broker>:<port number>",
 	    "acks": "all",
 	    "retries": "0"
 	}

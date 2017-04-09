@@ -22,8 +22,11 @@ import com.hpe.caf.auditing.kafka.KafkaAuditConnection;
 public class AuditConnectionFactory {
 
     /**
-     * Create Kafka connection for the Audit application using the specified
-     * list of seed brokers.
+     * Create Kafka connection for the Audit application using the specified list of seed brokers.
+     *
+     * @param configSource the configuration source
+     * @return the connection to the audit server
+     * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source
      */
     public static AuditConnection createConnection(final ConfigurationSource configSource) throws ConfigurationException {
         return new KafkaAuditConnection(configSource);

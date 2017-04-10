@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing;
+package com.hpe.caf.auditing.internal;
 
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
 import java.net.InetAddress;
@@ -26,7 +26,7 @@ import java.util.UUID;
 /**
  * Common functionality used by the auditing infrastructure.
  */
-public final class AuditLogHelper {
+final class AuditLogHelper {
 
     private static final UUID processId = ProcessIdentifier.getProcessId();
 

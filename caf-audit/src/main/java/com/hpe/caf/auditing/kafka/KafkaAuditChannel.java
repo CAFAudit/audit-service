@@ -18,6 +18,7 @@ package com.hpe.caf.auditing.kafka;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import org.apache.kafka.clients.producer.Producer;
+import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 
 final class KafkaAuditChannel implements AuditChannel
 {
@@ -33,8 +34,8 @@ final class KafkaAuditChannel implements AuditChannel
     }
 
     @Override
-    public AuditEventBuilder createEventBuilder() {
-        return new KafkaAuditEventBuilder(producer);
+    public AuditEventBuilder createEventBuilder(final AuditCoreMetadataProvider coreMetadataProvider) {
+        return new KafkaAuditEventBuilder(producer, coreMetadataProvider);
     }
 
     @Override

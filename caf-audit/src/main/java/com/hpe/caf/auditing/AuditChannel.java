@@ -15,6 +15,7 @@
  */
 package com.hpe.caf.auditing;
 
+import static com.hpe.caf.auditing.internal.AuditNewEventFactory.createNewEvent;
 import java.io.IOException;
 
 public interface AuditChannel extends AutoCloseable
@@ -34,5 +35,16 @@ public interface AuditChannel extends AutoCloseable
      *
      * @return an audit event builder
      */
-    AuditEventBuilder createEventBuilder();
+    default AuditEventBuilder createEventBuilder()
+    {
+        return createEventBuilder(createNewEvent());
+    }
+
+    /**
+     * Creates an object which can be used for preparing and sending an audit event.
+     *
+     * @param coreMetadataProvider provides values for the core system-provided metadata
+     * @return an audit event builder
+     */
+    AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider);
 }

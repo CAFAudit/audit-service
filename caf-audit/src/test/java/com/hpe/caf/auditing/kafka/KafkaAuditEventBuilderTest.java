@@ -15,6 +15,7 @@
  */
 package com.hpe.caf.auditing.kafka;
 
+import static com.hpe.caf.auditing.internal.AuditNewEventFactory.createNewEvent;
 import org.apache.kafka.clients.producer.Producer;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -29,7 +30,7 @@ public class KafkaAuditEventBuilderTest {
         Producer<String, String> mockProducer = Mockito.mock(Producer.class);
         doThrow(new RuntimeException()).when(mockProducer).send(Mockito.any());
 
-        KafkaAuditEventBuilder eventBuilder = new KafkaAuditEventBuilder(mockProducer);
+        KafkaAuditEventBuilder eventBuilder = new KafkaAuditEventBuilder(mockProducer, createNewEvent());
         eventBuilder.setApplication("TestApplication");
         eventBuilder.setUser("TestUser");
         eventBuilder.setEventType("TestCategory","TestType");

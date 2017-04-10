@@ -2,7 +2,7 @@
 
 ![Overview](images/overview.png)
 
-Applications will define audit events that will occur in the system in an [Audit Event Definition File](https://github.hpe.com/caf/audit-service/blob/develop/caf-audit-schema/README.md).
+Applications will define audit events that will occur in the system in an [Audit Event Definition File](../caf-audit-schema/README.md).
 The Audit Event Definition File will be used to generate an application-specific client-side auditing library using a custom maven plugin. The client-side library is then used to send audit event messages to the Apache Kafka messaging service.
 
 The Audit Event Definition File will also be used to register the application with the Audit Management Web Service. The web service will set up the Vertica database schema as well as register the Kafka topic with the Kafka scheduler in order to store the audit events.
@@ -22,11 +22,11 @@ For set-up:
 
 # Auditing Library
 
-This project builds a library that sends audit events to Apache Kafka. Application specific auditing libraries generated with the [code generation plugin](https://github.hpe.com/caf/audit-service/tree/develop/caf-audit-maven-plugin) use this to send  their events.
+This project builds a library that sends audit events to Apache Kafka. Application specific auditing libraries generated with the [code generation plugin](../caf-audit-maven-plugin) use this to send  their events.
 
 ## Generating a Client-side Auditing Library
 
-In order to use CAF Auditing you must first define the audit events in an [Audit Event Definition File](https://github.hpe.com/caf/audit-service/blob/develop/caf-audit-schema/README.md). After you have created the definition file you can use it to generate a client-side library to make it easier to raise the defined audit events.
+In order to use CAF Auditing you must first define the audit events in an [Audit Event Definition File](../caf-audit-schema/README.md). After you have created the definition file you can use it to generate a client-side library to make it easier to raise the defined audit events.
 
 Technically you do not need to generate a client-side library in order to use CAF Auditing; you could use the `caf-audit` module directly, but generating a client-side library should make it easier and safer to raise events, as it should mean that each event can be raised with a single type-safe call.
 
@@ -77,18 +77,7 @@ Here is a sample Maven project file that generates a client-side auditing librar
 	                </configuration>
 	            </plugin>
 	        </plugins>
-	    </build>
-	
-	    <pluginRepositories>
-	        <pluginRepository>
-	            <id>cmbg-maven-releases</id>
-	            <name>Cambridge Nexus Releases</name>
-	            <url>http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases</url>
-	            <snapshots>
-	                <enabled>false</enabled>
-	            </snapshots>
-	        </pluginRepository>
-	    </pluginRepositories>
+	    </build>	
 	</project>
 
 ### Maven Coordinates
@@ -113,7 +102,7 @@ The generated library will have a dependency on `caf-audit`, which the generated
 
 ### Code Generation Plugin
 
-The `xmltojava` goal of the [code generation plugin](https://github.hpe.com/caf/audit-service/tree/develop/caf-audit-maven-plugin) is used to generate the Java auditing code that will make up the library. The `auditXMLConfig` setting can be used to define the path to the Audit Event Definition file, and the `packageName` setting can be used to set the package in which the auditing code should be generated.
+The `xmltojava` goal of the [code generation plugin](../caf-audit-maven-plugin) is used to generate the Java auditing code that will make up the library. The `auditXMLConfig` setting can be used to define the path to the Audit Event Definition file, and the `packageName` setting can be used to set the package in which the auditing code should be generated.
 
 	<build>
 	    <plugins>
@@ -140,23 +129,6 @@ The `xmltojava` goal of the [code generation plugin](https://github.hpe.com/caf/
 
 In this example the Audit Event Definition file is in the `src/main/xml/` folder, though of course it could be read from any folder. The name of the package to use is being built up by appending `.auditing` to the project's group identifier (i.e. `com.hpe.sampleapp` in this example).
 
-### Plugin Repositories
-
-Depending on how your Maven settings.xml file is configured, the pluginRepositories section may or may not be required in order to locate the code generation plugin.
-
-	<pluginRepositories>
-	    <pluginRepository>
-	        <id>cmbg-maven-releases</id>
-	        <name>Cambridge Nexus Releases</name>
-	        <url>http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases</url>
-	        <snapshots>
-	            <enabled>false</enabled>
-	        </snapshots>
-	    </pluginRepository>
-	</pluginRepositories>
-
-In this example the URL is set to [http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases](http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases).
-
 ### No-op Auditing Library
 
 A dummy implementation of the standard auditing library, `caf-audit`, is also provided to support developers without any Apache Kafka infrastructure. It has the same interface as the standard auditing library but does not send anything to Kafka. This will allow developers to continue to work with their application without the need to install and configure Apache Kafka.
@@ -175,7 +147,7 @@ Alternatively, you could do something more custom at runtime where you replace t
 
 ### String Validation
 
-The standard auditing library, `caf-audit`, performs string validation on audit events through the `AuditValidator` object. This applies only to string data where the audit event parameter has been configured with minimum and/or maximum length constraints in the [Audit Event Definition File](https://github.hpe.com/caf/audit-service/blob/develop/caf-audit-schema/README.md). Where a `MinLength` constraint has been defined, validation will fail if the length of the given string is less than this number. Where a `MaxLength` constraint has been defined, validation will fail if the length of the given string is greater than this number.
+The standard auditing library, `caf-audit`, performs string validation on audit events through the `AuditValidator` object. This applies only to string data where the audit event parameter has been configured with minimum and/or maximum length constraints in the [Audit Event Definition File](../caf-audit-schema/README.md). Where a `MinLength` constraint has been defined, validation will fail if the length of the given string is less than this number. Where a `MaxLength` constraint has been defined, validation will fail if the length of the given string is greater than this number.
 
 ## Using a Client-side Auditing Library
 

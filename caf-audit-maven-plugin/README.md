@@ -1,8 +1,8 @@
 # Code Generation Plugin
 
-In order to use CAF Auditing in an application, the auditing events that the application uses must be specified along with the parameters that are associated with each of the events in an [Audit Event Definition File](https://github.hpe.com/caf/audit-service/blob/develop/caf-audit-schema/README.md). After you have created the definition file you can use it to generate a client-side auditing library in order to raise the application defined audit events. 
+In order to use CAF Auditing in an application, the auditing events that the application uses must be specified along with the parameters that are associated with each of the events in an [Audit Event Definition File](../caf-audit-schema/README.md). After you have created the definition file you can use it to generate a client-side auditing library in order to raise the application defined audit events. 
 
-The `caf-audit-maven-plugin` is a code generation plugin which uses the definition file to auto-generate Java auditing code that will make up the client-side auditing library. The generated class which is named `AuditLog`, uses the [Auditing Library](https://github.hpe.com/caf/audit-service/tree/develop/caf-audit) to send audit event messages to the Apache Kafka messaging service. 
+The `caf-audit-maven-plugin` is a code generation plugin which uses the definition file to auto-generate Java auditing code that will make up the client-side auditing library. The generated class which is named `AuditLog`, uses the [Auditing Library](../caf-audit) to send audit event messages to the Apache Kafka messaging service. 
 
 ## Usage
 
@@ -37,7 +37,7 @@ In this example the Audit Event Definition file is in the `src/main/xml/` folder
 
 ## Auto-Generated Methods
 
-Using the sample audit events XML specified in the [Audit Event Definition File](https://github.hpe.com/caf/audit-service/blob/develop/caf-audit-schema/README.md), the code generation plugin will auto-generate the following methods as part of the `AuditLog` class:
+Using the sample audit events XML specified in the [Audit Event Definition File](../caf-audit-schema/README.md), the code generation plugin will auto-generate the following methods as part of the `AuditLog` class:
 
 	/**
 	 * Audit the viewDocument event

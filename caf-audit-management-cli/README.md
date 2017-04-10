@@ -4,8 +4,8 @@
  
 ## Deployment
 
-This is available as a Docker container - see [caf-audit-management-cli-container](https://github.hpe.com/caf/audit-service/tree/develop/caf-audit-management-cli-container)
+This is available as a Docker container - see [caf-audit-management-cli-container](../caf-audit-management-cli-container)
 
 ## Usage
 
-The [CAF Audit Management Web Service](https://github.hpe.com/caf/audit-service/tree/develop/caf-audit-management-service) utilizes this library during tenant addition to associate the Kafka topic, which represents the feed of audit event messages with the Vertica job scheduler.
+The [CAF Audit Management Web Service](../caf-audit-management-service) utilizes this library during tenant addition to associate the Kafka topic, which represents the feed of audit event messages with the Vertica job scheduler.

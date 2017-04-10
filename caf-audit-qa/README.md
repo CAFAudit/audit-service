@@ -2,7 +2,7 @@
 This testing project sends a set of audit event messages to the Apache Kafka messaging service and then verifies the audit event details have been loaded from Kafka into the Vertica database.
 
 ## Audit Events Definition File
-In order to use CAF Auditing in a test application, the auditing events that the application uses must be specified along with the parameters that are associated with each of the events in an [Audit Event Definition File](https://github.hpe.com/caf/audit-service/blob/develop/caf-audit-schema/README.md). The definition file used for testing in this project can be found in the `\sample-test-scripts\xml\` folder:
+In order to use CAF Auditing in a test application, the auditing events that the application uses must be specified along with the parameters that are associated with each of the events in an [Audit Event Definition File](../caf-audit-schema/README.md). The definition file used for testing in this project can be found in the `\sample-test-scripts\xml\` folder:
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<AuditedApplication
@@ -106,7 +106,7 @@ In order to use CAF Auditing in a test application, the auditing events that the
 	</AuditedApplication>
 
 ## Audit Events Test Data
-The audit event message test data should be defined in a yaml file named `caf-audit-qa.yaml` in the root folder of the project. The yaml definition needs to include the number of messages to be sent, the [auto-generated auditing class](https://github.hpe.com/caf/audit-service/tree/develop/caf-audit-maven-plugin) method to be called for the audit event along with test values for each of the parameters associated with the audit event. A sample test data file for the audit events XML presented above is given next:
+The audit event message test data should be defined in a yaml file named `caf-audit-qa.yaml` in the root folder of the project. The yaml definition needs to include the number of messages to be sent, the [auto-generated auditing class](../caf-audit-maven-plugin) method to be called for the audit event along with test values for each of the parameters associated with the audit event. A sample test data file for the audit events XML presented above is given next:
 
 	---
 	numberOfMessages: 3
@@ -184,8 +184,8 @@ This needs to include the database connection url, username and password for the
 Placeholders for `<vertica host>` and `<port number>` will need replaced in this configuration file.
 
 ## Database Set-up 
-The project assumes that the necessary database schema has been created in Vertica for both the application defined audit events XML and the tenant specified in the test data file. The [CAF Audit Management Web Service](https://github.hpe.com/caf/audit-service/tree/develop/caf-audit-management-service) should be used beforehand to register the application audit events XML and create the tenant within the application.
+The project assumes that the necessary database schema has been created in Vertica for both the application defined audit events XML and the tenant specified in the test data file. The [CAF Audit Management Web Service](../caf-audit-management-service) should be used beforehand to register the application audit events XML and create the tenant within the application.
 
 ## Vertica Job Scheduler
-The project assumes that a Vertica job scheduler has been created and launched for the tenant used in the test data. The role of the job scheduler is to load the audit event data from Kafka into the Vertica database. When the tenant is added within the application using the [CAF Audit Management Web Service](https://github.hpe.com/caf/audit-service/tree/develop/caf-audit-management-service), the job scheduler will be automatically created and launched.
+The project assumes that a Vertica job scheduler has been created and launched for the tenant used in the test data. The role of the job scheduler is to load the audit event data from Kafka into the Vertica database. When the tenant is added within the application using the [CAF Audit Management Web Service](../caf-audit-management-service), the job scheduler will be automatically created and launched.
  

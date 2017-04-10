@@ -30,7 +30,7 @@ A Mesos/Marathon environment runs the Audit Management web service and Kafka-Ver
 
 The figure below illustrates the overall flow and relationship of components in the Audit Management service.
 
-![Architecture](images/AuditManagementArchitectureDraft.png)
+![Architecture](https://cafaudit.github.io/audit-service/pages/en-us/images/AuditManagementArchitectureDraft.png)
 
 1. Setting up your application for Auditing requires defining an audit event definition XML file. The file is used for:
 	- Generation of the client-side audit library.
@@ -53,22 +53,22 @@ In order to use Auditing in an application, the application's auditing events mu
 
 Providing the Audit Management web service /applications endpoint with the example audit event definition XML will create schemas and tables in the `CAFAudit` database for the application.
 
-![Audit Management Application Events Table With Sample Application](images/AuditManagementApplicationEventsWithSampleAppVertica.png)
+![Audit Management Application Events Table With Sample Application](https://cafaudit.github.io/audit-service/pages/en-us/images/AuditManagementApplicationEventsWithSampleAppVertica.png)
 
 The above figure's `ApplicationEvents` table, under the `AuditManagement` schema, contains a row for a registered SampleApp's audit event definition XML. The `applicationId` column contains the Application ID provided in the audit event definition XML and the `eventsXML` column contains the XML passed to the API. Audit Management web service uses `eventsXML` to create a tenant's application table with columns to match the audit event data types.
 
 Registering a tenant with the Audit Management web service /tenants endpoint creates an entry under the `AuditManagement` schema's `TenantApplications` for the tenant.
 
-![Audit Management Tenant Applications Table With Tenant ID](images/AuditManagementTenantApplicationsWithTenantApplication.png)
+![Audit Management Tenant Applications Table With Tenant ID](https://cafaudit.github.io/audit-service/pages/en-us/images/AuditManagementTenantApplicationsWithTenantApplication.png)
 
 The figure shows a row for the registered tenant; `tenantId` with an associated application's `applicationId`. This table keeps track of which tenants use which applications.
 
 Registering a new tenant creates a new schema under the `CAFAudit` database for the tenant called `account_<tenantId>`, where audit event data for the tenant's applications will be held. Audit Management also creates a `kafka_rej` table for holding the tenant's rejected audit events.
 
-![CAF Audit Account 1 Sample App Table Columns](images/account_1AuditSampleAppColumns.png)
+![CAF Audit Account 1 Sample App Table Columns](https://cafaudit.github.io/audit-service/pages/en-us/images/account_1AuditSampleAppColumns.png)
 
 The figure shows an `account_1` schema with an `AuditSampleApp` table and the columns for audit event data for the application.
 
-![CAF Audit Account 1 Kafka Reject Table Columns](images/account_1RejectTable.png)
+![CAF Audit Account 1 Kafka Reject Table Columns](https://cafaudit.github.io/audit-service/pages/en-us/images/account_1RejectTable.png)
 
 The figure shows the `account_1` schema with a `kafka_rej` table and columns for rejected audit event data.

@@ -62,25 +62,25 @@ A read-only role is required for users of search and anayltics services that wis
 1. Enter a CREATE ROLE command to create an audit reader role:
 	`CREATE ROLE "caf-audit-read";`
 
-	![Create Audit Reader Role SQL](images/CreateAuditReaderRoleSQL.PNG)
+	![Create Audit Reader Role SQL](https://cafaudit.github.io/audit-service/pages/en-us/images/CreateAuditReaderRoleSQL.PNG)
 
   **Note:** For illustrative purposes, the following example shows the creation of a new user and then grants that new user the audit reader role. In practice, it is more likely you would grant the reader role to an existing user, who wishes to query data in HPE Vertica for search and analytics purposes. 
   
 2. Create a new user and assign a password with IDENTIFIED BY:
 	`CREATE USER "caf-audit-reader" IDENTIFIED BY 'c@FaR3aD3R';`
 
-	![Create Audit Reader User SQL](images/CreateAuditReaderUserSQL.PNG)
+	![Create Audit Reader User SQL](https://cafaudit.github.io/audit-service/pages/en-us/images/CreateAuditReaderUserSQL.PNG)
 
 
 3. Grant the user the audit reader role:
 	`GRANT "caf-audit-read" TO "caf-audit-reader";`
 
-	![Grant Reader Role to Audit Reader User SQL](images/GrantAuditReaderUserReaderRoleSQL.PNG)
+	![Grant Reader Role to Audit Reader User SQL](https://cafaudit.github.io/audit-service/pages/en-us/images/GrantAuditReaderUserReaderRoleSQL.PNG)
 
 4. Enable the user with the audit reader role:
 	`ALTER USER "caf-audit-reader" DEFAULT ROLE "caf-audit-read";`
 
-	![Enable the Audit Reader User's Reader Role SQL](images/EnableAuditReaderUserReaderRoleSQL.PNG)
+	![Enable the Audit Reader User's Reader Role SQL](https://cafaudit.github.io/audit-service/pages/en-us/images/EnableAuditReaderUserReaderRoleSQL.PNG)
 
 The `caf-audit-read` role is granted its privileges internally by the Audit Management Web Service during tenant registration. When a new tenant is added, the database schema and corresponding tables for that tenant are created. It is during this stage that the `caf-audit-read` role is granted USAGE on the schema and SELECT on the relevant table.
 
@@ -91,12 +91,12 @@ The Audit Management web service requires a service account to create database t
 1. Create the Audit Service user and assign them a password with IDENTIFIED BY:
 	`CREATE USER "caf-audit-service" IDENTIFIED BY 'c@Fa5eR51cE';`
 
-	![Create the Audit Service User SQL](images/CreateAuditServiceUserSQL.PNG)
+	![Create the Audit Service User SQL](https://cafaudit.github.io/audit-service/pages/en-us/images/CreateAuditServiceUserSQL.PNG)
 
 2. Grant the Audit Service user database CREATE permission:
 	`GRANT CREATE ON DATABASE "CAFAudit" TO "caf-audit-service";`
 
-	![Grant the Audit Service User CREATE permissions on CAFAudit SQL](images/GrantAuditServiceUserCreatePermissionSQL.PNG)
+	![Grant the Audit Service User CREATE permissions on CAFAudit SQL](https://cafaudit.github.io/audit-service/pages/en-us/images/GrantAuditServiceUserCreatePermissionSQL.PNG)
 
 ##### Create Audit Loader User
 
@@ -105,17 +105,17 @@ The Kafka-Vertica Scheduler requires a loader account for loading audit events f
 1. To create the CAF Audit Loader User and assign them a password with IDENTIFIED BY:
 	`CREATE USER "caf-audit-loader" IDENTIFIED BY 'c@FaL0Ad3r';`
 
-	![Create the Audit Loader User SQL](images/CreateAuditLoaderUserSQL.PNG)
+	![Create the Audit Loader User SQL](https://cafaudit.github.io/audit-service/pages/en-us/images/CreateAuditLoaderUserSQL.PNG)
 
 2. Grant the Audit Loader user pseudo super user role:
 	`GRANT PSEUDOSUPERUSER TO "caf-audit-loader";`
 
-	![Grant PSEUDOSUPERUSER Role to Audit Loader User SQL](images/GrantAuditLoaderUserSudoRoleSQL.PNG)
+	![Grant PSEUDOSUPERUSER Role to Audit Loader User SQL](https://cafaudit.github.io/audit-service/pages/en-us/images/GrantAuditLoaderUserSudoRoleSQL.PNG)
 
 3. Enable the Audit Loader user with the pseudo super user role:
 	`ALTER USER "caf-audit-loader" DEFAULT ROLE PSEUDOSUPERUSER;`
 
-	![Enable Audit Loader User with PSEUDOSUPERUSER Role SQL](images/EnableAuditServiceUserSudoRoleSQL.PNG)
+	![Enable Audit Loader User with PSEUDOSUPERUSER Role SQL](https://cafaudit.github.io/audit-service/pages/en-us/images/EnableAuditServiceUserSudoRoleSQL.PNG)
 
 #### Prepare Vertica with Kafka-Vertica Scheduler Schema
 
@@ -143,7 +143,7 @@ where:
 
 The following figure shows the CAFAudit database with a new schema for tracking application tenant topics after running the `vkconfig scheduler --add` command:
 
-![CAFAudit DB with auditscheduler schema](images/CAFAuditAuditSchedulerSchema.PNG)
+![CAFAudit DB with auditscheduler schema](https://cafaudit.github.io/audit-service/pages/en-us/images/CAFAuditAuditSchedulerSchema.PNG)
 
 ## Deploying Kafka
 
@@ -179,7 +179,7 @@ The Kafka-Vertica Scheduler is responsible for consuming audit event messages, f
 
 The following figure shows a Marathon environment running the Audit services started with Chateau:
 
-![Marathon running CAF Audit Management Service](images/MarathonWithAuditManagementService.PNG)
+![Marathon running CAF Audit Management Service](https://cafaudit.github.io/audit-service/pages/en-us/images/MarathonWithAuditManagementService.PNG)
 
 ## Writing an Application Audit Event Definition File
 
@@ -187,7 +187,7 @@ An application for auditing requires the construction of an audit event definiti
 
 The following figure illustrates the audit event definition XML file's schema.
 
-![AuditEventDefinitionFileSchema](images/audit-event-definition-file-desc.png)
+![AuditEventDefinitionFileSchema](https://cafaudit.github.io/audit-service/pages/en-us/images/audit-event-definition-file-desc.png)
 
 where:
 
@@ -210,7 +210,7 @@ If you reference the XML schema file from your audit event definition file, then
 
 	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd http://rh7-artifactory.svs.hpeswlab.net:8081/artifactory/policyengine-release/com/hpe/caf/caf-audit-schema/1.1/caf-audit-schema-1.1.jar!/schema/AuditedApplication.xsd">
+	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd http://rh7-artifactory.svs.hpeswlab.net:8081/artifactory/policyengine-release/com/hpe/caf/caf-audit-schema/1.1/caf-audit-schema-1.1.jar!/schema/AuditedApplication.xsd">	                   
 
 Many IDEs and XML editors use the schema file to provide IntelliSense and type-ahead when authoring the definition file.
 
@@ -270,13 +270,13 @@ Replace `<audit.web.service.host.address>` and `<port>` as necessary.
 
 Application audit events are defined within the audit event definition file, which is used to register the application on the server side. The following figure shows the /applications endpoint for loading this file:
 
-![Overview](images/addApplication.png)
+![Overview](https://cafaudit.github.io/audit-service/pages/en-us/images/addApplication.png)
 
 #### Verification Instructions
 
 When an application events file is registered, it configures the HPE Vertica database with audit management tables to record both the application-specific audit events XML as well as tenants added through the service. See the `ApplicationEvents` and `TenantApplications` tables under the `AuditManagement` schema in the HPE Vertica database. An entry in the `ApplicationEvents` table will also be created to register the application events XML supplied. The following figure shows the `ApplicationEvents` table containing an entry for the SampleApp audit event definition file:
 
-![Audit Management Application Events Table With Sample Application](images/AuditManagementApplicationEventsWithSampleAppVertica.png)
+![Audit Management Application Events Table With Sample Application](https://cafaudit.github.io/audit-service/pages/en-us/images/AuditManagementApplicationEventsWithSampleAppVertica.png)
 
 Further calls to load new application audit event definition files result in additional rows being added to the `ApplicationEvents` table.
 
@@ -284,23 +284,23 @@ Further calls to load new application audit event definition files result in add
 
 Once applications have been registered, tenants can then be added using the /tenants endpoint. You need to supply the tenant and application identifiers in the call to this endpoint. You can associate a tenant with more than one application by passing multiple application identifiers as a JSON array of strings.
 
-![Overview](images/addTenant.png)
+![Overview](https://cafaudit.github.io/audit-service/pages/en-us/images/addTenant.png)
 
 #### Verification Instructions
 
 Every time you add a new tenant, a new row is inserted into the `TenantApplications` table under the `AuditManagement` schema. The following figure illustrates this:
 
-![Audit Management Tenant Applications Table With Tenant ID](images/AuditManagementTenantApplicationsWithTenantApplication.png)
+![Audit Management Tenant Applications Table With Tenant ID](https://cafaudit.github.io/audit-service/pages/en-us/images/AuditManagementTenantApplicationsWithTenantApplication.png)
 
 A new tenant-specific database schema is then created for the tenant in the HPE Vertica database, which is comprised of a number of tables. See [Auditing Database Tables](../../../../caf-audit-management-service-container/documentation/auditing-database-tables.md). If the client-side auditing library sent audit events for this tenant through to the Kafka messaging service, this audit event data should start to arrive in the application-specific audit events table under the tenant-specific schema created as part of the add tenant web service call.
 
 The following figure shows an `account_1` schema with an `AuditSampleApp` table and the columns for audit event data for the application:
 
-![CAF Audit Account 1 Sample App Table Columns](images/account_1AuditSampleAppColumns.png)
+![CAF Audit Account 1 Sample App Table Columns](https://cafaudit.github.io/audit-service/pages/en-us/images/account_1AuditSampleAppColumns.png)
 
 In the case of malformed audit events being passed to auditing, there is a reject table for holding these. The following figure shows the `account_1` schema with a `kafka_rej` table and columns for rejected audit event data:
 
-![CAF Audit Account 1 Kafka Reject Table Columns](images/account_1RejectTable.png)
+![CAF Audit Account 1 Kafka Reject Table Columns](https://cafaudit.github.io/audit-service/pages/en-us/images/account_1RejectTable.png)
 
 ## Generating a Client-side Auditing Library
 
@@ -596,6 +596,6 @@ The method will throw an exception if the audit event could not be stored for so
 
 Every time an `AuditLog` method is called, a new row is entered into the tenant's audit application table. The following figure shows a tenant's `account_1` schema's `AuditSampleApp` table with an audit event entry with data for an audit event:
 
-![Tenant 1 with AuditSampleApp audit event entry](images/account_1AuditSampleAppData.png)
+![Tenant 1 with AuditSampleApp audit event entry](https://cafaudit.github.io/audit-service/pages/en-us/images/account_1AuditSampleAppData.png)
 
 ---

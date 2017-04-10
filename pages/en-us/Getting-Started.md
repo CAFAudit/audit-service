@@ -17,7 +17,7 @@ You need to perform the following steps to set up the Audit Management service.
 
 These steps are explained in more detail in  subsequent sections:
 
-- [Deploying HPE Vertica](deploying-hpe-vertica)
+- [Deploying HPE Vertica](#deploying-hpe-vertica)
 - [Deploying Kafka](#deploying-kafka)
 - [Deploying Audit Web Service and Kafka-Vertica Scheduler](#deploying-audit-web-service-and-kafka-vertica-scheduler)
 - [Writing an Application Audit Event Definition File](#writing-an-application-audit-event-definition-file)
@@ -292,7 +292,7 @@ Every time you add a new tenant, a new row is inserted into the `TenantApplicati
 
 ![Audit Management Tenant Applications Table With Tenant ID](images/AuditManagementTenantApplicationsWithTenantApplication.png)
 
-A new tenant-specific database schema is then created for the tenant in the HPE Vertica database, which is comprised of a number of tables. See [Auditing Database Tables](https://github.hpe.com/caf/audit-service/blob/develop/caf-audit-management-service-container/documentation/auditing-database-tables.md). If the client-side auditing library sent audit events for this tenant through to the Kafka messaging service, this audit event data should start to arrive in the application-specific audit events table under the tenant-specific schema created as part of the add tenant web service call.
+A new tenant-specific database schema is then created for the tenant in the HPE Vertica database, which is comprised of a number of tables. See [Auditing Database Tables](../../../../caf-audit-management-service-container/documentation/auditing-database-tables.md). If the client-side auditing library sent audit events for this tenant through to the Kafka messaging service, this audit event data should start to arrive in the application-specific audit events table under the tenant-specific schema created as part of the add tenant web service call.
 
 The following figure shows an `account_1` schema with an `AuditSampleApp` table and the columns for audit event data for the application:
 
@@ -354,17 +354,6 @@ The following sample Maven project file generates a client-side auditing library
 	            </plugin>
 	        </plugins>
 	    </build>
-	
-	    <pluginRepositories>
-	        <pluginRepository>
-	            <id>cmbg-maven-releases</id>
-	            <name>Cambridge Nexus Releases</name>
-	            <url>http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases</url>
-	            <snapshots>
-	                <enabled>false</enabled>
-	            </snapshots>
-	        </pluginRepository>
-	    </pluginRepositories>
 	</project>
 
 ### Maven Coordinates
@@ -415,23 +404,6 @@ The `xmltojava` goal of the code generation plugin is used to generate the Java 
 	</build>
 
 In this example, the audit event definition file is in the `src/main/xml/` folder, though, it could be read from any folder. The name of the package to use is built up by appending ".auditing" to the project's group identifier (that is, "com.hpe.sampleapp" in this example).
-
-### Plugin Repositories
-
-Depending on how your Maven settings.xml file is configured, the `pluginRepositories` section may or may not be required to locate the code generation plugin.
-
-	<pluginRepositories>
-	    <pluginRepository>
-	        <id>cmbg-maven-releases</id>
-	        <name>Cambridge Nexus Releases</name>
-	        <url>http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases</url>
-	        <snapshots>
-	            <enabled>false</enabled>
-	        </snapshots>
-	    </pluginRepository>
-	</pluginRepositories>
-
-In this example, the URL is set to [http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases](http://cbgmaven.hpeswlab.net/nexus/content/repositories/releases).
 
 ### No-op Auditing Library
 

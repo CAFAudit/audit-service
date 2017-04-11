@@ -17,16 +17,16 @@ p {
 }
 
 a {
-    color: #e7af18;
+    color: #000B05;
     transition: color 0.3s ease-in-out;
 }
 
 a:hover {
-	color: af41e2;
+	color: #005751;
 }
 
 a:visited {
-    color: #2d8a84;
+    color: #00241E;
 }
 
 

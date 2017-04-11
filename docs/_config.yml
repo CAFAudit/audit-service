@@ -1,11 +1,14 @@
 title: Audit
 email: caf-audit@hpe.com
 
-description: CAF Auditing Site Documentation
+description: CAF Auditing Documentation
 baseurl: "/audit-service"
 
 # Build settings
 exclude: ['node_modules']
+
+navigation_image: 'assets/img/auditing-logo.png'
+custom_stylesheet: 'assets/css/site.css'
 
 markdown: kramdown
 highlighter: rouge

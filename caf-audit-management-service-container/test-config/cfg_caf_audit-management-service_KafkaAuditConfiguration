@@ -1,5 +1,0 @@
-{
-    "bootstrapServers": "192.168.56.20:9092",
-    "acks": "all",
-    "retries": "0"
-}

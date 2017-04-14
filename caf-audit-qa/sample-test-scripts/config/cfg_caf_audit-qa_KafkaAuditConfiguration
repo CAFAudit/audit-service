@@ -1,5 +1,0 @@
-{
-    "bootstrapServers": "<kafka broker>:<port number>",
-    "acks": "all",
-    "retries": "0"
-}

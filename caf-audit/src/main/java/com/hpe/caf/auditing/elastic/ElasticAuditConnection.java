@@ -20,14 +20,10 @@ import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import org.elasticsearch.client.transport.TransportClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class ElasticAuditConnection implements AuditConnection {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ElasticAuditConnection.class);
 
     private final TransportClient transportClient;
 

@@ -20,8 +20,6 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -31,8 +29,6 @@ import java.util.List;
  * A factory for Elastic Search TransportClients.
  */
 public class ElasticAuditTransportClientFactory {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ElasticAuditTransportClientFactory.class);
 
     private ElasticAuditTransportClientFactory() {
     }
@@ -56,9 +52,7 @@ public class ElasticAuditTransportClientFactory {
             //  Support for multiple hosts.
             for (final String host : hosts) {
                 transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));
-                LOG.debug("Elastic server initialization - added host: " + host);
             }
-            LOG.debug("Elastic client initialized: " + transportClient.listedNodes().toString());
         } catch (UnknownHostException e) {
             throw new ConfigurationException(e.getMessage(), e);
         }

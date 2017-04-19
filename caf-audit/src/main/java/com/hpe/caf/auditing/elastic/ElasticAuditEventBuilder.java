@@ -22,15 +22,12 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.rest.RestStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ElasticAuditEventBuilder implements AuditEventBuilder {
-    private static final Logger LOG = LoggerFactory.getLogger(ElasticAuditEventBuilder.class);
 
     private static final String ES_INDEX_PREFIX = "audit_tenant_";
     private static final String ES_TYPE = "cafAuditEvent";
@@ -168,16 +165,12 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
             final RestStatus status = indexResponse.status();
             if (status != RestStatus.CREATED) {
-                LOG.debug("Unexpected response status when indexing audit event message " + auditEvent.toString());
                 return;
             }
-            LOG.debug("Audit event message successfully indexed in Elasticsearch. Index: " + indexResponse.getIndex() + ", Type: " + indexResponse.getType() + ", Id: " + indexResponse.getId());
 
         } catch (NoNodeAvailableException nnae) {
-            LOG.error("Error when indexing audit event message " + auditEvent.toString(), nnae);
             throw new ConfigurationException(nnae.getMessage(), nnae);
         } catch (Exception e) {
-            LOG.error("Error when indexing audit event message " + auditEvent.toString(), e);
             throw e;
         }
     }

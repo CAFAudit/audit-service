@@ -15,12 +15,12 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.rest.RestStatus;
 
 import java.util.Date;
@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ElasticAuditEventBuilder implements AuditEventBuilder {
+
+    private static final Logger LOG = LogManager.getLogger(ElasticAuditEventBuilder.class.getName());
 
     private static final String ES_INDEX_PREFIX = "audit_tenant_";
     private static final String ES_TYPE = "cafAuditEvent";
@@ -162,7 +164,16 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
                     .prepareIndex(ES_INDEX_PREFIX + tenantId, ES_TYPE)
                     .setSource(auditEvent)
                     .get();
+
+            final RestStatus status = indexResponse.status();
+            if (status != RestStatus.CREATED) {
+                LOG.debug("Unexpected response status when indexing audit event message " + auditEvent.toString());
+                return;
+            }
+            LOG.debug("Audit event message successfully indexed in Elasticsearch. Index: " + indexResponse.getIndex() + ", Type: " + indexResponse.getType() + ", Id: " + indexResponse.getId());
+
         } catch (Exception e) {
+            LOG.error("Error when indexing audit event message " + auditEvent.toString(), e);
             throw new Exception("Error when indexing audit event message: " + auditEvent.toString(), e);
         }
     }

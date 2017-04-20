@@ -158,20 +158,12 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     public void send() throws Exception {
         try {
             //  Index audit event message into Elasticsearch.
-            IndexResponse indexResponse = transportClient
+            final IndexResponse indexResponse = transportClient
                     .prepareIndex(ES_INDEX_PREFIX + tenantId, ES_TYPE)
                     .setSource(auditEvent)
                     .get();
-
-            final RestStatus status = indexResponse.status();
-            if (status != RestStatus.CREATED) {
-                return;
-            }
-
-        } catch (NoNodeAvailableException nnae) {
-            throw new ConfigurationException(nnae.getMessage(), nnae);
         } catch (Exception e) {
-            throw e;
+            throw new Exception("Error when indexing audit event message: " + auditEvent.toString(), e);
         }
     }
 }

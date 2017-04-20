@@ -83,8 +83,8 @@ public class ElasticAuditIT {
         ES_CLUSTERNAME = System.getProperty("es.cluster.name", System.getenv("es.cluster.name"));
     }
 
-    @Test(expected = ConfigurationException.class)
-    public void testESHost_ConfigException() throws Exception {
+    @Test(expected = Exception.class)
+    public void testUnknownESHost() throws Exception {
 
         final String esUnknownHostName = "unknown";
 
@@ -108,8 +108,8 @@ public class ElasticAuditIT {
         }
     }
 
-    @Test(expected = ConfigurationException.class)
-    public void testESPort_ConfigException() throws Exception {
+    @Test(expected = Exception.class)
+    public void testIncorrectESPort() throws Exception {
 
         final int esUnexpectedPort = 9100;
 
@@ -141,7 +141,7 @@ public class ElasticAuditIT {
             auditEventBuilder.setUser(USER_ID);
 
             //  No need to set up custom data as we expect the call to index the document to fail because
-            //  of unexpected port.
+            //  of the unexpected port used.
             auditEventBuilder.send();
         }
     }

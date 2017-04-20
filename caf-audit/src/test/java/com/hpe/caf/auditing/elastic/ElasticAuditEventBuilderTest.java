@@ -15,7 +15,6 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.internal.AuditNewEventFactory;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -72,10 +71,10 @@ public class ElasticAuditEventBuilderTest {
         Mockito.verify(mockIndexRequestBuilder, Mockito.times(1)).get();
     }
 
-    @Test(expected = ConfigurationException.class)
+    @Test(expected = Exception.class)
     public void testSend_NoNodeAvailableException() throws Exception {
-        //  Throw NoNodeAvailableException() to simulate ConfigurationException.
-        doThrow(new NoNodeAvailableException("Configuration problem!")).when(mockTransportClient).prepareIndex(Mockito.anyString(), Mockito.anyString());
+        //  Throw NoNodeAvailableException() to simulate node disconnect for example.
+        doThrow(new NoNodeAvailableException("Failed!")).when(mockTransportClient).prepareIndex(Mockito.anyString(), Mockito.anyString());
 
         //  Send audit event details to ES.
         eventBuilder.send();
@@ -86,8 +85,8 @@ public class ElasticAuditEventBuilderTest {
 
     @Test(expected = Exception.class)
     public void testSend_Exception() throws Exception {
-        //  Throw NoNodeAvailableException() to simulate ConfigurationException.
-        doThrow(new Exception("Problem!")).when(mockTransportClient).prepareIndex(Mockito.anyString(), Mockito.anyString());
+        //  Throw Exception().
+        doThrow(new Exception("Failed!")).when(mockTransportClient).prepareIndex(Mockito.anyString(), Mockito.anyString());
 
         //  Send audit event details to ES.
         eventBuilder.send();

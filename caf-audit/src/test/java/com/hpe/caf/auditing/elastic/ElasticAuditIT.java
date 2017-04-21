@@ -20,12 +20,12 @@ import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.AuditEventBuilder;
-import org.elasticsearch.action.bulk.byscroll.BulkByScrollResponse;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.reindex.DeleteByQueryAction;
+import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -40,7 +40,7 @@ public class ElasticAuditIT {
 
     private static final String APPLICATION_ID = "aTestApplication";
     private static final String TENANT_ID = "tTestTenant";
-    private static final String USER_ID = "uTestUser2";
+    private static String USER_ID;
     private static final String EVENT_CATEGORY_ID = "evDocument";
     private static final String EVENT_TYPE_ID = "etView";
     private static final String CORRELATION_ID = "cTestCorrelation";
@@ -76,58 +76,76 @@ public class ElasticAuditIT {
     private static int ES_PORT;
     private static String ES_CLUSTERNAME;
 
+    static class RetryElasticsearchOperation {
+        public static final int DEFAULT_RETRIES = 5;
+        public static final long DEFAULT_WAIT_TIME_MS = 1000;
+
+        private int numberOfRetries;
+        private int numberOfTriesLeft;
+        private long timeToWait;
+
+        public RetryElasticsearchOperation() {
+            this(DEFAULT_RETRIES, DEFAULT_WAIT_TIME_MS);
+        }
+
+        public RetryElasticsearchOperation(int numberOfRetries, long timeToWait) {
+            this.numberOfRetries = numberOfRetries;
+            numberOfTriesLeft = numberOfRetries;
+            this.timeToWait = timeToWait;
+        }
+
+        public boolean shouldRetry() {
+            return numberOfTriesLeft > 0;
+        }
+
+        public void retryNeeded() throws Exception {
+            numberOfTriesLeft--;
+            if (!shouldRetry()) {
+                throw new Exception("Retry Failed: Total " + numberOfRetries
+                        + " attempts made at interval " + getTimeToWait()
+                        + "ms");
+            }
+            waitUntilNextTry();
+        }
+
+        public long getTimeToWait() {
+            return timeToWait;
+        }
+
+        private void waitUntilNextTry() {
+            try {
+                Thread.sleep(getTimeToWait());
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
     @BeforeClass
     public static void setup() throws Exception {
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));
         ES_CLUSTERNAME = System.getProperty("es.cluster.name", System.getenv("es.cluster.name"));
+        USER_ID = UUID.randomUUID().toString();
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = ConfigurationException.class)
     public void testUnknownESHost() throws Exception {
+        //  This tests the usage of an unknown host.
+        //  An exception is expected to be thrown.
 
-        final String esUnknownHostName = "unknown";
-
-        try (
-                AuditConnection auditConnection = AuditConnectionFactory.createConnection(new ConfigurationSource() {
-
-                    @Override
-                    public <T> T getConfiguration(Class<T> aClass) throws ConfigurationException {
-                        List<String> hostNames = new ArrayList<>();
-                        hostNames.add(esUnknownHostName);
-
-                        ElasticAuditConfiguration elasticAuditConfiguration = new ElasticAuditConfiguration();
-                        elasticAuditConfiguration.setHostnames(hostNames);
-                        elasticAuditConfiguration.setPort(ES_PORT);
-                        elasticAuditConfiguration.setClusterName(ES_CLUSTERNAME);
-                        return (T) elasticAuditConfiguration;
-                    }
-                })
-        ) {
-            // Do nothing as exception is expected to be thrown.
-        }
+        final String esHostAndPort = "unknown:" + ES_PORT;
+        final AuditConnection auditConnection = getAuditConnection(esHostAndPort,ES_CLUSTERNAME);
     }
 
     @Test(expected = Exception.class)
     public void testIncorrectESPort() throws Exception {
+        //  This tests the usage of an unexpected port number for the ES config.
+        //  An exception is expected to be thrown.
 
-        final int esUnexpectedPort = 9100;
+        final String esHostAndPort = ES_HOSTNAME + ":10000";
 
         try (
-                AuditConnection auditConnection = AuditConnectionFactory.createConnection(new ConfigurationSource() {
-
-                    @Override
-                    public <T> T getConfiguration(Class<T> aClass) throws ConfigurationException {
-                        List<String> hostNames = new ArrayList<>();
-                        hostNames.add(ES_HOSTNAME);
-
-                        ElasticAuditConfiguration elasticAuditConfiguration = new ElasticAuditConfiguration();
-                        elasticAuditConfiguration.setHostnames(hostNames);
-                        elasticAuditConfiguration.setPort(esUnexpectedPort);
-                        elasticAuditConfiguration.setClusterName(ES_CLUSTERNAME);
-                        return (T) elasticAuditConfiguration;
-                    }
-                });
+                AuditConnection auditConnection = getAuditConnection(esHostAndPort,ES_CLUSTERNAME);
                 com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()
         ) {
             //  Index a sample audit event message into Elasticsearch.
@@ -146,23 +164,42 @@ public class ElasticAuditIT {
         }
     }
 
-    @Test
-    public void testESIndexing() throws Exception {
-        final List<String> esHostNames = new ArrayList<>();
-        esHostNames.add(ES_HOSTNAME);
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidTenantId() throws Exception {
+        //  This tests the usage of invalid characters (i.e. commas) in
+        //  the tenant identifier. The tenant identifier is part of the ES
+        //  index name and therefore must not contain commas.
+        //  An IllegalArgumentException is expected to be thrown.
+
+        final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
+        final String invalidTenantIdContainingCommas = "t,test,tenant";
 
         try (
-                AuditConnection auditConnection = AuditConnectionFactory.createConnection(new ConfigurationSource() {
+                AuditConnection auditConnection = getAuditConnection(esHostAndPort,ES_CLUSTERNAME);
+                com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()
+        ) {
+            //  Index a sample audit event message into Elasticsearch.
+            AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
 
-                    @Override
-                    public <T> T getConfiguration(Class<T> aClass) throws ConfigurationException {
-                        ElasticAuditConfiguration elasticAuditConfiguration = new ElasticAuditConfiguration();
-                        elasticAuditConfiguration.setHostnames(esHostNames);
-                        elasticAuditConfiguration.setPort(ES_PORT);
-                        elasticAuditConfiguration.setClusterName(ES_CLUSTERNAME);
-                        return (T) elasticAuditConfiguration;
-                    }
-                });
+            //  Set up fixed field data for the sample audit event message.
+            auditEventBuilder.setApplication(APPLICATION_ID);
+            auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
+            auditEventBuilder.setCorrelationId(CORRELATION_ID);
+            auditEventBuilder.setTenant(invalidTenantIdContainingCommas);
+        }
+    }
+
+    @Test
+    public void testESIndexing() throws Exception {
+        //  This tests the successful indexing of a sample audit event
+        //  message into ES. It firstly indexes the message into ES. It then
+        //  searches ES for the newly indexed document and verifies the field
+        //  data indexed into ES. Afterwards the document is removed from ES.
+
+        final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
+
+        try (
+                AuditConnection auditConnection = getAuditConnection(esHostAndPort,ES_CLUSTERNAME);
                 com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()
         ) {
 
@@ -198,71 +235,88 @@ public class ElasticAuditIT {
 
             //  Send audit event message to Elasticsearch.
             auditEventBuilder.send();
-            Thread.sleep(1000);
 
-            //  Search Elasticsearch for the newly indexed document (by UserId).
-            try ( TransportClient transportClient = ElasticAuditTransportClientFactory.getTransportClient(esHostNames, ES_PORT, ES_CLUSTERNAME)) {
-                SearchHit[] hits = searchDocument(transportClient, ES_INDEX, ES_TYPE, USER_ID_FIELD, USER_ID);
+            //  Search for the audit event message in Elasticsearch and verify
+            //  field data matches input.
+            try (TransportClient transportClient =
+                         ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
+
+                SearchHit[] hits = new SearchHit[0];
+                RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
+                while (retrySearch.shouldRetry()) {
+                    hits = searchDocument(transportClient, USER_ID_FIELD.concat(KEYWORD_SUFFIX), USER_ID);
+
+                    if (hits.length > 0) {
+                        break;
+                    }
+
+                    //  No search hits just yet. Retry.
+                    try {
+                        retrySearch.retryNeeded();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
 
                 //  Expecting a single hit.
                 Assert.assertTrue(hits.length == 1);
 
-                //  Verify fixed field data results.
-                verifyFixedFieldResult(hits, APP_ID_FIELD, APPLICATION_ID);
-                verifyFixedFieldResult(hits, EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID);
-                verifyFixedFieldResult(hits, EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID);
-                verifyFixedFieldResult(hits, USER_ID_FIELD, USER_ID);
-                verifyFixedFieldResult(hits, CORRELATION_ID_FIELD, CORRELATION_ID);
+                //  Make a note of the document identifier as we will use this to clean
+                //  up afterwards.
+                final String docId = hits[0].getId();
 
                 //  Verify fixed field data results.
-                verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date");
+                verifyFieldResult(hits, APP_ID_FIELD, APPLICATION_ID, "string");
+                verifyFieldResult(hits, EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
+                verifyFieldResult(hits, EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
+                verifyFieldResult(hits, USER_ID_FIELD, USER_ID, "string");
+                verifyFieldResult(hits, CORRELATION_ID_FIELD, CORRELATION_ID, "string");
+
+                //  Verify fixed field data results.
+                verifyFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string");
+                verifyFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int");
+                verifyFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short");
+                verifyFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long");
+                verifyFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float");
+                verifyFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double");
+                verifyFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean");
+                verifyFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date");
 
                 //  Delete test document after verification is complete.
-                deleteDocument(transportClient, ES_INDEX, USER_ID_FIELD, USER_ID);
+                deleteDocument(transportClient, docId);
             }
         }
     }
 
-    private static SearchHit[] searchDocument(TransportClient client, String index, String type, String field, String value){
-        SearchResponse response = client.prepareSearch(index.toLowerCase())
-                .setTypes(type)
+    private static AuditConnection getAuditConnection(String esHostAndPorts, String esClusterName)
+            throws ConfigurationException {
+
+        return AuditConnectionFactory.createConnection(new ConfigurationSource() {
+
+            @Override
+            public <T> T getConfiguration(Class<T> aClass) throws ConfigurationException {
+                ElasticAuditConfiguration elasticAuditConfiguration = new ElasticAuditConfiguration();
+                elasticAuditConfiguration.setHostAndPort(esHostAndPorts);
+                elasticAuditConfiguration.setClusterName(esClusterName);
+                return (T) elasticAuditConfiguration;
+            }
+        });
+    }
+
+    private static SearchHit[] searchDocument(TransportClient client, String field, String value){
+        SearchResponse response = client.prepareSearch(ES_INDEX.toLowerCase())
+                .setTypes(ES_TYPE)
                 .setSearchType(SearchType.QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.termQuery(field, value.toLowerCase()))
-                .setFrom(0).setSize(60).setExplain(true)
+                .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
+                .setFrom(0).setSize(10)
                 .execute()
                 .actionGet();
 
         return response.getHits().getHits();
     }
 
-    private static void verifyFixedFieldResult(SearchHit[] results, String field, String expectedValue){
-        Map<String,Object> result = results[0].getSource();
-
-        Object actualFieldValue = null;
-
-        //  Identify matching field in search results.
-        for (Map.Entry<String, Object> entry : result.entrySet()) {
-
-            //  Allow for type suffixes appended to field name in ES.
-            if (entry.getKey().startsWith(field)) {
-                actualFieldValue = entry.getValue();
-                break;
-            }
-        }
-
-        //  Assert result is not null and matches expected value.
-        Assert.assertNotNull(actualFieldValue);
-        Assert.assertEquals(expectedValue, actualFieldValue);
-    }
-
-    private static void verifyCustomFieldResult(SearchHit[] results, String field, Object expectedValue, String type) throws ParseException {
+    private static void verifyFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
+            throws ParseException {
         //  Determine entry key to look for based on type supplied.
         switch(type.toLowerCase()) {
             case "string":
@@ -315,7 +369,8 @@ public class ElasticAuditIT {
     }
 
     private static boolean datesAreEqual(Date expectedDate, String actualDateString) throws ParseException {
-        //  Convert expected date to similar format used in Elasticsearch search results (default ISODateTimeFormat.dateOptionalTimeParser).
+        //  Convert expected date to similar format used in Elasticsearch search results
+        //  (i.e. default ISODateTimeFormat.dateOptionalTimeParser).
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         String expectedDateSting = df.format(expectedDate);
@@ -323,15 +378,30 @@ public class ElasticAuditIT {
         return expectedDateSting.equals(actualDateString);
     }
 
-    private static void deleteDocument(TransportClient client, String index, String field, String value){
-        //   Delete documents based on the provided field and value.
-        BulkByScrollResponse response =
-                DeleteByQueryAction.INSTANCE.newRequestBuilder(client)
-                        .filter(QueryBuilders.matchQuery(field, value))
-                        .source(index.toLowerCase())
-                        .get();
+    private static void deleteDocument(TransportClient client, String documentId){
 
-        //  Only expecting a single document to be deleted.
-        Assert.assertTrue(1 == response.getDeleted());
+        RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
+        while (retryDelete.shouldRetry()) {
+            // Delete document by id.
+            DeleteResponse response = client
+                    .prepareDelete()
+                    .setIndex(ES_INDEX.toLowerCase())
+                    .setType(ES_TYPE)
+                    .setId(documentId)
+                    .execute()
+                    .actionGet();
+
+            if (response.status() == RestStatus.OK) {
+                break;
+            }
+
+            // Retry deletion status is not OK.
+            try {
+                retryDelete.retryNeeded();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
+
 }

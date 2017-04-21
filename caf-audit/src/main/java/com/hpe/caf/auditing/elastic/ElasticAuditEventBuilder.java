@@ -67,30 +67,33 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
     private void addCommonFields(AuditCoreMetadataProvider coreMetadataProvider)
     {
-        auditEvent.put(PROCESS_ID_FIELD, coreMetadataProvider.getProcessId().toString());
-        auditEvent.put(THREAD_ID_FIELD, coreMetadataProvider.getThreadId());
-        auditEvent.put(EVENT_ORDER_FIELD, coreMetadataProvider.getEventOrder());
-        auditEvent.put(EVENT_TIME_FIELD, coreMetadataProvider.getEventTime().toString());
-        auditEvent.put(EVENT_TIME_SOURCE_FIELD, coreMetadataProvider.getEventTimeSource());
+        auditEvent.put(PROCESS_ID_FIELD.concat(KEYWORD_SUFFIX), coreMetadataProvider.getProcessId().toString());
+        auditEvent.put(THREAD_ID_FIELD.concat(LONG_SUFFIX), coreMetadataProvider.getThreadId());
+        auditEvent.put(EVENT_ORDER_FIELD.concat(LONG_SUFFIX), coreMetadataProvider.getEventOrder());
+        auditEvent.put(EVENT_TIME_FIELD.concat(DATE_SUFFIX), coreMetadataProvider.getEventTime().toString());
+        auditEvent.put(EVENT_TIME_SOURCE_FIELD.concat(KEYWORD_SUFFIX), coreMetadataProvider.getEventTimeSource());
     }
 
     @Override
     public void setApplication(String applicationId) {
-        auditEvent.put(APP_ID_FIELD, applicationId);
+        auditEvent.put(APP_ID_FIELD.concat(KEYWORD_SUFFIX), applicationId);
     }
 
     @Override
     public void setUser(String userId) {
-        auditEvent.put(USER_ID_FIELD, userId);
+        auditEvent.put(USER_ID_FIELD.concat(KEYWORD_SUFFIX), userId);
     }
 
     @Override
-    public void setTenant(String tenantId) throws Exception {
+    public void setTenant(String tenantId){
         //  The tenant identifier is used as part of the Elasticsearch index name.
         //  There are restrictions around the naming of the index including it must be lowercase
         //  and not contain commas.
         if(tenantId.contains(",")) {
-            throw new Exception("The tenant identifier must not contain commas.");
+            //  Report invalid comma usage.
+            String errorMessage = "Invalid characters (i.e commas) in the tenant identifier: " + tenantId;
+            LOG.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
         this.tenantId = tenantId.toLowerCase();
 
@@ -99,13 +102,13 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
     @Override
     public void setCorrelationId(String correlationId) {
-        auditEvent.put(CORRELATION_ID_FIELD, correlationId);
+        auditEvent.put(CORRELATION_ID_FIELD.concat(KEYWORD_SUFFIX), correlationId);
     }
 
     @Override
     public void setEventType(String eventCategoryId, String eventTypeId) {
-        auditEvent.put(EVENT_CATEGORY_ID_FIELD, eventCategoryId);
-        auditEvent.put(EVENT_TYPE_ID_FIELD, eventTypeId);
+        auditEvent.put(EVENT_CATEGORY_ID_FIELD.concat(KEYWORD_SUFFIX), eventCategoryId);
+        auditEvent.put(EVENT_TYPE_ID_FIELD.concat(KEYWORD_SUFFIX), eventTypeId);
     }
 
     @Override
@@ -167,14 +170,16 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
             final RestStatus status = indexResponse.status();
             if (status != RestStatus.CREATED) {
-                LOG.debug("Unexpected response status when indexing audit event message " + auditEvent.toString());
-                return;
+                //  Unexpected response so report this.
+                String errorMessage = "Unexpected Elasticsearch response status. Expected 'CREATED' but received '" + status.toString() + "'";
+                LOG.error(errorMessage);
+                throw new Exception(errorMessage);
             }
             LOG.debug("Audit event message successfully indexed in Elasticsearch. Index: " + indexResponse.getIndex() + ", Type: " + indexResponse.getType() + ", Id: " + indexResponse.getId());
 
         } catch (Exception e) {
             LOG.error("Error when indexing audit event message " + auditEvent.toString(), e);
-            throw new Exception("Error when indexing audit event message: " + auditEvent.toString(), e);
+            throw e;
         }
     }
 }

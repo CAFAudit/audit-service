@@ -48,6 +48,6 @@ public class ElasticAuditChannel implements AuditChannel {
 
     @Override
     public void close() throws Exception {
-        this.transportClient.close();
+        // Do nothing.
     }
 }

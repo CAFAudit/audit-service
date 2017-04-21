@@ -24,6 +24,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.List;
 
@@ -40,26 +42,48 @@ public class ElasticAuditTransportClientFactory {
     /**
      * Returns an elastic search TransportClient.
      *
-     * @param hosts list of Elasticsearch hosts
-     * @param port Elasticsearch port
+     * @param hostAndPortValues comma separated list of Elasticsearch host:port values
      * @param clusterName Elasticsearch cluster name
      * @return TransportClient
      * @throws ConfigurationException exception thrown if host is unknown
      */
-    public static TransportClient getTransportClient(List<String> hosts, int port, String clusterName) throws ConfigurationException{
+    public static TransportClient getTransportClient(String hostAndPortValues, String clusterName) throws ConfigurationException{
         final TransportClient transportClient;
+
         try {
             Settings settings = Settings.builder()
                     .put("cluster.name", clusterName).build();
             transportClient = new PreBuiltTransportClient(settings);
 
-            //  Support for multiple hosts.
-            for (final String host : hosts) {
-                transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));
-                LOG.debug("Elasticsearch initialization - added host: " + host);
+            //  Split comma separated list of ES hostname and port values.
+            final String[] hostAndPortArray = hostAndPortValues.split(",");
+
+            //  For each ES hostname and port, add a transport address that will be used to connect to.
+            for (final String hostAndPort : hostAndPortArray) {
+                final String host;
+                final int port;
+                try {
+                    // Add scheme to make the resulting URI valid.
+                    URI uri = new URI("http://" + hostAndPort);
+                    host = uri.getHost();
+                    port = uri.getPort();
+
+                    if (uri.getHost() == null || uri.getPort() == -1) {
+                        throw new URISyntaxException(uri.toString(),
+                                "Elasticsearch host and port have not been provided");
+                    }
+
+                    transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));
+                    LOG.debug("Elasticsearch initialization - added host: " + host);
+
+                } catch (URISyntaxException e) {
+                    LOG.error(e.getMessage());
+                    throw new ConfigurationException(e.getMessage(), e);
+                }
             }
             LOG.debug("Elasticsearch client initialized: " + transportClient.listedNodes().toString());
         } catch (UnknownHostException e) {
+            LOG.error(e.getMessage());
             throw new ConfigurationException(e.getMessage(), e);
         }
 

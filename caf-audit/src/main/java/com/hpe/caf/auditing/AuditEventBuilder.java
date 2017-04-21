@@ -23,7 +23,7 @@ public interface AuditEventBuilder
 
     void setUser(String userId);
 
-    void setTenant(String tenantId) throws Exception;
+    void setTenant(String tenantId);
 
     void setCorrelationId(String correlationId);
 

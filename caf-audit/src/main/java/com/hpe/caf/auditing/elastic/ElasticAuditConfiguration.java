@@ -26,26 +26,17 @@ public class ElasticAuditConfiguration {
 
     }
 
-    private List<String> hostNames;
-
-    private int port;
+    //  Comma separated list of host:port value pairs.
+    private String hostAndPort;
 
     private String clusterName;
 
-    public List<String> getHostNames() {
-        return hostNames;
+    public String getHostAndPort() {
+        return hostAndPort;
     }
 
-    public void setHostnames(List<String> hostNames) {
-        this.hostNames = hostNames;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
+    public void setHostAndPort(String hostAndPort) {
+        this.hostAndPort = hostAndPort;
     }
 
     public String getClusterName() {

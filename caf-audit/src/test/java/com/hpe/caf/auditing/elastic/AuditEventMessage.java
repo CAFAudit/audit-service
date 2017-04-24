@@ -15,45 +15,43 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-import com.hpe.caf.api.Configuration;
-
 import java.util.List;
 
-@Configuration
-public class ElasticAuditConfiguration
+/**
+ * Class to represent message test data.
+ */
+public class AuditEventMessage
 {
 
-    public ElasticAuditConfiguration()
+    public AuditEventMessage()
     {
-
     }
 
-    //  Comma separated list of host:port value pairs.
-    private String hostAndPort;
-
-    private String clusterName;
-
-    public String getHostAndPort()
+    public AuditEventMessage(String method)
     {
-        return hostAndPort;
+        this.method = method;
     }
 
-    public void setHostAndPort(String hostAndPort)
+    private String method;
+    private List<AuditEventMessageParam> params;
+
+    public String getAuditLogMethod()
     {
-        this.hostAndPort = hostAndPort;
+        return method;
     }
 
-    public String getClusterName()
+    public void setAuditLogMethod(String method)
     {
-        if (clusterName == null) {
-            //  Default cluster name.
-            clusterName = "elasticsearch";
-        }
-        return clusterName;
+        this.method = method;
     }
 
-    public void setClusterName(String clusterName)
+    public List<AuditEventMessageParam> getAuditLogMethodParams()
     {
-        this.clusterName = clusterName;
+        return params;
+    }
+
+    public void setAuditLogMethodParams(List<AuditEventMessageParam> params)
+    {
+        this.params = params;
     }
 }

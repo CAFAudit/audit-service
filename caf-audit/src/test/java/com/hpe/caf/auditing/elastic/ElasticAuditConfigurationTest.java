@@ -18,10 +18,12 @@ package com.hpe.caf.auditing.elastic;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ElasticAuditConfigurationTest {
+public class ElasticAuditConfigurationTest
+{
 
     @Test
-    public void testGetClusterName() throws Exception {
+    public void testGetClusterName() throws Exception
+    {
         ElasticAuditConfiguration config = new ElasticAuditConfiguration();
         String defaultClusterName = config.getClusterName();
         Assert.assertEquals("elasticsearch", defaultClusterName);

@@ -32,11 +32,13 @@ import java.util.List;
 /**
  * A factory for Elastic Search TransportClients.
  */
-public class ElasticAuditTransportClientFactory {
+public class ElasticAuditTransportClientFactory
+{
 
     private static final Logger LOG = LogManager.getLogger(ElasticAuditTransportClientFactory.class.getName());
 
-    private ElasticAuditTransportClientFactory() {
+    private ElasticAuditTransportClientFactory()
+    {
     }
 
     /**
@@ -47,12 +49,13 @@ public class ElasticAuditTransportClientFactory {
      * @return TransportClient
      * @throws ConfigurationException exception thrown if host is unknown
      */
-    public static TransportClient getTransportClient(String hostAndPortValues, String clusterName) throws ConfigurationException{
+    public static TransportClient getTransportClient(String hostAndPortValues, String clusterName) throws ConfigurationException
+    {
         final TransportClient transportClient;
 
         try {
             Settings settings = Settings.builder()
-                    .put("cluster.name", clusterName).build();
+                .put("cluster.name", clusterName).build();
             transportClient = new PreBuiltTransportClient(settings);
 
             //  Split comma separated list of ES hostname and port values.
@@ -70,7 +73,7 @@ public class ElasticAuditTransportClientFactory {
 
                     if (uri.getHost() == null || uri.getPort() == -1) {
                         throw new URISyntaxException(uri.toString(),
-                                "Elasticsearch host and port have not been provided");
+                                                     "Elasticsearch host and port have not been provided");
                     }
 
                     transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));

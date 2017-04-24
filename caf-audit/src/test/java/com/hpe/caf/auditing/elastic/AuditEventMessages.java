@@ -15,45 +15,44 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-import com.hpe.caf.api.Configuration;
-
 import java.util.List;
 
-@Configuration
-public class ElasticAuditConfiguration
+/**
+ * Class to represent messages in test data YAML file.
+ */
+public class AuditEventMessages
 {
 
-    public ElasticAuditConfiguration()
+    public AuditEventMessages()
     {
-
     }
 
-    //  Comma separated list of host:port value pairs.
-    private String hostAndPort;
-
-    private String clusterName;
-
-    public String getHostAndPort()
+    public AuditEventMessages(int numberOfMessages)
     {
-        return hostAndPort;
+        this.numberOfMessages = numberOfMessages;
     }
 
-    public void setHostAndPort(String hostAndPort)
+    private int numberOfMessages;
+    private List<AuditEventMessage> messages;
+
+    public int getNumberOfMessages()
     {
-        this.hostAndPort = hostAndPort;
+        return numberOfMessages;
     }
 
-    public String getClusterName()
+    public void setNumberOfMessages(int numberOfMessages)
     {
-        if (clusterName == null) {
-            //  Default cluster name.
-            clusterName = "elasticsearch";
-        }
-        return clusterName;
+        this.numberOfMessages = numberOfMessages;
     }
 
-    public void setClusterName(String clusterName)
+    public List<AuditEventMessage> getMessages()
     {
-        this.clusterName = clusterName;
+        return messages;
     }
+
+    public void setMessages(List<AuditEventMessage> messages)
+    {
+        this.messages = messages;
+    }
+
 }

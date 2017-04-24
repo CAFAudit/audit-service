@@ -19,7 +19,8 @@ import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.elastic.ElasticAuditConnection;
 
-public class AuditConnectionFactory {
+public class AuditConnectionFactory
+{
 
     /**
      * Create connection for the Audit application.
@@ -28,7 +29,8 @@ public class AuditConnectionFactory {
      * @return the connection to the audit server
      * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source
      */
-    public static AuditConnection createConnection(final ConfigurationSource configSource) throws ConfigurationException {
+    public static AuditConnection createConnection(final ConfigurationSource configSource) throws ConfigurationException
+    {
         return new ElasticAuditConnection(configSource);
     }
 }

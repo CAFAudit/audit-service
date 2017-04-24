@@ -31,6 +31,8 @@
     </parent>
 
     <properties>
+        <!-- Must be the same events XML file used in the test code, see AuditIT.auditXMLConfigFile -->
+        <auditXMLConfigFile>./test-case/events.xml</auditXMLConfigFile>
         <maven.failsafe.version>2.19</maven.failsafe.version>
     </properties>
 
@@ -52,6 +54,36 @@
         <dependency>
             <groupId>com.github.cafapi.util</groupId>
             <artifactId>util-process-identifier</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafapi.util</groupId>
+            <artifactId>util-moduleloader</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafapi.config</groupId>
+            <artifactId>config-system</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafapi.cipher</groupId>
+            <artifactId>cipher-null</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- Elasticsearch -->
@@ -139,6 +171,78 @@
 
     <build>
         <plugins>
+            <!-- Generate AuditLog for integration testing -->
+            <plugin>
+                <groupId>com.github.cafaudit</groupId>
+                <artifactId>caf-audit-maven-plugin</artifactId>
+                <version>${project.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-code</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xmltojava</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <auditXMLConfig>${auditXMLConfigFile}</auditXMLConfig>
+                    <packageName>com.hpe.caf.services.audit.api</packageName>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add_test_sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <executions>
+                    <execution>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <testCompilerArgument>-parameters</testCompilerArgument>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--<plugin>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-resources-plugin</artifactId>-->
+            <!--<version>${maven.resources.version}</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<phase>process-test-resources</phase>-->
+            <!--<goals>-->
+            <!--<goal>testResources</goal>-->
+            <!--</goals>-->
+            <!--</execution>-->
+            <!--</executions>-->
+            <!--</plugin>-->
+
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>

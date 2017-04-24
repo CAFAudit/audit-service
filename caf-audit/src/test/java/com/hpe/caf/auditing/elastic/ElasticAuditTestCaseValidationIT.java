@@ -165,17 +165,17 @@ public class ElasticAuditTestCaseValidationIT
                 Iterator<Map<String, Object>> expectedAuditEventsIter = expectedResultSet.iterator();
                 while (expectedAuditEventsIter.hasNext()) {
                     Map<String, Object> expectedAuditEvent = expectedAuditEventsIter.next();
-                    boolean customFieldsComparisonResult = verifyFields(actualAuditEvent, expectedAuditEvent);
+                    boolean fieldsComparisonResult = verifyFields(actualAuditEvent, expectedAuditEvent);
                     // If the fields did not match and there are still more expected fields to match against
                     // continue to the next expected fields for matching.
-                    if (!customFieldsComparisonResult && expectedAuditEventsIter.hasNext()) {
+                    if (!fieldsComparisonResult && expectedAuditEventsIter.hasNext()) {
                         LOG.debug("Actual set of Custom Fields returned did not match with Expected set of "
                             + "Custom Fields. Attempting to match with the next set of Expected Custom Fields.");
                         continue;
                     }
                     // If actual and expected fields matched, remove them from their lists and break out of
                     // the loop
-                    if (customFieldsComparisonResult) {
+                    if (fieldsComparisonResult) {
                         LOG.info("Actual Custom Fields matched with Expected Custom Fields.");
                         actualAuditEventsIter.remove();
                         expectedAuditEventsIter.remove();

@@ -196,7 +196,7 @@ public class ElasticAuditTestCaseValidationIT
         boolean comparisonResult = false;
         for (Map.Entry<String, Object> expectedField : expectedResult.entrySet()) {
             // Ignore tenantId as this is not stored in the DB.
-            if (!expectedField.getKey().equals("tenantId")) {  //TODO: Remove the correlationId and userId checks after merging Connor's latest changes
+            if (!expectedField.getKey().equals("tenantId")) {
                 try {
                     Object expectedFieldValue = expectedField.getValue();
                     comparisonResult = verifyFieldResult(actualResult, expectedField.getKey(), expectedFieldValue,

@@ -112,6 +112,7 @@
         <module>caf-audit-schema</module>
         <module>caf-audit-maven-plugin</module>
         <module>caf-audit</module>
+        <module>caf-audit-contract</module>
     </modules>
 
     <scm>

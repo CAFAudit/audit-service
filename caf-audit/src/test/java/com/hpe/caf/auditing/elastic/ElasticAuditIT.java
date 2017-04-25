@@ -18,8 +18,8 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditEventBuilder;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -33,6 +33,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 public class ElasticAuditIT
 {
@@ -251,21 +252,7 @@ public class ElasticAuditIT
                 = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
 
                 SearchHit[] hits = new SearchHit[0];
-                RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
-                while (retrySearch.shouldRetry()) {
-                    hits = searchDocument(transportClient, USER_ID_FIELD.concat(KEYWORD_SUFFIX), USER_ID);
-
-                    if (hits.length > 0) {
-                        break;
-                    }
-
-                    //  No search hits just yet. Retry.
-                    try {
-                        retrySearch.retryNeeded();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+                hits = searchDocumentInIndex(transportClient, ES_INDEX, USER_ID_FIELD.concat(KEYWORD_SUFFIX), USER_ID);
 
                 //  Expecting a single hit.
                 Assert.assertTrue(hits.length == 1);
@@ -292,7 +279,7 @@ public class ElasticAuditIT
                 verifyFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date");
 
                 //  Delete test document after verification is complete.
-                deleteDocument(transportClient, docId);
+                deleteTenantDocument(transportClient, ES_INDEX, docId);
             }
         }
     }
@@ -315,10 +302,12 @@ public class ElasticAuditIT
             //  Index a sample audit event message into Elasticsearch.
             AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
 
+            String testApplicationId = UUID.randomUUID().toString();
+
             String tenant1Id = TENANT_ID + 1;
 
             //  Set up fixed field data for the sample audit event message.
-            auditEventBuilder.setApplication(APPLICATION_ID);
+            auditEventBuilder.setApplication(testApplicationId);
             auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
             auditEventBuilder.setCorrelationId(CORRELATION_ID);
             auditEventBuilder.setTenant(tenant1Id);
@@ -330,7 +319,7 @@ public class ElasticAuditIT
             String tenant2Id = TENANT_ID + 2;
 
             //  Set up fixed field data for the sample audit event message.
-            auditEventBuilder.setApplication(APPLICATION_ID);
+            auditEventBuilder.setApplication(testApplicationId);
             auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
             auditEventBuilder.setCorrelationId(CORRELATION_ID);
             auditEventBuilder.setTenant(tenant2Id);
@@ -339,42 +328,50 @@ public class ElasticAuditIT
             //  Send audit event message to Elasticsearch.
             auditEventBuilder.send();
 
-            //  Search for the audit event message in Elasticsearch and verify
-            //  field data matches input.
+            // TODO: Search across all indexes for appId. The index names of each hit returned should match each tenantId.
+            //  Search across all indices for the applicationId field in Elasticsearch and verify that each hit returned belongs to the indices we expect.
             try (TransportClient transportClient
                          = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
 
-                SearchHit[] hits = new SearchHit[0];
-                RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
-                hits = getSearchHitsForTenantIndex(tenant1Id, transportClient, hits, retrySearch);
+                SearchHit[] tenant1IndexHits = new SearchHit[0];
+
+                String tenant1IndexId = ES_INDEX_PREFIX + tenant1Id;
+
+                tenant1IndexHits = searchDocumentInIndex(transportClient, tenant1IndexId,
+                        APP_ID_FIELD.concat(KEYWORD_SUFFIX), testApplicationId);
 
                 //  Expecting a single hit.
-                Assert.assertTrue(hits.length == 1);
+                Assert.assertTrue(tenant1IndexHits.length == 1);
 
-                //  Make a note of the document identifier as we will use this to clean
-                //  up afterwards.
-                final String tenant1DocId = hits[0].getId();
+                SearchHit[] tenant2IndexHits = new SearchHit[0];
 
-                retrySearch = new RetryElasticsearchOperation();
-                hits = getSearchHitsForTenantIndex(tenant2Id, transportClient, hits, retrySearch);
+                String tenant2IndexId = ES_INDEX_PREFIX + tenant2Id;
+
+                tenant2IndexHits = searchDocumentInIndex(transportClient, tenant2IndexId,
+                        APP_ID_FIELD.concat(KEYWORD_SUFFIX), testApplicationId);
 
                 //  Expecting a single hit.
-                Assert.assertTrue(hits.length == 1);
+                Assert.assertTrue(tenant2IndexHits.length == 1);
 
-                //  Make a note of the document identifier as we will use this to clean
-                //  up afterwards.
-                final String tenant2DocId = hits[0].getId();
-
-                //  Delete test documents after verification is complete.
-                deleteTenantDocument(transportClient, tenant1Id, tenant1DocId);
-                deleteTenantDocument(transportClient, tenant2Id, tenant2DocId);
+                //  Delete test indexes after verification is complete.
+                deleteTenantIndex(transportClient, tenant1IndexId);
+                deleteTenantIndex(transportClient, tenant2IndexId);
             }
         }
     }
 
-    private SearchHit[] getSearchHitsForTenantIndex(String tenantId, TransportClient transportClient, SearchHit[] hits, RetryElasticsearchOperation retrySearch) {
+    private static SearchHit[] searchDocumentInIndex(TransportClient client, String index, String field, String value)
+    {
+        RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
+        SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
-            hits = searchDocumentInIndex(transportClient, tenantId, USER_ID_FIELD.concat(KEYWORD_SUFFIX), USER_ID);
+            hits = client.prepareSearch(index.toLowerCase())
+                    .setTypes(ES_TYPE)
+                    .setSearchType(SearchType.QUERY_THEN_FETCH)
+                    .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
+                    .setFrom(0).setSize(10)
+                    .execute()
+                    .actionGet().getHits().getHits();
 
             if (hits.length > 0) {
                 break;
@@ -387,152 +384,8 @@ public class ElasticAuditIT
                 throw new RuntimeException(e);
             }
         }
+
         return hits;
-    }
-
-    @Test
-    public void testAuditEventsSearchingFieldValueIsNotCaseSensitive() throws Exception
-    {
-        //  This tests the successful indexing of a sample audit event
-        //  message into ES. It firstly indexes the message into ES. It then
-        //  searches ES for the newly indexed document and verifies the field
-        //  data indexed into ES. Afterwards the document is removed from ES.
-
-        final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
-
-        try (
-            AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(esHostAndPort, ES_CLUSTERNAME);
-            com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
-
-            //  Index a sample audit event message into Elasticsearch.
-            AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
-
-            //  Set up fixed field data for the sample audit event message.
-            auditEventBuilder.setApplication(APPLICATION_ID);
-            auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
-            auditEventBuilder.setCorrelationId(CORRELATION_ID);
-            auditEventBuilder.setTenant(TENANT_ID);
-            auditEventBuilder.setUser(USER_ID);
-
-            //  Send audit event message to Elasticsearch.
-            auditEventBuilder.send();
-
-            //  Search for the audit event message in Elasticsearch and verify
-            //  field data matches input.
-            try (TransportClient transportClient
-                = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
-
-                SearchHit[] hits = new SearchHit[0];
-                RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
-                while (retrySearch.shouldRetry()) {
-                    // Upper case the userId value to search for to prove case sensitivity is not required for matching
-                    hits = searchDocument(transportClient, USER_ID_FIELD.concat(KEYWORD_SUFFIX), USER_ID.toUpperCase());
-
-                    if (hits.length > 0) {
-                        break;
-                    }
-
-                    //  No search hits just yet. Retry.
-                    try {
-                        retrySearch.retryNeeded();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                //  Expecting a single hit.
-                Assert.assertTrue(hits.length == 1);
-
-                //  Delete test document after verification is complete.
-                deleteDocument(transportClient, hits[0].getId());
-            }
-        }
-    }
-
-    @Test
-    public void testAuditEventsSearchingFieldValueIsCharacterSensitive() throws Exception
-    {
-        //  This test indexes the message into ES. It then searches ES for the newly indexed document with field and
-        // value that contains unsupported characters, it verifies that the field value indexed into ES is not
-        // searchable because it contains unsupported characters. Afterwards the document is removed from ES.
-
-        final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
-
-        try (
-                AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(esHostAndPort, ES_CLUSTERNAME);
-                com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
-
-            //  Index a sample audit event message into Elasticsearch.
-            AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
-
-            String appIdWithUnsupportedCharacters = "^:¬`¦!\"£$%&*()_+-=/\\|{}:@~<>?[];'#,./\\" + APPLICATION_ID;
-
-            //  Set up fixed field data for the sample audit event message.
-            auditEventBuilder.setApplication(appIdWithUnsupportedCharacters);
-            auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
-            auditEventBuilder.setCorrelationId(CORRELATION_ID);
-            auditEventBuilder.setTenant(TENANT_ID);
-            auditEventBuilder.setUser(USER_ID);
-
-            //  Send audit event message to Elasticsearch.
-            auditEventBuilder.send();
-
-            //  Search for the audit event message in Elasticsearch and verify
-            //  field data matches input.
-            try (TransportClient transportClient
-                         = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
-
-                SearchHit[] hits = new SearchHit[0];
-                RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
-                while (retrySearch.shouldRetry()) {
-                    hits = searchDocument(transportClient, APP_ID_FIELD.concat(KEYWORD_SUFFIX),
-                            appIdWithUnsupportedCharacters);
-
-                    if (hits.length > 0) {
-                        break;
-                    }
-
-                    //  No search hits just yet. Retry.
-                    try {
-                        retrySearch.retryNeeded();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-
-                //  Expecting a single hit.
-                Assert.assertTrue(hits.length == 1);
-
-                //  Delete test document after verification is complete.
-                deleteDocument(transportClient, hits[0].getId());
-            }
-        }
-    }
-
-    private static SearchHit[] searchDocumentInIndex(TransportClient client, String index, String field, String value)
-    {
-        SearchResponse response = client.prepareSearch((ES_INDEX_PREFIX + index).toLowerCase())
-                .setTypes(ES_TYPE)
-                .setSearchType(SearchType.QUERY_THEN_FETCH)
-                .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
-                .setFrom(0).setSize(10)
-                .execute()
-                .actionGet();
-
-        return response.getHits().getHits();
-    }
-
-    private static SearchHit[] searchDocument(TransportClient client, String field, String value)
-    {
-        SearchResponse response = client.prepareSearch(ES_INDEX.toLowerCase())
-            .setTypes(ES_TYPE)
-            .setSearchType(SearchType.QUERY_THEN_FETCH)
-            .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
-            .setFrom(0).setSize(10)
-            .execute()
-            .actionGet();
-
-        return response.getHits().getHits();
     }
 
     private static void verifyFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
@@ -600,19 +453,18 @@ public class ElasticAuditIT
         return expectedDateSting.equals(actualDateString);
     }
 
-    private static void deleteDocument(TransportClient client, String documentId)
+    private static void deleteTenantDocument(TransportClient client, String tenantId, String documentId)
     {
-
         RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
         while (retryDelete.shouldRetry()) {
             // Delete document by id.
             DeleteResponse response = client
-                .prepareDelete()
-                .setIndex(ES_INDEX.toLowerCase())
-                .setType(ES_TYPE)
-                .setId(documentId)
-                .execute()
-                .actionGet();
+                    .prepareDelete()
+                    .setIndex(tenantId.toLowerCase())
+                    .setType(ES_TYPE)
+                    .setId(documentId)
+                    .execute()
+                    .actionGet();
 
             if (response.status() == RestStatus.OK) {
                 break;
@@ -627,28 +479,30 @@ public class ElasticAuditIT
         }
     }
 
-    private static void deleteTenantDocument(TransportClient client, String tenantId, String documentId)
+    private static void deleteTenantIndex(TransportClient client, String tenantIndexId)
     {
-
         RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
         while (retryDelete.shouldRetry()) {
-            // Delete document by id.
-            DeleteResponse response = client
-                    .prepareDelete()
-                    .setIndex((ES_INDEX_PREFIX + tenantId).toLowerCase())
-                    .setType(ES_TYPE)
-                    .setId(documentId)
-                    .execute()
-                    .actionGet();
-
-            if (response.status() == RestStatus.OK) {
-                break;
-            }
-
-            // Retry deletion status is not OK.
             try {
-                retryDelete.retryNeeded();
-            } catch (Exception e) {
+                boolean didElasticAckDelete = client.admin().indices().delete(
+                        new DeleteIndexRequest(tenantIndexId.toLowerCase())).get().isAcknowledged();
+
+                if (didElasticAckDelete) {
+                    // If Elastic acknowledged our delete wait a second to allow it time to delete the index
+                    Thread.sleep(1000);
+                    break;
+                }
+
+                // Retry deletion if Elastic did not acknowledge the delete request.
+                try {
+                    retryDelete.retryNeeded();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }

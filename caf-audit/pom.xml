@@ -33,7 +33,6 @@
     <properties>
         <!-- Must be the same events XML file used in the test code, see AuditIT.auditXMLConfigFile -->
         <auditXMLConfigFile>./test-case/events.xml</auditXMLConfigFile>
-        <maven.failsafe.version>2.19</maven.failsafe.version>
     </properties>
 
     <dependencies>
@@ -54,11 +53,6 @@
         <dependency>
             <groupId>com.github.cafapi.util</groupId>
             <artifactId>util-process-identifier</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -282,8 +276,10 @@
                                     <!--<log>Server startup complete</log>-->
                                     <http>
                                         <url>http://${docker.host.address}:${elasticsearch.http.port}</url>
+                                        <method>get</method>
+                                        <status>200</status>
                                     </http>
-                                    <time>300000</time>
+                                    <time>60000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
                                 <log>

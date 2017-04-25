@@ -328,36 +328,92 @@ public class ElasticAuditIT
             //  Send audit event message to Elasticsearch.
             auditEventBuilder.send();
 
-            // TODO: Search across all indexes for appId. The index names of each hit returned should match each tenantId.
-            //  Search across all indices for the applicationId field in Elasticsearch and verify that each hit returned belongs to the indices we expect.
+            // Search across all indices for the applicationId field in Elasticsearch and verify that the expected
+            // number of hits are returned.
             try (TransportClient transportClient
                          = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
 
-                SearchHit[] tenant1IndexHits = new SearchHit[0];
+                String[] tenantIndexIds = new String[2];
+                tenantIndexIds[0] = ES_INDEX_PREFIX + tenant1Id;
+                tenantIndexIds[1] = ES_INDEX_PREFIX + tenant2Id;
 
-                String tenant1IndexId = ES_INDEX_PREFIX + tenant1Id;
-
-                tenant1IndexHits = searchDocumentInIndex(transportClient, tenant1IndexId,
+                SearchHit[] tenantIndicesHits = searchDocumentInIndices(transportClient, tenantIndexIds,
                         APP_ID_FIELD.concat(KEYWORD_SUFFIX), testApplicationId);
 
-                //  Expecting a single hit.
-                Assert.assertTrue(tenant1IndexHits.length == 1);
-
-                SearchHit[] tenant2IndexHits = new SearchHit[0];
-
-                String tenant2IndexId = ES_INDEX_PREFIX + tenant2Id;
-
-                tenant2IndexHits = searchDocumentInIndex(transportClient, tenant2IndexId,
-                        APP_ID_FIELD.concat(KEYWORD_SUFFIX), testApplicationId);
-
-                //  Expecting a single hit.
-                Assert.assertTrue(tenant2IndexHits.length == 1);
+                //  Expecting a two hits.
+                Assert.assertTrue(tenantIndicesHits.length == 2);
 
                 //  Delete test indexes after verification is complete.
-                deleteTenantIndex(transportClient, tenant1IndexId);
-                deleteTenantIndex(transportClient, tenant2IndexId);
+                deleteTenantIndices(transportClient, tenantIndexIds);
             }
         }
+    }
+
+    private void deleteTenantIndices(TransportClient client, String[] indices) {
+        // Lowercase each string in the array of indices
+        for (int i = 0; i < indices.length; i++) {
+            indices[i] = indices[i].toLowerCase();
+        }
+
+        RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
+        while (retryDelete.shouldRetry()) {
+            try {
+                boolean didElasticAckDelete = client.admin().indices().delete(
+                        new DeleteIndexRequest(indices)).get().isAcknowledged();
+
+                if (didElasticAckDelete) {
+                    // If Elastic acknowledged our delete wait a second to allow it time to delete the indices
+                    Thread.sleep(1000);
+                    break;
+                }
+
+                // Retry deletion if Elastic did not acknowledge the delete request.
+                try {
+                    retryDelete.retryNeeded();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static SearchHit[] searchDocumentInIndices(TransportClient client, String[] indices, String field,
+                                                       String value)
+    {
+        // Lowercase each string in the array of indices
+        for (int i = 0; i < indices.length; i++) {
+            indices[i] = indices[i].toLowerCase();
+        }
+
+        RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
+        SearchHit[] hits = null;
+        while (retrySearch.shouldRetry()) {
+            hits = client.prepareSearch(indices)
+                    .setTypes(ES_TYPE)
+                    .setSearchType(SearchType.QUERY_THEN_FETCH)
+                    .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
+                    .setFrom(0).setSize(10)
+                    .execute()
+                    .actionGet().getHits().getHits();
+
+            if (hits.length > 0) {
+                break;
+            }
+
+            //  No search hits just yet. Retry.
+            try {
+                retrySearch.retryNeeded();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return hits;
     }
 
     private static SearchHit[] searchDocumentInIndex(TransportClient client, String index, String field, String value)

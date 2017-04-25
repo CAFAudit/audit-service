@@ -148,7 +148,8 @@ public class GeneratedAuditLogIT {
 
             SearchHit searchHit = getAuditEvent(correlationId);
             Map<String, Object> source = searchHit.getSource();
-            event1Order = (Long)source.get(EVENT_ORDER_FIELD.concat(LONG_SUFFIX));
+            //TODO Correct when custom type mappings are implemented
+            event1Order = (Integer)source.get(EVENT_ORDER_FIELD.concat(LONG_SUFFIX));
         }
 
         {
@@ -159,7 +160,8 @@ public class GeneratedAuditLogIT {
 
             SearchHit searchHit = getAuditEvent(correlationId);
             Map<String, Object> source = searchHit.getSource();
-            event2Order = (Long)source.get(EVENT_ORDER_FIELD.concat(LONG_SUFFIX));
+            //TODO Correct when custom type mappings are implemented
+            event2Order = (Integer)source.get(EVENT_ORDER_FIELD.concat(LONG_SUFFIX));
         }
 
         Assert.assertTrue("Event 1 order was not less than event 2 order", event1Order<event2Order);

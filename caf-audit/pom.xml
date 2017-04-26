@@ -33,6 +33,7 @@
     <properties>
         <!-- Must be the same events XML file used in the test code, see AuditIT.auditXMLConfigFile -->
         <auditXMLConfigFile>./test-case/events.xml</auditXMLConfigFile>
+        <maven.failsafe.version>2.19</maven.failsafe.version>
     </properties>
 
     <dependencies>
@@ -258,10 +259,8 @@
                                     <!--<log>Server startup complete</log>-->
                                     <http>
                                         <url>http://${docker.host.address}:${elasticsearch.http.port}</url>
-                                        <method>get</method>
-                                        <status>200</status>
                                     </http>
-                                    <time>60000</time>
+                                    <time>300000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
                                 <log>

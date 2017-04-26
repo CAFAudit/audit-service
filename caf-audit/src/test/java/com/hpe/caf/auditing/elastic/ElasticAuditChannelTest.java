@@ -24,35 +24,30 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ElasticAuditChannelTest
-{
+public class ElasticAuditChannelTest {
 
     private TransportClient mockTransportClient;
 
     @Before
-    public void setup()
-    {
+    public void setup() {
         mockTransportClient = Mockito.mock(TransportClient.class);
     }
 
     @Test
-    public void testClose() throws Exception
-    {
+    public void testClose() throws Exception {
         ElasticAuditChannel channel = new ElasticAuditChannel(mockTransportClient);
         channel.close();
     }
 
     @Test
-    public void testCreateEventBuilder() throws Exception
-    {
+    public void testCreateEventBuilder() throws Exception {
         ElasticAuditChannel channel = new ElasticAuditChannel(mockTransportClient);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         Assert.assertNotNull(auditEventBuilder);
     }
 
     @Test
-    public void testCreateEventBuilderWithAuditCoreMetadataProvider() throws Exception
-    {
+    public void testCreateEventBuilderWithAuditCoreMetadataProvider() throws Exception {
         AuditCoreMetadataProvider acmp = AuditNewEventFactory.createNewEvent();
         ElasticAuditChannel channel = new ElasticAuditChannel(mockTransportClient);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder(acmp);

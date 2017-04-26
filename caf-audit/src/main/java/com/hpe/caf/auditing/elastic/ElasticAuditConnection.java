@@ -23,13 +23,11 @@ import org.elasticsearch.client.transport.TransportClient;
 
 import java.io.IOException;
 
-public class ElasticAuditConnection implements AuditConnection
-{
+public class ElasticAuditConnection implements AuditConnection {
 
     private final TransportClient transportClient;
 
-    public ElasticAuditConnection(ConfigurationSource configSource) throws ConfigurationException
-    {
+    public ElasticAuditConnection(ConfigurationSource configSource) throws ConfigurationException {
         //  Get Elasticsearch configuration.
         final ElasticAuditConfiguration config = configSource.getConfiguration(ElasticAuditConfiguration.class);
 
@@ -38,15 +36,13 @@ public class ElasticAuditConnection implements AuditConnection
     }
 
     @Override
-    public AuditChannel createChannel() throws IOException
-    {
+    public AuditChannel createChannel() throws IOException {
         //  Share the Elasticsearch transport client across channels.
         return new ElasticAuditChannel(transportClient);
     }
 
     @Override
-    public void close() throws Exception
-    {
+    public void close() throws Exception {
         transportClient.close();
     }
 }

@@ -23,37 +23,31 @@ import org.elasticsearch.client.transport.TransportClient;
 
 import java.io.IOException;
 
-public class ElasticAuditChannel implements AuditChannel
-{
+public class ElasticAuditChannel implements AuditChannel {
 
     private final TransportClient transportClient;
 
-    public ElasticAuditChannel(TransportClient transportClient)
-    {
+    public ElasticAuditChannel(TransportClient transportClient){
         this.transportClient = transportClient;
     }
 
     @Override
-    public void declareApplication(String applicationId) throws IOException
-    {
+    public void declareApplication(String applicationId) throws IOException {
         // Do nothing.
     }
 
     @Override
-    public AuditEventBuilder createEventBuilder()
-    {
+    public AuditEventBuilder createEventBuilder() {
         return new ElasticAuditEventBuilder(transportClient, AuditNewEventFactory.createNewEvent());
     }
 
     @Override
-    public AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider)
-    {
+    public AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider) {
         return new ElasticAuditEventBuilder(transportClient, coreMetadataProvider);
     }
 
     @Override
-    public void close() throws Exception
-    {
+    public void close() throws Exception {
         // Do nothing.
     }
 }

@@ -20,11 +20,9 @@ import com.hpe.caf.api.Configuration;
 import java.util.List;
 
 @Configuration
-public class ElasticAuditConfiguration
-{
+public class ElasticAuditConfiguration {
 
-    public ElasticAuditConfiguration()
-    {
+    public ElasticAuditConfiguration() {
 
     }
 
@@ -33,27 +31,23 @@ public class ElasticAuditConfiguration
 
     private String clusterName;
 
-    public String getHostAndPort()
-    {
+    public String getHostAndPort() {
         return hostAndPort;
     }
 
-    public void setHostAndPort(String hostAndPort)
-    {
+    public void setHostAndPort(String hostAndPort) {
         this.hostAndPort = hostAndPort;
     }
 
-    public String getClusterName()
-    {
-        if (clusterName == null) {
+    public String getClusterName() {
+        if (clusterName ==  null) {
             //  Default cluster name.
             clusterName = "elasticsearch";
         }
         return clusterName;
     }
 
-    public void setClusterName(String clusterName)
-    {
+    public void setClusterName(String clusterName) {
         this.clusterName = clusterName;
     }
 }

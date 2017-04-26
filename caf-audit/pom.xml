@@ -163,6 +163,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>add_test_sources</id>
@@ -174,6 +175,26 @@
                             <sources>
                                 <source>${project.build.directory}/generated-sources</source>
                             </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Exclude the generated AuditLog class from javadoc generation-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <sourceFileExcludes>
+                                <sourceFileExclude>**/AuditLog.java</sourceFileExclude>
+                            </sourceFileExcludes>
                         </configuration>
                     </execution>
                 </executions>

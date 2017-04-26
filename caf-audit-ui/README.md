@@ -1,6 +1,6 @@
 # Audit Web Service UI
 
-This Swagger UI project builds a documentation web application for the [CAF Audit Web Service](https://github.com/CAFAudit/audit-service/tree/develop/caf-audit--service). It allows users to see what operations the web service exposes as well as documentation relating to those operations and the web service in general.
+This Swagger UI project builds a documentation web application for the [CAF Audit Web Service](https://github.com/CAFAudit/audit-service/tree/develop/caf-audit-service). It allows users to see what operations the web service exposes as well as documentation relating to those operations and the web service in general.
 
 ## Usage
 

@@ -279,7 +279,7 @@ public class ElasticAuditIT
                 verifyFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date");
 
                 //  Delete test document after verification is complete.
-                deleteTenantDocument(transportClient, ES_INDEX, docId);
+                deleteDocument(transportClient, ES_INDEX, docId);
             }
         }
     }
@@ -344,12 +344,12 @@ public class ElasticAuditIT
                 Assert.assertTrue(tenantIndicesHits.length == 2);
 
                 //  Delete test indexes after verification is complete.
-                deleteTenantIndices(transportClient, tenantIndexIds);
+                deleteIndices(transportClient, tenantIndexIds);
             }
         }
     }
 
-    private void deleteTenantIndices(TransportClient client, String[] indices) {
+    private void deleteIndices(TransportClient client, String[] indices) {
         // Lowercase each string in the array of indices
         for (int i = 0; i < indices.length; i++) {
             indices[i] = indices[i].toLowerCase();
@@ -416,12 +416,12 @@ public class ElasticAuditIT
         return hits;
     }
 
-    private static SearchHit[] searchDocumentInIndex(TransportClient client, String index, String field, String value)
+    private static SearchHit[] searchDocumentInIndex(TransportClient client, String indexId, String field, String value)
     {
         RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
-            hits = client.prepareSearch(index.toLowerCase())
+            hits = client.prepareSearch(indexId.toLowerCase())
                     .setTypes(ES_TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
@@ -509,14 +509,14 @@ public class ElasticAuditIT
         return expectedDateSting.equals(actualDateString);
     }
 
-    private static void deleteTenantDocument(TransportClient client, String tenantId, String documentId)
+    private static void deleteDocument(TransportClient client, String indexId, String documentId)
     {
         RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
         while (retryDelete.shouldRetry()) {
             // Delete document by id.
             DeleteResponse response = client
                     .prepareDelete()
-                    .setIndex(tenantId.toLowerCase())
+                    .setIndex(indexId.toLowerCase())
                     .setType(ES_TYPE)
                     .setId(documentId)
                     .execute()
@@ -535,13 +535,13 @@ public class ElasticAuditIT
         }
     }
 
-    private static void deleteTenantIndex(TransportClient client, String tenantIndexId)
+    private static void deleteIndex(TransportClient client, String indexId)
     {
         RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
         while (retryDelete.shouldRetry()) {
             try {
                 boolean didElasticAckDelete = client.admin().indices().delete(
-                        new DeleteIndexRequest(tenantIndexId.toLowerCase())).get().isAcknowledged();
+                        new DeleteIndexRequest(indexId.toLowerCase())).get().isAcknowledged();
 
                 if (didElasticAckDelete) {
                     // If Elastic acknowledged our delete wait a second to allow it time to delete the index

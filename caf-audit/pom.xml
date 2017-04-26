@@ -54,31 +54,6 @@
             <groupId>com.github.cafapi.util</groupId>
             <artifactId>util-process-identifier</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafapi.util</groupId>
-            <artifactId>util-moduleloader</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafapi.config</groupId>
-            <artifactId>config-system</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafapi.cipher</groupId>
-            <artifactId>cipher-null</artifactId>
-            <scope>test</scope>
-        </dependency>
 
         <!-- Elasticsearch -->
         <dependency>
@@ -222,20 +197,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-resources-plugin</artifactId>-->
-            <!--<version>${maven.resources.version}</version>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<phase>process-test-resources</phase>-->
-            <!--<goals>-->
-            <!--<goal>testResources</goal>-->
-            <!--</goals>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--</plugin>-->
 
             <plugin>
                 <groupId>io.fabric8</groupId>

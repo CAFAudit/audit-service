@@ -27,21 +27,18 @@ public interface AuditEventBuilder
 
     void setCorrelationId(String correlationId);
 
-    void setEventType
-    (
+    void setEventType(
         String eventCategoryId,
         String eventTypeId
     );
 
-    void addEventParameter
-    (
+    void addEventParameter(
         String name,
         String columnName,
         String value
     );
 
-    default void addEventParameter
-    (
+    default void addEventParameter(
         String name,
         String columnName,
         String value,
@@ -53,8 +50,7 @@ public interface AuditEventBuilder
         addEventParameter(name, columnName, value);
     }
 
-    default void addEventParameter
-    (
+    default void addEventParameter(
         String name,
         String columnName,
         short value
@@ -63,8 +59,7 @@ public interface AuditEventBuilder
         addEventParameter(name, columnName, Short.toString(value));
     }
 
-    default void addEventParameter
-    (
+    default void addEventParameter(
         String name,
         String columnName,
         int value
@@ -73,8 +68,7 @@ public interface AuditEventBuilder
         addEventParameter(name, columnName, Integer.toString(value));
     }
 
-    default void addEventParameter
-    (
+    default void addEventParameter(
         String name,
         String columnName,
         long value
@@ -83,8 +77,7 @@ public interface AuditEventBuilder
         addEventParameter(name, columnName, Long.toString(value));
     }
 
-    default void addEventParameter
-    (
+    default void addEventParameter(
         String name,
         String columnName,
         float value
@@ -93,8 +86,7 @@ public interface AuditEventBuilder
         addEventParameter(name, columnName, Float.toString(value));
     }
 
-    default void addEventParameter
-    (
+    default void addEventParameter(
         String name,
         String columnName,
         double value
@@ -103,8 +95,7 @@ public interface AuditEventBuilder
         addEventParameter(name, columnName, Double.toString(value));
     }
 
-    default void addEventParameter
-    (
+    default void addEventParameter(
         String name,
         String columnName,
         boolean value
@@ -113,8 +104,7 @@ public interface AuditEventBuilder
         addEventParameter(name, columnName, Boolean.toString(value));
     }
 
-    default void addEventParameter
-    (
+    default void addEventParameter(
         String name,
         String columnName,
         Date value

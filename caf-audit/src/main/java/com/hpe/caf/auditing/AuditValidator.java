@@ -17,7 +17,8 @@ package com.hpe.caf.auditing;
 
 import java.text.MessageFormat;
 
-final class AuditValidator {
+final class AuditValidator
+{
 
     /**
      * Validates the field length and throws an appropriate exception if min or max constraints are exceeded.

@@ -337,11 +337,34 @@ public class ElasticAuditIT
                 tenantIndexIds[0] = ES_INDEX_PREFIX + tenant1Id;
                 tenantIndexIds[1] = ES_INDEX_PREFIX + tenant2Id;
 
-                SearchHit[] tenantIndicesHits = searchDocumentInIndices(transportClient, tenantIndexIds,
-                        APP_ID_FIELD.concat(KEYWORD_SUFFIX), testApplicationId);
+                RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
+                SearchHit[] tenantIndicesHits;
+                while (retrySearch.shouldRetry()) {
+                    tenantIndicesHits = searchDocumentInIndices(transportClient, tenantIndexIds,
+                            APP_ID_FIELD.concat(KEYWORD_SUFFIX), testApplicationId);
 
-                //  Expecting a two hits.
-                Assert.assertTrue(tenantIndicesHits.length == 2);
+                    int numberOfTenantIndexHits = tenantIndicesHits.length;
+
+                    //  If there are less than two hits returned, retry.
+                    //  Else if there are more than two hits returned, fail the test
+                    if (numberOfTenantIndexHits < 2) {
+                        try {
+                            retrySearch.retryNeeded();
+                            continue;
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else if (numberOfTenantIndexHits > 2) {
+                        deleteIndices(transportClient, tenantIndexIds);
+                        Assert.fail("Expecting only two hits to be returned from Audit, however "
+                                + numberOfTenantIndexHits + " hits were returned from Elastic");
+                    }
+
+                    //  Expecting two hits.
+                    Assert.assertTrue("Expected two hits, one for each tenant index, to be returned from Elastic",
+                            numberOfTenantIndexHits == 2);
+                    break;
+                }
 
                 //  Delete test indexes after verification is complete.
                 deleteIndices(transportClient, tenantIndexIds);

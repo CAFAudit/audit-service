@@ -108,6 +108,15 @@ definitions:
       paramType:
         type: string
         description: Type of audit event parameter.
+        default: string
+        enum:
+          - integer
+          - number
+          - string
+          - boolean
+      paramColumnName:
+        type: string
+        description: Alternative field name to be used in the event that multiple audit events comprise of parameters with the same name.
       paramValue:
         type: string
         description: Audit event parameter value.

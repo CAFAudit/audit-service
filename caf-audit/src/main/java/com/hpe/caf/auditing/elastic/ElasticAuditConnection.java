@@ -26,6 +26,7 @@ import java.io.IOException;
 public class ElasticAuditConnection implements AuditConnection {
 
     private final TransportClient transportClient;
+    private ElasticAuditIndexManager indexManager;
 
     public ElasticAuditConnection(ConfigurationSource configSource) throws ConfigurationException {
         //  Get Elasticsearch configuration.
@@ -33,16 +34,20 @@ public class ElasticAuditConnection implements AuditConnection {
 
         //  Get Elasticsearch connection.
         transportClient = ElasticAuditTransportClientFactory.getTransportClient(config.getHostAndPort(), config.getClusterName());
+
+        //  Get Elasticsearch index manager.
+        indexManager = new ElasticAuditIndexManager(config, transportClient);
     }
 
     @Override
     public AuditChannel createChannel() throws IOException {
         //  Share the Elasticsearch transport client across channels.
-        return new ElasticAuditChannel(transportClient);
+        return new ElasticAuditChannel(transportClient, indexManager);
     }
 
     @Override
     public void close() throws Exception {
         transportClient.close();
+        indexManager = null;
     }
 }

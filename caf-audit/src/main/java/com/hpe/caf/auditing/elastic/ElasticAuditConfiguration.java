@@ -17,8 +17,6 @@ package com.hpe.caf.auditing.elastic;
 
 import com.hpe.caf.api.Configuration;
 
-import java.util.List;
-
 @Configuration
 public class ElasticAuditConfiguration {
 
@@ -26,28 +24,39 @@ public class ElasticAuditConfiguration {
 
     }
 
-    //  Comma separated list of host:port value pairs.
+    //  Comma separated list of Elasticsearch host:port value pairs.
     private String hostAndPort;
 
-    private String clusterName;
+    //  Name of the cluster. Defaults to "elasticsearch".
+    private String clusterName = "elasticsearch";
 
-    public String getHostAndPort() {
-        return hostAndPort;
-    }
+    //  The number of primary shards that an index should have. Defaults to 5.
+    private int numberOfShards = 5;
+
+    //  The number of replica shards (copies) that each primary shard should have. Defaults to 1.
+    private int numberOfReplicas = 1;
+
+    public String getHostAndPort() { return hostAndPort; }
 
     public void setHostAndPort(String hostAndPort) {
         this.hostAndPort = hostAndPort;
     }
 
-    public String getClusterName() {
-        if (clusterName ==  null) {
-            //  Default cluster name.
-            clusterName = "elasticsearch";
-        }
-        return clusterName;
-    }
+    public String getClusterName() { return clusterName; }
 
     public void setClusterName(String clusterName) {
         this.clusterName = clusterName;
+    }
+
+    public int getNumberOfShards() { return numberOfShards; }
+
+    public void setNumberOfShards(int numberOfShards) {
+        this.numberOfShards = numberOfShards;
+    }
+
+    public int getNumberOfReplicas() { return numberOfReplicas; }
+
+    public void setNumberOfReplicas(int numberOfReplicas) {
+        this.numberOfReplicas = numberOfReplicas;
     }
 }

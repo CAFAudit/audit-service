@@ -55,11 +55,13 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     private static final String DATE_SUFFIX = "_ADte";
 
     private final TransportClient transportClient;
+    private final ElasticAuditIndexManager indexManager;
     private String tenantId;
     private final Map<String, Object> auditEvent = new HashMap<>();
 
-    public ElasticAuditEventBuilder(TransportClient transportClient, AuditCoreMetadataProvider coreMetadataProvider){
+    public ElasticAuditEventBuilder(TransportClient transportClient, AuditCoreMetadataProvider coreMetadataProvider, ElasticAuditIndexManager indexManager){
         this.transportClient = transportClient;
+        this.indexManager = indexManager;
 
         //  Add fixed audit event fields to Map.
         addCommonFields(coreMetadataProvider);
@@ -97,7 +99,8 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
         }
         this.tenantId = tenantId.toLowerCase();
 
-        // TODO CAF-2610 - Create Elasticsearch index for the specified tenant if it does not already exist.
+        // Create Elasticsearch index for the specified tenant.
+        indexManager.getIndex(ES_INDEX_PREFIX.concat(this.tenantId));
     }
 
     @Override

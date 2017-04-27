@@ -33,7 +33,7 @@
     <parent>
         <groupId>com.github.cafapi</groupId>
         <artifactId>caf-common</artifactId>
-        <version>1.8.0-191</version>
+        <version>1.9.0-197</version>
         <relativePath />
     </parent>
 
@@ -114,6 +114,7 @@
         <module>caf-audit</module>
         <module>caf-audit-contract</module>
         <module>caf-audit-ui</module>
+        <module>docs</module>
     </modules>
 
     <scm>

@@ -113,6 +113,7 @@
         <module>caf-audit-maven-plugin</module>
         <module>caf-audit</module>
         <module>caf-audit-contract</module>
+        <module>caf-audit-ui</module>
     </modules>
 
     <scm>

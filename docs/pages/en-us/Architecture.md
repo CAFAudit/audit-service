@@ -13,25 +13,25 @@ banner:
 
 # Architecture
 
-The Audit library logs audit events on a per tenant, per application basis and facilitates the addition of new tenants and new applications.
+The Audit library logs audit events on a per tenant basis and facilitates the addition of new tenants and new applications.
 
 In order to use Auditing with an application, you must first specify the audit events that the application uses and the parameters that you want to associate with each of the events. The events are specified in an XML file known as the audit event definition file and are used to generate an application-specific, client-side auditing library that sends the application events for auditing to Elasticsearch.
 
-Elasticsearch receives application audit events for a tenant from the client-side library and adds the application audit event to the tenant's index.
+Elasticsearch receives CAF audit events for a tenant from the client-side library and adds the application audit event to the tenant's index.
 
 ## Overview
 
-Auditing is built on Elasticsearch for the messaging and storage of the audit events. Elasticsearch offers high availability, throughput, scalability, and performance to the overall solution. Additionally, Elasticsearch offers strong data analytics capabilities.
+Auditing is built on Elasticsearch for the messaging and storage of the audit events. Elasticsearch offers high availability, throughput, scalability, and performance to the overall solution. Additionally, Elasticsearch is accessible via RESTful APIs, it offers strong data analytics and monitoring capabilities.
 
-### Audit Management Component Architecture
+### Audit Service Component Architecture
 
 The figure below illustrates the overall flow and relationship of components in the Audit service.
 
 ![Architecture](images/AuditElasticArchitecture.png)
 
-1. Setting up your application for Auditing requires defining an audit event definition XML file. The file is used for generation of the client-side audit library.
+1. Setting up your application for Auditing requires defining an audit event definition XML file. The file is used for the generation of the client-side audit library.
 2. Using the `caf-audit-maven-plugin`, the client-side Java library is generated from the audit event definition XML file.
-3. The audited application makes calls to the generated client-side library to send tenant audit events to Elasticsearch which stores them in per tenant indices.
+3. The audited application makes calls to the generated client-side library to send audit events to Elasticsearch. An Audit event is stored in the index belonging to the tenant that made the call. In other words, audit events are stored per tenant within Elasticsearch.
 
 ### Audit Event Definition File
 
@@ -39,7 +39,7 @@ In order to use Auditing in an application, the application's auditing events mu
 
 ### Elasticsearch Indices and Type Mappings
 
-On a tenant's first call of the Audit library, an index is created for the them. A tenant's Elasticsearch index, type and document's ID (`index/type/_id`) is seen as `audit_tenant_<tenantId>/cafAuditEvent/<applicationAuditEvent>`.
+On a tenant's first call of the Audit library, an index is created for the tenant. A tenant's Elasticsearch index, type and document meta-field identifiers (`index/type/doc`) are seen as `audit_tenant_<tenantId>/cafAuditEvent/applicationAuditEvent`.
 
     GET /audit_tenant_1/_mapping/cafAuditEvent
     {
@@ -165,9 +165,9 @@ On a tenant's first call of the Audit library, an index is created for the them.
       }
     }
 
-The above JSON, returned from Elasticsearch, shows us the fixed and custom field type mappings for a tenant's index. An audit event's information is stored in fixed fields and the event's parameters are mapped to their appropriate types based on their field name suffixes added by the Audit library.
+The above JSON, returned from Elasticsearch, illustrates the field type mappings for a tenant's index. Audit event information is stored in fixed fields and the event parameters are mapped to appropriate types based on field name suffixes added by the Audit library.
 
-A tenant application's audit events sent from the client-side library are added that tenant's index.
+A tenant application's audit events are sent from the client-side library to Elasticsearch and added to the index created for the tenant.
 
     GET /audit_tenant_1/cafAuditEvent/_search
     {
@@ -225,4 +225,4 @@ A tenant application's audit events sent from the client-side library are added 
       }
     }
 
-The above JSON, returned from Elasticsearch, shows us all of the audit events belonging to a tenant.
+The above JSON, returned from Elasticsearch, shows us all of the audit events belonging to `audit_tenant_1`.

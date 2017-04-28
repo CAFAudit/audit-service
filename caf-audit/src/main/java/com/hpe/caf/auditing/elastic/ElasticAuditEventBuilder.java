@@ -31,7 +31,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
     private static final Logger LOG = LogManager.getLogger(ElasticAuditEventBuilder.class.getName());
 
-    private static final String ES_INDEX_PREFIX = "audit_tenant_";
+    private static final String ES_INDEX_SUFFIX = "_audit";
     private static final String ES_TYPE = "cafAuditEvent";
 
     private static final String PROCESS_ID_FIELD = "processId";
@@ -100,7 +100,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
         this.tenantId = tenantId.toLowerCase();
 
         // Create Elasticsearch index for the specified tenant.
-        indexManager.getIndex(ES_INDEX_PREFIX.concat(this.tenantId));
+        indexManager.getIndex(this.tenantId.concat(ES_INDEX_SUFFIX));
     }
 
     @Override
@@ -167,7 +167,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
         try {
             //  Index audit event message into Elasticsearch.
             final IndexResponse indexResponse = transportClient
-                    .prepareIndex(ES_INDEX_PREFIX + tenantId, ES_TYPE)
+                    .prepareIndex(tenantId.concat(ES_INDEX_SUFFIX), ES_TYPE)
                     .setSource(auditEvent)
                     .get();
 

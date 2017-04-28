@@ -81,6 +81,8 @@ public class ElasticAuditIndexManager {
         CreateIndexRequest indexRequest = new CreateIndexRequest(indexName, indexSettings);
 
         try {
+            //  Use IndicesAdminClient to create the new index. This operation
+            //  needs to be acknowledged.
             if (transportClient.admin().indices().create(indexRequest).actionGet().isAcknowledged()) {
                 //  Index creation has been acknowledged.
                 LOG.debug("Index " + indexName + " has been created");

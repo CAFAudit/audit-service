@@ -41,7 +41,7 @@ import java.util.UUID;
 
 public class GeneratedAuditLogIT {
 
-    private static final String INDEX_PREFIX = "audit_tenant_";
+    private static final String INDEX_SUFFIX = "_audit";
 
     private static final String ELASTIC_TYPE = "cafAuditEvent";
 
@@ -111,7 +111,7 @@ public class GeneratedAuditLogIT {
             assertField("TestCategory1", EVENT_CATEGORY_ID_FIELD, source);
             assertField("TestEvent1", EVENT_TYPE_ID_FIELD, source);
 
-            Assert.assertEquals(INDEX_PREFIX + "tenant1", searchHit.getIndex());
+            Assert.assertEquals("tenant1" + INDEX_SUFFIX, searchHit.getIndex());
             assertField("user1", USER_ID_FIELD, source);
             assertField(correlationId, CORRELATION_ID_FIELD, source);
             assertField(Short.MAX_VALUE, "ShortType", source);
@@ -167,7 +167,7 @@ public class GeneratedAuditLogIT {
         try (TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
-            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch(INDEX_PREFIX + "*")
+            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch("*" + INDEX_SUFFIX)
                     .setTypes(ELASTIC_TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setFetchSource(true)

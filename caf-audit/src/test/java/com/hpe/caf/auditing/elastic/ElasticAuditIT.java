@@ -45,8 +45,8 @@ public class ElasticAuditIT
     private static final String EVENT_TYPE_ID = "etView";
     private static final String CORRELATION_ID = "cTestCorrelation";
 
-    private static final String ES_INDEX_PREFIX = "audit_tenant_";
-    private static final String ES_INDEX = ES_INDEX_PREFIX + TENANT_ID;
+    private static final String ES_INDEX_SUFFIX = "_audit";
+    private static final String ES_INDEX = TENANT_ID + ES_INDEX_SUFFIX;
     private static final String ES_TYPE = "cafAuditEvent";
 
     private static final String APP_ID_FIELD = "applicationId";
@@ -334,8 +334,8 @@ public class ElasticAuditIT
                          = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
 
                 String[] tenantIndexIds = new String[2];
-                tenantIndexIds[0] = ES_INDEX_PREFIX + tenant1Id;
-                tenantIndexIds[1] = ES_INDEX_PREFIX + tenant2Id;
+                tenantIndexIds[0] = tenant1Id + ES_INDEX_SUFFIX;
+                tenantIndexIds[1] = tenant2Id + ES_INDEX_SUFFIX;
 
                 RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
                 SearchHit[] tenantIndicesHits;

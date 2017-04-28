@@ -26,9 +26,11 @@ import java.io.IOException;
 public class ElasticAuditChannel implements AuditChannel {
 
     private final TransportClient transportClient;
+    private final ElasticAuditIndexManager indexManager;
 
-    public ElasticAuditChannel(TransportClient transportClient){
+    public ElasticAuditChannel(TransportClient transportClient, ElasticAuditIndexManager indexManager){
         this.transportClient = transportClient;
+        this.indexManager = indexManager;
     }
 
     @Override
@@ -38,12 +40,12 @@ public class ElasticAuditChannel implements AuditChannel {
 
     @Override
     public AuditEventBuilder createEventBuilder() {
-        return new ElasticAuditEventBuilder(transportClient, AuditNewEventFactory.createNewEvent());
+        return new ElasticAuditEventBuilder(transportClient, AuditNewEventFactory.createNewEvent(), indexManager);
     }
 
     @Override
     public AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider) {
-        return new ElasticAuditEventBuilder(transportClient, coreMetadataProvider);
+        return new ElasticAuditEventBuilder(transportClient, coreMetadataProvider, indexManager);
     }
 
     @Override

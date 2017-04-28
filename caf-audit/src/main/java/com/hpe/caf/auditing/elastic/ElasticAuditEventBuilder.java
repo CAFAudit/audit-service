@@ -31,7 +31,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
     private static final Logger LOG = LogManager.getLogger(ElasticAuditEventBuilder.class.getName());
 
-    private static final String ES_INDEX_PREFIX = "audit_tenant_";
+    private static final String ES_INDEX_SUFFIX = "_audit";
     private static final String ES_TYPE = "cafAuditEvent";
 
     private static final String PROCESS_ID_FIELD = "processId";
@@ -55,11 +55,13 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     private static final String DATE_SUFFIX = "_ADte";
 
     private final TransportClient transportClient;
+    private final ElasticAuditIndexManager indexManager;
     private String tenantId;
     private final Map<String, Object> auditEvent = new HashMap<>();
 
-    public ElasticAuditEventBuilder(TransportClient transportClient, AuditCoreMetadataProvider coreMetadataProvider){
+    public ElasticAuditEventBuilder(TransportClient transportClient, AuditCoreMetadataProvider coreMetadataProvider, ElasticAuditIndexManager indexManager){
         this.transportClient = transportClient;
+        this.indexManager = indexManager;
 
         //  Add fixed audit event fields to Map.
         addCommonFields(coreMetadataProvider);
@@ -97,7 +99,8 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
         }
         this.tenantId = tenantId.toLowerCase();
 
-        // TODO CAF-2610 - Create Elasticsearch index for the specified tenant if it does not already exist.
+        // Create Elasticsearch index for the specified tenant.
+        indexManager.getIndex(this.tenantId.concat(ES_INDEX_SUFFIX));
     }
 
     @Override
@@ -164,7 +167,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
         try {
             //  Index audit event message into Elasticsearch.
             final IndexResponse indexResponse = transportClient
-                    .prepareIndex(ES_INDEX_PREFIX + tenantId, ES_TYPE)
+                    .prepareIndex(tenantId.concat(ES_INDEX_SUFFIX), ES_TYPE)
                     .setSource(auditEvent)
                     .get();
 

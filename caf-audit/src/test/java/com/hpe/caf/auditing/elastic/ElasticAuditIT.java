@@ -45,24 +45,7 @@ public class ElasticAuditIT
     private static final String EVENT_TYPE_ID = "etView";
     private static final String CORRELATION_ID = "cTestCorrelation";
 
-    private static final String ES_INDEX_SUFFIX = "_audit";
-    private static final String ES_INDEX = TENANT_ID + ES_INDEX_SUFFIX;
-    private static final String ES_TYPE = "cafAuditEvent";
-
-    private static final String APP_ID_FIELD = "applicationId";
-    private static final String USER_ID_FIELD = "userId";
-    private static final String CORRELATION_ID_FIELD = "correlationId";
-    private static final String EVENT_CATEGORY_ID_FIELD = "eventCategoryId";
-    private static final String EVENT_TYPE_ID_FIELD = "eventTypeId";
-
-    private static final String KEYWORD_SUFFIX = "_AKyw";
-    private static final String SHORT_SUFFIX = "_ASrt";
-    private static final String INT_SUFFIX = "_AInt";
-    private static final String LONG_SUFFIX = "_ALng";
-    private static final String FLOAT_SUFFIX = "_AFlt";
-    private static final String DOUBLE_SUFFIX = "_ADbl";
-    private static final String BOOLEAN_SUFFIX = "_ABln";
-    private static final String DATE_SUFFIX = "_ADte";
+    private static final String ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
 
     private static final String CUSTOM_DOC_STRING_PARAM_FIELD = "docStringParam";
     private static final String CUSTOM_DOC_INT_PARAM_FIELD = "docIntParam";
@@ -227,21 +210,21 @@ public class ElasticAuditIT
             Random rand = new Random();
 
             String docStringParamValue = "testStringParam";
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_STRING_PARAM_FIELD, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue);
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_STRING_PARAM_FIELD, null, docStringParamValue);
             int docIntParamValue = rand.nextInt();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_INT_PARAM_FIELD, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue);
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_INT_PARAM_FIELD, null, docIntParamValue);
             short docShortParamValue = (short) rand.nextInt(Short.MAX_VALUE + 1);
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_SHORT_PARAM_FIELD, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue);
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_SHORT_PARAM_FIELD, null, docShortParamValue);
             long docLongParamValue = rand.nextLong();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_LONG_PARAM_FIELD, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue);
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_LONG_PARAM_FIELD, null, docLongParamValue);
             float docFloatParamValue = rand.nextFloat();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_FLOAT_PARAM_FIELD, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue);
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_FLOAT_PARAM_FIELD, null, docFloatParamValue);
             double docDoubleParamValue = rand.nextDouble();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_DOUBLE_PARAM_FIELD, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue);
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_DOUBLE_PARAM_FIELD, null, docDoubleParamValue);
             boolean docBooleanParamValue = rand.nextBoolean();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_BOOLEAN_PARAM_FIELD, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue);
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_BOOLEAN_PARAM_FIELD, null, docBooleanParamValue);
             Date docDateParamValue = new Date();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_DATE_PARAM_FIELD, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue);
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_DATE_PARAM_FIELD, null, docDateParamValue);
 
             //  Send audit event message to Elasticsearch.
             auditEventBuilder.send();
@@ -252,7 +235,10 @@ public class ElasticAuditIT
                 = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
 
                 SearchHit[] hits = new SearchHit[0];
-                hits = searchDocumentInIndex(transportClient, ES_INDEX, USER_ID_FIELD.concat(KEYWORD_SUFFIX), USER_ID);
+                hits = searchDocumentInIndex(transportClient,
+                        ES_INDEX,
+                        ElasticAuditConstants.FixedFieldName.USER_ID_FIELD,
+                        USER_ID);
 
                 //  Expecting a single hit.
                 Assert.assertTrue(hits.length == 1);
@@ -262,21 +248,21 @@ public class ElasticAuditIT
                 final String docId = hits[0].getId();
 
                 //  Verify fixed field data results.
-                verifyFieldResult(hits, APP_ID_FIELD, APPLICATION_ID, "string");
-                verifyFieldResult(hits, EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
-                verifyFieldResult(hits, EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
-                verifyFieldResult(hits, USER_ID_FIELD, USER_ID, "string");
-                verifyFieldResult(hits, CORRELATION_ID_FIELD, CORRELATION_ID, "string");
+                verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, APPLICATION_ID, "string");
+                verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
+                verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
+                verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, USER_ID, "string");
+                verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
 
                 //  Verify fixed field data results.
-                verifyFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string");
-                verifyFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int");
-                verifyFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short");
-                verifyFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long");
-                verifyFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float");
-                verifyFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double");
-                verifyFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean");
-                verifyFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date");
+                verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string");
+                verifyCustomFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int");
+                verifyCustomFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short");
+                verifyCustomFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long");
+                verifyCustomFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float");
+                verifyCustomFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double");
+                verifyCustomFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean");
+                verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date");
 
                 //  Delete test document after verification is complete.
                 deleteDocument(transportClient, ES_INDEX, docId);
@@ -334,14 +320,16 @@ public class ElasticAuditIT
                          = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
 
                 String[] tenantIndexIds = new String[2];
-                tenantIndexIds[0] = tenant1Id + ES_INDEX_SUFFIX;
-                tenantIndexIds[1] = tenant2Id + ES_INDEX_SUFFIX;
+                tenantIndexIds[0] = tenant1Id + ElasticAuditConstants.Index.SUFFIX;
+                tenantIndexIds[1] = tenant2Id + ElasticAuditConstants.Index.SUFFIX;
 
                 RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
                 SearchHit[] tenantIndicesHits;
                 while (retrySearch.shouldRetry()) {
-                    tenantIndicesHits = searchDocumentInIndices(transportClient, tenantIndexIds,
-                            APP_ID_FIELD.concat(KEYWORD_SUFFIX), testApplicationId);
+                    tenantIndicesHits = searchDocumentInIndices(transportClient,
+                            tenantIndexIds,
+                            ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD,
+                            testApplicationId);
 
                     int numberOfTenantIndexHits = tenantIndicesHits.length;
 
@@ -417,7 +405,7 @@ public class ElasticAuditIT
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
             hits = client.prepareSearch(indices)
-                    .setTypes(ES_TYPE)
+                    .setTypes(ElasticAuditConstants.Index.TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
                     .setFrom(0).setSize(10)
@@ -445,7 +433,7 @@ public class ElasticAuditIT
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
             hits = client.prepareSearch(indexId.toLowerCase())
-                    .setTypes(ES_TYPE)
+                    .setTypes(ElasticAuditConstants.Index.TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
                     .setFrom(0).setSize(10)
@@ -467,34 +455,58 @@ public class ElasticAuditIT
         return hits;
     }
 
-    private static void verifyFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
+    private static void verifyFixedFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
+            throws ParseException
+    {
+        Map<String, Object> result = results[0].getSource();
+
+        Object actualFieldValue = null;
+
+        //  Identify matching field in search results.
+        for (Map.Entry<String, Object> entry : result.entrySet()) {
+            if (entry.getKey().equals(field)) {
+                actualFieldValue = entry.getValue();
+                break;
+            }
+        }
+
+        //  Assert result is not null and matches expected value.
+        Assert.assertNotNull(actualFieldValue);
+        if (!type.toLowerCase().equals("date")) {
+            Assert.assertEquals(expectedValue.toString(), actualFieldValue.toString());
+        } else {
+            Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue.toString()));
+        }
+    }
+
+    private static void verifyCustomFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
         throws ParseException
     {
         //  Determine entry key to look for based on type supplied.
         switch (type.toLowerCase()) {
             case "string":
-                field = field + KEYWORD_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
                 break;
             case "short":
-                field = field + SHORT_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX;
                 break;
             case "int":
-                field = field + INT_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.INT_SUFFIX;
                 break;
             case "long":
-                field = field + LONG_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.LONG_SUFFIX;
                 break;
             case "float":
-                field = field + FLOAT_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.FLOAT_SUFFIX;
                 break;
             case "double":
-                field = field + DOUBLE_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.DOUBLE_SUFFIX;
                 break;
             case "boolean":
-                field = field + BOOLEAN_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX;
                 break;
             case "date":
-                field = field + DATE_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.DATE_SUFFIX;
                 break;
         }
 
@@ -540,7 +552,7 @@ public class ElasticAuditIT
             DeleteResponse response = client
                     .prepareDelete()
                     .setIndex(indexId.toLowerCase())
-                    .setType(ES_TYPE)
+                    .setType(ElasticAuditConstants.Index.TYPE)
                     .setId(documentId)
                     .execute()
                     .actionGet();

@@ -77,57 +77,6 @@ public class ElasticAuditIT
     private static int ES_PORT;
     private static String ES_CLUSTERNAME;
 
-    static class RetryElasticsearchOperation
-    {
-        public static final int DEFAULT_RETRIES = 5;
-        public static final long DEFAULT_WAIT_TIME_MS = 1000;
-
-        private int numberOfRetries;
-        private int numberOfTriesLeft;
-        private long timeToWait;
-
-        public RetryElasticsearchOperation()
-        {
-            this(DEFAULT_RETRIES, DEFAULT_WAIT_TIME_MS);
-        }
-
-        public RetryElasticsearchOperation(int numberOfRetries, long timeToWait)
-        {
-            this.numberOfRetries = numberOfRetries;
-            numberOfTriesLeft = numberOfRetries;
-            this.timeToWait = timeToWait;
-        }
-
-        public boolean shouldRetry()
-        {
-            return numberOfTriesLeft > 0;
-        }
-
-        public void retryNeeded() throws Exception
-        {
-            numberOfTriesLeft--;
-            if (!shouldRetry()) {
-                throw new Exception("Retry Failed: Total " + numberOfRetries
-                    + " attempts made at interval " + getTimeToWait()
-                    + "ms");
-            }
-            waitUntilNextTry();
-        }
-
-        public long getTimeToWait()
-        {
-            return timeToWait;
-        }
-
-        private void waitUntilNextTry()
-        {
-            try {
-                Thread.sleep(getTimeToWait());
-            } catch (InterruptedException ignored) {
-            }
-        }
-    }
-
     @BeforeClass
     public static void setup() throws Exception
     {
@@ -553,35 +502,6 @@ public class ElasticAuditIT
             try {
                 retryDelete.retryNeeded();
             } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private static void deleteIndex(TransportClient client, String indexId)
-    {
-        RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
-        while (retryDelete.shouldRetry()) {
-            try {
-                boolean didElasticAckDelete = client.admin().indices().delete(
-                        new DeleteIndexRequest(indexId.toLowerCase())).get().isAcknowledged();
-
-                if (didElasticAckDelete) {
-                    // If Elastic acknowledged our delete wait a second to allow it time to delete the index
-                    Thread.sleep(1000);
-                    break;
-                }
-
-                // Retry deletion if Elastic did not acknowledge the delete request.
-                try {
-                    retryDelete.retryNeeded();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }

@@ -20,6 +20,7 @@ import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.services.audit.api.AuditLog;
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
@@ -27,6 +28,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -38,6 +40,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 public class GeneratedAuditLogIT {
 
@@ -65,6 +68,8 @@ public class GeneratedAuditLogIT {
     private static final String EVENT_CATEGORY_ID_FIELD = "eventCategoryId";
     private static final String EVENT_TYPE_ID_FIELD = "eventTypeId";
 
+    private static final String testTenant = "tenant1";
+
     private static final Logger LOG = LoggerFactory.getLogger(GeneratedAuditLogIT.class);
 
     private static String ES_HOSTNAME;
@@ -81,6 +86,14 @@ public class GeneratedAuditLogIT {
         ES_HOSTNAME_AND_PORT = String.format("%s:%s", ES_HOSTNAME, ES_PORT);
     }
 
+    @After
+    public void cleanUp() throws ConfigurationException {
+        try (TransportClient transportClient
+                     = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
+            deleteIndex(transportClient, testTenant + INDEX_SUFFIX);
+        }
+    }
+
     @Test
     public void auditSimpleEventTest() throws Exception {
         Date date = new Date();
@@ -89,7 +102,7 @@ public class GeneratedAuditLogIT {
         try (AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(ES_HOSTNAME_AND_PORT,
                         ES_CLUSTERNAME);
              com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
-            AuditLog.auditTestEvent1(auditChannel, "tenant1", "user1", correlationId, "stringType1",
+            AuditLog.auditTestEvent1(auditChannel, testTenant, "user1", correlationId, "stringType1",
                     Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
 
             SearchHit searchHit = getAuditEvent(correlationId);
@@ -111,7 +124,7 @@ public class GeneratedAuditLogIT {
             assertField("TestCategory1", EVENT_CATEGORY_ID_FIELD, source);
             assertField("TestEvent1", EVENT_TYPE_ID_FIELD, source);
 
-            Assert.assertEquals("tenant1" + INDEX_SUFFIX, searchHit.getIndex());
+            Assert.assertEquals(testTenant + INDEX_SUFFIX, searchHit.getIndex());
             assertField("user1", USER_ID_FIELD, source);
             assertField(correlationId, CORRELATION_ID_FIELD, source);
             assertField(Short.MAX_VALUE, "ShortType", source);
@@ -136,7 +149,7 @@ public class GeneratedAuditLogIT {
             {
                 Date date = new Date();
                 String correlationId = getCorrelationId();
-                AuditLog.auditTestEvent1(auditChannel, "tenant1", "user1", correlationId, "stringType1",
+                AuditLog.auditTestEvent1(auditChannel, testTenant, "user1", correlationId, "stringType1",
                         Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
 
                 SearchHit searchHit = getAuditEvent(correlationId);
@@ -147,7 +160,7 @@ public class GeneratedAuditLogIT {
             {
                 Date date = new Date();
                 String correlationId = getCorrelationId();
-                AuditLog.auditTestEvent1(auditChannel, "tenant1", "user1", correlationId, "stringType1",
+                AuditLog.auditTestEvent1(auditChannel, testTenant, "user1", correlationId, "stringType1",
                         Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
 
                 SearchHit searchHit = getAuditEvent(correlationId);
@@ -286,4 +299,32 @@ public class GeneratedAuditLogIT {
         Assert.assertEquals(new DateTime(expected), dateTime);
     }
 
+    private static void deleteIndex(TransportClient client, String indexId)
+    {
+        RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
+        while (retryDelete.shouldRetry()) {
+            try {
+                boolean didElasticAckDelete = client.admin().indices().delete(
+                        new DeleteIndexRequest(indexId.toLowerCase())).get().isAcknowledged();
+
+                if (didElasticAckDelete) {
+                    // If Elastic acknowledged our delete wait a second to allow it time to delete the index
+                    Thread.sleep(1000);
+                    break;
+                }
+
+                // Retry deletion if Elastic did not acknowledge the delete request.
+                try {
+                    retryDelete.retryNeeded();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

@@ -31,35 +31,14 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
     private static final Logger LOG = LogManager.getLogger(ElasticAuditEventBuilder.class.getName());
 
-    private static final String ES_INDEX_SUFFIX = "_audit";
-    private static final String ES_TYPE = "cafAuditEvent";
-
-    private static final String PROCESS_ID_FIELD = "processId";
-    private static final String THREAD_ID_FIELD = "threadId";
-    private static final String EVENT_ORDER_FIELD = "eventOrder";
-    private static final String EVENT_TIME_FIELD = "eventTime";
-    private static final String EVENT_TIME_SOURCE_FIELD = "eventTimeSource";
-    private static final String APP_ID_FIELD = "applicationId";
-    private static final String USER_ID_FIELD = "userId";
-    private static final String CORRELATION_ID_FIELD = "correlationId";
-    private static final String EVENT_CATEGORY_ID_FIELD = "eventCategoryId";
-    private static final String EVENT_TYPE_ID_FIELD = "eventTypeId";
-
-    private static final String KEYWORD_SUFFIX = "_AKyw";
-    private static final String SHORT_SUFFIX = "_ASrt";
-    private static final String INT_SUFFIX = "_AInt";
-    private static final String LONG_SUFFIX = "_ALng";
-    private static final String FLOAT_SUFFIX = "_AFlt";
-    private static final String DOUBLE_SUFFIX = "_ADbl";
-    private static final String BOOLEAN_SUFFIX = "_ABln";
-    private static final String DATE_SUFFIX = "_ADte";
-
     private final TransportClient transportClient;
     private final ElasticAuditIndexManager indexManager;
     private String tenantId;
     private final Map<String, Object> auditEvent = new HashMap<>();
 
-    public ElasticAuditEventBuilder(TransportClient transportClient, AuditCoreMetadataProvider coreMetadataProvider, ElasticAuditIndexManager indexManager){
+    public ElasticAuditEventBuilder(TransportClient transportClient,
+                                    AuditCoreMetadataProvider coreMetadataProvider,
+                                    ElasticAuditIndexManager indexManager){
         this.transportClient = transportClient;
         this.indexManager = indexManager;
 
@@ -69,21 +48,21 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
     private void addCommonFields(AuditCoreMetadataProvider coreMetadataProvider)
     {
-        auditEvent.put(PROCESS_ID_FIELD.concat(KEYWORD_SUFFIX), coreMetadataProvider.getProcessId().toString());
-        auditEvent.put(THREAD_ID_FIELD.concat(LONG_SUFFIX), coreMetadataProvider.getThreadId());
-        auditEvent.put(EVENT_ORDER_FIELD.concat(LONG_SUFFIX), coreMetadataProvider.getEventOrder());
-        auditEvent.put(EVENT_TIME_FIELD.concat(DATE_SUFFIX), coreMetadataProvider.getEventTime().toString());
-        auditEvent.put(EVENT_TIME_SOURCE_FIELD.concat(KEYWORD_SUFFIX), coreMetadataProvider.getEventTimeSource());
+        auditEvent.put(ElasticAuditConstants.FixedFieldName.PROCESS_ID_FIELD, coreMetadataProvider.getProcessId().toString());
+        auditEvent.put(ElasticAuditConstants.FixedFieldName.THREAD_ID_FIELD, coreMetadataProvider.getThreadId());
+        auditEvent.put(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD, coreMetadataProvider.getEventOrder());
+        auditEvent.put(ElasticAuditConstants.FixedFieldName.EVENT_TIME_FIELD, coreMetadataProvider.getEventTime().toString());
+        auditEvent.put(ElasticAuditConstants.FixedFieldName.EVENT_TIME_SOURCE_FIELD, coreMetadataProvider.getEventTimeSource());
     }
 
     @Override
     public void setApplication(String applicationId) {
-        auditEvent.put(APP_ID_FIELD.concat(KEYWORD_SUFFIX), applicationId);
+        auditEvent.put(ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, applicationId);
     }
 
     @Override
     public void setUser(String userId) {
-        auditEvent.put(USER_ID_FIELD.concat(KEYWORD_SUFFIX), userId);
+        auditEvent.put(ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, userId);
     }
 
     @Override
@@ -100,66 +79,67 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
         this.tenantId = tenantId.toLowerCase();
 
         // Create Elasticsearch index for the specified tenant.
-        indexManager.getIndex(this.tenantId.concat(ES_INDEX_SUFFIX));
+        indexManager.getIndex(this.tenantId.concat(ElasticAuditConstants.Index.SUFFIX));
     }
 
     @Override
     public void setCorrelationId(String correlationId) {
-        auditEvent.put(CORRELATION_ID_FIELD.concat(KEYWORD_SUFFIX), correlationId);
+        auditEvent.put(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId);
     }
 
     @Override
     public void setEventType(String eventCategoryId, String eventTypeId) {
-        auditEvent.put(EVENT_CATEGORY_ID_FIELD.concat(KEYWORD_SUFFIX), eventCategoryId);
-        auditEvent.put(EVENT_TYPE_ID_FIELD.concat(KEYWORD_SUFFIX), eventTypeId);
+        auditEvent.put(ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, eventCategoryId);
+        auditEvent.put(ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, eventTypeId);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, String value) {
-        // Append _AKyw suffix to field name for 'string' types.
-        auditEvent.put(columnName.concat(KEYWORD_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, short value) {
-        // Append _ASrt suffix to field name for 'short' types.
-        auditEvent.put(columnName.concat(SHORT_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, int value) {
-        // Append _AInt suffix to field name for 'int' types.
-        auditEvent.put(columnName.concat(INT_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.INT_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, long value) {
-        // Append _ALng suffix to field name for 'long' types.
-        auditEvent.put(columnName.concat(LONG_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.LONG_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, float value) {
-        // Append _AFlt suffix to field name for 'float' types.
-        auditEvent.put(columnName.concat(FLOAT_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.FLOAT_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, double value) {
-        // Append _ADbl suffix to field name for 'double' types.
-        auditEvent.put(columnName.concat(DOUBLE_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.DOUBLE_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, boolean value) {
-        // Append _ABln suffix to field name for 'boolean' types.
-        auditEvent.put(columnName.concat(BOOLEAN_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, Date value) {
-        // Append _ADte suffix to field name for 'date' types.
-        auditEvent.put(columnName.concat(DATE_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.DATE_SUFFIX), value);
+    }
+
+    private static String getEventParamName
+    (
+            final String name,
+            final String columnName
+    )
+    {
+        return ((columnName == null) ? name : columnName);
     }
 
     @Override
@@ -167,7 +147,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
         try {
             //  Index audit event message into Elasticsearch.
             final IndexResponse indexResponse = transportClient
-                    .prepareIndex(tenantId.concat(ES_INDEX_SUFFIX), ES_TYPE)
+                    .prepareIndex(tenantId.concat(ElasticAuditConstants.Index.SUFFIX), ElasticAuditConstants.Index.TYPE)
                     .setSource(auditEvent)
                     .get();
 

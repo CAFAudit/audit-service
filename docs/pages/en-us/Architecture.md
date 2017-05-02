@@ -41,20 +41,12 @@ In order to use Auditing in an application, the application's auditing events mu
 
 On a tenant's first call of the Audit library, an index is created for the tenant. A tenant's Elasticsearch index, type and document meta-field identifiers (`index/type/doc`) are seen as `audit_tenant_<tenantId>/cafAuditEvent/applicationAuditEvent`.
 
-    GET /audit_tenant_1/_mapping/cafAuditEvent
+    GET /1_audit/_mapping/cafAuditEvent
     {
-      "audit_tenant_1": {
+      "1_audit": {
         "mappings": {
           "cafAuditEvent": {
             "dynamic_templates": [
-              {
-                "CAFAuditString": {
-                  "match": "*_CAStr",
-                  "mapping": {
-                    "type": "keyword"
-                  }
-                }
-              },
               {
                 "CAFAuditKeyword": {
                   "match": "*_CAKyw",
@@ -89,7 +81,7 @@ On a tenant's first call of the Audit library, an index is created for the tenan
               },
               {
                 "CAFAuditShort": {
-                  "match": "*_CASrt",
+                  "match": "*_CAShort",
                   "mapping": {
                     "type": "short"
                   }
@@ -139,7 +131,7 @@ On a tenant's first call of the Audit library, an index is created for the tenan
                 "type": "keyword"
               },
               "eventOrder": {
-                "type": "integer"
+                "type": "long"
               },
               "eventTime": {
                 "type": "date"
@@ -154,7 +146,7 @@ On a tenant's first call of the Audit library, an index is created for the tenan
                 "type": "keyword"
               },
               "threadId": {
-                "type": "keyword"
+                "type": "long"
               },
               "userId": {
                 "type": "keyword"
@@ -169,7 +161,7 @@ The above JSON, returned from Elasticsearch, illustrates the field type mappings
 
 A tenant application's audit events are sent from the client-side library to Elasticsearch and added to the index created for the tenant.
 
-    GET /audit_tenant_1/cafAuditEvent/_search
+    GET /1_audit/cafAuditEvent/_search
     {
       "took": 3,
       "timed_out": false,
@@ -183,7 +175,7 @@ A tenant application's audit events are sent from the client-side library to Ela
         "max_score": 1,
         "hits": [
           {
-            "_index": "audit_tenant_1",
+            "_index": "1_audit",
             "_type": "cafAuditEvent",
             "_id": "AVuvyhWuI0NChd-OZTz-",
             "_score": 1,
@@ -203,7 +195,7 @@ A tenant application's audit events are sent from the client-side library to Ela
             }
           },
           {
-            "_index": "audit_tenant_1",
+            "_index": "1_audit",
             "_type": "cafAuditEvent",
             "_id": "AVuvySPNI0NChd-OZTzH",
             "_score": 1,
@@ -225,4 +217,4 @@ A tenant application's audit events are sent from the client-side library to Ela
       }
     }
 
-The above JSON, returned from Elasticsearch, shows us all of the audit events belonging to `audit_tenant_1`.
+The above JSON, returned from Elasticsearch, shows us all of the audit events belonging to `1_audit`.

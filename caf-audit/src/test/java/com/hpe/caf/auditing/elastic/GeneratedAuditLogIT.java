@@ -41,30 +41,6 @@ import java.util.UUID;
 
 public class GeneratedAuditLogIT {
 
-    private static final String INDEX_SUFFIX = "_audit";
-
-    private static final String ELASTIC_TYPE = "cafAuditEvent";
-
-    private static final String KEYWORD_SUFFIX = "_AKyw";
-    private static final String SHORT_SUFFIX = "_ASrt";
-    private static final String INT_SUFFIX = "_AInt";
-    private static final String LONG_SUFFIX = "_ALng";
-    private static final String FLOAT_SUFFIX = "_AFlt";
-    private static final String DOUBLE_SUFFIX = "_ADbl";
-    private static final String BOOLEAN_SUFFIX = "_ABln";
-    private static final String DATE_SUFFIX = "_ADte";
-
-    private static final String PROCESS_ID_FIELD = "processId";
-    private static final String THREAD_ID_FIELD = "threadId";
-    private static final String EVENT_ORDER_FIELD = "eventOrder";
-    private static final String EVENT_TIME_FIELD = "eventTime";
-    private static final String EVENT_TIME_SOURCE_FIELD = "eventTimeSource";
-    private static final String APP_ID_FIELD = "applicationId";
-    private static final String USER_ID_FIELD = "userId";
-    private static final String CORRELATION_ID_FIELD = "correlationId";
-    private static final String EVENT_CATEGORY_ID_FIELD = "eventCategoryId";
-    private static final String EVENT_TYPE_ID_FIELD = "eventTypeId";
-
     private static final Logger LOG = LoggerFactory.getLogger(GeneratedAuditLogIT.class);
 
     private static String ES_HOSTNAME;
@@ -95,25 +71,25 @@ public class GeneratedAuditLogIT {
             SearchHit searchHit = getAuditEvent(correlationId);
             Map<String, Object> source = searchHit.getSource();
 
-            assertField(ProcessIdentifier.getProcessId().toString(), PROCESS_ID_FIELD, source);
+            assertFixedField(ProcessIdentifier.getProcessId().toString(), ElasticAuditConstants.FixedFieldName.PROCESS_ID_FIELD, source);
 
             //TODO This will need to be corrected once we have index creation specifying the correct data type CAF-2613
 //            assertField(Thread.currentThread().getId(), THREAD_ID_FIELD, source);
 
             //Event order is tested in eventOrderTest()
 
-            Object eventTimeField = source.get(EVENT_TIME_FIELD.concat(DATE_SUFFIX));
+            Object eventTimeField = source.get(ElasticAuditConstants.FixedFieldName.EVENT_TIME_FIELD);
             DateTime eventDateTime = new DateTime(eventTimeField);
             Assert.assertTrue(eventDateTime.isAfter(new DateTime(date)));
 
-            assertField(InetAddress.getLocalHost().getHostName(), EVENT_TIME_SOURCE_FIELD, source);
-            assertField("TestAuditEvents", APP_ID_FIELD, source);
-            assertField("TestCategory1", EVENT_CATEGORY_ID_FIELD, source);
-            assertField("TestEvent1", EVENT_TYPE_ID_FIELD, source);
+            assertFixedField(InetAddress.getLocalHost().getHostName(), ElasticAuditConstants.FixedFieldName.EVENT_TIME_SOURCE_FIELD, source);
+            assertFixedField("TestAuditEvents", ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, source);
+            assertFixedField("TestCategory1", ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, source);
+            assertFixedField("TestEvent1", ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, source);
 
-            Assert.assertEquals("tenant1" + INDEX_SUFFIX, searchHit.getIndex());
-            assertField("user1", USER_ID_FIELD, source);
-            assertField(correlationId, CORRELATION_ID_FIELD, source);
+            Assert.assertEquals("tenant1" + ElasticAuditConstants.Index.SUFFIX, searchHit.getIndex());
+            assertFixedField("user1", ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, source);
+            assertFixedField(correlationId, ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, source);
             assertField(Short.MAX_VALUE, "ShortType", source);
             assertField(Integer.MAX_VALUE, "IntType", source);
             assertField(Long.MAX_VALUE, "LongType", source);
@@ -141,7 +117,7 @@ public class GeneratedAuditLogIT {
 
                 SearchHit searchHit = getAuditEvent(correlationId);
                 Map<String, Object> source = searchHit.getSource();
-                event1Order = (Integer) source.get(EVENT_ORDER_FIELD.concat(LONG_SUFFIX));  // TODO: CAF-2613 Remove cast to int
+                event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);  // TODO: CAF-2613 Remove cast to int
             }
 
             {
@@ -152,7 +128,7 @@ public class GeneratedAuditLogIT {
 
                 SearchHit searchHit = getAuditEvent(correlationId);
                 Map<String, Object> source = searchHit.getSource();
-                event2Order = (Integer) source.get(EVENT_ORDER_FIELD.concat(LONG_SUFFIX));  // TODO: CAF-2613 Remove cast to int
+                event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);  // TODO: CAF-2613 Remove cast to int
             }
 
             Assert.assertTrue("Event 1 order was not less than event 2 order", event1Order < event2Order);
@@ -167,11 +143,11 @@ public class GeneratedAuditLogIT {
         try (TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
-            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch("*" + INDEX_SUFFIX)
-                    .setTypes(ELASTIC_TYPE)
+            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch("*" + ElasticAuditConstants.Index.SUFFIX)
+                    .setTypes(ElasticAuditConstants.Index.TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setFetchSource(true)
-                    .setQuery(QueryBuilders.matchQuery(CORRELATION_ID_FIELD.concat(KEYWORD_SUFFIX), correlationId));
+                    .setQuery(QueryBuilders.matchQuery(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId));
 
             SearchHits searchHits = searchRequestBuilder.get().getHits();
             for (int attempts = 0; attempts < 5; attempts++) {
@@ -192,9 +168,19 @@ public class GeneratedAuditLogIT {
         }
     }
 
+    private void assertFixedField(String expected, String fieldName, Map<String, Object> source){
+
+        Assert.assertTrue(String.format("Field %s not returned", fieldName), source.containsKey(fieldName));
+        Object sourceField = source.get(fieldName);
+
+        Assert.assertEquals(String.class, sourceField.getClass());
+        String value = (String) sourceField;
+        Assert.assertEquals(expected, value);
+    }
+
     private void assertField(String expected, String fieldName, Map<String, Object> source){
 
-        String fullFieldName = fieldName.concat(KEYWORD_SUFFIX);
+        String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX);
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);
 
@@ -204,7 +190,7 @@ public class GeneratedAuditLogIT {
     }
 
     private void assertField(Short expected, String fieldName, Map<String, Object> source){
-        String fullFieldName = fieldName.concat(SHORT_SUFFIX);
+        String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);
@@ -216,7 +202,7 @@ public class GeneratedAuditLogIT {
     }
 
     private void assertField(Integer expected, String fieldName, Map<String, Object> source){
-        String fullFieldName = fieldName.concat(INT_SUFFIX);
+        String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.INT_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);
@@ -227,7 +213,7 @@ public class GeneratedAuditLogIT {
     }
 
     private void assertField(Long expected, String fieldName, Map<String, Object> source){
-        String fullFieldName = fieldName.concat(LONG_SUFFIX);
+        String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.LONG_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);
@@ -238,7 +224,7 @@ public class GeneratedAuditLogIT {
     }
 
     private void assertField(Float expected, String fieldName, Map<String, Object> source){
-        String fullFieldName = fieldName.concat(FLOAT_SUFFIX);
+        String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.FLOAT_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);
@@ -250,7 +236,7 @@ public class GeneratedAuditLogIT {
     }
 
     private void assertField(Double expected, String fieldName, Map<String, Object> source){
-        String fullFieldName = fieldName.concat(DOUBLE_SUFFIX);
+        String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.DOUBLE_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);
@@ -261,7 +247,7 @@ public class GeneratedAuditLogIT {
     }
 
     private void assertField(Boolean expected, String fieldName, Map<String, Object> source){
-        String fullFieldName = fieldName.concat(BOOLEAN_SUFFIX);
+        String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);
@@ -272,7 +258,7 @@ public class GeneratedAuditLogIT {
     }
 
     private void assertField(Date expected, String fieldName, Map<String, Object> source) throws ParseException {
-        String fullFieldName = fieldName.concat(DATE_SUFFIX);
+        String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.DATE_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);

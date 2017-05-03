@@ -13,16 +13,13 @@ features:
     feature_list:
         - image: assets/img/LandingIcons/support.png
           title: Support for Multiple Applications
-          subtitle: User and system audit events are defined per application. The Audit service offers an easy and user-friendly way to register these events using the Audit Management web service API.
+          subtitle: User and system audit events are defined per application.
         - image: assets/img/LandingIcons/multi-tenant.png
           title: Multi-Tenant Aware
-          subtitle: The service supports multiple tenants in a secure and scalable way. These tenants are registered using the Audit Management web service API. Multi-tenancy support also facilitates audit reporting on a per tenant basis.
+          subtitle: The service supports multiple tenants in a secure and scalable way. Multi-tenancy support also facilitates audit reporting on a per tenant basis.
         - image: assets/img/LandingIcons/library.png
           title: Auto-Generated Client Library
           subtitle: The service includes an auto-generated client library for type safety. This client library also makes it easier to send user and system audit events to the messaging system.
-        - image: assets/img/LandingIcons/messaging.png
-          title: High-Throughput Messaging
-          subtitle: The service uses Apache Kafka internally. Apache Kafka’s high-throughput distributed messaging system is designed to be fast.
 
 social:
     title: Get Involved

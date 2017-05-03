@@ -36,14 +36,6 @@
         },
         {
             "title": {
-                "en-us": "Server-side API"
-            },
-            "url": {
-                "en-us": "pages/en-us/Server-API"
-            }
-        },
-        {
-            "title": {
                 "en-us": "Client-side API"
             },
             "url": {

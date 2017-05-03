@@ -15,6 +15,7 @@
  */
 package com.hpe.caf.auditing.elastic;
 
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditEventBuilder;
@@ -130,6 +131,37 @@ public class ElasticAuditIT
             auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
             auditEventBuilder.setCorrelationId(CORRELATION_ID);
             auditEventBuilder.setTenant(invalidTenantIdContainingCommas);
+        }
+    }
+
+    @Test(expected = UncheckedExecutionException.class)
+    public void testStringLengthRestrictionTenantId() throws Exception
+    {
+        //  This tests the usage of too many characters supplied as the tenant identifier. The tenant identifier is
+        //  part of the ES index name and therefore must not exceed 255. An UncheckedExecutionException is expected to
+        //  be thrown.
+
+        final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
+        final String tenantIdContainingOver255Chars = "ATenantIndexNameWithOverOneHundredCharacters" +
+                "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters" +
+                "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters" +
+                "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters";
+
+        try (
+                AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(esHostAndPort,
+                        ES_CLUSTERNAME);
+                com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
+            //  Index a sample audit event message into Elasticsearch.
+            AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
+
+            //  Set up fixed field data for the sample audit event message.
+            auditEventBuilder.setApplication(APPLICATION_ID);
+            auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
+            auditEventBuilder.setCorrelationId(CORRELATION_ID);
+            auditEventBuilder.setTenant(tenantIdContainingOver255Chars);
+            auditEventBuilder.setUser(USER_ID);
+
+            auditEventBuilder.send();
         }
     }
 

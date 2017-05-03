@@ -18,10 +18,12 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditEventBuilder;
+import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.compress.CompressedXContent;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
@@ -178,10 +180,12 @@ public class ElasticAuditIT
             //  Send audit event message to Elasticsearch.
             auditEventBuilder.send();
 
-            //  Search for the audit event message in Elasticsearch and verify
-            //  field data matches input.
+            //  Verify the type mappings have been set for the index. Then search for the audit event message in
+            //  Elasticsearch and verify field data matches input.
             try (TransportClient transportClient
                 = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
+
+                verifyTypeMappings(transportClient);
 
                 SearchHit[] hits = new SearchHit[0];
                 hits = searchDocumentInIndex(transportClient,
@@ -217,6 +221,41 @@ public class ElasticAuditIT
                 deleteDocument(transportClient, ES_INDEX, docId);
             }
         }
+    }
+
+    private void verifyTypeMappings(TransportClient transportClient) {
+        String expectedTypeMappings = "{\"cafAuditEvent\":{\"dynamic_templates\":[{\"CAFAuditKeyword\":" +
+                "{\"match\":\"*_CAKyw\",\"mapping\":{\"type\":\"keyword\"}}},{\"CAFAuditText\":" +
+                "{\"match\":\"*_CATxt\",\"mapping\":{\"type\":\"text\"}}},{\"CAFAuditLong\":" +
+                "{\"match\":\"*_CALng\",\"mapping\":{\"type\":\"long\"}}},{\"CAFAuditInteger\":" +
+                "{\"match\":\"*_CAInt\",\"mapping\":{\"type\":\"integer\"}}},{\"CAFAuditShort\":" +
+                "{\"match\":\"*_CAShort\",\"mapping\":{\"type\":\"short\"}}},{\"CAFAuditDouble\":" +
+                "{\"match\":\"*_CADbl\",\"mapping\":{\"type\":\"double\"}}},{\"CAFAuditFloat\":" +
+                "{\"match\":\"*_CAFlt\",\"mapping\":{\"type\":\"float\"}}},{\"CAFAuditDate\":" +
+                "{\"match\":\"*_CADte\",\"mapping\":{\"type\":\"date\"}}},{\"CAFAuditBoolean\":" +
+                "{\"match\":\"*_CABln\",\"mapping\":{\"type\":\"boolean\"}}}],\"properties\":" +
+                "{\"applicationId\":{\"type\":\"keyword\"},\"correlationId\":{\"type\":\"keyword\"}," +
+                "\"docBooleanParam_CABln\":{\"type\":\"boolean\"},\"docDateParam_CADte\":{\"type\":\"date\"}," +
+                "\"docDoubleParam_CADbl\":{\"type\":\"double\"},\"docFloatParam_CAFlt\":{\"type\":\"float\"}," +
+                "\"docIntParam_CAInt\":{\"type\":\"integer\"},\"docLongParam_CALng\":{\"type\":\"long\"}," +
+                "\"docShortParam_CAShort\":{\"type\":\"short\"},\"docStringParam_CAKyw\":{\"type\":\"keyword\"}," +
+                "\"eventCategoryId\":{\"type\":\"keyword\"},\"eventOrder\":{\"type\":\"long\"},\"eventTime\":" +
+                "{\"type\":\"date\"},\"eventTimeSource\":{\"type\":\"keyword\"},\"eventTypeId\":" +
+                "{\"type\":\"keyword\"},\"processId\":{\"type\":\"keyword\"},\"threadId\":{\"type\":\"long\"}," +
+                "\"userId\":{\"type\":\"keyword\"}}}}";
+
+        ClusterStateResponse clusterStateResponse =
+                transportClient.admin().cluster().prepareState().execute().actionGet();
+
+        // Get the CAF Audit Event type mapping for the tenant index
+        CompressedXContent indexMapping = clusterStateResponse.getState().getMetaData()
+                .index((TENANT_ID + ElasticAuditConstants.Index.SUFFIX).toLowerCase())
+                .getMappings()
+                .get(ElasticAuditConstants.Index.TYPE)
+                .source();
+
+        Assert.assertEquals("Expected type mappings and actual type mappings should match", expectedTypeMappings,
+                indexMapping.toString());
     }
 
     @Test

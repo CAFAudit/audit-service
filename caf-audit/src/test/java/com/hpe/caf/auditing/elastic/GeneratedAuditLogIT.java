@@ -16,7 +16,6 @@
 package com.hpe.caf.auditing.elastic;
 
 import com.hpe.caf.api.ConfigurationException;
-import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.services.audit.api.AuditLog;
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
@@ -86,8 +85,7 @@ public class GeneratedAuditLogIT {
 
             assertFixedField(ProcessIdentifier.getProcessId().toString(), ElasticAuditConstants.FixedFieldName.PROCESS_ID_FIELD, source);
 
-            //TODO This will need to be corrected once we have index creation specifying the correct data type CAF-2613
-//            assertField(Thread.currentThread().getId(), THREAD_ID_FIELD, source);
+            Assert.assertEquals(Thread.currentThread().getId(), ((Integer) source.get(ElasticAuditConstants.FixedFieldName.THREAD_ID_FIELD)).longValue());
 
             //Event order is tested in eventOrderTest()
 
@@ -115,8 +113,8 @@ public class GeneratedAuditLogIT {
 
     @Test
     public void eventOrderTest() throws Exception{
-        long event1Order;
-        long event2Order;
+        int event1Order;
+        int event2Order;
 
         try (
                 AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(ES_HOSTNAME_AND_PORT,
@@ -130,7 +128,7 @@ public class GeneratedAuditLogIT {
 
                 SearchHit searchHit = getAuditEvent(correlationId);
                 Map<String, Object> source = searchHit.getSource();
-                event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);  // TODO: CAF-2613 Remove cast to int
+                event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
             }
 
             {
@@ -141,7 +139,7 @@ public class GeneratedAuditLogIT {
 
                 SearchHit searchHit = getAuditEvent(correlationId);
                 Map<String, Object> source = searchHit.getSource();
-                event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);  // TODO: CAF-2613 Remove cast to int
+                event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
             }
 
             Assert.assertTrue("Event 1 order was not less than event 2 order", event1Order < event2Order);
@@ -208,7 +206,7 @@ public class GeneratedAuditLogIT {
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);
 
-        // TODO Adjust short parsing as part of custom mapping JIRA CAF-2613
+        // Parse for short type because the Java search api returns shorts as integers
         Assert.assertEquals(Integer.class, sourceField.getClass());
         Short value = ((Integer)(sourceField)).shortValue();
         Assert.assertEquals(expected, value);
@@ -242,7 +240,7 @@ public class GeneratedAuditLogIT {
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);
 
-        // TODO Adjust as double parsing as part of custom mapping JIRA CAF-2613
+        // Parse for float type because the Java search api returns floats as doubles
         Assert.assertEquals(Double.class, sourceField.getClass());
         Float value = ((Double)sourceField).floatValue();
         Assert.assertEquals(expected, value);
@@ -276,7 +274,7 @@ public class GeneratedAuditLogIT {
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
         Object sourceField = source.get(fullFieldName);
 
-        // TODO Adjust as string parsing as part of custom mapping JIRA CAF-2613
+        //  Transform the returned value into a DateTime object as the Java search api returns dates as a strings
         Assert.assertEquals(String.class, sourceField.getClass());
 
         String sourceTime = (String)sourceField;

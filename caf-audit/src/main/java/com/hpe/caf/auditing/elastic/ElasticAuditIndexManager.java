@@ -25,11 +25,13 @@ import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.xcontent.*;
+import org.elasticsearch.common.xcontent.NamedXContentRegistry;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentParser;
+import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.IOException;
-
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 public class ElasticAuditIndexManager {
 
@@ -98,7 +100,7 @@ public class ElasticAuditIndexManager {
         } catch (IOException e) {
             String errorMessage = "Unable to read bytes from " + cafAuditEventTenantIndexMappingsFileName;
             LOG.error(errorMessage);
-            throw new RuntimeException(e);
+            throw new RuntimeException(errorMessage, e);
         }
 
         //  Parse JSON from the bytes and assign to the mapping builder
@@ -107,11 +109,11 @@ public class ElasticAuditIndexManager {
             XContentParser parser = XContentFactory.xContent(XContentType.JSON)
                     .createParser(NamedXContentRegistry.EMPTY, cafAuditEventTenantIndexMappingsBytes);
             parser.close();
-            mappingBuilder = jsonBuilder().copyCurrentStructure(parser);
+            mappingBuilder = XContentFactory.jsonBuilder().copyCurrentStructure(parser);
         } catch (IOException e) {
             String errorMessage = "Unable to parse JSON from " + cafAuditEventTenantIndexMappingsFileName;
             LOG.error(errorMessage);
-            throw new RuntimeException(e);
+            throw new RuntimeException(errorMessage, e);
         }
 
         //  Add the type mappings to the index request

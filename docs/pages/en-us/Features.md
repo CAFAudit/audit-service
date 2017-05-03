@@ -31,5 +31,6 @@ The service is extensively for scalabe as the Elasticsearch is designed with sca
 The service is designed for durability as Elasticsearch provides data redundancy across it's highly scalable cluster.
 
 ## High-Availability
-The service is highly available as Elasticsearch replicates and distributes data across it's scalable, durable cluster.
-
+The service is highly available as Elasticsearch replicates and distributes data across it's scalable, durable cluster.  
+<br/>  
+<br/>  

@@ -33,5 +33,4 @@ For more details on the Java Client-Side Audit Library, see [Client-API](Client-
 ## Elasticsearch
 Elasticsearch is an opensource, distributable, scalable, enterprise grade search engine.  Elasticsearch is accessible through an extensive RESTful API and can provide multi-tenant capable full text searches that support data discovery.  Official clients are available in Java, .NET (C#), Python, Groovy and many other languages.
 
-For more details on Elasticsearch deployment, see [Getting Started](Getting-Started).
-
+For more details on Elasticsearch deployment, see [Audit Service Deploy Project in GitHub](https://github.com/CAFAudit/audit-service-deploy).

@@ -39,7 +39,7 @@ In order to use Auditing in an application, the application's auditing events mu
 
 ### Elasticsearch Indices and Type Mappings
 
-On a tenant's first call of the Audit library, an index is created for the tenant. A tenant's Elasticsearch index, type and document meta-field identifiers (`index/type/doc`) are seen as `audit_tenant_<tenantId>/cafAuditEvent/applicationAuditEvent`.
+On a tenant's first call of the Audit library, an index is created for the tenant. A tenant's Elasticsearch index, type and document meta-field identifiers (`index/type/doc`) are seen as `<tenantId>_audit/cafAuditEvent/applicationAuditEvent`.
 
     GET /1_audit/_mapping/cafAuditEvent
     {
@@ -157,7 +157,7 @@ On a tenant's first call of the Audit library, an index is created for the tenan
       }
     }
 
-The above JSON, returned from Elasticsearch, illustrates the field type mappings for a tenant's index. Audit event information is stored in fixed fields and the event parameters are mapped to appropriate types based on field name suffixes added by the Audit library.
+The above JSON, returned from Elasticsearch, illustrates the field type mappings for an index belonging to a tenant whose ID is `1`. Audit event information is stored in fixed fields and the event parameters are mapped to appropriate types based on field name suffixes added by the Audit library.
 
 A tenant application's audit events are sent from the client-side library to Elasticsearch and added to the index created for the tenant.
 
@@ -191,7 +191,7 @@ A tenant application's audit events are sent from the client-side library to Ela
               "eventTypeId": "deleteDocument",
               "applicationId": "DocumentWebServiceApp",
               "docId_CALng": "123456",
-              "authorisedBy_CAStr": "JoesphBloggins@yourcompany.com"
+              "authorisedBy_CAKyw": "JoesphBloggins@yourcompany.com"
             }
           },
           {

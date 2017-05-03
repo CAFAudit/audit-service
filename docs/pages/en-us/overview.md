@@ -15,10 +15,10 @@ banner:
 
 The Audit service provides applications with a reliable, high-performance solution for recording events pertaining to user and system applications. 
 
-This documented audit trail of user and system activity has many uses. It provides trace-ability and individual accountability. Audit records can also be used for analytical purposes, including security violation detection and abnormal usage patterns. Audit trails have legal standing and can help protect the organization with a proven record of user and system activity. Audit records can also be exported for archival and reporting purposes.
+This documented audit trail of user and system activity has many uses.  It provides trace-ability and individual accountability.  Audit records can also be used for analytical purposes, including security violation detection and abnormal usage patterns.  Audit trails have legal standing and can help protect the organization with a proven record of user and system activity.  Audit records can also be exported for archival and reporting purposes.
 
 ## Introduction
-The Audit Service is designed to provide auditing of user and system actions by defining the required events and the information associated with each event. An application audit event definition file can be used to generate an application-specific, client-side auditing library. The Audit service is multi-tenant aware. Applications send events using the generated client-side auditing library to Elasticsearch where they are indexed according to each tenant.
+The Audit Service is designed to provide auditing of user and system actions by defining the required events and the information associated with each event.  An application audit event definition file can be used to generate an application-specific, client-side auditing library.  The Audit service is multi-tenant aware.  Applications send events using the generated client-side auditing library to Elasticsearch where they are indexed according to each tenant.
 
 ## User and System Actions
 Applications define user and system actions in an audit event definition file.
@@ -31,7 +31,7 @@ The audit events definition file is used by a code generation plugin to auto-gen
 For more details on the Java Client-Side Audit Library, see [Client-API](Client-API).
 
 ## Elasticsearch
-Elasticsearch is an opensource, distributable, scalable, enterprise grade search engine. Elasticsearch is accessible through an extensive RESTful API and can provide multi-tenant capable full text searches that support data discovery. Official clients are available in Java, .NET (C#), Python, Groovy and many other languages.
+Elasticsearch is an opensource, distributable, scalable, enterprise grade search engine.  Elasticsearch is accessible through an extensive RESTful API and can provide multi-tenant capable full text searches that support data discovery.  Official clients are available in Java, .NET (C#), Python, Groovy and many other languages.
 
 For more details on Elasticsearch deployment, see [Getting Started](Getting-Started).
 

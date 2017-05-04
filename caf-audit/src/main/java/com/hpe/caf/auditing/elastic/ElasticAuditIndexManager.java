@@ -41,8 +41,6 @@ public class ElasticAuditIndexManager {
     private final LoadingCache<String, String> indexCache;
     private final ElasticAuditConfiguration config;
 
-    private static final String indexTypeName = "cafAuditEvent";
-
     public ElasticAuditIndexManager(ElasticAuditConfiguration config, TransportClient transportClient) {
         this.transportClient = transportClient;
         this.config = config;
@@ -91,14 +89,13 @@ public class ElasticAuditIndexManager {
                 .build();
         CreateIndexRequest indexRequest = new CreateIndexRequest(indexName, indexSettings);
 
-        String cafAuditEventTenantIndexMappingsFileName = "CafAuditEventTenantIndexMappings.json";
         //  Get the contents of the index mapping file and assign to byte array before attempting to parse JSON
         byte[] cafAuditEventTenantIndexMappingsBytes;
         try {
             cafAuditEventTenantIndexMappingsBytes = ByteStreams.toByteArray(getClass().getClassLoader()
-                    .getResourceAsStream(cafAuditEventTenantIndexMappingsFileName));
+                    .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE));
         } catch (IOException e) {
-            String errorMessage = "Unable to read bytes from " + cafAuditEventTenantIndexMappingsFileName;
+            String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
             LOG.error(errorMessage);
             throw new RuntimeException(errorMessage, e);
         }
@@ -111,13 +108,13 @@ public class ElasticAuditIndexManager {
             parser.close();
             mappingBuilder = XContentFactory.jsonBuilder().copyCurrentStructure(parser);
         } catch (IOException e) {
-            String errorMessage = "Unable to parse JSON from " + cafAuditEventTenantIndexMappingsFileName;
+            String errorMessage = "Unable to parse JSON from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
             LOG.error(errorMessage);
             throw new RuntimeException(errorMessage, e);
         }
 
         //  Add the type mappings to the index request
-        indexRequest.mapping(indexTypeName, mappingBuilder);
+        indexRequest.mapping(ElasticAuditConstants.Index.TYPE, mappingBuilder);
 
         try {
             //  Use IndicesAdminClient to create the new index. This operation

@@ -15,7 +15,7 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-public class RetryElasticsearchOperation
+public class ElasticAuditRetryOperation
 {
     public static final int DEFAULT_RETRIES = 5;
     public static final long DEFAULT_WAIT_TIME_MS = 1000;
@@ -24,12 +24,12 @@ public class RetryElasticsearchOperation
     private int numberOfTriesLeft;
     private long timeToWait;
 
-    public RetryElasticsearchOperation()
+    public ElasticAuditRetryOperation()
     {
         this(DEFAULT_RETRIES, DEFAULT_WAIT_TIME_MS);
     }
 
-    public RetryElasticsearchOperation(int numberOfRetries, long timeToWait)
+    public ElasticAuditRetryOperation(int numberOfRetries, long timeToWait)
     {
         this.numberOfRetries = numberOfRetries;
         numberOfTriesLeft = numberOfRetries;

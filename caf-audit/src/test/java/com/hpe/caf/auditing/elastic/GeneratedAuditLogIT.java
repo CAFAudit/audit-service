@@ -31,8 +31,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.text.ParseException;
@@ -44,8 +42,6 @@ import java.util.concurrent.ExecutionException;
 public class GeneratedAuditLogIT {
 
     private static final String testTenant = "tenant1";
-
-    private static final Logger LOG = LoggerFactory.getLogger(GeneratedAuditLogIT.class);
 
     private static String ES_HOSTNAME;
     private static String ES_HOSTNAME_AND_PORT;
@@ -285,7 +281,7 @@ public class GeneratedAuditLogIT {
 
     private static void deleteIndex(TransportClient client, String indexId)
     {
-        RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
+        ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
             try {
                 boolean didElasticAckDelete = client.admin().indices().delete(

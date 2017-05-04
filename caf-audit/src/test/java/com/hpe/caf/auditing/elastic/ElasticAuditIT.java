@@ -347,7 +347,7 @@ public class ElasticAuditIT
                 tenantIndexIds[0] = tenant1Id + ElasticAuditConstants.Index.SUFFIX;
                 tenantIndexIds[1] = tenant2Id + ElasticAuditConstants.Index.SUFFIX;
 
-                RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
+                ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
                 SearchHit[] tenantIndicesHits;
                 while (retrySearch.shouldRetry()) {
                     tenantIndicesHits = searchDocumentInIndices(transportClient,
@@ -390,7 +390,7 @@ public class ElasticAuditIT
             indices[i] = indices[i].toLowerCase();
         }
 
-        RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
+        ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
             try {
                 boolean didElasticAckDelete = client.admin().indices().delete(
@@ -425,7 +425,7 @@ public class ElasticAuditIT
             indices[i] = indices[i].toLowerCase();
         }
 
-        RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
+        ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
             hits = client.prepareSearch(indices)
@@ -453,7 +453,7 @@ public class ElasticAuditIT
 
     private static SearchHit[] searchDocumentInIndex(TransportClient client, String indexId, String field, String value)
     {
-        RetryElasticsearchOperation retrySearch = new RetryElasticsearchOperation();
+        ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
             hits = client.prepareSearch(indexId.toLowerCase())
@@ -570,7 +570,7 @@ public class ElasticAuditIT
 
     private static void deleteDocument(TransportClient client, String indexId, String documentId)
     {
-        RetryElasticsearchOperation retryDelete = new RetryElasticsearchOperation();
+        ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
             // Delete document by id.
             DeleteResponse response = client

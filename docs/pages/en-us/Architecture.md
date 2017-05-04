@@ -48,11 +48,11 @@ On the audited application's first call to the Audit library, an index is create
 
 You can read more about Elasticsearch meta-field identifiers [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html).
 
-The following JSON, returned from Elasticsearch, illustrates the `cafAuditEvent` field type mappings for an index belonging to a tenant whose ID is `1`. Audit event information is stored in fixed fields and the event parameters are mapped to appropriate types based on field name suffixes added by the Audit library.
+The following JSON, returned from Elasticsearch, illustrates the `cafAuditEvent` field type mappings for an index belonging to a tenant whose ID is `00000001`. Audit event information is stored in fixed fields and the event parameters are mapped to appropriate types based on field name suffixes added by the Audit library.
 
-    GET /1_audit/_mapping/cafAuditEvent
+    GET /00000001_audit/_mapping/cafAuditEvent
     {
-      "1_audit": {
+      "00000001_audit": {
         "mappings": {
           "cafAuditEvent": {
             "dynamic_templates": [
@@ -168,9 +168,9 @@ The following JSON, returned from Elasticsearch, illustrates the `cafAuditEvent`
 
 A tenant application's audit events are sent from the client-side library to Elasticsearch and added to the index created for the tenant.
 
-The following JSON, returned from Elasticsearch, illustrates all of the application audit events belonging to the `1_audit` index. In other words each hit displayed is an audit event message belonging to a tenant application.
+The following JSON, returned from Elasticsearch, illustrates all of the application audit events belonging to the `00000001_audit` index. In other words each hit displayed is an audit event message belonging to a tenant application.
 
-    GET /1_audit/cafAuditEvent/_search
+    GET /00000001_audit/cafAuditEvent/_search
     {
       "took": 3,
       "timed_out": false,
@@ -184,7 +184,7 @@ The following JSON, returned from Elasticsearch, illustrates all of the applicat
         "max_score": 1,
         "hits": [
           {
-            "_index": "1_audit",
+            "_index": "00000001_audit",
             "_type": "cafAuditEvent",
             "_id": "AVuvyhWuI0NChd-OZTz-",
             "_score": 1,
@@ -204,7 +204,7 @@ The following JSON, returned from Elasticsearch, illustrates all of the applicat
             }
           },
           {
-            "_index": "1_audit",
+            "_index": "00000001_audit",
             "_type": "cafAuditEvent",
             "_id": "AVuvySPNI0NChd-OZTzH",
             "_score": 1,

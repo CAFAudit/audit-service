@@ -99,7 +99,7 @@ The health of the Elasticsearch container and / or cluster can be inspected by i
     }`
 
 7. Retrieve a simple customer document  
-    `curl -XGET '<DOCKER_HOST>:<ELASTICSEARCH_HTTP_PORT>/customer/external/1?pretty&pretty'`  
+    `curl -XGET '<DOCKER_HOST>:<ELASTICSEARCH_HTTP_PORT>/customer/external/1?pretty'`  
     i.e. `curl -XGET 'localhost:9200/customer/external/1?pretty'`  
   
     Response:  

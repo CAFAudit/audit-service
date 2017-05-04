@@ -39,7 +39,16 @@ In order to use Auditing in an application, the application's auditing events mu
 
 ### Elasticsearch Indices and Type Mappings
 
-On the audited application's first call to the Audit library, an index is created for the tenant. A tenant's Elasticsearch index, type and document meta-field identifiers (`index/type/doc`) are seen as `<tenantId>_audit/cafAuditEvent/applicationAuditEvent`.
+On the audited application's first call to the Audit library, an index is created for the tenant if it does not already exist. A tenant's Elasticsearch index and type meta-field identifiers are seen as:
+
+| Elasticsearch meta-field identifiers | Audit ES meta-field identifiers |                                                     Description |
+|--------------------------------------|:-------------------------------:|----------------------------------------------------------------:|
+| index                                |         <tenantId>_audit        | The index to which the tenant applications' audit events belong |
+| type                                 |          cafAuditEvent          |             The tenant applications' audit events mapping type  |
+
+You can read more about Elasticsearch meta-field identifiers [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html).
+
+The following JSON, returned from Elasticsearch, illustrates the `cafAuditEvent` field type mappings for an index belonging to a tenant whose ID is `1`. Audit event information is stored in fixed fields and the event parameters are mapped to appropriate types based on field name suffixes added by the Audit library.
 
     GET /1_audit/_mapping/cafAuditEvent
     {
@@ -157,9 +166,9 @@ On the audited application's first call to the Audit library, an index is create
       }
     }
 
-The above JSON, returned from Elasticsearch, illustrates the field type mappings for an index belonging to a tenant whose ID is `1`. Audit event information is stored in fixed fields and the event parameters are mapped to appropriate types based on field name suffixes added by the Audit library.
-
 A tenant application's audit events are sent from the client-side library to Elasticsearch and added to the index created for the tenant.
+
+The following JSON, returned from Elasticsearch, illustrates all of the application audit events belonging to the `1_audit` index. In other words each hit displayed is an audit event message belonging to a tenant application.
 
     GET /1_audit/cafAuditEvent/_search
     {
@@ -216,5 +225,3 @@ A tenant application's audit events are sent from the client-side library to Ela
         ]
       }
     }
-
-The above JSON, returned from Elasticsearch, illustrates all of the `applicationAuditEvent` documents belonging to the `1_audit` index. In other words each hit displayed is an audit event message belonging to a tenant application.

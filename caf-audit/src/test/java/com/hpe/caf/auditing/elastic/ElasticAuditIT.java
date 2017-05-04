@@ -35,7 +35,10 @@ import org.junit.Test;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Random;
+import java.util.UUID;
+import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ElasticAuditIT

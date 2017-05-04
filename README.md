@@ -80,12 +80,8 @@ The health of the Elasticsearch container and / or cluster can be inspected by i
     `1493041686 13:48:06 docker-cluster green 2 2 0 0 0 0 0 0 - 100.0%`
 
 6. Index a simple customer document 
-    `curl -XPUT '<DOCKER_HOST>:<ELASTICSEARCH_HTTP_PORT>/customer/external/1?pretty&pretty' -H 'Content-Type: application/json' -d'  
-    i.e. `curl -XPUT 'localhost:9200/customer/external/1?pretty&pretty' -H 'Content-Type: application/json' -d'
-    {
-        "name": "John Doe"
-    }'`
-    
+    `curl -XPUT '<DOCKER_HOST>:<ELASTICSEARCH_HTTP_PORT>/customer/external/1?pretty&pretty' -H 'Content-Type: application/json' -d '{"name": "John Doe"}'`
+    i.e. `curl -XPUT 'localhost:9200/customer/external/1?pretty&pretty' -H 'Content-Type: application/json' -d '{"name": "John Doe"}'`    
     Reponse:
     
     `{

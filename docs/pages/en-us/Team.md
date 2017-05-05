@@ -28,11 +28,11 @@ team_members:
           icon: hpe-social-email
           url: mailto:christopher.jam.comac@hpe.com
 
-    - name: Conal Smith
-      email: conal.smith@hpe.com
-      avatar: /assets/img/conal.png
+    - name: Greg Lucy
+      email: gregory.lucy@hpe.com
+      avatar: /assets/img/greg.png
       social:
         - title: Email
           icon: hpe-social-email
-          url: mailto:conal.smith@hpe.com
+          url: mailto:gregory.lucy@hpe.com
 ---

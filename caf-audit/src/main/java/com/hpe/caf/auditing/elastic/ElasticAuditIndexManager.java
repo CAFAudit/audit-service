@@ -41,12 +41,11 @@ public class ElasticAuditIndexManager {
     private final LoadingCache<String, String> indexCache;
     private final ElasticAuditConfiguration config;
 
-    private final XContentBuilder cafAuditEventTenantIndexMappingsBuilder;
+    private XContentBuilder cafAuditEventTenantIndexMappingsBuilder;
 
     public ElasticAuditIndexManager(ElasticAuditConfiguration config, TransportClient transportClient) {
         this.transportClient = transportClient;
         this.config = config;
-        this.cafAuditEventTenantIndexMappingsBuilder = getTenantIndexTypeMappingsBuilder();
 
         //  Configure in memory cache to hold list of Elasticsearch indexes already created.
         indexCache = CacheBuilder
@@ -116,6 +115,12 @@ public class ElasticAuditIndexManager {
                 .put("number_of_replicas", config.getNumberOfReplicas())
                 .build();
         CreateIndexRequest indexRequest = new CreateIndexRequest(indexName, indexSettings);
+
+        //  Get the index type mappings builder if it has not been set before, in other words if this is the first
+        //  tenant index created get the type mappings.
+        if (cafAuditEventTenantIndexMappingsBuilder == null) {
+            cafAuditEventTenantIndexMappingsBuilder = getTenantIndexTypeMappingsBuilder();
+        }
 
         //  Add the type mappings to the index request
         indexRequest.mapping(ElasticAuditConstants.Index.TYPE, cafAuditEventTenantIndexMappingsBuilder);

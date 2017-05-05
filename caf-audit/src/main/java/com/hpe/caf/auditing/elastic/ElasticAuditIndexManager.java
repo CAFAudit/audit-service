@@ -46,29 +46,7 @@ public class ElasticAuditIndexManager {
     public ElasticAuditIndexManager(ElasticAuditConfiguration config, TransportClient transportClient) {
         this.transportClient = transportClient;
         this.config = config;
-
-        //  Get the contents of the index mapping file and assign to byte array before attempting to parse JSON
-        byte[] cafAuditEventTenantIndexMappingsBytes;
-        try {
-            cafAuditEventTenantIndexMappingsBytes = ByteStreams.toByteArray(getClass().getClassLoader()
-                    .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE));
-        } catch (IOException e) {
-            String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
-            LOG.error(errorMessage);
-            throw new RuntimeException(errorMessage, e);
-        }
-
-        //  Parse JSON from the bytes and assign to the mapping builder
-        try {
-            XContentParser parser = XContentFactory.xContent(XContentType.JSON)
-                    .createParser(NamedXContentRegistry.EMPTY, cafAuditEventTenantIndexMappingsBytes);
-            parser.close();
-            this.cafAuditEventTenantIndexMappingsBuilder = XContentFactory.jsonBuilder().copyCurrentStructure(parser);
-        } catch (IOException e) {
-            String errorMessage = "Unable to parse JSON from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
-            LOG.error(errorMessage);
-            throw new RuntimeException(errorMessage, e);
-        }
+        this.cafAuditEventTenantIndexMappingsBuilder = getTenantIndexTypeMappingsBuilder();
 
         //  Configure in memory cache to hold list of Elasticsearch indexes already created.
         indexCache = CacheBuilder
@@ -82,6 +60,31 @@ public class ElasticAuditIndexManager {
                             }
                         }
                 );
+    }
+
+    private XContentBuilder getTenantIndexTypeMappingsBuilder() {
+        //  Get the contents of the index mapping file and assign to byte array before attempting to parse JSON
+        byte[] cafAuditEventTenantIndexMappingsBytes;
+        try {
+            cafAuditEventTenantIndexMappingsBytes = ByteStreams.toByteArray(getClass().getClassLoader()
+                    .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE));
+        } catch (IOException e) {
+            String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
+            LOG.error(errorMessage);
+            throw new RuntimeException(errorMessage, e);
+        }
+
+        //  Parse JSON from the bytes and return as a mapping builder
+        try {
+            XContentParser parser = XContentFactory.xContent(XContentType.JSON)
+                    .createParser(NamedXContentRegistry.EMPTY, cafAuditEventTenantIndexMappingsBytes);
+            parser.close();
+            return XContentFactory.jsonBuilder().copyCurrentStructure(parser);
+        } catch (IOException e) {
+            String errorMessage = "Unable to parse JSON from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
+            LOG.error(errorMessage);
+            throw new RuntimeException(errorMessage, e);
+        }
     }
 
     /**

@@ -5,7 +5,7 @@ title: Architecture
 banner:
     icon: 'assets/img/auditing-graphic.png'
     title: Auditing
-    subtitle: Traceability, accountability, analytics, archiving and reporting of application tenant events.
+    subtitle: Traceability, accountability and archiving of application tenant events.
     links:
         - title: GitHub
           url: https://github.com/CAFAudit/audit-service
@@ -13,70 +13,225 @@ banner:
 
 # Architecture
 
-Auditing logs audit events on a per application, per tenant basis.  The Audit Management web service facilitates the addition of new applications and new tenants.
+The Audit library logs audit event metadata, belonging to tenant applications, into Elasticsearch.
 
-In order to use Auditing with an application, you must first specify the audit events that the application uses, and the parameters that you want to associate with each of the events. The events are specified in an XML file known as the audit event definition file.
+In order to use Auditing with an application, you must first specify the audit events that the application uses and the parameters that you want to associate with each of the events. The events are specified in an XML file known as the audit event definition file and are used to generate an application-specific, client-side auditing library that sends the application events for auditing to Elasticsearch.
 
-After you author the audit event definition file, you can use it in two ways:
-
-1. To generate an application-specific, client-side auditing library
-2. To register the application with the Auditing Management web service
-
-After you generate an application-specific, client-side auditing library, the application uses the Java library to send audit event messages to the Apache Kafka messaging service.
-
-On the server-side, with the Audit Management web service API, the application's audit event definition file is used to create an audit event schema for the application within Vertica. The web service API can then register a tenant with one or more applications. It creates application audit event tables for the tenant and associates application tenant topics with the Kafka-Vertica Scheduler.
-
-Apache Kafka receives Audit events for an application's tenant from the client-side library and partitions them into per application, per tenant topics. The Kafka-Vertica Scheduler listens to these topics and streams the events to the tenant's application audit table in Vertica.
+Elasticsearch receives CAF audit events for a tenant from the client-side library and adds the application audit event to the tenant's index.
 
 ## Overview
 
-Auditing is built on Apache Kafka for the messaging of the audit events and HPE Vertica for the storage of the audit events. Both of these technologies offer high availability, throughput, scalability, and performance to the overall solution. Additionally, Vertica offers strong data analytics capabilities and comes with a pre-built Kafka integration, which can continually load data from Kafka.
+Auditing is built on Elasticsearch for the messaging and storage of the audit events. Elasticsearch offers high availability, throughput, scalability, and performance to the overall solution. Additionally, Elasticsearch is accessible via RESTful APIs, it offers strong data analytics and monitoring capabilities.
 
-A Mesos/Marathon environment runs the Audit Management web service and Kafka-Vertica Scheduler components, and provides redundancy for these services.
+### Audit Service Component Architecture
 
-### Audit Management Component Architecture
+The figure below illustrates the overall flow and relationship of components in the Audit service.
 
-The figure below illustrates the overall flow and relationship of components in the Audit Management service.
+![Architecture](images/AuditElasticArchitecture.png)
 
-![Architecture](images/AuditManagementArchitectureDraft.png)
-
-1. Setting up your application for Auditing requires defining an audit event definition XML file. The file is used for:
-	- Generation of the client-side audit library.
-	- Registration for auditing on the server-side.
-2. Using the caf-audit-maven-plugin, the client-side Java library is generated from the audit event definition XML file.
-3. The audit event definition XML containing the application and its events for auditing is registered with the server-side Audit Management web service API's POST /applications endpoint.
-	1. The Audit Management web service creates application and event schema based on the audit event definition XML.
-4. A tenant with a list of audited applications is registered with the server-side Audit Management web service API's POST /tenants endpoint.
-	1. The web service creates tables for each application with which the tenant is registered in Vertica for storage of the tenant's application events.
-	2. The web service associates a topic for each application that the tenant is registered with in the Kafka-Vertica Scheduler.
-5. The audited application makes calls to the generated client-side library to send tenant audit events to Kafka messaging.
-	1. Kafka receives messages from the client-side library and stores them in per application, per tenant topics.
-	2. Kafka-Vertica Scheduler listens to the topics that are registered with it and streams them into the tenant's application table in Vertica.
+1. Setting up your application for Auditing requires defining an audit event definition XML file. The file is used for the generation of the client-side audit library.
+2. Using the `caf-audit-maven-plugin`, the client-side Java library is generated from the audit event definition XML file.
+3. The audited application makes calls to the generated client-side library to send audit events to Elasticsearch. An Audit event is stored in the tenant index belonging to the application that made the call.
 
 ### Audit Event Definition File
 
 In order to use Auditing in an application, the application's auditing events must be specified along with the parameters that are associated with each of the events. These events are specified in an audit event definition file. You can read more about the audit event definition file and its XML schema in the [Getting Started Guide](Getting-Started.md).
 
-### Vertica Database Schema and Tables
+### Elasticsearch Indexing
 
-Providing the Audit Management web service /applications endpoint with the example audit event definition XML will create schemas and tables in the `CAFAudit` database for the application.
+In the context of the Audit service, an Elasticsearch index holds audit events belonging to a tenant's applications under predefined field value type mappings. You can read more about Elasticsearch index and type meta-field identifiers [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html).
 
-![Audit Management Application Events Table With Sample Application](images/AuditManagementApplicationEventsWithSampleAppVertica.png)
+#### Tenant Index
 
-The above figure's `ApplicationEvents` table, under the `AuditManagement` schema, contains a row for a registered SampleApp's audit event definition XML. The `applicationId` column contains the Application ID provided in the audit event definition XML and the `eventsXML` column contains the XML passed to the API. Audit Management web service uses `eventsXML` to create a tenant's application table with columns to match the audit event data types.
+On an audited application's first call to the Audit library, an index is created for the tenant if it does not already exist. The tenant index naming scheme is `<tenantId>_audit` and it holds application audit events that belong to the tenant.
 
-Registering a tenant with the Audit Management web service /tenants endpoint creates an entry under the `AuditManagement` schema's `TenantApplications` for the tenant.
+##### Index Type Mappings
 
-![Audit Management Tenant Applications Table With Tenant ID](images/AuditManagementTenantApplicationsWithTenantApplication.png)
+When an Audit event is added to a tenant's index its parameters are mapped to fields based on their names and stored with the corresponding datatypes. The datatypes that an audit event's parameters should map to are defined within the `cafAuditEvent` field type mappings.
 
-The figure shows a row for the registered tenant; `tenantId` with an associated application's `applicationId`. This table keeps track of which tenants use which applications.
+The following JSON, returned from Elasticsearch with a REST command, illustrates the `cafAuditEvent` field type mappings for an index belonging to a tenant whose ID is `00000001`.
 
-Registering a new tenant creates a new schema under the `CAFAudit` database for the tenant called `account_<tenantId>`, where audit event data for the tenant's applications will be held. Audit Management also creates a `kafka_rej` table for holding the tenant's rejected audit events.
+    GET http://<Elasticsearch_Host>:9200/00000001_audit/_mapping/cafAuditEvent
+    {
+      "00000001_audit": {
+        "mappings": {
+          "cafAuditEvent": {
+            "dynamic_templates": [
+              {
+                "CAFAuditKeyword": {
+                  "match": "*_CAKyw",
+                  "mapping": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              {
+                "CAFAuditText": {
+                  "match": "*_CATxt",
+                  "mapping": {
+                    "type": "text"
+                  }
+                }
+              },
+              {
+                "CAFAuditLong": {
+                  "match": "*_CALng",
+                  "mapping": {
+                    "type": "long"
+                  }
+                }
+              },
+              {
+                "CAFAuditInteger": {
+                  "match": "*_CAInt",
+                  "mapping": {
+                    "type": "integer"
+                  }
+                }
+              },
+              {
+                "CAFAuditShort": {
+                  "match": "*_CAShort",
+                  "mapping": {
+                    "type": "short"
+                  }
+                }
+              },
+              {
+                "CAFAuditDouble": {
+                  "match": "*_CADbl",
+                  "mapping": {
+                    "type": "double"
+                  }
+                }
+              },
+              {
+                "CAFAuditFloat": {
+                  "match": "*_CAFlt",
+                  "mapping": {
+                    "type": "float"
+                  }
+                }
+              },
+              {
+                "CAFAuditDate": {
+                  "match": "*_CADte",
+                  "mapping": {
+                    "type": "date"
+                  }
+                }
+              },
+              {
+                "CAFAuditBoolean": {
+                  "match": "*_CABln",
+                  "mapping": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "applicationId": {
+                "type": "keyword"
+              },
+              "correlationId": {
+                "type": "keyword"
+              },
+              "eventCategoryId": {
+                "type": "keyword"
+              },
+              "eventOrder": {
+                "type": "long"
+              },
+              "eventTime": {
+                "type": "date"
+              },
+              "eventTimeSource": {
+                "type": "keyword"
+              },
+              "eventTypeId": {
+                "type": "keyword"
+              },
+              "processId": {
+                "type": "keyword"
+              },
+              "threadId": {
+                "type": "long"
+              },
+              "userId": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      }
+    }
 
-![CAF Audit Account 1 Sample App Table Columns](images/account_1AuditSampleAppColumns.png)
+Audit event parameters are mapped and stored within the index based on the field names that they match within the `cafAuditEvent` type mapping definition.
 
-The figure shows an `account_1` schema with an `AuditSampleApp` table and the columns for audit event data for the application.
+- `properties` : each of these are audit event parameter field names, present in all audit events, with the datatypes in which they are to be stored.
+- `dynamic_templates` : each of these are potential audit event parameter field names suffixed with a datatype identifier. An audit event parameter field name that matches a dynamic field is stored with the corresponding datatype.
 
-![CAF Audit Account 1 Kafka Reject Table Columns](images/account_1RejectTable.png)
+Using `dynamic_templates` means that audit event parameters can be stored in a type-safe manner, otherwise Elasticserach automatically assumes the datatype, based on the value, when a it encounters a new field. You can read more about Elasticsearch dynamic templates [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/dynamic-templates.html).
 
-The figure shows the `account_1` schema with a `kafka_rej` table and columns for rejected audit event data.
+##### Tenant Index Example
+
+A tenant application's audit events are sent from the client-side library to Elasticsearch and added to the index created for the tenant.
+
+The following JSON, returned from Elasticsearch, illustrates all of the audit events belonging to the `00000001_audit` index. Each hit displayed is an audit event message belonging to a tenant application.
+
+    GET http://<Elasticsearch_Host>:9200/00000001_audit/cafAuditEvent/_search
+    {
+      "took": 3,
+      "timed_out": false,
+      "_shards": {
+        "total": 5,
+        "successful": 5,
+        "failed": 0
+      },
+      "hits": {
+        "total": 2,
+        "max_score": 1,
+        "hits": [
+          {
+            "_index": "00000001_audit",
+            "_type": "cafAuditEvent",
+            "_id": "AVuvyhWuI0NChd-OZTz-",
+            "_score": 1,
+            "_source": {
+              "processId": "a040cdab-778d-4634-8b64-4fe4deedaa93",
+              "threadId": "1",
+              "eventOrder": "1",
+              "eventTime": "2016-11-15T14:30:00",
+              "eventTimeSource": "HOST1",
+              "userId": "JoeBloggs@yourcompany.com",
+              "correlationId": "correlation1",
+              "eventCategoryId": "documentEvents",
+              "eventTypeId": "deleteDocument",
+              "applicationId": "DocumentWebServiceApp",
+              "docId_CALng": "123456",
+              "authorisedBy_CAKyw": "JoesphBloggins@yourcompany.com"
+            }
+          },
+          {
+            "_index": "00000001_audit",
+            "_type": "cafAuditEvent",
+            "_id": "AVuvySPNI0NChd-OZTzH",
+            "_score": 1,
+            "_source": {
+              "processId": "a040cdab-778d-4634-8b64-4fe4deedaa93",
+              "threadId": "1",
+              "eventOrder": "0",
+              "eventTime": "2016-11-15T14:12:12",
+              "eventTimeSource": "HOST1",
+              "userId": "JoeBloggs@yourcompany.com",
+              "correlationId": "correlation1",
+              "eventCategoryId": "documentEvents",
+              "eventTypeId": "viewDocument",
+              "applicationId": "DocumentWebServiceApp",
+              "docId_CALng": "123456"
+            }
+          }
+        ]
+      }
+    }

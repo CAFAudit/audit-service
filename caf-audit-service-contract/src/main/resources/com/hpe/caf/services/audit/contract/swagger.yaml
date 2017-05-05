@@ -26,7 +26,7 @@ info:
     tenant that the user belongs to. The audit event message will also include additional fields
     specific to the application. 
     
-basePath: /audit-service/v1
+basePath: /caf-audit-service/v1
 tags:
   - name: AuditEvents
 consumes:
@@ -35,7 +35,7 @@ produces:
   - application/json
 paths:
   /auditevents:
-    put:
+    post:
       tags:
         - AuditEvents
       summary: Indexes a new audit event message into Elasticsearch.
@@ -49,7 +49,7 @@ paths:
           schema:
             $ref: "#/definitions/newAuditEvent"
       responses:
-        201:
+        200:
           description: The audit event message was successfully indexed into Elasticsearch.
         400:
           description: The audit event message definition contains invalid data.
@@ -114,6 +114,15 @@ definitions:
           - number
           - string
           - boolean
+      paramFormat:
+        type: string
+        description: Format descriptor for the audit event parameter.
+        enum:
+          - int32
+          - int64
+          - float
+          - double
+          - date
       paramColumnName:
         type: string
         description: Alternative field name to be used in the event that multiple audit events comprise of parameters with the same name.

@@ -52,7 +52,10 @@ public class ElasticAuditIndexManager {
     }
 
     /**
-     *  Method used to query the index cache.
+     * Method used to query the index cache.
+     *
+     * @param  indexName  name of index to query the cache on
+     * @return the cached index name value
      */
     public String getIndex(String indexName){
         return indexCache.getUnchecked(indexName);

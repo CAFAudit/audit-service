@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.cafaudit</groupId>
-    <artifactId>caf-audit-ui</artifactId>
+    <artifactId>caf-audit-service-ui</artifactId>
     <packaging>war</packaging>
 
     <parent>
@@ -33,7 +33,7 @@
 
     <properties>
         <swagger.contract.groupId>com.github.cafaudit</swagger.contract.groupId>
-        <swagger.contract.artifactId>caf-audit-contract</swagger.contract.artifactId>
+        <swagger.contract.artifactId>caf-audit-service-contract</swagger.contract.artifactId>
         <swagger.contract.version>${project.version}</swagger.contract.version>
         <swagger.contract.path>/com/hpe/caf/services/audit/contract</swagger.contract.path>
     </properties>

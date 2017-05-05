@@ -9,7 +9,7 @@ button:
 
 features:
     title: About CAF Auditing
-    subtitle:  The Audit service maintains a documented audit trail of user and system activity in a centralized database.  The benefits of using the Audit service include traceability and accountability, but the audit records can also be used for analytical, archiving and reporting purposes.
+    subtitle:  The Audit service maintains a documented audit trail of user and system activity in a single resource.  The benefits of using the Audit service include traceability and accountability, but the audit records can also be used for analytical, archiving and reporting purposes.
     feature_list:
         - image: assets/img/LandingIcons/support.png
           title: Support for Multiple Applications

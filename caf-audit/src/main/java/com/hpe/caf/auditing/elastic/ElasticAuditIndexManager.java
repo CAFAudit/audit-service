@@ -18,12 +18,20 @@ package com.hpe.caf.auditing.elastic;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.io.ByteStreams;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.NamedXContentRegistry;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentParser;
+import org.elasticsearch.common.xcontent.XContentType;
+
+import java.io.IOException;
 
 public class ElasticAuditIndexManager {
 
@@ -32,6 +40,8 @@ public class ElasticAuditIndexManager {
     private final TransportClient transportClient;
     private final LoadingCache<String, String> indexCache;
     private final ElasticAuditConfiguration config;
+
+    private XContentBuilder cafAuditEventTenantIndexMappingsBuilder;
 
     public ElasticAuditIndexManager(ElasticAuditConfiguration config, TransportClient transportClient) {
         this.transportClient = transportClient;
@@ -51,6 +61,31 @@ public class ElasticAuditIndexManager {
                 );
     }
 
+    private XContentBuilder getTenantIndexTypeMappingsBuilder() {
+        //  Get the contents of the index mapping file and assign to byte array before attempting to parse JSON
+        byte[] cafAuditEventTenantIndexMappingsBytes;
+        try {
+            cafAuditEventTenantIndexMappingsBytes = ByteStreams.toByteArray(getClass().getClassLoader()
+                    .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE));
+        } catch (IOException e) {
+            String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
+            LOG.error(errorMessage);
+            throw new RuntimeException(errorMessage, e);
+        }
+
+        //  Parse JSON from the bytes and return as a mapping builder
+        try {
+            XContentParser parser = XContentFactory.xContent(XContentType.JSON)
+                    .createParser(NamedXContentRegistry.EMPTY, cafAuditEventTenantIndexMappingsBytes);
+            parser.close();
+            return XContentFactory.jsonBuilder().copyCurrentStructure(parser);
+        } catch (IOException e) {
+            String errorMessage = "Unable to parse JSON from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
+            LOG.error(errorMessage);
+            throw new RuntimeException(errorMessage, e);
+        }
+    }
+
     /**
      * Method used to query the index cache.
      *
@@ -62,7 +97,8 @@ public class ElasticAuditIndexManager {
     }
 
     /**
-     *  Returns immediately if index already exists in Elasticsearch, otherwise it creates a new index in Elasticsearch.
+     *  Returns immediately if index already exists in Elasticsearch, otherwise it creates a new index in Elasticsearch
+     *  with type mappings.
      */
     private void createIndex(String indexName){
         final String indexAlreadyExistsMessage = "Index " + indexName + " already exists";
@@ -82,6 +118,15 @@ public class ElasticAuditIndexManager {
                 .put("number_of_replicas", config.getNumberOfReplicas())
                 .build();
         CreateIndexRequest indexRequest = new CreateIndexRequest(indexName, indexSettings);
+
+        //  Get the index type mappings builder if it has not been set before, in other words if this is the first
+        //  tenant index created get the type mappings.
+        if (cafAuditEventTenantIndexMappingsBuilder == null) {
+            cafAuditEventTenantIndexMappingsBuilder = getTenantIndexTypeMappingsBuilder();
+        }
+
+        //  Add the type mappings to the index request
+        indexRequest.mapping(ElasticAuditConstants.Index.TYPE, cafAuditEventTenantIndexMappingsBuilder);
 
         try {
             //  Use IndicesAdminClient to create the new index. This operation

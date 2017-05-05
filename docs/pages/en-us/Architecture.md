@@ -43,7 +43,7 @@ In the context of the Audit service, an Elasticsearch index holds audit events b
 
 #### Tenant Index
 
-On an audited application's first call to the Audit library, an index is created for the tenant if it does not already exist. The tenant index naming scheme is `<tenantId>_audit` and it holds applications' audit events that belong to the tenant.
+On an audited application's first call to the Audit library, an index is created for the tenant if it does not already exist. The tenant index naming scheme is `<tenantId>_audit` and it holds application audit events that belong to the tenant.
 
 ##### Index Type Mappings
 
@@ -169,8 +169,8 @@ The following JSON, returned from Elasticsearch with a REST command, illustrates
 
 Audit event parameters are mapped and stored within the index based on the field names that they match within the `cafAuditEvent` type mapping definition.
 
-- `properties` : each of these are audit event parameter field names, present in all audit events, with the datatypes that each are stored as.
-- `dynamic_templates` : each of these are potential audit event parameter field names suffixed with a datatype identifier. An audit event parameter field name that matches a dynamic field is store with the corresponding datatype.
+- `properties` : each of these are audit event parameter field names, present in all audit events, with the datatypes in which they are to be stored.
+- `dynamic_templates` : each of these are potential audit event parameter field names suffixed with a datatype identifier. An audit event parameter field name that matches a dynamic field is stored with the corresponding datatype.
 
 Using `dynamic_templates` means that audit event parameters can be stored in a type-safe manner, otherwise Elasticserach automatically assumes the datatype, based on the value, when a it encounters a new field. You can read more about Elasticsearch dynamic templates [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/dynamic-templates.html).
 

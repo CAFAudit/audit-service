@@ -18,7 +18,6 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
-import com.hpe.caf.auditing.internal.AuditNewEventFactory;
 import org.elasticsearch.client.transport.TransportClient;
 
 import java.io.IOException;
@@ -36,11 +35,6 @@ public class ElasticAuditChannel implements AuditChannel {
     @Override
     public void declareApplication(String applicationId) throws IOException {
         // Do nothing.
-    }
-
-    @Override
-    public AuditEventBuilder createEventBuilder() {
-        return new ElasticAuditEventBuilder(transportClient, AuditNewEventFactory.createNewEvent(), indexManager);
     }
 
     @Override

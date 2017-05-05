@@ -5,7 +5,7 @@ title: Architecture
 banner:
     icon: 'assets/img/auditing-graphic.png'
     title: Auditing
-    subtitle: Traceability, accountability and archiving of application tenant events.
+    subtitle: Traceability, accountability, analytics, archiving and reporting of application tenant events.
     links:
         - title: GitHub
           url: https://github.com/CAFAudit/audit-service

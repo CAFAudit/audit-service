@@ -21,6 +21,7 @@ public final class ElasticAuditConstants {
     public final static class Index {
         public static final String SUFFIX = "_audit";
         public static final String TYPE = "cafAuditEvent";
+        public static final String TYPE_MAPPING_RESOURCE = "CafAuditEventTenantIndexMappings.json";
     }
 
     //  Fixed field names.

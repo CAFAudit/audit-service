@@ -253,7 +253,7 @@
                                         <fileSets>
                                             <fileSet>
                                                 <directory>test-configs</directory>
-                                                <outputDirectory>/</outputDirectory>
+                                                <outputDirectory>./</outputDirectory>
                                                 <includes>
                                                     <include>*</include>
                                                 </includes>

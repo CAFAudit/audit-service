@@ -23,7 +23,7 @@ Elasticsearch receives CAF audit events for a tenant from the client-side librar
 
 Auditing is built on Elasticsearch for the messaging and storage of the audit events. Elasticsearch offers high availability, throughput, scalability, and performance to the overall solution. Additionally, Elasticsearch is accessible via RESTful APIs, it offers strong data analytics and monitoring capabilities.
 
-### Audit Service Component Architecture
+## Audit Service Component Architecture
 
 The figure below illustrates the overall flow and relationship of components in the Audit service.
 
@@ -33,19 +33,19 @@ The figure below illustrates the overall flow and relationship of components in 
 2. Using the `caf-audit-maven-plugin`, the client-side Java library is generated from the audit event definition XML file.
 3. The audited application makes calls to the generated client-side library to send audit events to Elasticsearch. An Audit event is stored in the tenant index belonging to the application that made the call.
 
-### Audit Event Definition File
+## Audit Event Definition File
 
-In order to use Auditing in an application, the application's auditing events must be specified along with the parameters that are associated with each of the events. These events are specified in an audit event definition file. You can read more about the audit event definition file and its XML schema in the [Getting Started Guide](Getting-Started.md).
+In order to use Auditing in an application, the application's auditing events must be specified along with the parameters that are associated with each of the events. These events are specified in an audit event definition file. You can read more about the audit event definition file and its XML schema in the [Getting Started Guide](Getting-Started).
 
-### Elasticsearch Indexing
+## Elasticsearch Indexing
 
 In the context of the Audit service, an Elasticsearch index holds audit events belonging to a tenant's applications under predefined field value type mappings. You can read more about Elasticsearch index and type meta-field identifiers [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-fields.html).
 
-#### Tenant Index
+### Tenant Index
 
 On an audited application's first call to the Audit library, an index is created for the tenant if it does not already exist. The tenant index naming scheme is `<tenantId>_audit` and it holds application audit events that belong to the tenant.
 
-##### Index Type Mappings
+#### Index Type Mappings
 
 When an Audit event is added to a tenant's index its parameters are mapped to fields based on their names and stored with the corresponding datatypes. The datatypes that an audit event's parameters should map to are defined within the `cafAuditEvent` field type mappings.
 
@@ -174,7 +174,7 @@ Audit event parameters are mapped and stored within the index based on the field
 
 Using `dynamic_templates` means that audit event parameters can be stored in a type-safe manner, otherwise Elasticserach automatically assumes the datatype, based on the value, when a it encounters a new field. You can read more about Elasticsearch dynamic templates [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/dynamic-templates.html).
 
-##### Tenant Index Example
+#### Tenant Index Example
 
 A tenant application's audit events are sent from the client-side library to Elasticsearch and added to the index created for the tenant.
 

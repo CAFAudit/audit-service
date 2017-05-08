@@ -36,37 +36,40 @@ import java.util.UUID;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JaxRSServerCodegen", date = "2017-04-28T07:15:58.947+01:00")
 public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
-    private static final String ERR_MSG_APPLICATION_ID_NOT_SPECIFIED = "The application identifier has not been specified.";
-    private static final String ERR_MSG_PROCESS_ID_NOT_SPECIFIED = "The process identifier has not been specified.";
-    private static final String ERR_MSG_THREAD_ID_NOT_SPECIFIED = "The thread identifier has not been specified.";
-    private static final String ERR_MSG_EVENT_ORDER_NOT_SPECIFIED = "The event order has not been specified.";
-    private static final String ERR_MSG_EVENT_TIME_NOT_SPECIFIED = "The event time has not been specified.";
-    private static final String ERR_MSG_EVENT_TIME_SOURCE_NOT_SPECIFIED = "The event time source has not been specified.";
-    private static final String ERR_MSG_USER_ID_NOT_SPECIFIED = "The user identifier has not been specified.";
-    private static final String ERR_MSG_TENANT_ID_NOT_SPECIFIED = "The tenant identifier has not been specified.";
-    private static final String ERR_MSG_CORRELATION_ID_NOT_SPECIFIED = "The correlation identifier has not been specified.";
-    private static final String ERR_MSG_EVENT_TYPE_ID_NOT_SPECIFIED = "The event type identifier has not been specified.";
-    private static final String ERR_MSG_EVENT_CATEGORY_ID_NOT_SPECIFIED = "The event category identifier has not been specified.";
-    private static final String ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED = "Custom audit event fields have not been specified.";
-    private static final String ERR_MSG_ES_HOST_AND_PORT_MISSING = "The Elasticsearch host and port have not been provided.";
+    private static final Logger LOG = LogManager.getLogger(AuditeventsApiServiceImpl.class.getName());
+
+    private static final String ERR_MSG_APPLICATION_ID_NOT_SPECIFIED = "The application identifier has not been specified";
+    private static final String ERR_MSG_PROCESS_ID_NOT_SPECIFIED = "The process identifier has not been specified";
+    private static final String ERR_MSG_THREAD_ID_NOT_SPECIFIED = "The thread identifier has not been specified";
+    private static final String ERR_MSG_EVENT_ORDER_NOT_SPECIFIED = "The event order has not been specified";
+    private static final String ERR_MSG_EVENT_TIME_NOT_SPECIFIED = "The event time has not been specified";
+    private static final String ERR_MSG_EVENT_TIME_SOURCE_NOT_SPECIFIED = "The event time source has not been specified";
+    private static final String ERR_MSG_USER_ID_NOT_SPECIFIED = "The user identifier has not been specified";
+    private static final String ERR_MSG_TENANT_ID_NOT_SPECIFIED = "The tenant identifier has not been specified";
+    private static final String ERR_MSG_CORRELATION_ID_NOT_SPECIFIED = "The correlation identifier has not been specified";
+    private static final String ERR_MSG_EVENT_TYPE_ID_NOT_SPECIFIED = "The event type identifier has not been specified";
+    private static final String ERR_MSG_EVENT_CATEGORY_ID_NOT_SPECIFIED = "The event category identifier has not been specified";
+    private static final String ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED = "Custom audit event fields have not been specified";
+    private static final String ERR_MSG_ES_HOST_AND_PORT_MISSING = "The Elasticsearch host and port have not been provided";
 
     @Override
     public Response auditeventsPost(NewAuditEvent newAuditEvent,SecurityContext securityContext) throws NotFoundException {
-
         //  Index new audit event into Elasticsearch.
         try {
+            LOG.debug("Start indexing audit event message into Elasticsearch");
             AddNewAuditEvent(newAuditEvent);
+            LOG.debug("Indexing audit event message into Elasticsearch complete");
             return Response.noContent().build();
-// TODO            return Response.ok().build();
-//            return Response.status(Response.Status.OK).entity("Audit event successfully indexed into Elasticsearch").build();
         } catch (BadRequestException | ConfigurationException e){
-//            return Response.status(Response.Status.BAD_REQUEST).entity(new ApiResponseMessage(ApiResponseMessage.ERROR,e.getMessage())).build();
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type("text/plain").build();
         } catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ApiResponseMessage(ApiResponseMessage.ERROR,e.getMessage())).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type("text/plain").build();
         }
 
     }
@@ -77,6 +80,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     private void AddNewAuditEvent(final NewAuditEvent newAuditEvent) throws Exception {
 
         //  Make sure fixed audit event fields have been supplied.
+        LOG.debug("Checking that fixed and custom audit event parameters have been provided");
         areAuditEventFieldsNullOrEmpty(newAuditEvent);
 
         //  Index audit event message into Elasticsearch.
@@ -84,20 +88,26 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
                 AuditConnection auditConnection = AuditConnectionFactory.createConnection(getConfigurationSource());
                 AuditChannel auditChannel = auditConnection.createChannel()
         ) {
+            LOG.debug("AuditConnection and AuditChannel created");
+
             //  Get an instance of AuditCoreMetadataProvider comprising a set of auto-generated field data including
             //  processid, threadId, eventOrder, eventTime and eventTimeSource.
             final AuditCoreMetadataProvider acmp = getAuditCoreMetadataProvider(newAuditEvent);
 
             //  Create a new event builder object for the audit event message to be indexed into Elasticsearch.
+            LOG.debug("Create audit event builder object");
             AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder(acmp);
 
             //  Add fixed field data to the audit event message.
+            LOG.debug("Add fixed audit event parameters to the event builder object");
             addFixedFieldsToAuditEventMessage(auditEventBuilder, newAuditEvent);
 
             //  Add custom field data to the audit event message.
+            LOG.debug("Add custom audit event parameters to the event builder object");
             addCustomFieldsToAuditEventMessage(auditEventBuilder, newAuditEvent);
 
             //  Send the audit event message to Elasticsearch.
+            LOG.debug("Send audit event message to Elasticsearch");
             auditEventBuilder.send();
         }
     }
@@ -110,51 +120,63 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
         //  Make sure the fixed audit event fields have been supplied.
         if (isNullOrEmpty(newAuditEvent.getApplicationId())) {
+            LOG.error(ERR_MSG_APPLICATION_ID_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_APPLICATION_ID_NOT_SPECIFIED);
         }
 
         if (isNullOrEmpty(newAuditEvent.getProcessId())) {
+            LOG.error(ERR_MSG_PROCESS_ID_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_PROCESS_ID_NOT_SPECIFIED);
         }
 
         if (0 == newAuditEvent.getThreadId()) {
+            LOG.error(ERR_MSG_THREAD_ID_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_THREAD_ID_NOT_SPECIFIED);
         }
 
         if (0 == newAuditEvent.getEventOrder()) {
+            LOG.error(ERR_MSG_EVENT_ORDER_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_EVENT_ORDER_NOT_SPECIFIED);
         }
 
         if (isNullOrEmpty(newAuditEvent.getEventTime())) {
+            LOG.error(ERR_MSG_EVENT_TIME_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_EVENT_TIME_NOT_SPECIFIED);
         }
 
         if (isNullOrEmpty(newAuditEvent.getEventTimeSource())) {
+            LOG.error(ERR_MSG_EVENT_TIME_SOURCE_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_EVENT_TIME_SOURCE_NOT_SPECIFIED);
         }
 
         if (isNullOrEmpty(newAuditEvent.getUserId())) {
+            LOG.error(ERR_MSG_USER_ID_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_USER_ID_NOT_SPECIFIED);
         }
 
         if (isNullOrEmpty(newAuditEvent.getTenantId())) {
+            LOG.error(ERR_MSG_TENANT_ID_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_TENANT_ID_NOT_SPECIFIED);
         }
 
         if (isNullOrEmpty(newAuditEvent.getCorrelationId())) {
+            LOG.error(ERR_MSG_CORRELATION_ID_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_CORRELATION_ID_NOT_SPECIFIED);
         }
 
         if (isNullOrEmpty(newAuditEvent.getEventTypeId())) {
+            LOG.error(ERR_MSG_EVENT_TYPE_ID_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_EVENT_TYPE_ID_NOT_SPECIFIED);
         }
 
         if (isNullOrEmpty(newAuditEvent.getEventCategoryId())) {
+            LOG.error(ERR_MSG_EVENT_CATEGORY_ID_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_EVENT_CATEGORY_ID_NOT_SPECIFIED);
         }
 
         //  Make sure at least one custom audit event field has been supplied.
         if (newAuditEvent.getEventParams().isEmpty()) {
+            LOG.error(ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED);
         }
     }
@@ -172,6 +194,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     private AppConfig getAppConfigProperties() throws ConfigurationException {
         AppConfig appConfig;
 
+        LOG.debug("Load application configuration");
         AnnotationConfigApplicationContext propertiesApplicationContext = new AnnotationConfigApplicationContext();
         propertiesApplicationContext.register(PropertySourcesPlaceholderConfigurer.class);
         RootBeanDefinition beanDefinition = new RootBeanDefinition();
@@ -184,9 +207,11 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
         //  Make sure Elasticsearch host and port have been provided.
         try {
             if (appConfig.getElasticHostAndPort() == null) {
+                LOG.error(ERR_MSG_ES_HOST_AND_PORT_MISSING);
                 throw new ConfigurationException(ERR_MSG_ES_HOST_AND_PORT_MISSING);
             }
         } catch (NullPointerException npe) {
+            LOG.error(ERR_MSG_ES_HOST_AND_PORT_MISSING);
             throw new ConfigurationException(ERR_MSG_ES_HOST_AND_PORT_MISSING);
         }
 
@@ -320,7 +345,9 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
                 //  Unexpected type.
                 default:
-                    throw new IllegalArgumentException("Unexpected paramater type: " + epParamType.toString());
+                    String unexpectedParamTypeErrorMessage = "Unexpected parameter type: " + epParamType.toString();
+                    LOG.error(unexpectedParamTypeErrorMessage);
+                    throw new IllegalArgumentException(unexpectedParamTypeErrorMessage);
             }
         }
     }
@@ -339,7 +366,9 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
                     break;
                 default:
                     // Unexpected format for integer type.
-                    throw new IllegalArgumentException("Unexpected paramater format: " + epParamFormat.toString());
+                    String unexpectedParamFormatErrorMessage = "Unexpected parameter format for type 'integer': " + epParamFormat.toString();
+                    LOG.error(unexpectedParamFormatErrorMessage);
+                    throw new IllegalArgumentException(unexpectedParamFormatErrorMessage);
             }
         } else {
             //  Default to long if format has not been provided.
@@ -361,7 +390,9 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
                     break;
                 default:
                     // Unexpected format for number type.
-                    throw new IllegalArgumentException("Unexpected paramater format: " + epParamFormat.toString());
+                    String unexpectedParamFormatErrorMessage = "Unexpected parameter format for type 'number': " + epParamFormat.toString();
+                    LOG.error(unexpectedParamFormatErrorMessage);
+                    throw new IllegalArgumentException(unexpectedParamFormatErrorMessage);
             }
         } else {
             //  Default to double if format has not been provided.
@@ -382,7 +413,9 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
                     break;
                 default:
                     // Unexpected format for string type.
-                    throw new IllegalArgumentException("Unexpected paramater format: " + epParamFormat.toString());
+                    String unexpectedParamFormatErrorMessage = "Unexpected parameter format for type 'string': " + epParamFormat.toString();
+                    LOG.error(unexpectedParamFormatErrorMessage);
+                    throw new IllegalArgumentException(unexpectedParamFormatErrorMessage);
             }
         } else {
             //  Default to string if format has not been provided.

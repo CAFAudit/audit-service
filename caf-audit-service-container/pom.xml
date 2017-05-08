@@ -335,12 +335,8 @@
                             <run>
                                 <ports>
                                     <port>${webservice.adminport}:8080</port>
-
-                                    <port>15005:5005</port>
                                 </ports>
                                 <env>
-                                    <_JAVA_OPTIONS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</_JAVA_OPTIONS>
-
                                     <CAF_APPNAME>test/auditservice</CAF_APPNAME>
                                     <CAF_CONFIG_PATH>/config</CAF_CONFIG_PATH>
                                     <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.transport.port}</CAF_ELASTIC_HOST_AND_PORT>

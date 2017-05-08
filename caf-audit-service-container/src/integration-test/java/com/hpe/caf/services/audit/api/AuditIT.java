@@ -18,6 +18,7 @@ package com.hpe.caf.services.audit.api;
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.elastic.ElasticAuditTransportClientFactory;
+import com.hpe.caf.services.audit.client.ApiException;
 import com.hpe.caf.services.audit.client.api.AuditEventsApi;
 import com.hpe.caf.services.audit.client.model.EventParam;
 import com.hpe.caf.services.audit.client.model.NewAuditEvent;
@@ -32,8 +33,6 @@ import org.joda.time.Instant;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.text.*;
 import java.util.*;
 
@@ -42,11 +41,7 @@ public class AuditIT {
     private static String CAF_ELASTIC_HOST_AND_PORT;
     private static String CAF_ELASTIC_CLUSTER_NAME;
 
-    private static final String ES_HOST_AND_PORT_NOT_PROVIDED = "Elasticsearch host and port have not been provided";
-
     private static AuditEventsApi auditEventsApi;
-
-    private static final Logger LOG = LoggerFactory.getLogger(AuditIT.class);
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -59,109 +54,89 @@ public class AuditIT {
         auditEventsApi.getApiClient().setBasePath(AUDIT_WEBSERVICE_BASE_PATH);
     }
 
-//    @Test
-//    public void testAuditEventsPost() throws Exception {
-//        //  Create new audit event message and index into Elasticsearch.
-//        final NewAuditEvent auditEventMessage = createNewAuditEvent();
-//        auditEventsApi.auditeventsPost(auditEventMessage);
-//
-//        //  Search for the audit event message in Elasticsearch and verify
-//        //  hit has been returned.
-//        try (TransportClient transportClient
-//                     = ElasticAuditTransportClientFactory.getTransportClient(CAF_ELASTIC_HOST_AND_PORT, CAF_ELASTIC_CLUSTER_NAME)) {
-//
-//            final String esIndex = auditEventMessage.getTenantId().toLowerCase().concat("_audit");
-//            SearchHit[] hits = new SearchHit[0];
-//            hits = searchAuditEventMessage(transportClient,
-//                    esIndex,
-//                    "userId",
-//                    auditEventMessage.getUserId());
-//
-//            //  Expecting a single hit.
-//            Assert.assertTrue(hits.length == 1);
-//
-//            //  Make a note of the document identifier as we will use this to clean
-//            //  up afterwards.
-//            final String docId = hits[0].getId();
-//
-//            //  Verify search results match the expected audit event message data.
-//            final Map<String, Object> hitSource = hits[0].getSource();
-//            verifySearchResults(auditEventMessage, hitSource);
-//
-//            //  Delete test document after verification is complete.
-//            deleteAuditEventMessage(transportClient, esIndex, docId);
-//        }
-//    }
-
-//    @Test(expectedExceptions = BadRequestException.class)
-//    public void testAuditEventsPost_FixedFieldNotProvided() throws Exception {
-//        //  Create new audit event message with at least one fixed field missing.
-//        NewAuditEvent auditEventMessage = createNewAuditEventExcludeFixedField();
-//        auditEventsApi.auditeventsPost(auditEventMessage);
-//    }
-//
-//    @Test(expectedExceptions = BadRequestException.class)
-//    public void testAuditEventsPost_CustomFieldNotProvided() throws Exception {
-//        //  Create new audit event message with no custom fields specified.
-//        NewAuditEvent auditEventMessage = createNewAuditEventExcludeCustomFields();
-//        auditEventsApi.auditeventsPost(auditEventMessage);
-//    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testAuditEventsPost_UnexpectedParameterType() throws Exception {
-        //  Create new audit event message comprising an unexpected parameter type value.
-        final NewAuditEvent auditEventMessage = createNewAuditEventWithUnknownType();
+    @Test
+    public void testAuditEventsPost() throws Exception {
+        //  Create new audit event message and index into Elasticsearch.
+        final NewAuditEvent auditEventMessage = createNewAuditEvent();
         auditEventsApi.auditeventsPost(auditEventMessage);
+
+        //  Search for the audit event message in Elasticsearch and verify
+        //  hit has been returned.
+        try (TransportClient transportClient
+                     = ElasticAuditTransportClientFactory.getTransportClient(CAF_ELASTIC_HOST_AND_PORT, CAF_ELASTIC_CLUSTER_NAME)) {
+
+            final String esIndex = auditEventMessage.getTenantId().toLowerCase().concat("_audit");
+            SearchHit[] hits = new SearchHit[0];
+            hits = searchAuditEventMessage(transportClient,
+                    esIndex,
+                    "userId",
+                    auditEventMessage.getUserId());
+
+            //  Expecting a single hit.
+            Assert.assertTrue(hits.length == 1);
+
+            //  Make a note of the document identifier as we will use this to clean
+            //  up afterwards.
+            final String docId = hits[0].getId();
+
+            //  Verify search results match the expected audit event message data.
+            final Map<String, Object> hitSource = hits[0].getSource();
+            verifySearchResults(auditEventMessage, hitSource);
+
+            //  Delete test document after verification is complete.
+            deleteAuditEventMessage(transportClient, esIndex, docId);
+        }
     }
 
-//    @Test(expectedExceptions = IllegalArgumentException.class)
-//    public void testAuditEventsPost_UnexpectedParameterFormat() throws Exception {
-//        //  Create new audit event message comprising an unexpected parameter format value.
-//        final NewAuditEvent auditEventMessage = createNewAuditEventWithUnknownFormat();
-//        auditEventsApi.auditeventsPost(auditEventMessage);
-//    }
+    @Test
+    public void testAuditEventsPost_FixedFieldNotProvided() {
+        //  Create new audit event message with at least one fixed field missing.
+        NewAuditEvent auditEventMessage = createNewAuditEventExcludeFixedField();
+        try {
+            auditEventsApi.auditeventsPost(auditEventMessage);
+        } catch (ApiException ae) {
+            Assert.assertEquals(ae.getMessage(),"The application identifier has not been specified");
+        }
+    }
+
+    @Test
+    public void testAuditEventsPost_CustomsFieldsNotProvided() {
+        //  Create new audit event message with no custom fields specified.
+        NewAuditEvent auditEventMessage = createNewAuditEventExcludeCustomFields();
+        try {
+            auditEventsApi.auditeventsPost(auditEventMessage);
+        } catch (ApiException ae) {
+            Assert.assertEquals(ae.getMessage(),"Custom audit event fields have not been specified");
+        }
+    }
 
     /**
      * Returns a new audit event object.
      */
     private NewAuditEvent createNewAuditEvent() {
-        return getNewAuditEvent(false, false, false, false);
+        return getNewAuditEvent(false, false);
     }
 
     /**
      * Returns a new audit event object with a fixed field removed.
      */
     private NewAuditEvent createNewAuditEventExcludeFixedField() {
-        return getNewAuditEvent(true, false, false, false);
+        return getNewAuditEvent(true, false);
     }
 
     /**
      * Returns a new audit event object with no custom fields defined.
      */
     private NewAuditEvent createNewAuditEventExcludeCustomFields() {
-        return getNewAuditEvent(false, true, false, false);
-    }
-
-    /**
-     * Returns a new audit event object with an unknown event parameter type specified.
-     */
-    private NewAuditEvent createNewAuditEventWithUnknownType() {
-        return getNewAuditEvent(false, false, true, false);
-    }
-
-    /**
-     * Returns a new audit event object with an unknown event parameter format specified.
-     */
-    private NewAuditEvent createNewAuditEventWithUnknownFormat() {
-        return getNewAuditEvent(false, false, false, true);
+        return getNewAuditEvent(false, true);
     }
 
     /**
      * Creates a new audit event object. Depending on the supplied boolean inputs, it returns an instance
-     * comprising fixed and custom fields. It can be configured to exclude a single fixed field, exclude all
-     * custom fields, to utilise an unexpected parameter type as well as use an unexpected parameter format.
+     * comprising fixed and custom fields. It can be configured to exclude a single fixed field and all
+     * custom fields.
      */
-    private NewAuditEvent getNewAuditEvent(final boolean excludeFixed, final boolean excludeCustom, final boolean useUnknownType, final boolean useUnknownFormat) {
+    private NewAuditEvent getNewAuditEvent(final boolean excludeFixed, final boolean excludeCustom) {
 
         //  Declare fixed field metadata values for test purposes.
         final String APPLICATION_ID = "application-test";
@@ -207,20 +182,8 @@ public class AuditIT {
             final EventParam stringEventParam = createEventParam("stringParam", null, EventParam.ParamTypeEnum.STRING, null, "stringParam-test-value");
             eventParamsList.add(stringEventParam);
 
-            final EventParam intEventParam;
-            //  Used unexpected event parameter type if requested.
-            if (!useUnknownType) {
-                //  Used unexpected event parameter format if requested.
-                if (!useUnknownFormat) {
-                    intEventParam = createEventParam("intParam", null, EventParam.ParamTypeEnum.INTEGER, EventParam.ParamFormatEnum.INT32, String.valueOf(rand.nextInt()));
-                } else {
-                    intEventParam = createEventParam("intParam", null, EventParam.ParamTypeEnum.INTEGER, EventParam.ParamFormatEnum.valueOf("UNEXPECTED"), String.valueOf(rand.nextInt()));
-                }
-            } else {
-                intEventParam = createEventParam("intParam", null, EventParam.ParamTypeEnum.valueOf("UNEXPECTED"), EventParam.ParamFormatEnum.INT32, String.valueOf(rand.nextInt()));
-            }
+            final EventParam intEventParam = createEventParam("intParam", null, EventParam.ParamTypeEnum.INTEGER, EventParam.ParamFormatEnum.INT32, String.valueOf(rand.nextInt()));
             eventParamsList.add(intEventParam);
-
             final EventParam shortEventParam = createEventParam("shortParam", null, EventParam.ParamTypeEnum.INTEGER, EventParam.ParamFormatEnum.INT32, String.valueOf((short) rand.nextInt(Short.MAX_VALUE + 1)));
             eventParamsList.add(shortEventParam);
             final EventParam longEventParam = createEventParam("longParam", null, EventParam.ParamTypeEnum.INTEGER, EventParam.ParamFormatEnum.INT64, String.valueOf(rand.nextLong()));
@@ -249,7 +212,7 @@ public class AuditIT {
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
             hits = client.prepareSearch(indexId.toLowerCase())
-                    .setTypes("ElasticAuditConstants.Index.TYPE")
+                    .setTypes(ElasticAuditConstants.Index.TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
                     .setFrom(0).setSize(10)

@@ -49,10 +49,10 @@ paths:
           schema:
             $ref: "#/definitions/newAuditEvent"
       responses:
-        200:
+        204:
           description: The audit event message was successfully indexed into Elasticsearch.
         400:
-          description: The audit event message definition contains invalid data.
+          description: The audit event message definition is missing expected event parameters.
 definitions:
   newAuditEvent:
     type: object

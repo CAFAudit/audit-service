@@ -232,7 +232,7 @@
                             <goal>push</goal>
                         </goals>
                         <configuration>
-                            <image>audit-service</image>
+                            <filter>audit-service</filter>
                         </configuration>
                     </execution>
                 </executions>

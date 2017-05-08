@@ -15,7 +15,7 @@ banner:
 
 You need to perform the following steps to set up the Audit service.
 
-1. Using Audit Service Deployment, launch an Elasticsearch cluster.
+1. Use the [Audit Service Deploy Project](https://github.com/CAFAudit/audit-service-deploy), to launch an Elasticsearch cluster.
 2. Define an application's audit events in an Audit Event Definition File.
 3. Generate the client-side auditing library using the audit event definition file and the code generation plugin. 
 4. In your application, use the client-side auditing library to send audit events to Elasticsearch.
@@ -27,7 +27,7 @@ These steps are explained in more detail in  subsequent sections:
 - [Generating a Client-side Auditing Library](#generating-a-client-side-auditing-library)
 - [Using the Client-side Auditing Library](#using-the-client-side-auditing-library)
 
-For more information on Audit Service Deployment, go [here](https://github.com/CAFAudit/audit-service-deploy).
+For more information on Audit Service Deploy, go [here](https://github.com/CAFAudit/audit-service-deploy).
 
 For more information on Elasticsearch, go [here](https://www.elastic.co/products/elasticsearch/).
 
@@ -35,7 +35,7 @@ For more information on Elasticsearch, go [here](https://www.elastic.co/products
 
 Elasticsearch is a datastore designed for delivering speed, scalability, availability and analytics. In the Auditing service, Elasticsearch ultimately stores the audit events belonging to tenant applications. You can then use Elasticsearch's vast query capabilities to perform analytics on audited application data.
 
-For developer deployment of Elasticsearch, please follow the Audit Service Deployment documentation as it covers configuring and starting of Elasticsearch cluster in Docker. For more information on Audit Service Deployment, go [here](https://github.com/CAFAudit/audit-service-deploy).
+For developer deployment of Elasticsearch, please follow the Audit Service Deployment documentation. The documentation covers configuring and starting of an Elasticsearch cluster in Docker. For more information on Audit Service Deployment, go [here](https://github.com/CAFAudit/audit-service-deploy).
 
 ## Writing an Application Audit Event Definition File
 
@@ -68,7 +68,7 @@ If you reference the XML schema file from your audit event definition file, then
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://oss.sonatype.org/content/repositories/releases/com/github/cafaudit/caf-audit-schema/3.0.0/caf-audit-schema-3.0.0.jar!/schema/AuditedApplication.xsd">	                   
 
-Many IDEs and XML editors use the schema file to provide IntelliSense and type-ahead when authoring the definition file.
+Many IDEs and XML editors use the schema file to provide IntelliSense / Auto-Complete when authoring the definition file.
 
 ### Example Audit Event Definition XML
 
@@ -116,7 +116,7 @@ The following is an example of an audit event definition file used throughout th
 
 ## Generating a Client-side Auditing Library
 
-As previously mentioned, in order to use Auditing, you must first define the audit events in an audit event definition file. After you create the definition file, you use it to generate a client-side library. Technically, you do not need to generate a client-side library to use Auditing; you could use the `caf-audit` module directly; read more on the using the library directed [here](Client-API). However, generating a client-side library should make it easier and safer to raise events because each event can be raised with a single type-safe call.
+As previously mentioned, in order to use Auditing, you must first define the audit events in an audit event definition file. After you create the definition file, you use it to generate a client-side library. Technically, you do not need to generate a client-side library to use Auditing; you could use the `caf-audit` module directly; read more on the using the library directly, [here](Client-API). However, generating a client-side library should make it easier and safer to raise events because each event can be raised with a single type-safe call.
 
 The following sample Maven project file generates a client-side auditing library:
 
@@ -235,7 +235,7 @@ A generated client-side library should be referenced in the normal way in the ap
 
 Regardless of whether you choose to use a generated client-side library, or to use `caf-audit` directly, you must first create an `AuditConnection` object.
 
-This object represents a logical connection to persistent storage (that is, Elasticsearch in the current implementation). It is a thread-safe object. ***Please take into account that this object requires some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
+This object represents a logical connection to the datastore (that is, Elasticsearch in the current implementation). It is a thread-safe object. ***Please take into account that this object requires some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
 
 The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a `ConfigurationSource` parameter, which is the standard method of configuration in CAF.
 
@@ -330,7 +330,7 @@ In the `ConfigurationSource` above, we used JSON-encoded files with the followin
 Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_ElasticsearchAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
-	    "hostAndPort": "<Elasticsearch_Cluser_Node_1>:<Port_Number>,<Elasticsearch_Cluser_Node_2>:<Port_Number>",
+	    "hostAndPortValues": "<Elasticsearch_Cluser_Node_1>:<Port_Number>,<Elasticsearch_Cluser_Node_2>:<Port_Number>",
 	    "clusterName": "elasticsearchcluster",
 	    "numberOfShards": "5",
 	    "numberOfReplicas": "1"
@@ -338,7 +338,7 @@ Given this configuration, you would configure Auditing by creating a file named 
 
 where:
 
-- `hostAndPort` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
+- `hostAndPortValues` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
 - `clusterName` name of the Elasticsearch cluster. Defaults to "elasticsearch".
 - `numberOfShards` the number of primary shards that an index should have. Defaults to 5.
 - `numberOfReplicas` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
@@ -347,9 +347,9 @@ where:
 
 After you successfully construct an `AuditConnection` object, you must construct an `AuditChannel` object.
 
-This object represents a logical channel to the persistent storage (that is, Elasticsearch in this implementation). **It is NOT a thread-safe object and must not be shared across threads without synchronization.** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
+This object represents a logical channel to the datastore (that is, Elasticsearch in this implementation). **It is NOT a thread-safe object and must not be shared across threads without synchronization.** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
 
-The `AuditChannel` object can be constructed using the `createChannel()` method on the `AuditConnectionn` object. It does not take any parameters.
+The `AuditChannel` object can be constructed using the `createChannel()` method on the `AuditConnection` object. It does not take any parameters.
 
 ### Audit Log
 

@@ -90,7 +90,7 @@ To use JSON-encoded files for your configuration, add the following additional d
 	    <scope>runtime</scope>
 	</dependency>
 	<dependency>
-	    <groupId>com.github.cafapi.code</groupId>
+	    <groupId>com.github.cafapi.codec</groupId>
 	    <artifactId>codec-json</artifactId>
 	    <version>1.6.0-176</version>
 	    <scope>runtime</scope>
@@ -112,8 +112,8 @@ In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded
 Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_ElasticAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
-	    "hostAndPortValues": "<Elasticsearch_Cluster_Node_1>:<Port_Number>,<Elasticsearch_Cluster_Node_2>:<Port_Number>",
-	    "clusterName": "elasticsearchcluster",
+	    "hostAndPortValues": "<Elasticsearch_Cluster_Node1>:<ES_Port_Node1>,<Elasticsearch_Cluster_Node2>:<ES_Port_Node2>,<Elasticsearch_Cluster_Node3>:<ES_Port_Node3>",
+	    "clusterName": "elasticsearch-cluster",
 	    "numberOfShards": "5",
 	    "numberOfReplicas": "1"
 	}
@@ -121,7 +121,7 @@ Given this configuration, you would configure Auditing by creating a file named 
 where:
 
 - `hostAndPortValues` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
-- `clusterName` name of the Elasticsearch cluster. Defaults to "elasticsearch".
+- `clusterName` name of the Elasticsearch cluster. Defaults to "elasticsearch-cluster".
 - `numberOfShards` the number of primary shards that an index should have. Defaults to 5.
 - `numberOfReplicas` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
 

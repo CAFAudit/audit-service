@@ -2,7 +2,7 @@
 
 In order to use CAF Auditing in an application, the auditing events that the application uses must be specified along with the parameters that are associated with each of the events in an [Audit Event Definition File](../caf-audit-schema/README.md). After you have created the definition file you can use it to generate a client-side auditing library in order to raise the application defined audit events. 
 
-The `caf-audit-maven-plugin` is a code generation plugin which uses the definition file to auto-generate Java auditing code that will make up the client-side auditing library. The generated class which is named `AuditLog`, uses the [Auditing Library](../caf-audit) to send audit event messages to the Apache Kafka messaging service. 
+The `caf-audit-maven-plugin` is a code generation plugin which uses the definition file to auto-generate Java auditing code that will make up the client-side auditing library. The generated class which is named `AuditLog`, uses the [Auditing Library](../caf-audit) to send audit event messages to the Elasticsearch. 
 
 ## Usage
 
@@ -11,9 +11,9 @@ The client-side auditing library will need to include the code generation plugin
 	<build>
 	    <plugins>
 	        <plugin>
-	            <groupId>com.hpe.caf</groupId>
+	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit-maven-plugin</artifactId>
-	            <version>1.1.0</version>
+	            <version>3.0.0</version>
 	            <executions>
 	                <execution>
 	                    <id>generate-code</id>
@@ -100,4 +100,4 @@ Using the sample audit events XML specified in the [Audit Event Definition File]
 	    auditEventBuilder.send();
 	}
 
-Calls to methods `auditViewDocument` and `auditDeleteDocument` would then be made to send document event messages to Kafka.
+Calls to methods `auditViewDocument` and `auditDeleteDocument` would then be made to send document event messages to Elasticsearch.

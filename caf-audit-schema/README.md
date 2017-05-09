@@ -9,7 +9,9 @@ This project contains the exact XML Schema file that the Audit Event Definition 
 An example of an Audit Event Definition File is shown next:
 
 	<?xml version="1.0" encoding="UTF-8"?>
-	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd">
+	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://oss.sonatype.org/content/repositories/releases/com/github/cafaudit/caf-audit-schema/3.0.0/caf-audit-schema-3.0.0.jar!/schema/AuditedApplication.xsd">
 	  <ApplicationId>SampleApp</ApplicationId>
 	  <AuditEvents>
 	    <AuditEvent>
@@ -71,6 +73,6 @@ to:
 
 	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd http://rh7-artifactory.svs.hpeswlab.net:8081/artifactory/policyengine-release/com/hpe/caf/caf-audit-schema/1.0/caf-audit-schema-1.0.jar!/schema/AuditedApplication.xsd">
+	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://oss.sonatype.org/content/repositories/releases/com/github/cafaudit/caf-audit-schema/3.0.0/caf-audit-schema-3.0.0.jar!/schema/AuditedApplication.xsd">
 
 Many IDEs and XML Editors will also use the schema file to provide IntelliSense and type-ahead when the definition file is being authored.

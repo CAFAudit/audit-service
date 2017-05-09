@@ -112,7 +112,7 @@ In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded
 Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_ElasticAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
-	    "hostAndPortValues": "<Elasticsearch_Cluser_Node_1>:<Port_Number>,<Elasticsearch_Cluser_Node_2>:<Port_Number>",
+	    "hostAndPortValues": "<Elasticsearch_Cluster_Node_1>:<Port_Number>,<Elasticsearch_Cluster_Node_2>:<Port_Number>",
 	    "clusterName": "elasticsearchcluster",
 	    "numberOfShards": "5",
 	    "numberOfReplicas": "1"

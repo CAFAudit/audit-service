@@ -330,7 +330,7 @@ In the `ConfigurationSource` above, we used JSON-encoded files with the followin
 Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_ElasticAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
-	    "hostAndPortValues": "<Elasticsearch_Cluser_Node_1>:<Port_Number>,<Elasticsearch_Cluser_Node_2>:<Port_Number>",
+	    "hostAndPortValues": "<Elasticsearch_Cluster_Node_1>:<Port_Number>,<Elasticsearch_Cluster_Node_2>:<Port_Number>",
 	    "clusterName": "elasticsearchcluster",
 	    "numberOfShards": "5",
 	    "numberOfReplicas": "1"
@@ -396,11 +396,11 @@ Every time an `AuditLog` method is called, a new application audit event is ente
 
 Elasticsearch offers a RESTful interface for querying index entries. For more information on the Elasticsearch REST Search API, go [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html).
 
-Using the configuration source details above, the following Search API operation, `http://<Elasticsearch_Cluser_Node_1>:<Port_Number>/00000001_audit/cafAuditEvent/_search`, can be run to display all audit event entries belonging to tenantId `00000001`:
+Using the configuration source details above, the following Search API operation, `http://<Elasticsearch_Cluster_Node_1>:<Port_Number>/00000001_audit/cafAuditEvent/_search`, can be run to display all audit event entries belonging to tenantId `00000001`:
 
 ![Tenant 00000001_audit all audit event index entries](images/GetTenantIndexAuditEvents.PNG)
 
-The following Search API operation, `http://<Elasticsearch_Cluser_Node_1>:<Port_Number>/00000001_audit/cafAuditEvent/_search?q=userId:JoanneBloggs@yourcompany.com`, can be run to display the audit event entries belonging to tenantId `00000001` and whose `userId` is `JoanneBloggs@yourcompany.com`:
+The following Search API operation, `http://<Elasticsearch_Cluster_Node_1>:<Port_Number>/00000001_audit/cafAuditEvent/_search?q=userId:JoanneBloggs@yourcompany.com`, can be run to display the audit event entries belonging to tenantId `00000001` and whose `userId` is `JoanneBloggs@yourcompany.com`:
 
 ![Tenant 00000001_audit, userId JoanneBloggs@yourcompany.com, audit event index entries](images/GetTenantIndexAuditEventsForSpecificUser.PNG)
 

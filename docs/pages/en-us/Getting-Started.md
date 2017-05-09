@@ -327,7 +327,7 @@ In the `ConfigurationSource` above, we used JSON-encoded files with the followin
 - `CAF_CONFIG_PATH: /etc/sampleapp/config`
 - `CAF_APPNAME: sampleappgroup/sampleapp`
 
-Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_ElasticsearchAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
+Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_ElasticAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
 	    "hostAndPortValues": "<Elasticsearch_Cluser_Node_1>:<Port_Number>,<Elasticsearch_Cluser_Node_2>:<Port_Number>",
@@ -345,7 +345,7 @@ where:
 
 ### Audit Channel
 
-After you successfully construct an `AuditConnection` object, you must construct an `AuditChannel` object.
+After you successfully construct an `AuditConnection` object, you must then create an `AuditChannel` object.
 
 This object represents a logical channel to the datastore (that is, Elasticsearch in this implementation). **It is NOT a thread-safe object and must not be shared across threads without synchronization.** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
 
@@ -392,13 +392,15 @@ The method will throw an exception if the audit event could not be stored for so
 
 ### Verification Instructions
 
-Every time an `AuditLog` method is called, a new application audit event is entered into the tenant's index. Elasticsearch offers a RESTful interface for querying index entries.
+Every time an `AuditLog` method is called, a new application audit event is entered into the tenant's index. 
 
-The following figure shows all audit event entries belonging to tenant index `00000001_audit`:
+Elasticsearch offers a RESTful interface for querying index entries. For more information on the Elasticsearch REST Search API, go [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html).
+
+Using the configuration source details above, the following Search API operation, `http://<Elasticsearch_Cluser_Node_1>:<Port_Number>/00000001_audit/cafAuditEvent/_search`, can be run to display all audit event entries belonging to tenantId `00000001`:
 
 ![Tenant 00000001_audit all audit event index entries](images/GetTenantIndexAuditEvents.PNG)
 
-The following figure shows all audit event entries belonging to tenant index `00000001_audit` whose `userId` is `JoanneBloggs@yourcompany.com`:
+The following Search API operation, `http://<Elasticsearch_Cluser_Node_1>:<Port_Number>/00000001_audit/cafAuditEvent/_search?q=userId:JoanneBloggs@yourcompany.com`, can be run to display the audit event entries belonging to tenantId `00000001` and whose `userId` is `JoanneBloggs@yourcompany.com`:
 
 ![Tenant 00000001_audit, userId JoanneBloggs@yourcompany.com, audit event index entries](images/GetTenantIndexAuditEventsForSpecificUser.PNG)
 

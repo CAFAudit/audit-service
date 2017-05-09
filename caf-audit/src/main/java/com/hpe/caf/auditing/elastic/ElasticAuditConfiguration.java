@@ -20,7 +20,7 @@ import com.hpe.caf.api.Configuration;
 @Configuration
 public class ElasticAuditConfiguration {
 
-    private static String DEFAULT_CLUSTER_NAME = "elasticsearch";
+    private static String DEFAULT_CLUSTER_NAME = "elasticsearch-cluster";
     private static int DEFAULT_NUMBER_OF_SHARDS = 5;
     private static int DEFAULT_NUMBER_OF_REPLICAS = 1;
 
@@ -29,7 +29,7 @@ public class ElasticAuditConfiguration {
     }
 
     //  Comma separated list of Elasticsearch host:port value pairs.
-    private String hostAndPort;
+    private String hostAndPortValues;
 
     //  Name of the cluster. Defaults to "elasticsearch".
     private String clusterName = DEFAULT_CLUSTER_NAME;
@@ -40,10 +40,10 @@ public class ElasticAuditConfiguration {
     //  The number of replica shards (copies) that each primary shard should have. Defaults to 1.
     private int numberOfReplicas = DEFAULT_NUMBER_OF_REPLICAS;
 
-    public String getHostAndPort() { return hostAndPort; }
+    public String getHostAndPortValues() { return hostAndPortValues; }
 
-    public void setHostAndPort(String hostAndPort) {
-        this.hostAndPort = hostAndPort;
+    public void setHostAndPortValues(String hostAndPortValues) {
+        this.hostAndPortValues = hostAndPortValues;
     }
 
     public String getClusterName() { return (clusterName != null) ? clusterName : DEFAULT_CLUSTER_NAME;}

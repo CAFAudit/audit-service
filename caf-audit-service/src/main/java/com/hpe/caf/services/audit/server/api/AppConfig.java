@@ -30,7 +30,7 @@ public class AppConfig {
     private Environment environment;
 
     //  Comma separated list of Elasticsearch host:port value pairs.
-    public String getElasticHostAndPort(){
+    public String getElasticHostAndPortValues(){
         return environment.getProperty("CAF_ELASTIC_HOST_AND_PORT");
     }
 

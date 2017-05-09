@@ -17,13 +17,14 @@ The order of instantiation and use of these objects for sending audit events is 
 2. Create an [`AuditConnection`](#AuditConnection) object by passing the `AuditConnectionFactory` the [`ConfigurationSource`](#ConfigurationSource).
 3. Use the `AuditConnectionFactory` to create the [`AuditConnection`](#AuditConnection) object. You will need to pass it the [`ConfigurationSource`](#ConfigurationSource).
 3. Create an [`AuditChannel`](#AuditChannel) object from the [`AuditConnection`](#AuditConnection) object.
-4. Use the [`AuditEventBuilder`](#AuditEventBuilder) object to construct audit events and send them to Kafka.
+4. Use the [`AuditEventBuilder`](#AuditEventBuilder) object to construct audit events and send them to Elasticsearch.
 
 ### ConfigurationSource
 
 [comment]: <> (The caf-audit Getting-Started.md documentation content contains duplication of the ConfigurationSource section. It is important that any changes here must also be included within the Getting-Started.md content.)
 
 You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from any of the following:
+
 - environment variables
 - files
 - a REST service
@@ -54,44 +55,44 @@ If you're not already using CAF's configuration mechanism, this sample code illu
 To compile the above sample code, add the following dependencies to your POM:
 
 	<dependency>
-	    <groupId>com.hpe.caf</groupId>
+	    <groupId>com.github.cafapi</groupId>
 	    <artifactId>caf-api</artifactId>
-	    <version>11.2</version>
+	    <version>1.6.0-176</version>
 	</dependency>
 	<dependency>
-	    <groupId>com.hpe.caf.cipher</groupId>
+	    <groupId>com.github.cafapi.cipher</groupId>
 	    <artifactId>cipher-null</artifactId>
-	    <version>10.0</version>
+	    <version>1.6.0-176</version>
 	</dependency>
 	<dependency>
-	    <groupId>com.hpe.caf.config</groupId>
+	    <groupId>com.github.cafapi.config</groupId>
 	    <artifactId>config-system</artifactId>
-	    <version>10.0</version>
+	    <version>1.6.0-176</version>
 	</dependency>
 	<dependency>
-	    <groupId>com.hpe.caf.util</groupId>
+	    <groupId>com.github.cafapi.util</groupId>
 	    <artifactId>util-moduleloader</artifactId>
-	    <version>1.1</version>
+	    <version>1.6.0-176</version>
 	</dependency>
 	<dependency>
-	    <groupId>com.hpe.caf.util</groupId>
+	    <groupId>com.github.cafapi.util</groupId>
 	    <artifactId>util-naming</artifactId>
-	    <version>1.0</version>
+	    <version>1.6.0-176</version>
 	</dependency>
 
 To use JSON-encoded files for your configuration, add the following additional dependencies to your POM:
 
 	<!-- Runtime-only Dependencies -->
 	<dependency>
-	    <groupId>com.hpe.caf.config</groupId>
+	    <groupId>com.github.cafapi.config</groupId>
 	    <artifactId>config-file</artifactId>
-	    <version>10.0</version>
+	    <version>1.6.0-176</version>
 	    <scope>runtime</scope>
 	</dependency>
 	<dependency>
-	    <groupId>com.hpe.caf.codec</groupId>
+	    <groupId>com.github.cafapi.codec</groupId>
 	    <artifactId>codec-json</artifactId>
-	    <version>10.1</version>
+	    <version>1.6.0-176</version>
 	    <scope>runtime</scope>
 	</dependency>
 	<dependency>
@@ -108,28 +109,31 @@ In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded
 - `CAF_CONFIG_PATH: /etc/sampleapp/config`
 - `CAF_APPNAME: sampleappgroup/sampleapp`
 
-Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_KafkaAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
+Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_ElasticAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
-	    "bootstrapServers": "<kafka broker>:<port number>",
-	    "acks": "all",
-	    "retries": "0"
+	    "hostAndPortValues": "<Elasticsearch_Cluster_Node1>:<ES_Port_Node1>,<Elasticsearch_Cluster_Node2>:<ES_Port_Node2>,<Elasticsearch_Cluster_Node3>:<ES_Port_Node3>",
+	    "clusterName": "elasticsearch-cluster",
+	    "numberOfShards": "5",
+	    "numberOfReplicas": "1"
 	}
 
-
 where:
-* `bootstrapServers` refers to one or more of the nodes of the Kafka cluster as a comma-separated list.
-* `acks` is the number of nodes in the cluster which must acknowledge an audit event when it is sent.
+
+- `hostAndPortValues` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
+- `clusterName` name of the Elasticsearch cluster. Defaults to "elasticsearch-cluster".
+- `numberOfShards` the number of primary shards that an index should have. Defaults to 5.
+- `numberOfReplicas` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
 
 ### AuditConnection
 
-The `AuditConnection` object represents a logical connection to the persistent storage (that is, Kafka in this implementation). It is a thread-safe object. ***You should expect this object to take some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
+The `AuditConnection` object represents a logical connection to the datastore (that is, Elasticsearch in this implementation). It is a thread-safe object. ***You should expect this object to take some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
 
 The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a [`ConfigurationSource`](#ConfigurationSource) parameter, which is the standard method of configuration in CAF:
 
 	AuditConnection auditConnection = null;
     try {
-        // Setup Kafka Connection
+        // Setup Elasticsearch Connection
         auditConnection = new AuditConnectionFactory().createConnection(createCafConfigSource());
     } catch (Exception e) {
         System.out.println("Unable to create Audit Connection");
@@ -140,13 +144,13 @@ The `AuditConnection` object can be constructed using the static `createConnecti
 
 An `AuditChannel` object is constructed from the [`AuditConnection`](#AuditConnection) object.
 
-This object represents a logical channel to the persistent storage (that is, Kafka in this implementation). ***It is NOT a thread-safe object and must not be shared across threads without synchronization.*** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
+This object represents a logical channel to the datastore (that is, Elasticsearch in this implementation). ***It is NOT a thread-safe object and must not be shared across threads without synchronization.*** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
 
 The `AuditChannel` object can be constructed using the `createChannel()` method on the [`AuditConnection`](#AuditConnection) object. It does not take any parameters:
 
 	AuditChannel auditChannel = null;
 	try {
-	    // Setup a connection channel to Kafka
+	    // Setup a connection channel to Elasticsearch
 	    auditChannel = auditConnection.createChannel();
 	} catch (IOException e) {
 	    System.out.println("Unable to create Audit Channel from Audit Connection");
@@ -185,4 +189,4 @@ The `AuditEventBuilder` object is created using the `createEventBuilder()` metho
 	// Send the constructed event to storage
 	auditEventBuilder.send();
 
-Typically, this object is only used indirectly. Normally, you generate a type-safe client-side auditing library using the code generation plugin. Internally, the auto-generated code makes use of the `AuditEventBuilder` object.
+Typically, this object is only used indirectly. Normally, you generate a type-safe client-side auditing library using the code generation plugin. Internally, the auto-generated code makes use of the `AuditEventBuilder` object. For information on how to generate a type-safe client-side auditing library for your application, visit the Getting Started guide [here](Getting-Started).

@@ -65,7 +65,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     private static final String ERR_MSG_EVEN_PARAM_PARSING = "Error parsing value for audit event parameter: ";
 
     @Override
-    public Response auditeventsPost(NewAuditEvent newAuditEvent,SecurityContext securityContext) throws NotFoundException {
+    public Response auditeventsPost(NewAuditEvent newAuditEvent, SecurityContext securityContext) throws NotFoundException {
         //  Index new audit event into Elasticsearch.
         try {
             LOG.debug("Start indexing audit event message into Elasticsearch");
@@ -74,8 +74,6 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
             return Response.noContent().build();
         } catch (BadRequestException e){
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type("text/plain").build();
-        } catch(ConfigurationException e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type("text/plain").build();
         } catch(Exception e){
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type("text/plain").build();
         }

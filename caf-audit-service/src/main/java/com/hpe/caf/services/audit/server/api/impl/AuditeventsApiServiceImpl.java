@@ -17,7 +17,11 @@ package com.hpe.caf.services.audit.server.api.impl;
 
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
-import com.hpe.caf.auditing.*;
+import com.hpe.caf.auditing.AuditChannel;
+import com.hpe.caf.auditing.AuditConnection;
+import com.hpe.caf.auditing.AuditConnectionFactory;
+import com.hpe.caf.auditing.AuditCoreMetadataProvider;
+import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.elastic.ElasticAuditConfiguration;
 import com.hpe.caf.services.audit.server.api.*;
 import com.hpe.caf.services.audit.server.api.exceptions.BadRequestException;

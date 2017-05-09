@@ -5,11 +5,12 @@ services:
   elasticsearch1:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.3.1
     ports:
-      - "${ELASTICSEARCH_HTTP_PORT:-9200}:9200"
-      - "${ELASTICSEARCH_NETWORK_PORT:-9300}:9300"
+      - "${ELASTICSEARCH_HTTP_PORT_NODE1:-9200}:9200"
+      - "${ELASTICSEARCH_NETWORK_PORT_NODE1:-9300}:9300"
     environment:
       cluster.name: "docker-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
+      discovery.zen.ping.unicast.hosts: "elasticsearch2:${ELASTICSEARCH_NETWORK_PORT_NODE2:-9301},elasticsearch3:${ELASTICSEARCH_NETWORK_PORT_NODE3:-9302}"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
       #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
@@ -33,10 +34,13 @@ services:
 
   elasticsearch2:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.3.1
+    ports:
+      - "${ELASTICSEARCH_HTTP_PORT_NODE2:-9201}:9200"
+      - "${ELASTICSEARCH_NETWORK_PORT_NODE2:-9301}:9300"
     environment:
       cluster.name: "docker-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
-      discovery.zen.ping.unicast.hosts: elasticsearch1
+      discovery.zen.ping.unicast.hosts: "elasticsearch1:${ELASTICSEARCH_NETWORK_PORT_NODE1:-9300},elasticsearch3:${ELASTICSEARCH_NETWORK_PORT_NODE3:-9302}"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
       #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
@@ -58,6 +62,37 @@ services:
     volumes:
       - esdata2:/usr/share/elasticsearch/data
 
+  elasticsearch3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.1
+    ports:
+      - "${ELASTICSEARCH_HTTP_PORT_NODE3:-9202}:9200"
+      - "${ELASTICSEARCH_NETWORK_PORT_NODE3:-9302}:9300"
+    environment:
+      cluster.name: "docker-cluster"
+      ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
+      discovery.zen.ping.unicast.hosts: "elasticsearch1:${ELASTICSEARCH_NETWORK_PORT_NODE1:-9300},elasticsearch3:${ELASTICSEARCH_NETWORK_PORT_NODE2:-9301}"
+      # disable X-Pack
+      # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
+      #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
+      xpack.security.enabled: "false"
+      xpack.monitoring.enabled: "false"
+      xpack.graph.enabled: "false"
+      xpack.watcher.enabled: "false"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    deploy:
+      resources:
+        limit:
+          memory: 1gb
+    volumes:
+      - esdata3:/usr/share/elasticsearch/data
+
 volumes:
   esdata1:
   esdata2:
+  esdata3:

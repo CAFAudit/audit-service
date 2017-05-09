@@ -213,7 +213,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
         //  Make sure Elasticsearch host and port have been provided.
         try {
-            if (appConfig.getElasticHostAndPort() == null) {
+            if (appConfig.getElasticHostAndPortValues() == null) {
                 LOG.error(ERR_MSG_ES_HOST_AND_PORT_MISSING);
                 throw new ConfigurationException(ERR_MSG_ES_HOST_AND_PORT_MISSING);
             }
@@ -241,7 +241,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
                 AppConfig appConfig = getAppConfigProperties();
 
                 //  Host and port must always be provided.
-                String hostAndPort = appConfig.getElasticHostAndPort();
+                String hostAndPort = appConfig.getElasticHostAndPortValues();
 
                 //  Support for optional configuration properties and defaults.
                 String clusterName = (appConfig.getElasticClusterName() != null) ? appConfig.getElasticClusterName() : DEFAULT_CLUSTER_NAME;
@@ -251,7 +251,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
                 //  Create and return audit configuration source instance.
                 ElasticAuditConfiguration config = new ElasticAuditConfiguration();
                 config.setClusterName(clusterName);
-                config.setHostAndPort(hostAndPort);
+                config.setHostAndPortValues(hostAndPort);
                 config.setNumberOfShards(numberOfShards);
                 config.setNumberOfReplicas(numberOfReplicas);
                 return (T) config;

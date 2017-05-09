@@ -24,7 +24,7 @@ public class ElasticAuditConfigurationTest {
     public void testGetClusterName() throws Exception {
         ElasticAuditConfiguration config = new ElasticAuditConfiguration();
         String defaultClusterName = config.getClusterName();
-        Assert.assertEquals("elasticsearch", defaultClusterName);
+        Assert.assertEquals("elasticsearch-cluster", defaultClusterName);
     }
 
 }

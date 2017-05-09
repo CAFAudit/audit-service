@@ -20,7 +20,7 @@ import com.hpe.caf.api.Configuration;
 @Configuration
 public class ElasticAuditConfiguration {
 
-    private static String DEFAULT_CLUSTER_NAME = "elasticsearch";
+    private static String DEFAULT_CLUSTER_NAME = "elasticsearch-cluster";
     private static int DEFAULT_NUMBER_OF_SHARDS = 5;
     private static int DEFAULT_NUMBER_OF_REPLICAS = 1;
 

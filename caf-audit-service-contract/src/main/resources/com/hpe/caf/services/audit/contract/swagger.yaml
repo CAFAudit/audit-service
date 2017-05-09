@@ -52,7 +52,7 @@ paths:
         204:
           description: The audit event message was successfully indexed into Elasticsearch.
         400:
-          description: The audit event message definition is missing expected event parameters.
+          description: The audit event message definition is incomplete or contains invalid data.
 definitions:
   newAuditEvent:
     type: object

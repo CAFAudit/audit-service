@@ -34,6 +34,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -61,6 +62,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     private static final String ERR_MSG_EVENT_CATEGORY_ID_NOT_SPECIFIED = "The event category identifier has not been specified";
     private static final String ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED = "Custom audit event fields have not been specified";
     private static final String ERR_MSG_ES_HOST_AND_PORT_MISSING = "The Elasticsearch host and port have not been provided";
+    private static final String ERR_MSG_EVEN_PARAM_PARSING = "Error parsing value for audit event parameter: ";
 
     @Override
     public Response auditeventsPost(NewAuditEvent newAuditEvent,SecurityContext securityContext) throws NotFoundException {
@@ -70,18 +72,19 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
             AddNewAuditEvent(newAuditEvent);
             LOG.debug("Indexing audit event message into Elasticsearch complete");
             return Response.noContent().build();
-        } catch (BadRequestException | ConfigurationException e){
+        } catch (BadRequestException e){
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type("text/plain").build();
+        } catch(ConfigurationException e){
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type("text/plain").build();
         } catch(Exception e){
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type("text/plain").build();
         }
-
     }
 
     /**
      * Indexes a new audit event message into Elasticsearch.
      */
-    private void AddNewAuditEvent(final NewAuditEvent newAuditEvent) throws Exception {
+    private void AddNewAuditEvent(final NewAuditEvent newAuditEvent) throws Exception, BadRequestException, ConfigurationException {
 
         //  Make sure fixed audit event fields have been supplied.
         LOG.debug("Checking that fixed and custom audit event parameters have been provided");
@@ -113,6 +116,8 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
             //  Send the audit event message to Elasticsearch.
             LOG.debug("Send audit event message to Elasticsearch");
             auditEventBuilder.send();
+        } catch (DateTimeParseException e) {
+            throw new BadRequestException(e.getMessage());
         }
     }
 
@@ -262,7 +267,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
      * Returns a AuditCoreMetadataProvider instance comprising the processId, threadId, eventOrder,
      * eventTime and eventTimeSource.
      */
-    private AuditCoreMetadataProvider getAuditCoreMetadataProvider(final NewAuditEvent newAuditEvent) {
+    private AuditCoreMetadataProvider getAuditCoreMetadataProvider(final NewAuditEvent newAuditEvent) throws DateTimeParseException {
         return new AuditCoreMetadataProvider()
         {
             @Override
@@ -308,7 +313,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     /**
      * Adds custom field data to the audit event builder.
      */
-    private void addCustomFieldsToAuditEventMessage(AuditEventBuilder auditEventBuilder, final NewAuditEvent newAuditEvent) throws ParseException {
+    private void addCustomFieldsToAuditEventMessage(AuditEventBuilder auditEventBuilder, final NewAuditEvent newAuditEvent) throws BadRequestException {
 
         //  Iterate through the list of custom event parameter fields and add field data values to the audit event message.
         for (EventParam ep : newAuditEvent.getEventParams()) {
@@ -326,7 +331,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
             EventParam.ParamFormatEnum epParamFormat = ep.getParamFormat();
 
             //  Perform OpenAPI type/format to java primitive type mapping and add event parameter to the message.
-            switch(epParamType) {
+            switch (epParamType) {
                 //  Type is integer. Could be signed 32 or 64 bits.
                 case INTEGER:
                     addIntegerTypeEventParameter(auditEventBuilder, epParamFormat, epParamName, epParamColumn, epParamValue);
@@ -351,7 +356,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
                 default:
                     String unexpectedParamTypeErrorMessage = "Unexpected parameter type: " + epParamType.toString();
                     LOG.error(unexpectedParamTypeErrorMessage);
-                    throw new IllegalArgumentException(unexpectedParamTypeErrorMessage);
+                    throw new BadRequestException(unexpectedParamTypeErrorMessage);
             }
         }
     }
@@ -359,71 +364,86 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     /**
      * Adds an integer or long audit event parameter to the audit event builder.
      */
-    private void addIntegerTypeEventParameter(AuditEventBuilder auditEventBuilder, final EventParam.ParamFormatEnum epParamFormat, final String epParamName, final String epParamColumn, final String epParamValue){
-        if (null != epParamFormat) {
-            switch (epParamFormat) {
-                case INT32:
-                    auditEventBuilder.addEventParameter(epParamName, epParamColumn, Integer.parseInt(epParamValue));
-                    break;
-                case INT64:
-                    auditEventBuilder.addEventParameter(epParamName, epParamColumn, Long.parseLong(epParamValue));
-                    break;
-                default:
-                    // Unexpected format for integer type.
-                    String unexpectedParamFormatErrorMessage = "Unexpected parameter format for type 'integer': " + epParamFormat.toString();
-                    LOG.error(unexpectedParamFormatErrorMessage);
-                    throw new IllegalArgumentException(unexpectedParamFormatErrorMessage);
+    private void addIntegerTypeEventParameter(AuditEventBuilder auditEventBuilder, final EventParam.ParamFormatEnum epParamFormat, final String epParamName, final String epParamColumn, final String epParamValue) throws BadRequestException {
+        try {
+            if (null != epParamFormat) {
+                switch (epParamFormat) {
+                    case INT32:
+                        auditEventBuilder.addEventParameter(epParamName, epParamColumn, Integer.parseInt(epParamValue));
+                        break;
+                    case INT64:
+                        auditEventBuilder.addEventParameter(epParamName, epParamColumn, Long.parseLong(epParamValue));
+                        break;
+                    default:
+                        // Unexpected format for integer type.
+                        String unexpectedParamFormatErrorMessage = "Unexpected parameter format for type 'integer': " + epParamFormat.toString();
+                        LOG.error(unexpectedParamFormatErrorMessage);
+                        throw new BadRequestException(unexpectedParamFormatErrorMessage);
+                }
+            } else {
+                //  Default to long if format has not been provided.
+                auditEventBuilder.addEventParameter(epParamName, epParamColumn, Long.parseLong(epParamValue));
             }
-        } else {
-            //  Default to long if format has not been provided.
-            auditEventBuilder.addEventParameter(epParamName, epParamColumn, Long.parseLong(epParamValue));
+        } catch (NullPointerException | NumberFormatException e) {
+            LOG.error(ERR_MSG_EVEN_PARAM_PARSING + epParamName);
+            throw new BadRequestException(ERR_MSG_EVEN_PARAM_PARSING + epParamName, e);
         }
     }
 
     /**
      * Adds a float or double audit event parameter to the audit event builder.
      */
-    private void addNumberTypeEventParameter(AuditEventBuilder auditEventBuilder, final EventParam.ParamFormatEnum epParamFormat, final String epParamName, final String epParamColumn, final String epParamValue){
-        if (null != epParamFormat) {
-            switch (epParamFormat) {
-                case FLOAT:
-                    auditEventBuilder.addEventParameter(epParamName, epParamColumn, Float.parseFloat(epParamValue));
-                    break;
-                case DOUBLE:
-                    auditEventBuilder.addEventParameter(epParamName, epParamColumn, Double.parseDouble(epParamValue));
-                    break;
-                default:
-                    // Unexpected format for number type.
-                    String unexpectedParamFormatErrorMessage = "Unexpected parameter format for type 'number': " + epParamFormat.toString();
-                    LOG.error(unexpectedParamFormatErrorMessage);
-                    throw new IllegalArgumentException(unexpectedParamFormatErrorMessage);
+    private void addNumberTypeEventParameter(AuditEventBuilder auditEventBuilder, final EventParam.ParamFormatEnum epParamFormat, final String epParamName, final String epParamColumn, final String epParamValue) throws BadRequestException{
+        try {
+            if (null != epParamFormat) {
+                switch (epParamFormat) {
+                    case FLOAT:
+                        auditEventBuilder.addEventParameter(epParamName, epParamColumn, Float.parseFloat(epParamValue));
+                        break;
+                    case DOUBLE:
+                        auditEventBuilder.addEventParameter(epParamName, epParamColumn, Double.parseDouble(epParamValue));
+                        break;
+                    default:
+                        // Unexpected format for number type.
+                        String unexpectedParamFormatErrorMessage = "Unexpected parameter format for type 'number': " + epParamFormat.toString();
+                        LOG.error(unexpectedParamFormatErrorMessage);
+                        throw new BadRequestException(unexpectedParamFormatErrorMessage);
+                }
+            } else {
+                //  Default to double if format has not been provided.
+                auditEventBuilder.addEventParameter(epParamName, epParamColumn, Double.parseDouble(epParamValue));
             }
-        } else {
-            //  Default to double if format has not been provided.
-            auditEventBuilder.addEventParameter(epParamName, epParamColumn, Double.parseDouble(epParamValue));
+        } catch (NullPointerException | NumberFormatException e) {
+            LOG.error(ERR_MSG_EVEN_PARAM_PARSING + epParamName);
+            throw new BadRequestException(ERR_MSG_EVEN_PARAM_PARSING + epParamName, e);
         }
     }
 
     /**
      * Adds a date or string audit event parameter to the audit event builder.
      */
-    private void addStringTypeEventParameter(AuditEventBuilder auditEventBuilder, final EventParam.ParamFormatEnum epParamFormat, final String epParamName, final String epParamColumn, final String epParamValue) throws ParseException {
-        if (null != epParamFormat) {
-            switch (epParamFormat) {
-                case DATE:
-                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                    auditEventBuilder.addEventParameter(epParamName, epParamColumn, df.parse(epParamValue));
-                    break;
-                default:
-                    // Unexpected format for string type.
-                    String unexpectedParamFormatErrorMessage = "Unexpected parameter format for type 'string': " + epParamFormat.toString();
-                    LOG.error(unexpectedParamFormatErrorMessage);
-                    throw new IllegalArgumentException(unexpectedParamFormatErrorMessage);
+    private void addStringTypeEventParameter(AuditEventBuilder auditEventBuilder, final EventParam.ParamFormatEnum epParamFormat, final String epParamName, final String epParamColumn, final String epParamValue) throws BadRequestException {
+        try {
+            if (null != epParamFormat) {
+                switch (epParamFormat) {
+                    case DATE:
+                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                        auditEventBuilder.addEventParameter(epParamName, epParamColumn, df.parse(epParamValue));
+                        break;
+                    default:
+                        // Unexpected format for string type.
+                        String unexpectedParamFormatErrorMessage = "Unexpected parameter format for type 'string': " + epParamFormat.toString();
+                        LOG.error(unexpectedParamFormatErrorMessage);
+                        throw new BadRequestException(unexpectedParamFormatErrorMessage);
+                }
+            } else {
+                //  Default to string if format has not been provided.
+                auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue);
             }
-        } else {
-            //  Default to string if format has not been provided.
-            auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue);
+        } catch (ParseException e) {
+            LOG.error(ERR_MSG_EVEN_PARAM_PARSING + epParamName);
+            throw new BadRequestException(ERR_MSG_EVEN_PARAM_PARSING + epParamName, e);
         }
     }
 }

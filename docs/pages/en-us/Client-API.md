@@ -183,8 +183,8 @@ The `AuditEventBuilder` object is created using the `createEventBuilder()` metho
 	// Add Event Parameters
 		// Add an Event Parameter for holding the Document ID that was deleted
 	auditEventBuilder.addEventParameter("docId", null, docId);
-		// Add an Event Parameter for holding the User who authorised the deletion of the document.
-	auditEventBuilder.addEventParameter("authorisedBy", null, authorisedBy);
+		// Add an Event Parameter for holding the User who authorised the deletion of the document. Add length constraints for this parameter as it is of type String
+	auditEventBuilder.addEventParameter("authorisedBy", null, authorisedBy, 1, 256);
 	
 	// Send the constructed event to storage
 	auditEventBuilder.send();

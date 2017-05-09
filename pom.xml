@@ -113,8 +113,12 @@
         <module>caf-audit-schema</module>
         <module>caf-audit-maven-plugin</module>
         <module>caf-audit</module>
-        <module>caf-audit-contract</module>
-        <module>caf-audit-ui</module>
+        <module>caf-audit-service-contract</module>
+        <module>caf-audit-service-ui</module>
+        <module>caf-audit-service-client</module>
+        <module>caf-audit-service-server-stub-source</module>
+        <module>caf-audit-service</module>
+        <module>caf-audit-service-container</module>
     </modules>
 
     <scm>

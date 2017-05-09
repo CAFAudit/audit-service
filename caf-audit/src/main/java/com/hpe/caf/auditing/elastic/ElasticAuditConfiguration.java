@@ -20,6 +20,10 @@ import com.hpe.caf.api.Configuration;
 @Configuration
 public class ElasticAuditConfiguration {
 
+    private static String DEFAULT_CLUSTER_NAME = "elasticsearch";
+    private static int DEFAULT_NUMBER_OF_SHARDS = 5;
+    private static int DEFAULT_NUMBER_OF_REPLICAS = 1;
+
     public ElasticAuditConfiguration() {
 
     }
@@ -28,13 +32,13 @@ public class ElasticAuditConfiguration {
     private String hostAndPortValues;
 
     //  Name of the cluster. Defaults to "elasticsearch".
-    private String clusterName = "elasticsearch";
+    private String clusterName = DEFAULT_CLUSTER_NAME;
 
     //  The number of primary shards that an index should have. Defaults to 5.
-    private int numberOfShards = 5;
+    private int numberOfShards = DEFAULT_NUMBER_OF_SHARDS;
 
     //  The number of replica shards (copies) that each primary shard should have. Defaults to 1.
-    private int numberOfReplicas = 1;
+    private int numberOfReplicas = DEFAULT_NUMBER_OF_REPLICAS;
 
     public String getHostAndPortValues() { return hostAndPortValues; }
 
@@ -42,19 +46,17 @@ public class ElasticAuditConfiguration {
         this.hostAndPortValues = hostAndPortValues;
     }
 
-    public String getClusterName() { return clusterName; }
+    public String getClusterName() { return (clusterName != null) ? clusterName : DEFAULT_CLUSTER_NAME;}
 
     public void setClusterName(String clusterName) {
         this.clusterName = clusterName;
     }
 
-    public int getNumberOfShards() { return numberOfShards; }
+    public int getNumberOfShards() { return (numberOfShards != 0) ? numberOfShards : DEFAULT_NUMBER_OF_SHARDS; }
 
-    public void setNumberOfShards(int numberOfShards) {
-        this.numberOfShards = numberOfShards;
-    }
+    public void setNumberOfShards(int numberOfShards) { this.numberOfShards = numberOfShards; }
 
-    public int getNumberOfReplicas() { return numberOfReplicas; }
+    public int getNumberOfReplicas() { return (numberOfReplicas != 0) ? numberOfReplicas : DEFAULT_NUMBER_OF_REPLICAS; }
 
     public void setNumberOfReplicas(int numberOfReplicas) {
         this.numberOfReplicas = numberOfReplicas;

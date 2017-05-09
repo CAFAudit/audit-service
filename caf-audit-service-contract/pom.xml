@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.cafaudit</groupId>
-    <artifactId>caf-audit-contract</artifactId>
+    <artifactId>caf-audit-service-contract</artifactId>
 
     <parent>
         <groupId>com.github.cafaudit</groupId>

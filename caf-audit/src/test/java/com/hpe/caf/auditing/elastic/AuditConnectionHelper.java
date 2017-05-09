@@ -34,7 +34,7 @@ public class AuditConnectionHelper
             public <T> T getConfiguration(Class<T> aClass) throws ConfigurationException
             {
                 ElasticAuditConfiguration elasticAuditConfiguration = new ElasticAuditConfiguration();
-                elasticAuditConfiguration.setHostAndPort(esHostAndPorts);
+                elasticAuditConfiguration.setHostAndPortValues(esHostAndPorts);
                 elasticAuditConfiguration.setClusterName(esClusterName);
                 return (T) elasticAuditConfiguration;
             }

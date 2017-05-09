@@ -33,7 +33,7 @@ public class ElasticAuditConnection implements AuditConnection {
         final ElasticAuditConfiguration config = configSource.getConfiguration(ElasticAuditConfiguration.class);
 
         //  Get Elasticsearch connection.
-        transportClient = ElasticAuditTransportClientFactory.getTransportClient(config.getHostAndPort(), config.getClusterName());
+        transportClient = ElasticAuditTransportClientFactory.getTransportClient(config.getHostAndPortValues(), config.getClusterName());
 
         //  Get Elasticsearch index manager.
         indexManager = new ElasticAuditIndexManager(config, transportClient);

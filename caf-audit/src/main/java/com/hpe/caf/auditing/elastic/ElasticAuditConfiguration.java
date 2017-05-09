@@ -25,7 +25,7 @@ public class ElasticAuditConfiguration {
     }
 
     //  Comma separated list of Elasticsearch host:port value pairs.
-    private String hostAndPort;
+    private String hostAndPortValues;
 
     //  Name of the cluster. Defaults to "elasticsearch".
     private String clusterName = "elasticsearch";
@@ -36,10 +36,10 @@ public class ElasticAuditConfiguration {
     //  The number of replica shards (copies) that each primary shard should have. Defaults to 1.
     private int numberOfReplicas = 1;
 
-    public String getHostAndPort() { return hostAndPort; }
+    public String getHostAndPortValues() { return hostAndPortValues; }
 
-    public void setHostAndPort(String hostAndPort) {
-        this.hostAndPort = hostAndPort;
+    public void setHostAndPortValues(String hostAndPortValues) {
+        this.hostAndPortValues = hostAndPortValues;
     }
 
     public String getClusterName() { return clusterName; }

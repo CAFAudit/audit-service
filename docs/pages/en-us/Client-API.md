@@ -109,10 +109,10 @@ In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded
 - `CAF_CONFIG_PATH: /etc/sampleapp/config`
 - `CAF_APPNAME: sampleappgroup/sampleapp`
 
-Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_ElasticsearchAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
+Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_ElasticAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
-	    "hostAndPort": "<Elasticsearch_Cluser_Node_1>:<Port_Number>,<Elasticsearch_Cluser_Node_2>:<Port_Number>",
+	    "hostAndPortValues": "<Elasticsearch_Cluser_Node_1>:<Port_Number>,<Elasticsearch_Cluser_Node_2>:<Port_Number>",
 	    "clusterName": "elasticsearchcluster",
 	    "numberOfShards": "5",
 	    "numberOfReplicas": "1"
@@ -120,14 +120,14 @@ Given this configuration, you would configure Auditing by creating a file named 
 
 where:
 
-- `hostAndPort` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
+- `hostAndPortValues` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
 - `clusterName` name of the Elasticsearch cluster. Defaults to "elasticsearch".
 - `numberOfShards` the number of primary shards that an index should have. Defaults to 5.
 - `numberOfReplicas` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
 
 ### AuditConnection
 
-The `AuditConnection` object represents a logical connection to the persistent storage (that is, Elasticsearch in this implementation). It is a thread-safe object. ***You should expect this object to take some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
+The `AuditConnection` object represents a logical connection to the datastore (that is, Elasticsearch in this implementation). It is a thread-safe object. ***You should expect this object to take some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
 
 The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a [`ConfigurationSource`](#ConfigurationSource) parameter, which is the standard method of configuration in CAF:
 
@@ -144,7 +144,7 @@ The `AuditConnection` object can be constructed using the static `createConnecti
 
 An `AuditChannel` object is constructed from the [`AuditConnection`](#AuditConnection) object.
 
-This object represents a logical channel to the persistent storage (that is, Elasticsearch in this implementation). ***It is NOT a thread-safe object and must not be shared across threads without synchronization.*** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
+This object represents a logical channel to the datastore (that is, Elasticsearch in this implementation). ***It is NOT a thread-safe object and must not be shared across threads without synchronization.*** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
 
 The `AuditChannel` object can be constructed using the `createChannel()` method on the [`AuditConnection`](#AuditConnection) object. It does not take any parameters:
 

@@ -47,6 +47,7 @@
         <swagger-codegen-modelPackage>com.hpe.caf.services.audit.server.model</swagger-codegen-modelPackage>
         <swagger-codegen-apiPackage>com.hpe.caf.services.audit.server.api</swagger-codegen-apiPackage>
         <maven.javadoc.skip>true</maven.javadoc.skip>
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
     </properties>
 
     <dependencies>

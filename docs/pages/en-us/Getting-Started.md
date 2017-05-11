@@ -66,7 +66,7 @@ If you reference the XML schema file from your audit event definition file, then
 
 	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://oss.sonatype.org/content/repositories/releases/com/github/cafaudit/caf-audit-schema/3.0.0/caf-audit-schema-3.0.0.jar!/schema/AuditedApplication.xsd">	                   
+	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.0.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">	                   
 
 Many IDEs and XML editors use the schema file to provide IntelliSense / Auto-Complete when authoring the definition file.
 
@@ -77,7 +77,7 @@ The following is an example of an audit event definition file used throughout th
 	<?xml version="1.0" encoding="UTF-8"?>
 	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://oss.sonatype.org/content/repositories/releases/com/github/cafaudit/caf-audit-schema/3.0.0/caf-audit-schema-3.0.0.jar!/schema/AuditedApplication.xsd">
+	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.0.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">
 	  <ApplicationId>SampleApp</ApplicationId>
 	  <AuditEvents>
 	    <AuditEvent>

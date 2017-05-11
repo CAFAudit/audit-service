@@ -179,22 +179,22 @@ public class AuditIT {
             //  Set up random test values for custom field data.
             final Random rand = new Random();
 
-            final EventParam stringEventParam = createEventParam("stringParam", null, EventParam.ParamTypeEnum.STRING, null, "stringParam-test-value");
+            final EventParam stringEventParam = createEventParam("stringParam", null, EventParam.ParamTypeEnum.STRING, "stringParam-test-value");
             eventParamsList.add(stringEventParam);
 
-            final EventParam intEventParam = createEventParam("intParam", null, EventParam.ParamTypeEnum.INTEGER, EventParam.ParamFormatEnum.INT32, String.valueOf(rand.nextInt()));
+            final EventParam intEventParam = createEventParam("intParam", null, EventParam.ParamTypeEnum.INT, String.valueOf(rand.nextInt()));
             eventParamsList.add(intEventParam);
-            final EventParam shortEventParam = createEventParam("shortParam", null, EventParam.ParamTypeEnum.INTEGER, EventParam.ParamFormatEnum.INT32, String.valueOf((short) rand.nextInt(Short.MAX_VALUE + 1)));
+            final EventParam shortEventParam = createEventParam("shortParam", null, EventParam.ParamTypeEnum.SHORT, String.valueOf((short) rand.nextInt(Short.MAX_VALUE + 1)));
             eventParamsList.add(shortEventParam);
-            final EventParam longEventParam = createEventParam("longParam", null, EventParam.ParamTypeEnum.INTEGER, EventParam.ParamFormatEnum.INT64, String.valueOf(rand.nextLong()));
+            final EventParam longEventParam = createEventParam("longParam", null, EventParam.ParamTypeEnum.LONG, String.valueOf(rand.nextLong()));
             eventParamsList.add(longEventParam);
-            final EventParam floatEventParam = createEventParam("floatParam", null, EventParam.ParamTypeEnum.NUMBER, EventParam.ParamFormatEnum.FLOAT, String.valueOf(rand.nextFloat()));
+            final EventParam floatEventParam = createEventParam("floatParam", null, EventParam.ParamTypeEnum.FLOAT, String.valueOf(rand.nextFloat()));
             eventParamsList.add(floatEventParam);
-            final EventParam doubleEventParam = createEventParam("doubleParam", null, EventParam.ParamTypeEnum.NUMBER, EventParam.ParamFormatEnum.DOUBLE, String.valueOf(rand.nextDouble()));
+            final EventParam doubleEventParam = createEventParam("doubleParam", null, EventParam.ParamTypeEnum.DOUBLE, String.valueOf(rand.nextDouble()));
             eventParamsList.add(doubleEventParam);
-            final EventParam booleanEventParam = createEventParam("booleanParam", null, EventParam.ParamTypeEnum.BOOLEAN, null, String.valueOf(rand.nextBoolean()));
+            final EventParam booleanEventParam = createEventParam("booleanParam", null, EventParam.ParamTypeEnum.BOOLEAN, String.valueOf(rand.nextBoolean()));
             eventParamsList.add(booleanEventParam);
-            final EventParam dateEventParam = createEventParam("dateParam", null, EventParam.ParamTypeEnum.STRING, EventParam.ParamFormatEnum.DATE, Instant.now().toString());
+            final EventParam dateEventParam = createEventParam("dateParam", null, EventParam.ParamTypeEnum.DATE, Instant.now().toString());
             eventParamsList.add(dateEventParam);
 
             ae.setEventParams(eventParamsList);
@@ -285,79 +285,38 @@ public class AuditIT {
             //  Identify parameter type.
             final EventParam.ParamTypeEnum epParamType = ep.getParamType();
 
-            //  Perform OpenAPI type/format to java primitive type mapping and add event parameter to the message.
             switch(epParamType) {
-                //  Type is integer. Could be signed 32 or 64 bits.
-                case INTEGER:
-                    verifyIntegerCustomField(ep, actual);
-                    break;
-
-                //  Type is number. Could be float or double.
-                case NUMBER:
-                    verifyNumberCustomField(ep, actual);
-                    break;
-
-                //  Type is string. Could be string or date.
                 case STRING:
-                    verifyStringCustomField(ep, actual);
+                    assertField(ep.getParamName(), true, ep.getParamValue(), actual);
                     break;
-
-                //  Type is boolean.
+                case SHORT:
+                    assertField(ep.getParamName(), true, Short.parseShort(ep.getParamValue()), actual);
+                    break;
+                case INT:
+                    assertField(ep.getParamName(), true, Integer.parseInt(ep.getParamValue()), actual);
+                    break;
+                case LONG:
+                    assertField(ep.getParamName(), true, Long.parseLong(ep.getParamValue()), actual);
+                    break;
+                case FLOAT:
+                    assertField(ep.getParamName(), true, Float.parseFloat(ep.getParamValue()), actual);
+                    break;
+                case DOUBLE:
+                    assertField(ep.getParamName(), true, Double.parseDouble(ep.getParamValue()), actual);
+                    break;
                 case BOOLEAN:
                     assertField(ep.getParamName(), true, Boolean.parseBoolean(ep.getParamValue()), actual);
                     break;
+                case DATE:
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    assertField(ep.getParamName(), true, df.parse(ep.getParamValue()), actual);
+                    break;
+
+                default:
+                    // Unexpected audit event parameter type.
+                    throw new IllegalArgumentException("Unexpected parameter type: " + epParamType.toString());
             }
-        }
-    }
-
-    /**
-     * Verifies the integer or long custom audit event parameter value matches what was returned in the search result.
-     */
-    private void verifyIntegerCustomField(final EventParam eventParameter, final Map<String, Object> actual){
-        Assert.assertNotNull(eventParameter.getParamFormat());
-        switch (eventParameter.getParamFormat()) {
-            case INT32:
-                assertField(eventParameter.getParamName(), true, Integer.parseInt(eventParameter.getParamValue()), actual);
-                break;
-            case INT64:
-                assertField(eventParameter.getParamName(), true, Long.parseLong(eventParameter.getParamValue()), actual);
-                break;
-            default:
-                // Unexpected format for integer type.
-                throw new IllegalArgumentException("Unexpected paramater format: " + eventParameter.toString());
-        }
-    }
-
-    /**
-     * Verifies the float or double custom audit event parameter value matches what was returned in the search result.
-     */
-    private void verifyNumberCustomField(final EventParam eventParameter, final Map<String, Object> actual){
-        Assert.assertNotNull(eventParameter.getParamFormat());
-        switch (eventParameter.getParamFormat()) {
-            case FLOAT:
-                assertField(eventParameter.getParamName(), true, Float.parseFloat(eventParameter.getParamValue()), actual);
-                break;
-            case DOUBLE:
-                assertField(eventParameter.getParamName(), true, Double.parseDouble(eventParameter.getParamValue()), actual);
-                break;
-            default:
-                // Unexpected format for integer type.
-                throw new IllegalArgumentException("Unexpected paramater format: " + eventParameter.toString());
-        }
-    }
-
-    /**
-     * Verifies the float or double custom audit event parameter value matches what was returned in the search result.
-     */
-    private void verifyStringCustomField(final EventParam eventParameter, final Map<String, Object> actual) throws ParseException {
-        if (null != eventParameter.getParamFormat()) {
-            Assert.assertEquals(EventParam.ParamFormatEnum.DATE, eventParameter.getParamFormat());
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            assertField(eventParameter.getParamName(), true, df.parse(eventParameter.getParamValue()), actual);
-        } else {
-            //  Default to string if format has not been provided.
-            assertField(eventParameter.getParamName(), true, eventParameter.getParamValue(), actual);
         }
     }
 
@@ -469,13 +428,12 @@ public class AuditIT {
     }
 
     //  Returns a new event parameter object.
-    private EventParam createEventParam(final String name, final String columnName, final EventParam.ParamTypeEnum type, final EventParam.ParamFormatEnum format, final String value) {
+    private EventParam createEventParam(final String name, final String columnName, final EventParam.ParamTypeEnum type, final String value) {
         EventParam ep = new EventParam();
 
         ep.setParamName(name);
         ep.setParamColumnName(columnName);
         ep.setParamType(type);
-        ep.setParamFormat(format);
         ep.setParamValue(value);
 
         return ep;

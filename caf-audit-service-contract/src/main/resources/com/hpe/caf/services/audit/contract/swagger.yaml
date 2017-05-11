@@ -110,18 +110,13 @@ definitions:
         description: Type of audit event parameter.
         default: string
         enum:
-          - integer
-          - number
           - string
-          - boolean
-      paramFormat:
-        type: string
-        description: Format descriptor for the audit event parameter.
-        enum:
-          - int32
-          - int64
+          - short
+          - int
+          - long
           - float
           - double
+          - boolean
           - date
       paramColumnName:
         type: string

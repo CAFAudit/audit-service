@@ -141,7 +141,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
             throw new BadRequestException(ERR_MSG_THREAD_ID_NOT_SPECIFIED);
         }
 
-        if (newAuditEvent.getEventOrder() == null || 0 == newAuditEvent.getEventOrder()) {
+        if (newAuditEvent.getEventOrder() == null || newAuditEvent.getEventOrder() < 0) {
             LOG.error(ERR_MSG_EVENT_ORDER_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_EVENT_ORDER_NOT_SPECIFIED);
         }

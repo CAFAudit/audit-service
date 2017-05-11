@@ -141,8 +141,8 @@ public class AuditIT {
         //  Declare fixed field metadata values for test purposes.
         final String APPLICATION_ID = "application-test";
         final String PROCESS_ID = UUID.randomUUID().toString();
-        final int THREAD_ID = 1;
-        final int EVENT_ORDER = 1;
+        final long THREAD_ID = 1;
+        final long EVENT_ORDER = 1;
         final String EVENT_TIME = Instant.now().toString();
         final String EVENT_TIME_SOURCE = "event-time-source-test";
         final String USER_ID = UUID.randomUUID().toString();
@@ -367,8 +367,7 @@ public class AuditIT {
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
         Object sourceField = searchResult.get(fieldName);
 
-        Assert.assertEquals(Long.class, sourceField.getClass());
-        Long value = (Long)sourceField;
+        Long value = Long.parseLong(sourceField.toString());
         Assert.assertEquals(expectedValue, value);
     }
 

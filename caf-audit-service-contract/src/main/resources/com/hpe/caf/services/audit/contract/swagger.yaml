@@ -65,9 +65,11 @@ definitions:
         description: Unique identifier associated with the particular instance of the process that generated the audit event.
       threadId:
         type: integer
+        format: int64
         description: Numeric id associated with the particular thread within the process that generated the audit event.
       eventOrder:
         type: integer
+        format: int64
         description: Used to order events raised by the specified thread.  
       eventTime:
         type: string

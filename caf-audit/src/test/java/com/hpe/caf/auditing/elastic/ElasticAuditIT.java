@@ -18,6 +18,7 @@ package com.hpe.caf.auditing.elastic;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
+import com.hpe.caf.auditing.AuditConnectionHelper;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -70,6 +71,9 @@ public class ElasticAuditIT
     @BeforeClass
     public static void setup() throws Exception
     {
+        // Test the Auditing library in elasticsearchdirect mode
+        System.setProperty("AUDIT_LIB_MODE", "elasticsearchdirect");
+
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));
         ES_CLUSTERNAME = System.getProperty("es.cluster.name", System.getenv("es.cluster.name"));
@@ -83,7 +87,7 @@ public class ElasticAuditIT
         //  An exception is expected to be thrown.
 
         final String esHostAndPort = "unknown:" + ES_PORT;
-        final AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(esHostAndPort, ES_CLUSTERNAME);
+        final AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort, ES_CLUSTERNAME);
     }
 
     @Test(expected = Exception.class)
@@ -95,7 +99,7 @@ public class ElasticAuditIT
         final String esHostAndPort = ES_HOSTNAME + ":10000";
 
         try (
-            AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(esHostAndPort, ES_CLUSTERNAME);
+            AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort, ES_CLUSTERNAME);
             com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             //  Index a sample audit event message into Elasticsearch.
             AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
@@ -125,7 +129,7 @@ public class ElasticAuditIT
         final String invalidTenantIdContainingCommas = "t,test,tenant";
 
         try (
-            AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(esHostAndPort, ES_CLUSTERNAME);
+            AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort, ES_CLUSTERNAME);
             com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             //  Index a sample audit event message into Elasticsearch.
             AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
@@ -152,7 +156,7 @@ public class ElasticAuditIT
                 "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters";
 
         try (
-                AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(esHostAndPort,
+                AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort,
                         ES_CLUSTERNAME);
                 com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             //  Index a sample audit event message into Elasticsearch.
@@ -180,7 +184,7 @@ public class ElasticAuditIT
         final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
 
         try (
-            AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(esHostAndPort, ES_CLUSTERNAME);
+            AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort, ES_CLUSTERNAME);
             com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
 
             //  Index a sample audit event message into Elasticsearch.
@@ -305,7 +309,7 @@ public class ElasticAuditIT
         final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
 
         try (
-                AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(esHostAndPort,
+                AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort,
                         ES_CLUSTERNAME);
                 com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
 

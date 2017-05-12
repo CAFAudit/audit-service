@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.elastic;
+package com.hpe.caf.services.audit.api;
 
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionFactory;
+import com.hpe.caf.auditing.elastic.ElasticAuditConfiguration;
+import com.hpe.caf.auditing.webserviceclient.WebserviceClientAuditConfiguration;
 
 public class AuditConnectionHelper
 {
 
-    public static AuditConnection getAuditConnection(String esHostAndPorts, String esClusterName)
+    public static AuditConnection getElasticAuditConnection(String esHostAndPorts, String esClusterName)
         throws ConfigurationException
     {
 
@@ -37,6 +39,23 @@ public class AuditConnectionHelper
                 elasticAuditConfiguration.setHostAndPortValues(esHostAndPorts);
                 elasticAuditConfiguration.setClusterName(esClusterName);
                 return (T) elasticAuditConfiguration;
+            }
+        });
+    }
+
+    public static AuditConnection getWebserviceAuditConnection(String wsHostAndPort)
+            throws ConfigurationException
+    {
+
+        return AuditConnectionFactory.createConnection(new ConfigurationSource()
+        {
+
+            @Override
+            public <T> T getConfiguration(Class<T> aClass) throws ConfigurationException
+            {
+                WebserviceClientAuditConfiguration webserviceClientAuditConfiguration = new WebserviceClientAuditConfiguration();
+                webserviceClientAuditConfiguration.setHostAndPort(wsHostAndPort);
+                return (T) webserviceClientAuditConfiguration;
             }
         });
     }

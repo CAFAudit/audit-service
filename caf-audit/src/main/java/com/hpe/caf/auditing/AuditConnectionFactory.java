@@ -18,17 +18,37 @@ package com.hpe.caf.auditing;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.elastic.ElasticAuditConnection;
+import com.hpe.caf.auditing.noop.NoopAuditConnection;
+import com.hpe.caf.auditing.webserviceclient.WebserviceClientAuditConnection;
 
 public class AuditConnectionFactory {
 
     /**
-     * Create connection for the Audit application.
+     * Create connection for the Audit application. Returns NoopAuditConnection if an 'AUDIT_LIB_MODE' environment
+     * variable has not been set. If 'AUDIT_LIB_MODE' has been set to 'webserviceclient' this returns a
+     * WebserviceClientAuditConnection. If 'AUDIT_LIB_MODE' has been set to 'elasticsearchdirect' this returns an
+     * ElasticAuditConnection.
      *
      * @param configSource the configuration source
-     * @return the connection to the audit server
+     * @return the connection to the audit server, depending on the setting of the 'AUDIT_LIB_MODE' environment variable
      * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source
      */
     public static AuditConnection createConnection(final ConfigurationSource configSource) throws ConfigurationException {
-        return new ElasticAuditConnection(configSource);
+        String auditLibMode = System.getProperty("AUDIT_LIB_MODE", System.getenv("AUDIT_LIB_MODE"));
+
+        // If the AUDIT_LIB_MODE environment variable has not been set return the NOOP implementation
+        if (auditLibMode == null) {
+            return new NoopAuditConnection(configSource);
+        }
+
+        // Return WebServiceClient or Direct to Elastic search impl depending on AUDIT_LIB_MODE's value
+        if (auditLibMode.equals("webserviceclient")) {
+            return new WebserviceClientAuditConnection(configSource);
+        } else if (auditLibMode.equals("elasticsearchdirect")) {
+            return new ElasticAuditConnection(configSource);
+        }
+
+        // Throw a RuntimeException if an unknown AUDIT_LIB_MODE is specified
+        throw new RuntimeException("Unknown AUDIT_LIB_MODE specified");
     }
 }

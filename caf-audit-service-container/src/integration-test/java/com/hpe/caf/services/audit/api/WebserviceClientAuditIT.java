@@ -319,8 +319,8 @@ public class WebserviceClientAuditIT {
                 .get(ElasticAuditConstants.Index.TYPE)
                 .source();
 
-        Assert.assertEquals("Expected type mappings and actual type mappings should match", expectedTypeMappings,
-                indexMapping.toString());
+        Assert.assertEquals(indexMapping.toString(), expectedTypeMappings,
+                "Expected type mappings and actual type mappings should match");
     }
 
     private static void verifyFixedFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
@@ -341,7 +341,7 @@ public class WebserviceClientAuditIT {
         //  Assert result is not null and matches expected value.
         Assert.assertNotNull(actualFieldValue);
         if (!type.toLowerCase().equals("date")) {
-            Assert.assertEquals(expectedValue.toString(), actualFieldValue.toString());
+            Assert.assertEquals(actualFieldValue.toString(), expectedValue.toString());
         } else {
             Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue.toString()));
         }
@@ -395,7 +395,7 @@ public class WebserviceClientAuditIT {
         //  Assert result is not null and matches expected value.
         Assert.assertNotNull(actualFieldValue);
         if (!type.toLowerCase().equals("date")) {
-            Assert.assertEquals(expectedValue.toString(), actualFieldValue.toString());
+            Assert.assertEquals(actualFieldValue.toString(), expectedValue.toString());
         } else {
             Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue.toString()));
         }

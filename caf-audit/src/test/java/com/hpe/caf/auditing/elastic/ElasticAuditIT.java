@@ -19,6 +19,7 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.AuditIndexingHint;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -55,6 +56,8 @@ public class ElasticAuditIT
     private static final String ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
 
     private static final String CUSTOM_DOC_STRING_PARAM_FIELD = "docStringParam";
+    private static final String CUSTOM_DOC_STRING_KEYWORD_PARAM_FIELD = "docKeywordParam";
+    private static final String CUSTOM_DOC_STRING_TEXT_PARAM_FIELD = "docTextParam";
     private static final String CUSTOM_DOC_INT_PARAM_FIELD = "docIntParam";
     private static final String CUSTOM_DOC_SHORT_PARAM_FIELD = "docShortParam";
     private static final String CUSTOM_DOC_LONG_PARAM_FIELD = "docLongParam";
@@ -244,14 +247,14 @@ public class ElasticAuditIT
                 verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
 
                 //  Verify fixed field data results.
-                verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean");
-                verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date");
+                verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string", AuditIndexingHint.KEYWORD);
+                verifyCustomFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int", null);
+                verifyCustomFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short", null);
+                verifyCustomFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long", null);
+                verifyCustomFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float", null);
+                verifyCustomFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double", null);
+                verifyCustomFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean", null);
+                verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date", null);
 
                 //  Delete test document after verification is complete.
                 deleteDocument(transportClient, ES_INDEX, docId);
@@ -503,13 +506,17 @@ public class ElasticAuditIT
         }
     }
 
-    private static void verifyCustomFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
+    private static void verifyCustomFieldResult(SearchHit[] results, String field, Object expectedValue, String type, AuditIndexingHint indexingHint)
         throws ParseException
     {
         //  Determine entry key to look for based on type supplied.
         switch (type.toLowerCase()) {
             case "string":
-                field = field + ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
+                if (indexingHint == AuditIndexingHint.KEYWORD) {
+                    field = field + ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
+                } else {
+                    field = field + ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX;
+                }
                 break;
             case "short":
                 field = field + ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX;

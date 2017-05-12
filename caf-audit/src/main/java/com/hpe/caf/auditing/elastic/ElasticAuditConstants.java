@@ -42,6 +42,7 @@ public final class ElasticAuditConstants {
     //  Suffixes appended to custom fields in the Elasticsearch index.
     public final static class CustomFieldSuffix{
         public static final String KEYWORD_SUFFIX = "_CAKyw";
+        public static final String TEXT_SUFFIX = "_CATxt";
         public static final String SHORT_SUFFIX = "_CAShort";
         public static final String INT_SUFFIX = "_CAInt";
         public static final String LONG_SUFFIX = "_CALng";

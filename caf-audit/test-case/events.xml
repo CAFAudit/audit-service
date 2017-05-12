@@ -34,6 +34,27 @@
                     <Description>Description for StringType</Description>
                 </Param>
                 <Param>
+                    <Name>StringKeywordType</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Description for StringKeywordType</Description>
+                </Param>
+                <Param>
+                    <Name>StringTextType</Name>
+                    <Type>string</Type>
+                    <IndexingHint>fulltext</IndexingHint>
+                    <Description>Description for StringTextType</Description>
+                </Param>
+                <Param>
+                    <Name>StringWithConstraintsType</Name>
+                    <Type>string</Type>
+                    <Constraints>
+                        <MinLength>1</MinLength>
+                        <MaxLength>100</MaxLength>
+                    </Constraints>
+                    <Description>Description for StringType</Description>
+                </Param>
+                <Param>
                     <Name>ShortType</Name>
                     <Type>short</Type>
                     <ColumnName>ShortType</ColumnName>

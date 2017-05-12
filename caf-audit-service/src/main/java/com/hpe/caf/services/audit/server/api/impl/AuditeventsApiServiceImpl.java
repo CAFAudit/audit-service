@@ -17,11 +17,7 @@ package com.hpe.caf.services.audit.server.api.impl;
 
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
-import com.hpe.caf.auditing.AuditChannel;
-import com.hpe.caf.auditing.AuditConnection;
-import com.hpe.caf.auditing.AuditConnectionFactory;
-import com.hpe.caf.auditing.AuditCoreMetadataProvider;
-import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.*;
 import com.hpe.caf.auditing.elastic.ElasticAuditConfiguration;
 import com.hpe.caf.services.audit.server.api.*;
 import com.hpe.caf.services.audit.server.api.exceptions.BadRequestException;
@@ -311,7 +307,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     /**
      * Adds custom field data to the audit event builder.
      */
-    private void addCustomFieldsToAuditEventMessage(AuditEventBuilder auditEventBuilder, final NewAuditEvent newAuditEvent) throws BadRequestException {
+    private void addCustomFieldsToAuditEventMessage(AuditEventBuilder auditEventBuilder, final NewAuditEvent newAuditEvent) throws Exception, BadRequestException {
 
         //  Iterate through the list of custom event parameter fields and add field data values to the audit event message.
         for (EventParam ep : newAuditEvent.getEventParams()) {
@@ -328,10 +324,27 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
             EventParam.ParamTypeEnum epParamType = ep.getParamType();
 
             try {
-                //  Add event parameter details to the audit event builder object by type.
+                //  Add event paramter details to the audit event builder object by type.
                 switch (epParamType) {
                     case STRING:
-                        auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue);
+                        //  Has an indexing hint been specified.
+                        if (ep.getParamIndexingHint() != null) {
+                            switch (ep.getParamIndexingHint()) {
+                                case FULLTEXT:
+                                    auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue, AuditIndexingHint.FULLTEXT);
+                                    break;
+
+                                case KEYWORD:
+                                    auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue, AuditIndexingHint.KEYWORD);
+                                    break;
+
+                                default:
+                                    // Only FULLTEXT and KEYWORD supported.
+                                    //  Nothing to do here.
+                            }
+                        } else {
+                            auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue);
+                        }
                         break;
                     case SHORT:
                         auditEventBuilder.addEventParameter(epParamName, epParamColumn, Short.parseShort(epParamValue));

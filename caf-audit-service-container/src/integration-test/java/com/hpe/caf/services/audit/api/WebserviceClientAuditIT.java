@@ -18,7 +18,6 @@ package com.hpe.caf.services.audit.api;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
-import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
@@ -33,16 +32,14 @@ import org.elasticsearch.common.compress.CompressedXContent;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -94,7 +91,7 @@ public class WebserviceClientAuditIT {
         ES_HOSTNAME_AND_PORT = String.format("%s:%s", ES_HOSTNAME, ES_PORT);
     }
 
-    @After
+    @AfterMethod
     public void cleanUp() throws ConfigurationException {
         if (!SKIP_AFTER_TEST) {
             try (TransportClient transportClient
@@ -187,7 +184,7 @@ public class WebserviceClientAuditIT {
         }
     }
 
-    @Test(expected = WebserviceClientException.class)
+    @Test(expectedExceptions = WebserviceClientException.class)
     public void testWebserviceClientBadAuditEvent() throws Exception {
         // This test does not require the @After cleanUp to run as it does not create a tenant index in ES.
         SKIP_AFTER_TEST = true;

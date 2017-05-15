@@ -20,13 +20,14 @@ import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
 public class WebserviceClientAuditChannel implements AuditChannel {
 
-    private final String webserviceHostAndPort;
+    private final HttpURLConnection webserviceHttpUrlConnection;
 
-    public WebserviceClientAuditChannel(final String webserviceHostAndPort) {
-        this.webserviceHostAndPort = webserviceHostAndPort;
+    public WebserviceClientAuditChannel(final HttpURLConnection webserviceHttpUrlConnection) {
+        this.webserviceHttpUrlConnection = webserviceHttpUrlConnection;
     }
 
     @Override
@@ -36,7 +37,7 @@ public class WebserviceClientAuditChannel implements AuditChannel {
 
     @Override
     public AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider) {
-        return new WebserviceClientAuditEventBuilder(webserviceHostAndPort, coreMetadataProvider);
+        return new WebserviceClientAuditEventBuilder(webserviceHttpUrlConnection, coreMetadataProvider);
     }
 
     @Override

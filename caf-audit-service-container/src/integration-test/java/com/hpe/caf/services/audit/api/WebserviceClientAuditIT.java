@@ -64,7 +64,7 @@ public class WebserviceClientAuditIT {
     private static final String CUSTOM_DOC_DATE_PARAM_FIELD = "docDateParam";
 
     private static String WS_HOSTNAME;
-    private static String WS_HOSTNAME_AND_PORT;
+    private static String WS_ENDPOINT;
     private static int WS_PORT;
 
     private static String ES_HOSTNAME;
@@ -83,7 +83,7 @@ public class WebserviceClientAuditIT {
 
         WS_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         WS_PORT = Integer.parseInt(System.getProperty("webservice.adminport", System.getenv("webservice.adminport")));
-        WS_HOSTNAME_AND_PORT = String.format("%s:%s", WS_HOSTNAME, WS_PORT);
+        WS_ENDPOINT = String.format("http://%s:%s/caf-audit-service/v1", WS_HOSTNAME, WS_PORT);
 
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("elasticsearch.transport.port", System.getenv("elasticsearch.transport.port")));
@@ -106,7 +106,7 @@ public class WebserviceClientAuditIT {
     @Test
     public void testWebserviceClient() throws Exception {
 
-        AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(WS_HOSTNAME_AND_PORT);
+        AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(WS_ENDPOINT);
         AuditChannel auditChannel = auditConnection.createChannel();
 
         // Create new Audit Event Builder
@@ -189,7 +189,7 @@ public class WebserviceClientAuditIT {
         // This test does not require the @After cleanUp to run as it does not create a tenant index in ES.
         SKIP_AFTER_TEST = true;
 
-        AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(WS_HOSTNAME_AND_PORT);
+        AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(WS_ENDPOINT);
         AuditChannel auditChannel = auditConnection.createChannel();
 
         // Create new Audit Event Builder

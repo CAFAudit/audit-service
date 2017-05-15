@@ -26,7 +26,6 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,7 +36,7 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
 
     private static final Logger LOG = LogManager.getLogger(WebserviceClientAuditEventBuilder.class.getName());
 
-    private final String webserviceHostAndPort;
+    private final HttpURLConnection webserviceHttpUrlConnection;
 
     private final Map<String, Object> auditEventCommonFields = new HashMap<>();
 
@@ -45,9 +44,9 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
 
     private XContentBuilder jsonBuilder;
 
-    public WebserviceClientAuditEventBuilder(final String webserviceHostAndPort,
+    public WebserviceClientAuditEventBuilder(final HttpURLConnection webserviceHttpUrlConnection,
                                              final AuditCoreMetadataProvider coreMetadataProvider) {
-        this.webserviceHostAndPort = webserviceHostAndPort;
+        this.webserviceHttpUrlConnection = webserviceHttpUrlConnection;
 
         try {
             this.jsonBuilder = XContentFactory.jsonBuilder();
@@ -160,24 +159,22 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
             throw new WebserviceClientException(errorMessage);
         }
 
-        URL url = new URL("http://" + webserviceHostAndPort + "/caf-audit-service/v1/auditevents");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         //  Try to send Audit Event to the Audit Webservice HTTP endpoint
         try {
-            conn.setConnectTimeout(5000);
-            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            conn.setDoOutput(true);
+            webserviceHttpUrlConnection.setConnectTimeout(5000);       //TODO: Should this be configurable?
+            webserviceHttpUrlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+            webserviceHttpUrlConnection.setDoOutput(true);
 
             byte[] auditEventJsonBytes = auditEventJson.getBytes("UTF-8");
 
             //  The number of bytes to send is known; set fixed length streaming mode
-            conn.setFixedLengthStreamingMode(auditEventJsonBytes.length);
+            webserviceHttpUrlConnection.setFixedLengthStreamingMode(auditEventJsonBytes.length);
 
-            OutputStream outputStream = conn.getOutputStream();
+            OutputStream outputStream = webserviceHttpUrlConnection.getOutputStream();
             outputStream.write(auditEventJsonBytes);
             outputStream.close();
 
-            int responseCode = conn.getResponseCode();
+            int responseCode = webserviceHttpUrlConnection.getResponseCode();
 
             // Check that the response code was returned as expected. Print a WARN if the response code was a 200 but
             // not 204. Print an error if the response code is anything else.
@@ -195,7 +192,7 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
             }
             LOG.info("Audit event request sent and received response code " + responseCode + " from the webservice");
         } finally {
-            conn.disconnect();
+            webserviceHttpUrlConnection.disconnect();
         }
     }
 

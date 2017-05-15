@@ -21,13 +21,15 @@ import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.elastic.ElasticAuditConfiguration;
 import com.hpe.caf.auditing.webserviceclient.WebserviceClientAuditConfiguration;
+import com.hpe.caf.auditing.webserviceclient.WebserviceClientException;
+
+import java.net.MalformedURLException;
 
 public class AuditConnectionHelper
 {
 
     public static AuditConnection getElasticAuditConnection(String esHostAndPorts, String esClusterName)
-        throws ConfigurationException
-    {
+            throws ConfigurationException, MalformedURLException, WebserviceClientException {
 
         return AuditConnectionFactory.createConnection(new ConfigurationSource()
         {
@@ -43,9 +45,8 @@ public class AuditConnectionHelper
         });
     }
 
-    public static AuditConnection getWebserviceAuditConnection(String wsHostAndPort)
-            throws ConfigurationException
-    {
+    public static AuditConnection getWebserviceAuditConnection(String webserviceEndpoint)
+            throws ConfigurationException, MalformedURLException, WebserviceClientException {
 
         return AuditConnectionFactory.createConnection(new ConfigurationSource()
         {
@@ -54,7 +55,7 @@ public class AuditConnectionHelper
             public <T> T getConfiguration(Class<T> aClass) throws ConfigurationException
             {
                 WebserviceClientAuditConfiguration webserviceClientAuditConfiguration = new WebserviceClientAuditConfiguration();
-                webserviceClientAuditConfiguration.setHostAndPort(wsHostAndPort);
+                webserviceClientAuditConfiguration.setWebserviceEndpoint(webserviceEndpoint);
                 return (T) webserviceClientAuditConfiguration;
             }
         });

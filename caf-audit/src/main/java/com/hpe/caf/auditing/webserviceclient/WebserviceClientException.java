@@ -19,4 +19,8 @@ public class WebserviceClientException extends Exception {
     public WebserviceClientException(String message) {
         super(message);
     }
+
+    public WebserviceClientException(String errorMessage, Exception e) {
+        super(errorMessage, e);
+    }
 }

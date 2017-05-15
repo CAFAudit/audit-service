@@ -25,11 +25,11 @@ public class WebserviceClientAuditConfiguration {
     }
 
     //  Webservice host:port value.
-    private String hostAndPort;
+    private String webserviceEndpoint;
 
-    public String getHostAndPort() { return hostAndPort; }
+    public String getWebserviceEndpoint() { return webserviceEndpoint; }
 
-    public void setHostAndPort(String hostAndPort) {
-        this.hostAndPort = hostAndPort;
+    public void setWebserviceEndpoint(String webserviceEndpoint) {
+        this.webserviceEndpoint = webserviceEndpoint;
     }
 }

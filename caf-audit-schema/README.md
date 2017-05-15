@@ -9,9 +9,9 @@ This project contains the exact XML Schema file that the Audit Event Definition 
 An example of an Audit Event Definition File is shown next:
 
 	<?xml version="1.0" encoding="UTF-8"?>
-	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+	<AuditedApplication xmlns="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.0.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">
+                        xsi:schemaLocation="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.0.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">
 	  <ApplicationId>SampleApp</ApplicationId>
 	  <AuditEvents>
 	    <AuditEvent>
@@ -67,12 +67,12 @@ If you reference the XML Schema file from your Audit Event Definition File then 
 
 Change the `AuditedApplication` element from:
 
-	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd">
+	<AuditedApplication xmlns="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd">
 
 to:
 
-	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+	<AuditedApplication xmlns="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.0.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">
-
+                        xsi:schemaLocation="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.0.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">
+                        
 Many IDEs and XML Editors will also use the schema file to provide IntelliSense and type-ahead when the definition file is being authored.

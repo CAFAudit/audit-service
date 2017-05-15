@@ -17,8 +17,8 @@
 
 -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-        xmlns:aa="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
-        targetNamespace="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+        xmlns:aa="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
+        targetNamespace="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
         elementFormDefault="qualified">
 
   <element name="AuditedApplication">

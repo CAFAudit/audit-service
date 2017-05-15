@@ -34,55 +34,107 @@ public class WebserviceClientAuditConnection implements AuditConnection {
 
     private static final Logger LOG = LogManager.getLogger(WebserviceClientAuditConnection.class.getName());
 
+    private static final String NO_PROXY = "NO_PROXY";
+    private static final String HTTP_PROXY = "HTTP_PROXY";
+    private static final String HTTPS_PROXY = "HTTPS_PROXY";
+
     private HttpURLConnection webserviceHttpUrlConnection;
 
     public WebserviceClientAuditConnection(final ConfigurationSource configSource) throws WebserviceClientException,
             MalformedURLException, ConfigurationException {
         //  Get Webservice configuration.
-        final WebserviceClientAuditConfiguration config = configSource.getConfiguration(WebserviceClientAuditConfiguration.class);
+        final WebserviceClientAuditConfiguration config =
+                configSource.getConfiguration(WebserviceClientAuditConfiguration.class);
 
-        URL webserviceEndpointUrl = new URL(config.getWebserviceEndpoint() + "/auditevents"); // TODO: How should this prepend forward slash? What if the user has already provided a forward slash via configuration?
+        this.webserviceHttpUrlConnection = getWebserviceHttpUrlConnection(config.getWebserviceEndpoint());
+    }
 
+    private HttpURLConnection getWebserviceHttpUrlConnection(String webserviceEndpoint) throws
+            WebserviceClientException, MalformedURLException {
+        URL webserviceEndpointUrl = new URL(getWebserviceEndpointFullPath(webserviceEndpoint));
+        String webserviceEndpointUrlProtocol = webserviceEndpointUrl.getProtocol();
         try {
-            //  If the webservice endpoint is not included in no-proxy, depending on the webservice endpoint protocol set,
-            //  route through http or https proxy. Else create a HttpUrlConnection or HttpsUrlConnection based upon the webserviceEndpoint protocol.
-            String noProxyList = System.getProperty("no_proxy", System.getenv("no_proxy"));
-            if (noProxyList == null || !noProxyList.contains(webserviceEndpointUrl.getHost())) { // TODO: -Check if the fetching of env var is case sensitive. -Check if the proxy variables would ever be passed as sys vars, or would they only ever be passed as env vars?
-                if (webserviceEndpointUrl.getProtocol().equals("http")) {
+            //  If the webservice endpoint is not included in no-proxy, depending on the webservice endpoint protocol
+            //  set, route through http or https proxy. Else create a HttpUrlConnection or HttpsUrlConnection based
+            //  upon the webserviceEndpoint protocol.
+            String noProxyList = getNoProxyList();
+            if (noProxyList == null || !noProxyList.contains(webserviceEndpointUrl.getHost())) {
+                LOG.debug(webserviceEndpointUrl.getHost() + " is not included in the list of no_proxy hosts. " +
+                        "Attempting to create connection through " + webserviceEndpointUrlProtocol.toUpperCase()
+                        + " proxy");
+                if (webserviceEndpointUrlProtocol.equals("http")) {
                     // If a HTTP Proxy has been set then create a HttpURLConnection based upon it, else create a HttpURLConnection without proxy
-                    String httpProxy = System.getProperty("http_proxy", System.getenv("http_proxy"));
+                    String httpProxy = getHttpProxy();
                     if (httpProxy != null && !httpProxy.isEmpty()) {
                         URL httpProxyUrl = new URL(httpProxy);
-                        InetSocketAddress proxyInet = new InetSocketAddress(httpProxyUrl.getHost(), httpProxyUrl.getPort());
+                        InetSocketAddress proxyInet = new InetSocketAddress(httpProxyUrl.getHost(),
+                                httpProxyUrl.getPort());
                         Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyInet);
-                        webserviceHttpUrlConnection = (HttpURLConnection) webserviceEndpointUrl.openConnection(proxy);
+                        return (HttpURLConnection) webserviceEndpointUrl.openConnection(proxy);
                     } else {
-                        webserviceHttpUrlConnection = (HttpURLConnection) webserviceEndpointUrl.openConnection();
+                        LOG.debug("HTTP proxy is not set, connection to webservice is not proxied");
+                        return (HttpURLConnection) webserviceEndpointUrl.openConnection();
                     }
-                } else if (webserviceEndpointUrl.getProtocol().equals("https")) {
+                } else if (webserviceEndpointUrlProtocol.equals("https")) {
                     // If a HTTPS Proxy has been set then create a HttpsURLConnection based upon it, else create a HttpsURLConnection without proxy
-                    String httpsProxy = System.getProperty("https_proxy", System.getenv("https_proxy"));
+                    String httpsProxy = getHttpsProxy();
                     if (httpsProxy != null && !httpsProxy.isEmpty()) {
                         URL httpsProxyUrl = new URL(httpsProxy);
-                        InetSocketAddress proxyInet = new InetSocketAddress(httpsProxyUrl.getHost(), httpsProxyUrl.getPort());
+                        InetSocketAddress proxyInet = new InetSocketAddress(httpsProxyUrl.getHost(),
+                                httpsProxyUrl.getPort());
                         Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyInet);
-                        webserviceHttpUrlConnection = (HttpsURLConnection) webserviceEndpointUrl.openConnection(proxy);
+                        return (HttpsURLConnection) webserviceEndpointUrl.openConnection(proxy);
                     } else {
-                        webserviceHttpUrlConnection = (HttpsURLConnection) webserviceEndpointUrl.openConnection();
+                        LOG.debug("HTTPS proxy is not set, connection to webservice is not proxied");
+                        return (HttpsURLConnection) webserviceEndpointUrl.openConnection();
                     }
                 }
-            } else {
-                if (webserviceEndpointUrl.getProtocol().equals("https")) {
-                    webserviceHttpUrlConnection = (HttpsURLConnection) webserviceEndpointUrl.openConnection();
-                } else {
-                    webserviceHttpUrlConnection = (HttpURLConnection) webserviceEndpointUrl.openConnection();
-                }
             }
+
+            LOG.debug(webserviceEndpointUrl.getHost() + " is included in the list of no_proxy hosts. Attempting to " +
+                    "create " + webserviceEndpointUrlProtocol.toUpperCase() + " connection to webservice");
+            if (webserviceEndpointUrlProtocol.equals("https")) {
+                return (HttpsURLConnection) webserviceEndpointUrl.openConnection();
+            }
+            return (HttpURLConnection) webserviceEndpointUrl.openConnection();
         } catch (IOException ioe) {
-            String errorMessage = "Unable to open HTTP Connection to " + webserviceEndpointUrl.toExternalForm();
+            String errorMessage = "Unable to open " + webserviceEndpointUrlProtocol.toUpperCase()
+                    + " URL Connection to " + webserviceEndpointUrl.toExternalForm();
             LOG.error(errorMessage, ioe);
             throw new WebserviceClientException(errorMessage, ioe);
         }
+    }
+
+    private String getWebserviceEndpointFullPath(String webserviceEndpoint) {
+        // Append 'auditevents' accordingly to create the full path to the webservice
+        if (webserviceEndpoint.endsWith("/")) {
+            return webserviceEndpoint + "auditevents";
+        }
+        return webserviceEndpoint + "/auditevents";
+    }
+
+    private String getNoProxyList() {
+        String noProxyList = System.getProperty(NO_PROXY, System.getenv(NO_PROXY));
+        if (noProxyList == null) {
+            noProxyList = System.getProperty(NO_PROXY.toLowerCase());
+        }
+        return noProxyList;
+    }
+
+    private String getHttpProxy() {
+        String httpProxy = System.getProperty(HTTP_PROXY, System.getenv(HTTP_PROXY));
+        if (httpProxy == null) {
+            httpProxy = System.getProperty(HTTP_PROXY.toLowerCase());
+        }
+        return httpProxy;
+    }
+
+    private String getHttpsProxy() {
+        String httpsProxy = System.getProperty(HTTPS_PROXY, System.getenv(HTTPS_PROXY));
+        if (httpsProxy == null) {
+            httpsProxy = System.getProperty(HTTPS_PROXY.toLowerCase());
+        }
+        return httpsProxy;
     }
 
     @Override

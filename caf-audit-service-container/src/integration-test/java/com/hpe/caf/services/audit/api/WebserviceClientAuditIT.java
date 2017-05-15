@@ -79,7 +79,7 @@ public class WebserviceClientAuditIT {
 
     static class TestEnvironmentVariablesOverrider {
         @SuppressWarnings("unchecked")
-        public static void resetEnvironmentVariable(String name, String value) throws Exception {
+        public static void configureEnvironmentVariable(String name, String value) throws Exception {
             Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
             Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
             theEnvironmentField.setAccessible(true);
@@ -98,9 +98,9 @@ public class WebserviceClientAuditIT {
         // Test the Auditing library in webserviceclient mode
         System.setProperty("AUDIT_LIB_MODE", "webserviceclient");
 
-        TestEnvironmentVariablesOverrider.resetEnvironmentVariable("no_proxy", "");
-        TestEnvironmentVariablesOverrider.resetEnvironmentVariable("http_proxy", "");
-        TestEnvironmentVariablesOverrider.resetEnvironmentVariable("https_proxy", "");
+        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
+        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "");
+        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("https_proxy", "");
 
         WS_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         WS_PORT = Integer.parseInt(System.getProperty("webservice.adminport", System.getenv("webservice.adminport")));

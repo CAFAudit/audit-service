@@ -19,12 +19,30 @@ import com.hpe.caf.auditing.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 public class WebserviceClientAuditConnectionTest {
 
-    String testWebserviceHttpsEndpoint = "https://testWsHost:8080/caf-audit-service/v1"; // http://%s:%s/caf-audit-service/v1
+    String testWebserviceHttpsEndpoint = "https://testWsHost:8080/caf-audit-service/v1";
+
+    static class TestEnvironmentVariablesOverrider {
+        @SuppressWarnings("unchecked")
+        public static void configureEnvironmentVariable(String name, String value) throws Exception {
+            Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
+            Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
+            theEnvironmentField.setAccessible(true);
+            Map<String, String> env = (Map<String, String>) theEnvironmentField.get(null);
+            env.put(name, value);
+            Field theCaseInsensitiveEnvironmentField = processEnvironmentClass
+                    .getDeclaredField("theCaseInsensitiveEnvironment");
+            theCaseInsensitiveEnvironmentField.setAccessible(true);
+            Map<String, String> cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
+            cienv.put(name, value);
+        }
+    }
 
     @BeforeClass
     public static void setup() {
@@ -43,7 +61,9 @@ public class WebserviceClientAuditConnectionTest {
     @Test(expected = UnknownHostException.class)
     public void testWebserviceClientBadHttpsProxy() throws Exception {
 
-        System.setProperty("https_proxy", "https://a-https-proxy:8081");
+        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
+        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "");
+        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("https_proxy", "https://a-https-proxy:8081");
 
         AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(testWebserviceHttpsEndpoint);
         AuditChannel auditChannel = auditConnection.createChannel();

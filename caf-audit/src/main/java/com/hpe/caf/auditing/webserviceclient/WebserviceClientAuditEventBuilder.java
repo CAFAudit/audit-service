@@ -36,6 +36,10 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
 
     private static final Logger LOG = LogManager.getLogger(WebserviceClientAuditEventBuilder.class.getName());
 
+    private static final String AUDIT_WS_CONN_TIMEOUT = "AUDIT_WS_CONN_TIMEOUT";
+
+    private final int webserviceConnectionTimeout;
+
     private final HttpURLConnection webserviceHttpUrlConnection;
 
     private final Map<String, Object> auditEventCommonFields = new HashMap<>();
@@ -47,6 +51,8 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
     public WebserviceClientAuditEventBuilder(final HttpURLConnection webserviceHttpUrlConnection,
                                              final AuditCoreMetadataProvider coreMetadataProvider) {
         this.webserviceHttpUrlConnection = webserviceHttpUrlConnection;
+
+        this.webserviceConnectionTimeout = getWebserviceConnectionTimeout();
 
         try {
             this.jsonBuilder = XContentFactory.jsonBuilder();
@@ -161,7 +167,7 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
 
         //  Try to send Audit Event to the Audit Webservice HTTP endpoint
         try {
-            webserviceHttpUrlConnection.setConnectTimeout(5000);       //TODO: Should this be configurable?
+            webserviceHttpUrlConnection.setConnectTimeout(webserviceConnectionTimeout);
             webserviceHttpUrlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             webserviceHttpUrlConnection.setDoOutput(true);
 
@@ -194,6 +200,19 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
         } finally {
             webserviceHttpUrlConnection.disconnect();
         }
+    }
+
+    private int getWebserviceConnectionTimeout() {
+        int webserviceTimeout;
+        try {
+            webserviceTimeout = Integer.parseInt(System.getProperty(AUDIT_WS_CONN_TIMEOUT,
+                    System.getenv(AUDIT_WS_CONN_TIMEOUT)));
+        } catch (NumberFormatException efe) {
+            LOG.debug("Unable to parse timeout value from "
+                    + AUDIT_WS_CONN_TIMEOUT + " system or environment variable, defaulting timeout to 30 seconds");
+            webserviceTimeout = 30000;
+        }
+        return webserviceTimeout;
     }
 
     private String getAuditEventAsJsonString() throws IOException {

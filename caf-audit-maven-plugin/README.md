@@ -95,7 +95,7 @@ Using the sample audit events XML specified in the [Audit Event Definition File]
 	    auditEventBuilder.setCorrelationId(correlationId);
 	    auditEventBuilder.setEventType("documentEvents", "deleteDocument");
 	    auditEventBuilder.addEventParameter("docId", null, docId);
-	    auditEventBuilder.addEventParameter("authorisedBy", null, authorisedBy, "keyword", 1, 256);
+	    auditEventBuilder.addEventParameter("authorisedBy", null, authorisedBy, AuditIndexingHint.KEYWORD, 1, 256);
 	
 	    auditEventBuilder.send();
 	}

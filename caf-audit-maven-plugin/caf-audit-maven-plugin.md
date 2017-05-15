@@ -35,12 +35,13 @@ provided next.
         <Param>
           <Name>policyName</Name>
           <Type>string</Type>
-          <Description>Policy Name</Description >
 		  <IndexingHint>keyword</IndexingHint>
+          <Description>Policy Name</Description >
         </Param>
         <Param>
           <Name>policyDef</Name>
           <Type>string</Type>
+		  <IndexingHint>fulltext</IndexingHint>
           <ColumnName>policyDefinition</ColumnName>
           <Description>Policy definition</Description >
         </Param>
@@ -50,7 +51,7 @@ provided next.
 </AuditedApplication>
 ```
 
-`AuditedApplication` is the root element. `ApplicationId` identifies the name of the application that the audit event type is associated with. For each audit event defined, `TypeId` is a string identifier for the particular event (e.g. viewDocument) and `CategoryId` is a string identifier for the category of event. A list of parameter elements are then defined for each Audit Event. This includes the `Name` of the parameter, the `Type` (i.e. string, short, int, long, float, double, boolean or date) and the `Description`. The `IndexingHint` (i.e. full-text or keyword) is optional and can be used to specify a indexing hint when storing audit event parameter data of `Type` string. The `Constraints` element is also optional and this can be used to specify minimum and/or maximum length constraints for audit event parameters of `Type` string. The `ColumnName` element too is optional which can be used to force the use of a particular database column when storing the audit data.
+`AuditedApplication` is the root element. `ApplicationId` identifies the name of the application that the audit event type is associated with. For each audit event defined, `TypeId` is a string identifier for the particular event (e.g. viewDocument) and `CategoryId` is a string identifier for the category of event. A list of parameter elements are then defined for each Audit Event. This includes the `Name` of the parameter, the `Type` (i.e. string, short, int, long, float, double, boolean or date) and the `Description`. The `IndexingHint` (i.e. fulltext or keyword) is optional and can be used to specify an indexing hint when storing audit event parameter data of `Type` string. The `Constraints` element is also optional and this can be used to specify minimum and/or maximum length constraints for audit event parameters of `Type` string. The `ColumnName` element too is optional which can be used to force the use of a particular database column when storing the audit data. 
 
 ## Application POM 
 
@@ -132,8 +133,8 @@ Using the sample XML above, the CAF Audit plugin will auto-generate the followin
         auditEventBuilder.setUser(userId);
         auditEventBuilder.setEventType("policyEvents", "policyApplied");
         auditEventBuilder.addEventParameter("policyId", null, policyId);
-        auditEventBuilder.addEventParameter("policyName", null, policyName, "keyword");
-        auditEventBuilder.addEventParameter("policyDef", "policyDefinition", policyDef, null);
+        auditEventBuilder.addEventParameter("policyName", null, policyName, AuditIndexingHint.KEYWORD);
+        auditEventBuilder.addEventParameter("policyDef", "policyDefinition", policyDef, AuditIndexingHint.FULLTEXT);
 
         auditEventBuilder.send();
     }

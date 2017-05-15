@@ -19,9 +19,9 @@ An example of an Audit Event Definition File is shown next:
 	      <CategoryId>documentEvents</CategoryId>
 	      <Params>
 	        <Param>
-	          <Name>docId</Name>
-	          <Type>long</Type>
-	          <Description>Document Identifier</Description>
+                <Name>docId</Name>
+                <Type>long</Type>
+                <Description>Document Identifier</Description>
 	        </Param>
 	      </Params>
 	    </AuditEvent>
@@ -30,18 +30,19 @@ An example of an Audit Event Definition File is shown next:
 	      <CategoryId>documentEvents</CategoryId>
 	      <Params>
 	        <Param>
-	          <Name>docId</Name>
-	          <Type>long</Type>
-	          <Description>Document Identifier</Description>
+                <Name>docId</Name>
+                <Type>long</Type>
+                <Description>Document Identifier</Description>
 	        </Param>
 	        <Param>
-	          <Name>authorisedBy</Name>
-	          <Type>string</Type>
-			  <Constraints>
-				<MinLength>1</MinLength>
-				<MaxLength>256</MaxLength>
-			  </Constraints>
-	          <Description>User who authorised the deletion</Description>
+                <Name>authorisedBy</Name>
+                <Type>string</Type>
+                <IndexingHint>keyword</IndexingHint>
+                <Constraints>
+                    <MinLength>1</MinLength>
+                    <MaxLength>256</MaxLength>
+                </Constraints>
+                <Description>User who authorised the deletion</Description>
 	        </Param>
 	      </Params>
 	    </AuditEvent>
@@ -59,7 +60,7 @@ An example of an Audit Event Definition File is shown next:
 For each Audit Event defined, `TypeId` is a string identifier for the particular event (e.g. viewDocument) and 
 `CategoryId` is a string identifier for the category of the event.
 
-A list of parameter elements are then defined for each Audit Event. This includes the `Name` of the parameter, the `Type` (i.e. string, short, int, long, float, double, boolean or date) and the `Description`. The `IndexingHint` (i.e. fulltext or keyword) is optional and can be used to specify a indexing hint when storing audit event parameter data of `Type` string. The `Constraints` element is also optional and this can be used to specify minimum and/or maximum length constraints for audit event parameters of `Type` string. The `ColumnName` element too is optional which can be used to force the use of a particular database column when storing the audit data.  
+A list of parameter elements are then defined for each Audit Event. This includes the `Name` of the parameter, the `Type` (i.e. string, short, int, long, float, double, boolean or date) and the `Description`. The `IndexingHint` (i.e. fulltext or keyword) is optional and can be used to specify an indexing hint when storing audit event parameter data of `Type` string. The `Constraints` element is also optional and this can be used to specify minimum and/or maximum length constraints for audit event parameters of `Type` string. The `ColumnName` element too is optional which can be used to force the use of a particular database column when storing the audit data.
 
 ## Using the Schema File
 

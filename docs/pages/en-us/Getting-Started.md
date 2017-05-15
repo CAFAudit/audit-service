@@ -57,6 +57,7 @@ A list of parameter elements are then defined for each audit event, including th
 - `Name`
 - `Type` (string, short, int, long, float, double, boolean or date)
 - `Description`
+- `IndexingHint` (optional) can be used to specify an indexing hint (fulltext or keyword) when storing audit event parameter data of `Type` string.
 - `ColumnName` (optional) can be used to force the use of a particular database column to store the audit data. 
 - `Constraints` (optional) can be used to specify minimum and/or maximum length constraints for audit event parameters of `Type` string.
 
@@ -103,6 +104,7 @@ The following is an example of an audit event definition file used throughout th
 	        <Param>
 	          <Name>authorisedBy</Name>
 	          <Type>string</Type>
+			  <IndexingHint>keyword</IndexingHint>
 			  <Constraints>
 				<MinLength>1</MinLength>
 				<MaxLength>256</MaxLength>
@@ -140,7 +142,7 @@ The following sample Maven project file generates a client-side auditing library
 	        <dependency>
 	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit</artifactId>
-	            <version>3.0.0</version>
+	            <version>3.1.0</version>
 	        </dependency>
 	    </dependencies>
 	
@@ -149,7 +151,7 @@ The following sample Maven project file generates a client-side auditing library
 	            <plugin>
 	                <groupId>com.github.cafaudit</groupId>
 	                <artifactId>caf-audit-maven-plugin</artifactId>
-	                <version>3.0.0</version>
+	                <version>3.1.0</version>
 	                <executions>
 	                    <execution>
 	                        <id>generate-code</id>
@@ -184,7 +186,7 @@ The generated library has a dependency on `caf-audit`, which the generated code 
 	    <dependency>
 	        <groupId>com.github.cafaudit</groupId>
 	        <artifactId>caf-audit</artifactId>
-	        <version>3.0.0</version>
+	        <version>3.1.0</version>
 	    </dependency>
 	</dependencies>
 
@@ -197,7 +199,7 @@ The `xmltojava` goal of the code generation plugin is used to generate the Java 
 	        <plugin>
 	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit-maven-plugin</artifactId>
-	            <version>3.0.0</version>
+	            <version>3.1.0</version>
 	            <executions>
 	                <execution>
 	                    <id>generate-code</id>

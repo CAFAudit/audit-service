@@ -1,7 +1,6 @@
-!not-ready-for-release!
 
 #### Version Number
-${version-number}
+CAF-2693: Added support for Elasticsearch 'keyword' and 'text' string data types.
 
 #### New Features
 

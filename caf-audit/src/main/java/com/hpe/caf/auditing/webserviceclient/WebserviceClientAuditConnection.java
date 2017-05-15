@@ -46,18 +46,30 @@ public class WebserviceClientAuditConnection implements AuditConnection {
         try {
             //  If the webservice endpoint is not included in no-proxy, depending on the webservice endpoint protocol set,
             //  route through http or https proxy. Else create a HttpUrlConnection or HttpsUrlConnection based upon the webserviceEndpoint protocol.
-            String noProxies = System.getProperty("no_proxy", System.getenv("no_proxy"));
-            if (noProxies == null || !noProxies.contains(webserviceEndpointUrl.getHost())) { // TODO: -Check if the fetching of env var is case sensitive. -Check if the proxy variables would ever be passed as sys vars, or would they only ever be passed as env vars?
+            String noProxyList = System.getProperty("no_proxy", System.getenv("no_proxy"));
+            if (noProxyList == null || !noProxyList.contains(webserviceEndpointUrl.getHost())) { // TODO: -Check if the fetching of env var is case sensitive. -Check if the proxy variables would ever be passed as sys vars, or would they only ever be passed as env vars?
                 if (webserviceEndpointUrl.getProtocol().equals("http")) {
-                    URL httpProxy = new URL(System.getProperty("http_proxy", System.getenv("http_proxy")));
-                    InetSocketAddress proxyInet = new InetSocketAddress(httpProxy.getHost(), httpProxy.getPort());
-                    Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyInet);
-                    webserviceHttpUrlConnection = (HttpURLConnection) webserviceEndpointUrl.openConnection(proxy);
+                    // If a HTTP Proxy has been set then create a HttpURLConnection based upon it, else create a HttpURLConnection without proxy
+                    String httpProxy = System.getProperty("http_proxy", System.getenv("http_proxy"));
+                    if (httpProxy != null && !httpProxy.isEmpty()) {
+                        URL httpProxyUrl = new URL(httpProxy);
+                        InetSocketAddress proxyInet = new InetSocketAddress(httpProxyUrl.getHost(), httpProxyUrl.getPort());
+                        Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyInet);
+                        webserviceHttpUrlConnection = (HttpURLConnection) webserviceEndpointUrl.openConnection(proxy);
+                    } else {
+                        webserviceHttpUrlConnection = (HttpURLConnection) webserviceEndpointUrl.openConnection();
+                    }
                 } else if (webserviceEndpointUrl.getProtocol().equals("https")) {
-                    URL httpsProxy = new URL(System.getProperty("https_proxy", System.getenv("https_proxy")));
-                    InetSocketAddress proxyInet = new InetSocketAddress(httpsProxy.getHost(), httpsProxy.getPort());
-                    Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyInet);
-                    webserviceHttpUrlConnection = (HttpsURLConnection) webserviceEndpointUrl.openConnection(proxy);
+                    // If a HTTPS Proxy has been set then create a HttpsURLConnection based upon it, else create a HttpsURLConnection without proxy
+                    String httpsProxy = System.getProperty("https_proxy", System.getenv("https_proxy"));
+                    if (httpsProxy != null && !httpsProxy.isEmpty()) {
+                        URL httpsProxyUrl = new URL(httpsProxy);
+                        InetSocketAddress proxyInet = new InetSocketAddress(httpsProxyUrl.getHost(), httpsProxyUrl.getPort());
+                        Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyInet);
+                        webserviceHttpUrlConnection = (HttpsURLConnection) webserviceEndpointUrl.openConnection(proxy);
+                    } else {
+                        webserviceHttpUrlConnection = (HttpsURLConnection) webserviceEndpointUrl.openConnection();
+                    }
                 }
             } else {
                 if (webserviceEndpointUrl.getProtocol().equals("https")) {
@@ -67,7 +79,7 @@ public class WebserviceClientAuditConnection implements AuditConnection {
                 }
             }
         } catch (IOException ioe) {
-            String errorMessage = "Unable to open HTTP Connection to " + webserviceEndpointUrl.toExternalForm();  // TODO: Breakpoint to see if the url object can return the full endpoint url.
+            String errorMessage = "Unable to open HTTP Connection to " + webserviceEndpointUrl.toExternalForm();
             LOG.error(errorMessage, ioe);
             throw new WebserviceClientException(errorMessage, ioe);
         }

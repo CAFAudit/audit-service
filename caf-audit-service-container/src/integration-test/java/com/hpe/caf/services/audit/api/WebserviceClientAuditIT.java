@@ -37,6 +37,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -76,10 +77,30 @@ public class WebserviceClientAuditIT {
     //  teardown/deletion of tenant index from ES.
     private static boolean SKIP_AFTER_TEST = false;
 
+    static class TestEnvironmentVariablesOverrider {
+        @SuppressWarnings("unchecked")
+        public static void resetEnvironmentVariable(String name, String value) throws Exception {
+            Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
+            Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
+            theEnvironmentField.setAccessible(true);
+            Map<String, String> env = (Map<String, String>) theEnvironmentField.get(null);
+            env.put(name, value);
+            Field theCaseInsensitiveEnvironmentField = processEnvironmentClass
+                    .getDeclaredField("theCaseInsensitiveEnvironment");
+            theCaseInsensitiveEnvironmentField.setAccessible(true);
+            Map<String, String> cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
+            cienv.put(name, value);
+        }
+    }
+
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws Exception {
         // Test the Auditing library in webserviceclient mode
         System.setProperty("AUDIT_LIB_MODE", "webserviceclient");
+
+        TestEnvironmentVariablesOverrider.resetEnvironmentVariable("no_proxy", "");
+        TestEnvironmentVariablesOverrider.resetEnvironmentVariable("http_proxy", "");
+        TestEnvironmentVariablesOverrider.resetEnvironmentVariable("https_proxy", "");
 
         WS_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         WS_PORT = Integer.parseInt(System.getProperty("webservice.adminport", System.getenv("webservice.adminport")));

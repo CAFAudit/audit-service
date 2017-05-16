@@ -31,11 +31,10 @@ public class WebserviceClientAuditChannelTest {
 
     @BeforeClass
     public static void setup() throws IOException {
-        // Test the Auditing library in webserviceclient mode
-        System.setProperty("AUDIT_LIB_MODE", "webserviceclient");
-
         httpURLConnection =
                 (HttpURLConnection) new URL("http://testWsHost:8080/caf-audit-service/v1/audtevents").openConnection();
+        // Test the Auditing library in webservice mode
+        System.setProperty("AUDIT_LIB_MODE", "webservice");
     }
 
     @Test

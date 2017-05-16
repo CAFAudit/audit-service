@@ -46,19 +46,11 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
 
     private final List<EventParam> auditEventParams = new ArrayList<>();
 
-    private XContentBuilder jsonBuilder;
-
     public WebserviceClientAuditEventBuilder(final HttpURLConnection webserviceHttpUrlConnection,
                                              final AuditCoreMetadataProvider coreMetadataProvider) {
         this.webserviceHttpUrlConnection = webserviceHttpUrlConnection;
 
         this.webserviceConnectionTimeout = getWebserviceConnectionTimeout();
-
-        try {
-            this.jsonBuilder = XContentFactory.jsonBuilder();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         //  Add fixed audit event fields to Map.
         addCommonFields(coreMetadataProvider);
@@ -149,14 +141,15 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
         auditEventParams.add(new EventParam(name, "date", columnName, value));
     }
 
+    /**
+     * Sends the constructed Audit Event to the Webservice HTTP Endpoint
+     * @throws Exception
+     */
     @Override
     public void send() throws Exception {
 
         //  Get the constructed Audit Event as a JSON string
         String auditEventJson = getAuditEventAsJsonString();
-
-        // Reset the JsonBuilder
-        jsonBuilder = XContentFactory.jsonBuilder();
 
         //  An Audit Event in Json format was not returned, throw exception
         if (auditEventJson == null || auditEventJson.isEmpty()) {
@@ -216,6 +209,8 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
     }
 
     private String getAuditEventAsJsonString() throws IOException {
+        XContentBuilder jsonBuilder = XContentFactory.jsonBuilder();
+
         jsonBuilder.startObject();
         for (Map.Entry<String, Object> auditEventCommonField : auditEventCommonFields.entrySet()) {
             jsonBuilder.field(auditEventCommonField.getKey(), auditEventCommonField.getValue());

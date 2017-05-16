@@ -28,8 +28,8 @@ public class AuditConnectionFactory {
 
     /**
      * Create connection for the Audit application. Returns NoopAuditConnection if an 'AUDIT_LIB_MODE' environment
-     * variable has not been set. If 'AUDIT_LIB_MODE' has been set to 'webserviceclient' this returns a
-     * WebserviceClientAuditConnection. If 'AUDIT_LIB_MODE' has been set to 'elasticsearchdirect' this returns an
+     * variable has not been set. If 'AUDIT_LIB_MODE' has been set to 'webservice' this returns a
+     * WebserviceClientAuditConnection. If 'AUDIT_LIB_MODE' has been set to 'direct' this returns an
      * ElasticAuditConnection.
      *
      * @param configSource the configuration source
@@ -49,14 +49,15 @@ public class AuditConnectionFactory {
             return new NoopAuditConnection(configSource);
         }
 
-        // Return WebServiceClient or Direct to Elastic search impl depending on AUDIT_LIB_MODE's value
-        if (auditLibMode.equals("webserviceclient")) {
-            return new WebserviceClientAuditConnection(configSource);
-        } else if (auditLibMode.equals("elasticsearchdirect")) {
-            return new ElasticAuditConnection(configSource);
+        // Return WebserviceClientAuditConnection or ElasticAuditConnection impl depending on AUDIT_LIB_MODE's value
+        switch (auditLibMode.toLowerCase()) {
+            case "webservice":
+                return new WebserviceClientAuditConnection(configSource);
+            case "direct":
+                return new ElasticAuditConnection(configSource);
+            default:
+                // Throw a RuntimeException if an unknown AUDIT_LIB_MODE is specified
+                throw new RuntimeException("Unknown AUDIT_LIB_MODE specified");
         }
-
-        // Throw a RuntimeException if an unknown AUDIT_LIB_MODE is specified
-        throw new RuntimeException("Unknown AUDIT_LIB_MODE specified");
     }
 }

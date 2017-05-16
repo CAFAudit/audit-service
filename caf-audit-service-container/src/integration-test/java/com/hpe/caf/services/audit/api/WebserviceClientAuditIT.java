@@ -26,12 +26,14 @@ import com.hpe.caf.auditing.webserviceclient.WebserviceClientException;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.compress.CompressedXContent;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -48,7 +50,7 @@ public class WebserviceClientAuditIT {
 
     private static final String APPLICATION_ID = "aTestApplication";
     private static final String TENANT_ID = "tTestTenant";
-    private static String USER_ID = "aTestUser@testcompany.com";
+    private static final String USER_ID = "aTestUser@testcompany.com";
     private static final String EVENT_CATEGORY_ID = "evDocument";
     private static final String EVENT_TYPE_ID = "etView";
     private static final String CORRELATION_ID = "cTestCorrelation";
@@ -95,8 +97,8 @@ public class WebserviceClientAuditIT {
 
     @BeforeClass
     public static void setup() throws Exception {
-        // Test the Auditing library in webserviceclient mode
-        System.setProperty("AUDIT_LIB_MODE", "webserviceclient");
+        // Test the Auditing library in webservice mode
+        System.setProperty("AUDIT_LIB_MODE", "webservice");
 
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "");
@@ -205,6 +207,41 @@ public class WebserviceClientAuditIT {
         }
     }
 
+    @Test
+    public void eventOrderTest() throws Exception{
+        int event1Order;
+        int event2Order;
+
+        try (
+                AuditConnection auditConnection =
+                        AuditConnectionHelper.getWebserviceAuditConnection(WS_HOSTNAME_AND_PORT);
+                com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
+            {
+                Date date = new Date();
+                String correlationId = UUID.randomUUID().toString();
+                AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId, "stringType1",
+                        Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
+
+                SearchHit searchHit = getAuditEvent(correlationId);
+                Map<String, Object> source = searchHit.getSource();
+                event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
+            }
+
+            {
+                Date date = new Date();
+                String correlationId = UUID.randomUUID().toString();
+                AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId, "stringType1",
+                        Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
+
+                SearchHit searchHit = getAuditEvent(correlationId);
+                Map<String, Object> source = searchHit.getSource();
+                event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
+            }
+
+            Assert.assertTrue(event1Order < event2Order, "Event 1 order was not less than event 2 order");
+        }
+    }
+
     @Test(expectedExceptions = WebserviceClientException.class)
     public void testWebserviceClientBadAuditEvent() throws Exception {
         // This test does not require the @After cleanUp to run as it does not create a tenant index in ES.
@@ -224,6 +261,35 @@ public class WebserviceClientAuditIT {
 
         //  Send audit event message to Elasticsearch.
         auditEventBuilder.send();
+    }
+
+    private SearchHit getAuditEvent(String correlationId) throws ConfigurationException {
+        try (TransportClient transportClient
+                     = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
+            //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
+            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch("*" + ElasticAuditConstants.Index.SUFFIX)
+                    .setTypes(ElasticAuditConstants.Index.TYPE)
+                    .setSearchType(SearchType.QUERY_THEN_FETCH)
+                    .setFetchSource(true)
+                    .setQuery(QueryBuilders.matchQuery(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId));
+
+            SearchHits searchHits = searchRequestBuilder.get().getHits();
+            for (int attempts = 0; attempts < 5; attempts++) {
+                if (searchHits.getTotalHits() > 0) {
+                    break;
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                searchHits = searchRequestBuilder.get().getHits();
+            }
+
+            org.junit.Assert.assertEquals("Expected search result not found", 1, searchHits.getTotalHits());
+
+            return searchHits.getHits()[0];
+        }
     }
 
     private static void deleteIndex(TransportClient client, String indexId)

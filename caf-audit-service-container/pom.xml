@@ -271,7 +271,7 @@
                                     <Git.Commit>${git.revision}</Git.Commit>
                                 </labels>
                                 <env>
-                                    <AUDIT_LIB_MODE>elasticsearchdirect</AUDIT_LIB_MODE>
+                                    <AUDIT_LIB_MODE>direct</AUDIT_LIB_MODE>
                                 </env>
                                 <ports>
                                     <port>8080</port>

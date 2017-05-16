@@ -214,7 +214,7 @@ public class WebserviceClientAuditIT {
 
         try (
                 AuditConnection auditConnection =
-                        AuditConnectionHelper.getWebserviceAuditConnection(WS_HOSTNAME_AND_PORT);
+                        AuditConnectionHelper.getWebserviceAuditConnection(WS_ENDPOINT);
                 com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             {
                 Date date = new Date();

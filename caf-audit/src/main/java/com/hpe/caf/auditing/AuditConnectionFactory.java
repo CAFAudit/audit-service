@@ -35,9 +35,9 @@ public class AuditConnectionFactory {
      * @param configSource the configuration source
      * @return the connection to the audit server, depending on the setting of the 'AUDIT_LIB_MODE' environment variable
      * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source
-     * @throws MalformedURLException (if AUDIT_LIB_MODE=webserviceclient) if the webservice endpoint URL, passed via
+     * @throws MalformedURLException (if AUDIT_LIB_MODE=webservice) if the webservice endpoint URL, passed via
      * configuration, is malformed
-     * @throws WebserviceClientException (if AUDIT_LIB_MODE=webserviceclient) if HttpUrlConnection could not be opened
+     * @throws WebserviceClientException (if AUDIT_LIB_MODE=webservice) if HttpUrlConnection could not be opened
      * to the webservice endpoint
      */
     public static AuditConnection createConnection(final ConfigurationSource configSource) throws

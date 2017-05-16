@@ -28,6 +28,14 @@ import java.net.MalformedURLException;
 public class AuditConnectionHelper
 {
 
+    /**
+     * Returns an instance of an ElasticsearchAuditConnection (if environment variable AUDIT_LIB_MODE is set to
+     * 'direct')
+     * @param esHostAndPorts comma separated list of Elasticsearch host and ports
+     * @param esClusterName the name of the Elasticsearch cluster
+     * @return configured ElasticAuditConnection
+     * @throws ConfigurationException if there is an error with the ConfigurationSource
+     */
     public static AuditConnection getElasticAuditConnection(String esHostAndPorts, String esClusterName)
             throws ConfigurationException, MalformedURLException, WebserviceClientException {
 
@@ -45,6 +53,13 @@ public class AuditConnectionHelper
         });
     }
 
+    /**
+     * Returns an instance of an WebserviceClientAuditConnection (if environment variable AUDIT_LIB_MODE is set to
+     * 'webservice')
+     * @param webserviceEndpoint the webservice endpoint
+     * @return configured ElasticAuditConnection
+     * @throws ConfigurationException if there is an error with the ConfigurationSource
+     */
     public static AuditConnection getWebserviceAuditConnection(String webserviceEndpoint)
             throws ConfigurationException, MalformedURLException, WebserviceClientException {
 

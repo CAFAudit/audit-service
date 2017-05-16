@@ -22,11 +22,8 @@ import com.hpe.caf.auditing.AuditConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
@@ -38,71 +35,57 @@ public class WebserviceClientAuditConnection implements AuditConnection {
     private static final String HTTP_PROXY = "HTTP_PROXY";
     private static final String HTTPS_PROXY = "HTTPS_PROXY";
 
-    private HttpURLConnection webserviceHttpUrlConnection;
+    private final Proxy httpProxy;
 
-    public WebserviceClientAuditConnection(final ConfigurationSource configSource) throws WebserviceClientException,
+    private final URL webserviceEndpointUrl;
+
+    /**
+     * Audit Webservice Client Connection object used to create new instances of the Webservice Client Audit Channel
+     * @param configSource ConfigurationSource object that contains the properties for creating an Audit Connection
+     * @throws MalformedURLException if webservice endpoint, HTTP Proxy or HTTPS Proxy URLs are malformed
+     * @throws ConfigurationException if the configuration for the Webservice client cannot be retrieved
+     */
+    public WebserviceClientAuditConnection(final ConfigurationSource configSource) throws
             MalformedURLException, ConfigurationException {
-        //  Get Webservice configuration.
-        final WebserviceClientAuditConfiguration config =
-                configSource.getConfiguration(WebserviceClientAuditConfiguration.class);
+        //  Get Webservice endpoint URL
+        this.webserviceEndpointUrl = new URL(getWebserviceEndpointFullPath(
+                configSource.getConfiguration(WebserviceClientAuditConfiguration.class).getWebserviceEndpoint()));
 
-        this.webserviceHttpUrlConnection = getWebserviceHttpUrlConnection(config.getWebserviceEndpoint());
+        // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
+        this.httpProxy = getProxy(webserviceEndpointUrl);
     }
 
-    private HttpURLConnection getWebserviceHttpUrlConnection(String webserviceEndpoint) throws
-            WebserviceClientException, MalformedURLException {
-        URL webserviceEndpointUrl = new URL(getWebserviceEndpointFullPath(webserviceEndpoint));
+    private Proxy getProxy(final URL webserviceEndpointUrl) throws MalformedURLException {
         String webserviceEndpointUrlProtocol = webserviceEndpointUrl.getProtocol();
-        try {
-            //  If the webservice endpoint is not included in no-proxy, depending on the webservice endpoint protocol
-            //  set, route through http or https proxy. Else create a HttpUrlConnection or HttpsUrlConnection based
-            //  upon the webserviceEndpoint protocol.
-            String noProxyList = getNoProxyList();
-            if (noProxyList == null || !noProxyList.contains(webserviceEndpointUrl.getHost())) {
-                LOG.debug(webserviceEndpointUrl.getHost() + " is not included in the list of no_proxy hosts. " +
-                        "Attempting to create connection through " + webserviceEndpointUrlProtocol.toUpperCase()
-                        + " proxy");
-                if (webserviceEndpointUrlProtocol.equals("http")) {
-                    // If a HTTP Proxy has been set then create a HttpURLConnection based upon it, else create a HttpURLConnection without proxy
-                    String httpProxy = getHttpProxy();
-                    if (httpProxy != null && !httpProxy.isEmpty()) {
-                        URL httpProxyUrl = new URL(httpProxy);
-                        InetSocketAddress proxyInet = new InetSocketAddress(httpProxyUrl.getHost(),
-                                httpProxyUrl.getPort());
-                        Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyInet);
-                        return (HttpURLConnection) webserviceEndpointUrl.openConnection(proxy);
-                    } else {
-                        LOG.debug("HTTP proxy is not set, connection to webservice is not proxied");
-                        return (HttpURLConnection) webserviceEndpointUrl.openConnection();
-                    }
-                } else if (webserviceEndpointUrlProtocol.equals("https")) {
-                    // If a HTTPS Proxy has been set then create a HttpsURLConnection based upon it, else create a HttpsURLConnection without proxy
-                    String httpsProxy = getHttpsProxy();
-                    if (httpsProxy != null && !httpsProxy.isEmpty()) {
-                        URL httpsProxyUrl = new URL(httpsProxy);
-                        InetSocketAddress proxyInet = new InetSocketAddress(httpsProxyUrl.getHost(),
-                                httpsProxyUrl.getPort());
-                        Proxy proxy = new Proxy(Proxy.Type.HTTP, proxyInet);
-                        return (HttpsURLConnection) webserviceEndpointUrl.openConnection(proxy);
-                    } else {
-                        LOG.debug("HTTPS proxy is not set, connection to webservice is not proxied");
-                        return (HttpsURLConnection) webserviceEndpointUrl.openConnection();
-                    }
+        //  If the webservice endpoint is not included in no-proxy, depending on the webservice endpoint protocol
+        //  set, return http or https proxy object. Else return null.
+        String noProxyList = getNoProxyList();
+        if (noProxyList == null || !noProxyList.contains(webserviceEndpointUrl.getHost())) {
+            LOG.debug(webserviceEndpointUrl.getHost() + " is not included in the list of no_proxy hosts. " +
+                    "Attempting to create " + webserviceEndpointUrlProtocol.toUpperCase() + " proxy");
+            if (webserviceEndpointUrlProtocol.equals("http")) {
+                // If a HTTP Proxy has been set and the WS Endpoint Protocol is HTTP, return a Proxy based upon it
+                String httpProxy = getHttpProxy();
+                if (httpProxy != null && !httpProxy.isEmpty()) {
+                    URL httpProxyUrl = new URL(httpProxy);
+                    InetSocketAddress proxyInet = new InetSocketAddress(httpProxyUrl.getHost(),
+                            httpProxyUrl.getPort());
+                    return new Proxy(Proxy.Type.HTTP, proxyInet);
+                }
+            } else if (webserviceEndpointUrlProtocol.equals("https")) {
+                // If a HTTPS Proxy has been set and the WS Endpoint Protocol is HTTPS, return a Proxy based upon it
+                String httpsProxy = getHttpsProxy();
+                if (httpsProxy != null && !httpsProxy.isEmpty()) {
+                    URL httpsProxyUrl = new URL(httpsProxy);
+                    InetSocketAddress proxyInet = new InetSocketAddress(httpsProxyUrl.getHost(),
+                            httpsProxyUrl.getPort());
+                    return new Proxy(Proxy.Type.HTTP, proxyInet);
                 }
             }
-
-            LOG.debug(webserviceEndpointUrl.getHost() + " is included in the list of no_proxy hosts. Attempting to " +
-                    "create " + webserviceEndpointUrlProtocol.toUpperCase() + " connection to webservice");
-            if (webserviceEndpointUrlProtocol.equals("https")) {
-                return (HttpsURLConnection) webserviceEndpointUrl.openConnection();
-            }
-            return (HttpURLConnection) webserviceEndpointUrl.openConnection();
-        } catch (IOException ioe) {
-            String errorMessage = "Unable to open " + webserviceEndpointUrlProtocol.toUpperCase()
-                    + " URL Connection to " + webserviceEndpointUrl.toExternalForm();
-            LOG.error(errorMessage, ioe);
-            throw new WebserviceClientException(errorMessage, ioe);
         }
+        LOG.debug(webserviceEndpointUrl.getHost() + " is included in the list of no_proxy hosts or there are no HTTP " +
+                "or HTTPS proxies set to base one upon.");
+        return null;
     }
 
     private String getWebserviceEndpointFullPath(String webserviceEndpoint) {
@@ -137,13 +120,20 @@ public class WebserviceClientAuditConnection implements AuditConnection {
         return httpsProxy;
     }
 
+    /**
+     * Creates a Webservice Client Audit Channel that can be used to create Webservice Client Audit Event Builder
+     * @return a new instance of WebserviceClientAuditChannel
+     */
     @Override
-    public AuditChannel createChannel() throws IOException {
-        return new WebserviceClientAuditChannel(webserviceHttpUrlConnection);
+    public AuditChannel createChannel() {
+        return new WebserviceClientAuditChannel(webserviceEndpointUrl, httpProxy);
     }
 
+    /**
+     * No Implementation
+     */
     @Override
-    public void close() throws Exception {
-
+    public void close() {
+        // Do nothing
     }
 }

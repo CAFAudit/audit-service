@@ -19,29 +19,48 @@ import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
+import java.net.Proxy;
+import java.net.URL;
 
 public class WebserviceClientAuditChannel implements AuditChannel {
 
-    private final HttpURLConnection webserviceHttpUrlConnection;
+    private final URL webserviceEndpointUrl;
 
-    public WebserviceClientAuditChannel(final HttpURLConnection webserviceHttpUrlConnection) {
-        this.webserviceHttpUrlConnection = webserviceHttpUrlConnection;
+    private final Proxy httpProxy;
+
+    /**
+     * Audit Webservice Client Channel object used to create new instances of the Webservice Client Audit Event Builder
+     * @param webserviceEndpointUrl webservice HTTP endpoint URL object
+     * @param httpProxy the proxy that HTTP requests to the webservice endpoint will be routed via
+     */
+    public WebserviceClientAuditChannel(final URL webserviceEndpointUrl, final Proxy httpProxy) {
+        this.webserviceEndpointUrl = webserviceEndpointUrl;
+        this.httpProxy = httpProxy;
     }
 
+    /**
+     * No implementation
+     */
     @Override
-    public void declareApplication(String applicationId) throws IOException {
+    public void declareApplication(String applicationId) {
         // Do nothing
     }
 
+    /**
+     * Create a Webservice Client Audit Event Builder with provided Audit Event Metadata
+     * @param coreMetadataProvider provides values for the core system-provided metadata
+     * @return A new instance of the WebserviceClientAuditEventBuilder
+     */
     @Override
     public AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider) {
-        return new WebserviceClientAuditEventBuilder(webserviceHttpUrlConnection, coreMetadataProvider);
+        return new WebserviceClientAuditEventBuilder(webserviceEndpointUrl, httpProxy, coreMetadataProvider);
     }
 
+    /**
+     * No implementation
+     */
     @Override
-    public void close() throws Exception {
+    public void close() {
         // Do nothing
     }
 }

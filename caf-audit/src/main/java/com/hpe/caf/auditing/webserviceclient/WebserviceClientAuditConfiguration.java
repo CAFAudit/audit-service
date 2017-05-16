@@ -18,18 +18,18 @@ package com.hpe.caf.auditing.webserviceclient;
 import com.hpe.caf.api.Configuration;
 
 @Configuration
-public class WebserviceClientAuditConfiguration {
+public class WebServiceClientAuditConfiguration {
 
-    public WebserviceClientAuditConfiguration() {
+    public WebServiceClientAuditConfiguration() {
 
     }
 
-    //  Webservice host:port value.
-    private String webserviceEndpoint;
+    //  WebService host:port value.
+    private String webServiceEndpoint;
 
-    public String getWebserviceEndpoint() { return webserviceEndpoint; }
+    public String getWebServiceEndpoint() { return webServiceEndpoint; }
 
-    public void setWebserviceEndpoint(String webserviceEndpoint) {
-        this.webserviceEndpoint = webserviceEndpoint;
+    public void setWebServiceEndpoint(String webServiceEndpoint) {
+        this.webServiceEndpoint = webServiceEndpoint;
     }
 }

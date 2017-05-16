@@ -22,19 +22,19 @@ import com.hpe.caf.auditing.AuditEventBuilder;
 import java.net.Proxy;
 import java.net.URL;
 
-public class WebserviceClientAuditChannel implements AuditChannel {
+public class WebServiceClientAuditChannel implements AuditChannel {
 
-    private final URL webserviceEndpointUrl;
+    private final URL webServiceEndpointUrl;
 
     private final Proxy httpProxy;
 
     /**
      * Audit Webservice Client Channel object used to create new instances of the Webservice Client Audit Event Builder
-     * @param webserviceEndpointUrl webservice HTTP endpoint URL object
+     * @param webServiceEndpointUrl webservice HTTP endpoint URL object
      * @param httpProxy the proxy that HTTP requests to the webservice endpoint will be routed via
      */
-    public WebserviceClientAuditChannel(final URL webserviceEndpointUrl, final Proxy httpProxy) {
-        this.webserviceEndpointUrl = webserviceEndpointUrl;
+    public WebServiceClientAuditChannel(final URL webServiceEndpointUrl, final Proxy httpProxy) {
+        this.webServiceEndpointUrl = webServiceEndpointUrl;
         this.httpProxy = httpProxy;
     }
 
@@ -49,11 +49,11 @@ public class WebserviceClientAuditChannel implements AuditChannel {
     /**
      * Create a Webservice Client Audit Event Builder with provided Audit Event Metadata
      * @param coreMetadataProvider provides values for the core system-provided metadata
-     * @return A new instance of the WebserviceClientAuditEventBuilder
+     * @return A new instance of the WebServiceClientAuditEventBuilder
      */
     @Override
     public AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider) {
-        return new WebserviceClientAuditEventBuilder(webserviceEndpointUrl, httpProxy, coreMetadataProvider);
+        return new WebServiceClientAuditEventBuilder(webServiceEndpointUrl, httpProxy, coreMetadataProvider);
     }
 
     /**

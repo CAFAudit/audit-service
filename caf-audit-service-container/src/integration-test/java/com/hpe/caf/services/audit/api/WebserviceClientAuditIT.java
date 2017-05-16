@@ -22,7 +22,9 @@ import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.elastic.ElasticAuditTransportClientFactory;
-import com.hpe.caf.auditing.webserviceclient.WebserviceClientException;
+import com.hpe.caf.auditing.webserviceclient.WebServiceClientException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -47,6 +49,8 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class WebserviceClientAuditIT {
+
+    private static final Logger LOG = LogManager.getLogger(WebserviceClientAuditIT.class.getName());
 
     private static final String APPLICATION_ID = "aTestApplication";
     private static final String TENANT_ID = "tTestTenant";
@@ -75,10 +79,10 @@ public class WebserviceClientAuditIT {
     private static String ES_HOSTNAME_AND_PORT;
     private static String ES_CLUSTERNAME;
 
-    //  Used by tests that require the skipping of the @After Junit annotation. These are tests that don't require the
-    //  teardown/deletion of tenant index from ES.
-    private static boolean SKIP_AFTER_TEST = false;
-
+    /**
+     * Class that enables overriding of environment variables without effecting the environment variables set on the
+     * host
+     */
     static class TestEnvironmentVariablesOverrider {
         @SuppressWarnings("unchecked")
         public static void configureEnvironmentVariable(String name, String value) throws Exception {
@@ -116,14 +120,13 @@ public class WebserviceClientAuditIT {
 
     @AfterMethod
     public void cleanUp() throws ConfigurationException {
-        if (!SKIP_AFTER_TEST) {
-            try (TransportClient transportClient
-                         = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
-                deleteIndex(transportClient, ES_INDEX);
-            }
+        TransportClient transportClient
+                     = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME);
+        try {
+            deleteIndex(transportClient, ES_INDEX);
+        } catch (RuntimeException rte) {
+            LOG.warn("Unable to delete tenant index. It may not exist.");
         }
-        // Set to false, the next @Test method can decide if @After cleanUp needs to be skipped
-        SKIP_AFTER_TEST = false;
     }
 
     @Test
@@ -242,10 +245,8 @@ public class WebserviceClientAuditIT {
         }
     }
 
-    @Test(expectedExceptions = WebserviceClientException.class)
+    @Test(expectedExceptions = WebServiceClientException.class)
     public void testWebserviceClientBadAuditEvent() throws Exception {
-        // This test does not require the @After cleanUp to run as it does not create a tenant index in ES.
-        SKIP_AFTER_TEST = true;
 
         AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(WS_ENDPOINT);
         AuditChannel auditChannel = auditConnection.createChannel();

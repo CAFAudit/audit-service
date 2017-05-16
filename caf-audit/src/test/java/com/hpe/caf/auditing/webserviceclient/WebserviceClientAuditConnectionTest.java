@@ -24,10 +24,14 @@ import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-public class WebserviceClientAuditConnectionTest {
+public class WebServiceClientAuditConnectionTest {
 
     String testWebserviceHttpsEndpoint = "https://testWsHost:8080/caf-audit-service/v1";
 
+    /**
+     * Class that enables overriding of environment variables without effecting the environment variables set on the
+     * host
+     */
     static class TestEnvironmentVariablesOverrider {
         @SuppressWarnings("unchecked")
         public static void configureEnvironmentVariable(String name, String value) throws Exception {

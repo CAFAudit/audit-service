@@ -27,9 +27,9 @@ import java.net.URL;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
-public class WebserviceClientAuditConnection implements AuditConnection {
+public class WebServiceClientAuditConnection implements AuditConnection {
 
-    private static final Logger LOG = LogManager.getLogger(WebserviceClientAuditConnection.class.getName());
+    private static final Logger LOG = LogManager.getLogger(WebServiceClientAuditConnection.class.getName());
 
     private static final String NO_PROXY = "NO_PROXY";
     private static final String HTTP_PROXY = "HTTP_PROXY";
@@ -37,31 +37,31 @@ public class WebserviceClientAuditConnection implements AuditConnection {
 
     private final Proxy httpProxy;
 
-    private final URL webserviceEndpointUrl;
+    private final URL webServiceEndpointUrl;
 
     /**
-     * Audit Webservice Client Connection object used to create new instances of the Webservice Client Audit Channel
+     * Audit WebService Client Connection object used to create new instances of the WebService Client Audit Channel
      * @param configSource ConfigurationSource object that contains the properties for creating an Audit Connection
      * @throws MalformedURLException if webservice endpoint, HTTP Proxy or HTTPS Proxy URLs are malformed
      * @throws ConfigurationException if the configuration for the Webservice client cannot be retrieved
      */
-    public WebserviceClientAuditConnection(final ConfigurationSource configSource) throws
+    public WebServiceClientAuditConnection(final ConfigurationSource configSource) throws
             MalformedURLException, ConfigurationException {
         //  Get Webservice endpoint URL
-        this.webserviceEndpointUrl = new URL(getWebserviceEndpointFullPath(
-                configSource.getConfiguration(WebserviceClientAuditConfiguration.class).getWebserviceEndpoint()));
+        this.webServiceEndpointUrl = new URL(getWebserviceEndpointFullPath(
+                configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
 
         // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
-        this.httpProxy = getProxy(webserviceEndpointUrl);
+        this.httpProxy = getProxy(webServiceEndpointUrl);
     }
 
-    private Proxy getProxy(final URL webserviceEndpointUrl) throws MalformedURLException {
-        String webserviceEndpointUrlProtocol = webserviceEndpointUrl.getProtocol();
+    private Proxy getProxy(final URL webServiceEndpointUrl) throws MalformedURLException {
+        String webserviceEndpointUrlProtocol = webServiceEndpointUrl.getProtocol();
         //  If the webservice endpoint is not included in no-proxy, depending on the webservice endpoint protocol
         //  set, return http or https proxy object. Else return null.
         String noProxyList = getNoProxyList();
-        if (noProxyList == null || !noProxyList.contains(webserviceEndpointUrl.getHost())) {
-            LOG.debug(webserviceEndpointUrl.getHost() + " is not included in the list of no_proxy hosts. " +
+        if (noProxyList == null || !noProxyList.contains(webServiceEndpointUrl.getHost())) {
+            LOG.debug(webServiceEndpointUrl.getHost() + " is not included in the list of no_proxy hosts. " +
                     "Attempting to create " + webserviceEndpointUrlProtocol.toUpperCase() + " proxy");
             if (webserviceEndpointUrlProtocol.equals("http")) {
                 // If a HTTP Proxy has been set and the WS Endpoint Protocol is HTTP, return a Proxy based upon it
@@ -83,7 +83,7 @@ public class WebserviceClientAuditConnection implements AuditConnection {
                 }
             }
         }
-        LOG.debug(webserviceEndpointUrl.getHost() + " is included in the list of no_proxy hosts or there are no HTTP " +
+        LOG.debug(webServiceEndpointUrl.getHost() + " is included in the list of no_proxy hosts or there are no HTTP " +
                 "or HTTPS proxies set to base one upon.");
         return null;
     }
@@ -122,11 +122,11 @@ public class WebserviceClientAuditConnection implements AuditConnection {
 
     /**
      * Creates a Webservice Client Audit Channel that can be used to create Webservice Client Audit Event Builder
-     * @return a new instance of WebserviceClientAuditChannel
+     * @return a new instance of WebServiceClientAuditChannel
      */
     @Override
     public AuditChannel createChannel() {
-        return new WebserviceClientAuditChannel(webserviceEndpointUrl, httpProxy);
+        return new WebServiceClientAuditChannel(webServiceEndpointUrl, httpProxy);
     }
 
     /**

@@ -24,26 +24,20 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.URL;
 
-public class WebserviceClientAuditChannelTest {
+public class WebServiceClientAuditChannelTest {
 
-    private static URL webserviceHttpURLConnection;
+    private static URL webServiceHttpURLConnection;
 
     @BeforeClass
     public static void setup() throws IOException {
-        webserviceHttpURLConnection = new URL("http://testWsHost:8080/caf-audit-service/v1/audtevents");
+        webServiceHttpURLConnection = new URL("http://testWsHost:8080/caf-audit-service/v1/audtevents");
         // Test the Auditing library in webservice mode
         System.setProperty("AUDIT_LIB_MODE", "webservice");
     }
 
     @Test
-    public void testClose() throws Exception {
-        WebserviceClientAuditChannel channel = new WebserviceClientAuditChannel(webserviceHttpURLConnection, null);
-        channel.close();
-    }
-
-    @Test
     public void testCreateEventBuilder() throws Exception {
-        WebserviceClientAuditChannel channel = new WebserviceClientAuditChannel(webserviceHttpURLConnection, null);
+        WebServiceClientAuditChannel channel = new WebServiceClientAuditChannel(webServiceHttpURLConnection, null);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         Assert.assertNotNull(auditEventBuilder);
     }
@@ -51,7 +45,7 @@ public class WebserviceClientAuditChannelTest {
     @Test
     public void testCreateEventBuilderWithAuditCoreMetadataProvider() throws Exception {
         AuditCoreMetadataProvider acmp = AuditNewEventFactory.createNewEvent();
-        WebserviceClientAuditChannel channel = new WebserviceClientAuditChannel(webserviceHttpURLConnection, null);
+        WebServiceClientAuditChannel channel = new WebServiceClientAuditChannel(webServiceHttpURLConnection, null);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder(acmp);
         Assert.assertNotNull(auditEventBuilder);
     }
@@ -59,7 +53,7 @@ public class WebserviceClientAuditChannelTest {
     @Test(expected = IOException.class)
     public void testWebserviceClientBadWebserviceHost() throws Exception {
 
-        WebserviceClientAuditChannel channel = new WebserviceClientAuditChannel(webserviceHttpURLConnection, null);
+        WebServiceClientAuditChannel channel = new WebServiceClientAuditChannel(webServiceHttpURLConnection, null);
 
         // Create new Audit Event Builder
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();

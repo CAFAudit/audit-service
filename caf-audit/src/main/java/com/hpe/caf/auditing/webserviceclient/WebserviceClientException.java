@@ -15,12 +15,12 @@
  */
 package com.hpe.caf.auditing.webserviceclient;
 
-public class WebserviceClientException extends Exception {
-    public WebserviceClientException(String message) {
+public class WebServiceClientException extends Exception {
+    public WebServiceClientException(String message) {
         super(message);
     }
 
-    public WebserviceClientException(String errorMessage, Exception e) {
+    public WebServiceClientException(String errorMessage, Exception e) {
         super(errorMessage, e);
     }
 }

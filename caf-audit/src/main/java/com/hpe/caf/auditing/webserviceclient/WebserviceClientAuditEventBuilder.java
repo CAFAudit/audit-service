@@ -35,17 +35,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
-public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
+public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
-    private static final Logger LOG = LogManager.getLogger(WebserviceClientAuditEventBuilder.class.getName());
+    private static final Logger LOG = LogManager.getLogger(WebServiceClientAuditEventBuilder.class.getName());
 
     private static final String AUDIT_WS_CONN_TIMEOUT = "AUDIT_WS_CONN_TIMEOUT";
 
-    private static int webserviceConnectionTimeout;
+    private static int webServiceConnectionTimeout;
 
     private final Proxy httpProxy;
 
-    private final URL webserviceEndpointUrl;
+    private final URL webServiceEndpointUrl;
 
     private final Map<String, Object> auditEventCommonFields = new HashMap<>();
 
@@ -54,16 +54,16 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
     /**
      * Webservice Client Audit Event Builder object is use to build up application audit events and send them to the
      * Audit Webservice.
-     * @param webserviceEndpointUrl webservice HTTP endpoint URL object
-     * @param httpProxy the proxy that HTTP requests to the webservice endpoint will be routed via
+     * @param webServiceEndpointUrl webService HTTP endpoint URL object
+     * @param httpProxy the proxy that HTTP requests to the webService endpoint will be routed via
      * @param coreMetadataProvider the Audit Event Metadata for creation of system data Audit Event fixed fields
      */
-    public WebserviceClientAuditEventBuilder(final URL webserviceEndpointUrl, final Proxy httpProxy,
+    public WebServiceClientAuditEventBuilder(final URL webServiceEndpointUrl, final Proxy httpProxy,
                                              final AuditCoreMetadataProvider coreMetadataProvider) {
-        this.webserviceEndpointUrl = webserviceEndpointUrl;
+        this.webServiceEndpointUrl = webServiceEndpointUrl;
         this.httpProxy = httpProxy;
 
-        this.webserviceConnectionTimeout = getWebserviceConnectionTimeout();
+        this.webServiceConnectionTimeout = getWebServiceConnectionTimeout();
 
         //  Add fixed audit event fields to Map.
         addCommonFields(coreMetadataProvider);
@@ -156,38 +156,37 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
 
     /**
      * Sends the constructed Audit Event to the Webservice HTTP Endpoint
-     * @throws IOException if a HTTP connection cannot be opened to the webservice or HTTP request output stream could
+     * @throws IOException if a HTTP connection cannot be opened to the webService or HTTP request output stream could
      * not be opened
-     * @throws WebserviceClientException if JSON string could not be built from audit event parameters
+     * @throws WebServiceClientException if JSON string could not be built from audit event parameters
      */
     @Override
-    public void send() throws IOException, WebserviceClientException { // TODO Remove Exception from method signature
+    public void send() throws IOException, WebServiceClientException {
 
         //  Get the constructed Audit Event as a JSON string
         String auditEventJson = getAuditEventAsJsonString();
 
         //  An Audit Event in Json format was not returned, throw exception
         if (auditEventJson == null || auditEventJson.isEmpty()) {
-            String errorMessage = "No Audit Event JSON to send to the Audit webservice";
+            String errorMessage = "No Audit Event JSON to send to the Audit WebService";
             LOG.error(errorMessage);
-            throw new WebserviceClientException(errorMessage);
+            throw new WebServiceClientException(errorMessage);
         }
 
-        final HttpURLConnection webserviceHttpUrlConnection = getWebserviceHttpEndpointUrlConnection();
+        byte[] auditEventJsonBytes = auditEventJson.getBytes("UTF-8");
 
-        //  Try to send Audit Event to the Audit Webservice HTTP endpoint
+        final HttpURLConnection webServiceHttpUrlConnection =
+                getWebserviceHttpEndpointUrlConnection(auditEventJsonBytes.length);
+
+        //  Try to send the JSON request to the WebService HTTP Endpoint Connection output stream
+        try (OutputStream outputStream = webServiceHttpUrlConnection.getOutputStream()) {
+            outputStream.write(auditEventJsonBytes);
+            outputStream.close();
+        }
+
         try {
-            byte[] auditEventJsonBytes = auditEventJson.getBytes("UTF-8");
-
-            //  The number of bytes to send is known; set fixed length streaming mode
-            webserviceHttpUrlConnection.setFixedLengthStreamingMode(auditEventJsonBytes.length);
-
-            try (OutputStream outputStream = webserviceHttpUrlConnection.getOutputStream()) {
-                outputStream.write(auditEventJsonBytes);
-                outputStream.close();
-            }
-
-            int responseCode = webserviceHttpUrlConnection.getResponseCode();
+            //  Try to retrieve response from the Audit WebService HTTP endpoint request
+            int responseCode = webServiceHttpUrlConnection.getResponseCode();
 
             // Check that the response code was returned as expected. Print a WARN if the response code was a 200 but
             // not 204. Print an error if the response code is anything else.
@@ -201,52 +200,55 @@ public class WebserviceClientAuditEventBuilder implements AuditEventBuilder {
                 String errorMessage = "Webservice returned response code " + responseCode + " when the expected " +
                         "response code is " + expectedResponseCode;
                 LOG.error(errorMessage);
-                throw new WebserviceClientException(errorMessage);
+                throw new WebServiceClientException(errorMessage);
             }
-            LOG.info("Audit event request sent and received response code " + responseCode + " from the webservice");
+            LOG.info("Audit event request sent and received response code " + responseCode + " from the WebService");
         } finally {
-            webserviceHttpUrlConnection.disconnect();
+            webServiceHttpUrlConnection.disconnect();
         }
     }
 
-    private static void configureHttpUrlConnection(final HttpURLConnection httpUrlConnection) {
-        httpUrlConnection.setConnectTimeout(webserviceConnectionTimeout);
+    private static void configureHttpUrlConnection(final HttpURLConnection httpUrlConnection,
+                                                   final int streamingModeLength) {
+        httpUrlConnection.setConnectTimeout(webServiceConnectionTimeout);
         httpUrlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
         httpUrlConnection.setDoOutput(true);
+        //  The number of bytes to send is known; set fixed length streaming mode
+        httpUrlConnection.setFixedLengthStreamingMode(streamingModeLength);
     }
 
-    private HttpURLConnection getWebserviceHttpEndpointUrlConnection() throws IOException {
-        final HttpURLConnection webserviceHttpUrlConn;
+    private HttpURLConnection getWebserviceHttpEndpointUrlConnection(final int streamingModeLength) throws IOException {
+        final HttpURLConnection webServiceHttpUrlConn;
         // If there is no HTTP proxy, create a new unproxied HTTP or HTTPS URL Connection. Else create a new
         // proxied HTTP or HTTPS URL Connection.
         if (httpProxy == null) {
-            if (webserviceEndpointUrl.getProtocol().equalsIgnoreCase("https")) {
-                webserviceHttpUrlConn = (HttpsURLConnection) webserviceEndpointUrl.openConnection();
+            if (webServiceEndpointUrl.getProtocol().equalsIgnoreCase("https")) {
+                webServiceHttpUrlConn = (HttpsURLConnection) webServiceEndpointUrl.openConnection();
             } else {
-                webserviceHttpUrlConn = (HttpURLConnection) webserviceEndpointUrl.openConnection();
+                webServiceHttpUrlConn = (HttpURLConnection) webServiceEndpointUrl.openConnection();
             }
         } else {
-            if (webserviceEndpointUrl.getProtocol().equalsIgnoreCase("https")) {
-                webserviceHttpUrlConn = (HttpsURLConnection) webserviceEndpointUrl.openConnection(httpProxy);
+            if (webServiceEndpointUrl.getProtocol().equalsIgnoreCase("https")) {
+                webServiceHttpUrlConn = (HttpsURLConnection) webServiceEndpointUrl.openConnection(httpProxy);
             } else {
-                webserviceHttpUrlConn = (HttpURLConnection) webserviceEndpointUrl.openConnection(httpProxy);
+                webServiceHttpUrlConn = (HttpURLConnection) webServiceEndpointUrl.openConnection(httpProxy);
             }
         }
-        configureHttpUrlConnection(webserviceHttpUrlConn);
-        return webserviceHttpUrlConn;
+        configureHttpUrlConnection(webServiceHttpUrlConn, streamingModeLength);
+        return webServiceHttpUrlConn;
     }
 
-    private static int getWebserviceConnectionTimeout() {
-        int webserviceTimeout;
+    private static int getWebServiceConnectionTimeout() {
+        int webServiceTimeout;
         try {
-            webserviceTimeout = Integer.parseInt(System.getProperty(AUDIT_WS_CONN_TIMEOUT,
+            webServiceTimeout = Integer.parseInt(System.getProperty(AUDIT_WS_CONN_TIMEOUT,
                     System.getenv(AUDIT_WS_CONN_TIMEOUT)));
         } catch (NumberFormatException efe) {
             LOG.debug("Unable to parse timeout value from "
                     + AUDIT_WS_CONN_TIMEOUT + " system or environment variable, defaulting timeout to 30 seconds");
-            webserviceTimeout = 30000;
+            webServiceTimeout = 30000;
         }
-        return webserviceTimeout;
+        return webServiceTimeout;
     }
 
     private String getAuditEventAsJsonString() throws IOException {

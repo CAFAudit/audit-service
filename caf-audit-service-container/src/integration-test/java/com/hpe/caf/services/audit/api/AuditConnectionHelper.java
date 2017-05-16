@@ -20,8 +20,8 @@ import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.elastic.ElasticAuditConfiguration;
-import com.hpe.caf.auditing.webserviceclient.WebserviceClientAuditConfiguration;
-import com.hpe.caf.auditing.webserviceclient.WebserviceClientException;
+import com.hpe.caf.auditing.webserviceclient.WebServiceClientAuditConfiguration;
+import com.hpe.caf.auditing.webserviceclient.WebServiceClientException;
 
 import java.net.MalformedURLException;
 
@@ -37,7 +37,7 @@ public class AuditConnectionHelper
      * @throws ConfigurationException if there is an error with the ConfigurationSource
      */
     public static AuditConnection getElasticAuditConnection(String esHostAndPorts, String esClusterName)
-            throws ConfigurationException, MalformedURLException, WebserviceClientException {
+            throws ConfigurationException, MalformedURLException, WebServiceClientException {
 
         return AuditConnectionFactory.createConnection(new ConfigurationSource()
         {
@@ -54,14 +54,14 @@ public class AuditConnectionHelper
     }
 
     /**
-     * Returns an instance of an WebserviceClientAuditConnection (if environment variable AUDIT_LIB_MODE is set to
+     * Returns an instance of an WebServiceClientAuditConnection (if environment variable AUDIT_LIB_MODE is set to
      * 'webservice')
      * @param webserviceEndpoint the webservice endpoint
      * @return configured ElasticAuditConnection
      * @throws ConfigurationException if there is an error with the ConfigurationSource
      */
     public static AuditConnection getWebserviceAuditConnection(String webserviceEndpoint)
-            throws ConfigurationException, MalformedURLException, WebserviceClientException {
+            throws ConfigurationException, MalformedURLException, WebServiceClientException {
 
         return AuditConnectionFactory.createConnection(new ConfigurationSource()
         {
@@ -69,9 +69,9 @@ public class AuditConnectionHelper
             @Override
             public <T> T getConfiguration(Class<T> aClass) throws ConfigurationException
             {
-                WebserviceClientAuditConfiguration webserviceClientAuditConfiguration = new WebserviceClientAuditConfiguration();
-                webserviceClientAuditConfiguration.setWebserviceEndpoint(webserviceEndpoint);
-                return (T) webserviceClientAuditConfiguration;
+                WebServiceClientAuditConfiguration webServiceClientAuditConfiguration = new WebServiceClientAuditConfiguration();
+                webServiceClientAuditConfiguration.setWebServiceEndpoint(webserviceEndpoint);
+                return (T) webServiceClientAuditConfiguration;
             }
         });
     }

@@ -9,7 +9,7 @@ The XML audit event file used by the custom plugin defines the audit events that
 provided next.
 
 ```xml
-<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd">
+<AuditedApplication xmlns="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd">
   <ApplicationId>ProductX</ApplicationId>
   <AuditEvents>
     <AuditEvent>

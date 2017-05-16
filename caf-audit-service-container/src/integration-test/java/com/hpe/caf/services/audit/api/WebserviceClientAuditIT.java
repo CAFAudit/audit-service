@@ -49,7 +49,7 @@ public class WebserviceClientAuditIT {
 
     private static final String APPLICATION_ID = "aTestApplication";
     private static final String TENANT_ID = "tTestTenant";
-    private static String USER_ID = "aTestUser@testcompany.com";
+    private static final String USER_ID = "aTestUser@testcompany.com";
     private static final String EVENT_CATEGORY_ID = "evDocument";
     private static final String EVENT_TYPE_ID = "etView";
     private static final String CORRELATION_ID = "cTestCorrelation";
@@ -80,8 +80,8 @@ public class WebserviceClientAuditIT {
 
     @BeforeClass
     public static void setup() {
-        // Test the Auditing library in webserviceclient mode
-        System.setProperty("AUDIT_LIB_MODE", "webserviceclient");
+        // Test the Auditing library in webservice mode
+        System.setProperty("AUDIT_LIB_MODE", "webservice");
 
         WS_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         WS_PORT = Integer.parseInt(System.getProperty("webservice.adminport", System.getenv("webservice.adminport")));

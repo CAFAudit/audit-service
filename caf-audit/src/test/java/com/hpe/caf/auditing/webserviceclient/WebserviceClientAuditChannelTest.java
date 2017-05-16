@@ -29,8 +29,8 @@ public class WebserviceClientAuditChannelTest {
 
     @BeforeClass
     public static void setup() {
-        // Test the Auditing library in webserviceclient mode
-        System.setProperty("AUDIT_LIB_MODE", "webserviceclient");
+        // Test the Auditing library in webservice mode
+        System.setProperty("AUDIT_LIB_MODE", "webservice");
     }
 
     @Test

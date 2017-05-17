@@ -54,6 +54,7 @@
     <sequence>
       <element name="Name" type="string" />
       <element name="Type" type="aa:AuditEventParamType" />
+      <element name="IndexingHint" type="aa:AuditEventParamIndexingHint" minOccurs="0"/>
       <element name="Constraints" type="aa:AuditEventParamConstraints" minOccurs="0"/>
       <element name="ColumnName" type="string" minOccurs="0" />
       <element name="Description" type="string" />
@@ -77,6 +78,13 @@
       <enumeration value="double" />
       <enumeration value="boolean" />
       <enumeration value="date" />
+    </restriction>
+  </simpleType>
+
+  <simpleType name="AuditEventParamIndexingHint">
+    <restriction base="string">
+      <enumeration value="fulltext" />
+      <enumeration value="keyword" />
     </restriction>
   </simpleType>
 

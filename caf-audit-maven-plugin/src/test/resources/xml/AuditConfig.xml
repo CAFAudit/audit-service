@@ -30,11 +30,28 @@
 				<Param>
 					<Name>String_Param</Name>
 					<Type>string</Type>
+					<Description>Description for String_Param</Description>
+				</Param>
+				<Param>
+					<Name>String_Fulltext_Param</Name>
+					<Type>string</Type>
+					<IndexingHint>fulltext</IndexingHint>
+					<Description>Description for String_Fulltext_Param</Description>
+				</Param>
+				<Param>
+					<Name>String_Keyword_Param</Name>
+					<Type>string</Type>
+					<IndexingHint>keyword</IndexingHint>
+					<Description>Description for String_Keyword_Param</Description>
+				</Param>
+				<Param>
+					<Name>String_With_Constraints_Param</Name>
+					<Type>string</Type>
 					<Constraints>
 						<MinLength>1</MinLength>
 						<MaxLength>32</MaxLength>
 					</Constraints>
-					<Description>Description for String_Param</Description>
+					<Description>Description for String_With_Constraints_Param</Description>
 				</Param>
 				<Param>
 					<Name>Int16_Param</Name>

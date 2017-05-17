@@ -19,6 +19,7 @@ package com.hpe.caf.auditing.plugins.unittest;
 
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.AuditIndexingHint;
 
 import java.util.Date;
 
@@ -42,8 +43,7 @@ public final class AuditLog
         channel.declareApplication(APPLICATION_IDENTIFIER);
     }
 
-                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
     /**
      * Audit the viewDocument event
      * @param channel Identifies the channel to be used for message queuing 
@@ -51,6 +51,9 @@ public final class AuditLog
      * @param userId Identifies the user who triggered the event 
      * @param correlationId Identifies the same user action 
      * @param String_Param Description for String_Param 
+     * @param String_Fulltext_Param Description for String_Fulltext_Param 
+     * @param String_Keyword_Param Description for String_Keyword_Param 
+     * @param String_With_Constraints_Param Description for String_With_Constraints_Param 
      * @param Int16_Param Description for Int16_Param 
      * @param Int32_Param Description for Int32_Param 
      * @param Int64_Param Description for Int64_Param 
@@ -66,6 +69,9 @@ public final class AuditLog
         final String userId,
         final String correlationId,
         final String String_Param,
+        final String String_Fulltext_Param,
+        final String String_Keyword_Param,
+        final String String_With_Constraints_Param,
         final short Int16_Param,
         final int Int32_Param,
         final long Int64_Param,
@@ -82,7 +88,10 @@ public final class AuditLog
         auditEventBuilder.setUser(userId);
         auditEventBuilder.setCorrelationId(correlationId);
         auditEventBuilder.setEventType("documentEvents", "viewDocument");
-        auditEventBuilder.addEventParameter("String_Param", null, String_Param, 1, 32);
+        auditEventBuilder.addEventParameter("String_Param", null, String_Param);
+        auditEventBuilder.addEventParameter("String_Fulltext_Param", null, String_Fulltext_Param, AuditIndexingHint.FULLTEXT);
+        auditEventBuilder.addEventParameter("String_Keyword_Param", null, String_Keyword_Param, AuditIndexingHint.KEYWORD);
+        auditEventBuilder.addEventParameter("String_With_Constraints_Param", null, String_With_Constraints_Param, 1, 32);
         auditEventBuilder.addEventParameter("Int16_Param", null, Int16_Param);
         auditEventBuilder.addEventParameter("Int32_Param", null, Int32_Param);
         auditEventBuilder.addEventParameter("Int64_Param", null, Int64_Param);

@@ -16,6 +16,8 @@
 package com.hpe.caf.auditing.noop;
 
 import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.AuditIndexingHint;
+
 import java.util.Date;
 
 final class NoopAuditEventBuilder implements AuditEventBuilder
@@ -51,6 +53,11 @@ final class NoopAuditEventBuilder implements AuditEventBuilder
 
     @Override
     public void addEventParameter(final String name, final String columnName, final String value)
+    {
+    }
+
+    @Override
+    public void addEventParameter(final String name, final String columnName, final String value, final AuditIndexingHint indexingHint)
     {
     }
 

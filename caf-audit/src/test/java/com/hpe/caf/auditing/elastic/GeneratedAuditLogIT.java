@@ -17,6 +17,7 @@ package com.hpe.caf.auditing.elastic;
 
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
+import com.hpe.caf.auditing.AuditConnectionHelper;
 import com.hpe.caf.services.audit.api.AuditLog;
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -50,6 +51,9 @@ public class GeneratedAuditLogIT {
 
     @BeforeClass
     public static void setup() throws Exception {
+        // Test the Auditing library in direct mode
+        System.setProperty("AUDIT_LIB_MODE", "direct");
+
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));
         ES_CLUSTERNAME = System.getProperty("es.cluster.name", System.getenv("es.cluster.name"));
@@ -70,7 +74,7 @@ public class GeneratedAuditLogIT {
         Date date = new Date();
         String correlationId = getCorrelationId();
 
-        try (AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(ES_HOSTNAME_AND_PORT,
+        try (AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(ES_HOSTNAME_AND_PORT,
                         ES_CLUSTERNAME);
              com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             AuditLog.auditTestEvent1(auditChannel, testTenant, "user1", correlationId,
@@ -114,7 +118,7 @@ public class GeneratedAuditLogIT {
         int event2Order;
 
         try (
-                AuditConnection auditConnection = AuditConnectionHelper.getAuditConnection(ES_HOSTNAME_AND_PORT,
+                AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(ES_HOSTNAME_AND_PORT,
                         ES_CLUSTERNAME);
                 com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             {

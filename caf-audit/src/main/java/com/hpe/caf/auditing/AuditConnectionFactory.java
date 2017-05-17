@@ -18,17 +18,46 @@ package com.hpe.caf.auditing;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.elastic.ElasticAuditConnection;
+import com.hpe.caf.auditing.noop.NoopAuditConnection;
+import com.hpe.caf.auditing.webserviceclient.WebServiceClientAuditConnection;
+import com.hpe.caf.auditing.webserviceclient.WebServiceClientException;
+
+import java.net.MalformedURLException;
 
 public class AuditConnectionFactory {
 
     /**
-     * Create connection for the Audit application.
+     * Create connection for the Audit application. Returns NoopAuditConnection if an 'AUDIT_LIB_MODE' environment
+     * variable has not been set. If 'AUDIT_LIB_MODE' has been set to 'webservice' this returns a
+     * WebServiceClientAuditConnection. If 'AUDIT_LIB_MODE' has been set to 'direct' this returns an
+     * ElasticAuditConnection.
      *
      * @param configSource the configuration source
-     * @return the connection to the audit server
+     * @return the connection to the audit server, depending on the setting of the 'AUDIT_LIB_MODE' environment variable
      * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source
+     * @throws MalformedURLException (if AUDIT_LIB_MODE=webservice) if the webservice endpoint URL, passed via
+     * configuration, is malformed
+     * @throws WebServiceClientException (if AUDIT_LIB_MODE=webservice) if HttpUrlConnection could not be opened
+     * to the webservice endpoint
      */
-    public static AuditConnection createConnection(final ConfigurationSource configSource) throws ConfigurationException {
-        return new ElasticAuditConnection(configSource);
+    public static AuditConnection createConnection(final ConfigurationSource configSource) throws
+            ConfigurationException, MalformedURLException, WebServiceClientException {
+        String auditLibMode = System.getProperty("AUDIT_LIB_MODE", System.getenv("AUDIT_LIB_MODE"));
+
+        // If the AUDIT_LIB_MODE environment variable has not been set return the NOOP implementation
+        if (auditLibMode == null) {
+            return new NoopAuditConnection(configSource);
+        }
+
+        // Return WebServiceClientAuditConnection or ElasticAuditConnection impl depending on AUDIT_LIB_MODE's value
+        switch (auditLibMode.toLowerCase()) {
+            case "webservice":
+                return new WebServiceClientAuditConnection(configSource);
+            case "direct":
+                return new ElasticAuditConnection(configSource);
+            default:
+                // Throw a RuntimeException if an unknown AUDIT_LIB_MODE is specified
+                throw new RuntimeException("Unknown AUDIT_LIB_MODE specified");
+        }
     }
 }

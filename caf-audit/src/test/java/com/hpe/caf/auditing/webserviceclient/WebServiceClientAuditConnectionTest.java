@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class WebServiceClientAuditConnectionTest {
 
-    String testWebserviceHttpsEndpoint = "https://testWsHost:8080/caf-audit-service/v1";
+    String testWebServiceHttpsEndpoint = "https://testWsHost:8080/caf-audit-service/v1";
 
     /**
      * Class that enables overriding of environment variables without effecting the environment variables set on the
@@ -55,21 +55,21 @@ public class WebServiceClientAuditConnectionTest {
     }
 
     @Test(expected = MalformedURLException.class)
-    public void testWebserviceClientBadWebserviceEndpoint() throws Exception {
+    public void testWebServiceClientBadWebserviceEndpoint() throws Exception {
 
-        String invalidWebserviceEndpoint = "thisIsNotAValidEndpointUrl";
+        String invalidWebServiceEndpoint = "thisIsNotAValidEndpointUrl";
 
-        AuditConnectionHelper.getWebserviceAuditConnection(invalidWebserviceEndpoint);
+        AuditConnectionHelper.getWebserviceAuditConnection(invalidWebServiceEndpoint);
     }
 
     @Test(expected = UnknownHostException.class)
-    public void testWebserviceClientBadHttpsProxy() throws Exception {
+    public void testWebServiceClientBadHttpsProxy() throws Exception {
 
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "");
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("https_proxy", "https://a-https-proxy:8081");
 
-        AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(testWebserviceHttpsEndpoint);
+        AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(testWebServiceHttpsEndpoint);
         AuditChannel auditChannel = auditConnection.createChannel();
 
         // Create new Audit Event Builder

@@ -176,7 +176,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
         byte[] auditEventJsonBytes = auditEventJson.getBytes("UTF-8");
 
         final HttpURLConnection webServiceHttpUrlConnection =
-                getWebserviceHttpEndpointUrlConnection(auditEventJsonBytes.length);
+                getWebServiceHttpEndpointUrlConnection(auditEventJsonBytes.length);
 
         //  Try to send the JSON request to the WebService HTTP Endpoint Connection output stream
         try (OutputStream outputStream = webServiceHttpUrlConnection.getOutputStream()) {
@@ -217,7 +217,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
         httpUrlConnection.setFixedLengthStreamingMode(streamingModeLength);
     }
 
-    private HttpURLConnection getWebserviceHttpEndpointUrlConnection(final int streamingModeLength) throws IOException {
+    private HttpURLConnection getWebServiceHttpEndpointUrlConnection(final int streamingModeLength) throws IOException {
         final HttpURLConnection webServiceHttpUrlConn;
         // If there is no HTTP proxy, create a new unproxied HTTP or HTTPS URL Connection. Else create a new
         // proxied HTTP or HTTPS URL Connection.

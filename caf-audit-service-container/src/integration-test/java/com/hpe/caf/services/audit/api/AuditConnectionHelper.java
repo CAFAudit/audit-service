@@ -56,11 +56,11 @@ public class AuditConnectionHelper
     /**
      * Returns an instance of an WebServiceClientAuditConnection (if environment variable AUDIT_LIB_MODE is set to
      * 'webservice')
-     * @param webserviceEndpoint the webservice endpoint
+     * @param webServiceEndpoint the webservice endpoint
      * @return configured ElasticAuditConnection
      * @throws ConfigurationException if there is an error with the ConfigurationSource
      */
-    public static AuditConnection getWebserviceAuditConnection(String webserviceEndpoint)
+    public static AuditConnection getWebServiceAuditConnection(String webServiceEndpoint)
             throws ConfigurationException, MalformedURLException, WebServiceClientException {
 
         return AuditConnectionFactory.createConnection(new ConfigurationSource()
@@ -70,7 +70,7 @@ public class AuditConnectionHelper
             public <T> T getConfiguration(Class<T> aClass) throws ConfigurationException
             {
                 WebServiceClientAuditConfiguration webServiceClientAuditConfiguration = new WebServiceClientAuditConfiguration();
-                webServiceClientAuditConfiguration.setWebServiceEndpoint(webserviceEndpoint);
+                webServiceClientAuditConfiguration.setWebServiceEndpoint(webServiceEndpoint);
                 return (T) webServiceClientAuditConfiguration;
             }
         });

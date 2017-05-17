@@ -48,7 +48,7 @@ public class WebServiceClientAuditConnection implements AuditConnection {
     public WebServiceClientAuditConnection(final ConfigurationSource configSource) throws
             MalformedURLException, ConfigurationException {
         //  Get Webservice endpoint URL
-        this.webServiceEndpointUrl = new URL(getWebserviceEndpointFullPath(
+        this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
                 configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
 
         // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
@@ -88,12 +88,12 @@ public class WebServiceClientAuditConnection implements AuditConnection {
         return null;
     }
 
-    private String getWebserviceEndpointFullPath(String webserviceEndpoint) {
+    private String getWebServiceEndpointFullPath(String webServiceEndpoint) {
         // Append 'auditevents' accordingly to create the full path to the webservice
-        if (webserviceEndpoint.endsWith("/")) {
-            return webserviceEndpoint + "auditevents";
+        if (webServiceEndpoint.endsWith("/")) {
+            return webServiceEndpoint + "auditevents";
         }
-        return webserviceEndpoint + "/auditevents";
+        return webServiceEndpoint + "/auditevents";
     }
 
     private String getNoProxyList() {
@@ -121,7 +121,7 @@ public class WebServiceClientAuditConnection implements AuditConnection {
     }
 
     /**
-     * Creates a Webservice Client Audit Channel that can be used to create Webservice Client Audit Event Builder
+     * Creates a WebService Client Audit Channel that can be used to create WebService Client Audit Event Builder
      * @return a new instance of WebServiceClientAuditChannel
      */
     @Override

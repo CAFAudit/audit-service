@@ -132,7 +132,7 @@ public class WebserviceClientAuditIT {
     @Test
     public void testWebserviceClient() throws Exception {
 
-        AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(WS_ENDPOINT);
+        AuditConnection auditConnection = AuditConnectionHelper.getWebServiceAuditConnection(WS_ENDPOINT);
         AuditChannel auditChannel = auditConnection.createChannel();
 
         // Create new Audit Event Builder
@@ -217,7 +217,7 @@ public class WebserviceClientAuditIT {
 
         try (
                 AuditConnection auditConnection =
-                        AuditConnectionHelper.getWebserviceAuditConnection(WS_ENDPOINT);
+                        AuditConnectionHelper.getWebServiceAuditConnection(WS_ENDPOINT);
                 com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             {
                 Date date = new Date();
@@ -248,7 +248,7 @@ public class WebserviceClientAuditIT {
     @Test(expectedExceptions = WebServiceClientException.class)
     public void testWebserviceClientBadAuditEvent() throws Exception {
 
-        AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(WS_ENDPOINT);
+        AuditConnection auditConnection = AuditConnectionHelper.getWebServiceAuditConnection(WS_ENDPOINT);
         AuditChannel auditChannel = auditConnection.createChannel();
 
         // Create new Audit Event Builder

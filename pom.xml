@@ -109,7 +109,7 @@
     </dependencyManagement>
 
     <modules>
-        <!--<module>docs</module>-->
+        <module>docs</module>
         <module>caf-audit-schema</module>
         <module>caf-audit-maven-plugin</module>
         <module>caf-audit</module>

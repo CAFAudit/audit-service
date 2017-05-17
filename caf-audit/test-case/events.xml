@@ -18,8 +18,8 @@
 -->
 <AuditedApplication
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
-    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+    xmlns="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
+    xsi:schemaLocation="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
 >
     <ApplicationId>TestAuditEvents</ApplicationId>
     <AuditEvents>

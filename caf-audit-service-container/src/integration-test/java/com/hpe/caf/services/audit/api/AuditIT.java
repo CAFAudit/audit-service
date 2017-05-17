@@ -33,11 +33,28 @@ import org.joda.time.Instant;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import java.text.*;
-import java.util.*;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.TimeZone;
+import java.util.UUID;
 
 public class AuditIT {
-    private static String AUDIT_WEBSERVICE_BASE_PATH;
+    private static String AUDIT_WEBSERVICE_HTTP_BASE_PATH;
+    private static String AUDIT_WEBSERVICE_HTTPS_BASE_PATH;
     private static String CAF_ELASTIC_HOST_AND_PORT;
     private static String CAF_ELASTIC_CLUSTER_NAME;
 
@@ -46,16 +63,102 @@ public class AuditIT {
     @BeforeClass
     public static void setup() throws Exception {
         //  Read environment variable settings
-        AUDIT_WEBSERVICE_BASE_PATH = System.getenv("webserviceurl");
+        AUDIT_WEBSERVICE_HTTP_BASE_PATH = System.getenv("webserviceurl");
+        AUDIT_WEBSERVICE_HTTPS_BASE_PATH = System.getenv("webserviceurlhttps");
+
         CAF_ELASTIC_HOST_AND_PORT = System.getenv("CAF_ELASTIC_HOST_AND_PORT");
         CAF_ELASTIC_CLUSTER_NAME = System.getenv("CAF_ELASTIC_CLUSTER_NAME");
 
         auditEventsApi = new AuditEventsApi();
-        auditEventsApi.getApiClient().setBasePath(AUDIT_WEBSERVICE_BASE_PATH);
     }
 
     @Test
     public void testAuditEventsPost() throws Exception {
+        auditEventsApi.getApiClient().setBasePath(AUDIT_WEBSERVICE_HTTP_BASE_PATH);
+        postNewAuditEvent();
+    }
+
+    @Test
+    public void testAuditEventsPost_Https() throws Exception {
+        disableSSLVerification();
+        auditEventsApi.getApiClient().setBasePath(AUDIT_WEBSERVICE_HTTPS_BASE_PATH);
+        postNewAuditEvent();
+    }
+
+    @Test
+    public void testAuditEventsPost_FixedFieldNotProvided() {
+        //  Create new audit event message with at least one fixed field missing.
+        NewAuditEvent auditEventMessage = createNewAuditEventExcludeFixedField();
+        try {
+            auditEventsApi.auditeventsPost(auditEventMessage);
+        } catch (ApiException ae) {
+            Assert.assertEquals(ae.getMessage(),"The application identifier has not been specified");
+        }
+    }
+
+    @Test
+    public void testAuditEventsPost_CustomsFieldsNotProvided() {
+        //  Create new audit event message with no custom fields specified.
+        NewAuditEvent auditEventMessage = createNewAuditEventExcludeCustomFields();
+        try {
+            auditEventsApi.auditeventsPost(auditEventMessage);
+        } catch (ApiException ae) {
+            Assert.assertEquals(ae.getMessage(),"Custom audit event fields have not been specified");
+        }
+    }
+
+    /**
+     * Disable Certificate Validation in Java SSL Connections.
+     */
+    private static void disableSSLVerification() {
+        // Set up a trust-all cert manager implementation
+        TrustManager[] trustAllCertsManager = new TrustManager[]{
+                new X509TrustManager()
+                {
+                    @Override
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers()
+                    {
+                        System.out.println("Trust All TrustManager getAcceptedIssuers() called");
+                        return null;
+                    }
+
+                    @Override
+                    public void checkClientTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType)
+                    {
+                        System.out.println("Trust All TrustManager checkClientTrusted() called");
+                    }
+
+                    @Override
+                    public void checkServerTrusted(
+                            java.security.cert.X509Certificate[] certs, String authType)
+                    {
+                        System.out.println("Trust All TrustManager CheckServerTrusted() called");
+                    }
+                }
+        };
+
+        SSLContext sc;
+        try {
+            // Install the all-trusting trust manager.
+            sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCertsManager, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier.
+            HostnameVerifier allHostsValid = (hostname, session) -> true;
+
+            // Install the all-trusting host verifier.
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Sends a new audit event message to Elasticsearch.
+     */
+    private void postNewAuditEvent() throws Exception {
         //  Create new audit event message and index into Elasticsearch.
         final NewAuditEvent auditEventMessage = createNewAuditEvent();
         auditEventsApi.auditeventsPost(auditEventMessage);
@@ -85,28 +188,6 @@ public class AuditIT {
 
             //  Delete test document after verification is complete.
             deleteAuditEventMessage(transportClient, esIndex, docId);
-        }
-    }
-
-    @Test
-    public void testAuditEventsPost_FixedFieldNotProvided() {
-        //  Create new audit event message with at least one fixed field missing.
-        NewAuditEvent auditEventMessage = createNewAuditEventExcludeFixedField();
-        try {
-            auditEventsApi.auditeventsPost(auditEventMessage);
-        } catch (ApiException ae) {
-            Assert.assertEquals(ae.getMessage(),"The application identifier has not been specified");
-        }
-    }
-
-    @Test
-    public void testAuditEventsPost_CustomsFieldsNotProvided() {
-        //  Create new audit event message with no custom fields specified.
-        NewAuditEvent auditEventMessage = createNewAuditEventExcludeCustomFields();
-        try {
-            auditEventsApi.auditeventsPost(auditEventMessage);
-        } catch (ApiException ae) {
-            Assert.assertEquals(ae.getMessage(),"Custom audit event fields have not been specified");
         }
     }
 

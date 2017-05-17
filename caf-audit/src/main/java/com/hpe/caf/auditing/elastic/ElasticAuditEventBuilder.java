@@ -17,6 +17,7 @@ package com.hpe.caf.auditing.elastic;
 
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.AuditIndexingHint;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.apache.logging.log4j.LogManager;
@@ -96,6 +97,30 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     @Override
     public void addEventParameter(String name, String columnName, String value) {
         auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
+    }
+
+    @Override
+    public void addEventParameter(String name, String columnName, String value, AuditIndexingHint indexingHint) {
+        if (indexingHint != null) {
+            switch (indexingHint) {
+                case KEYWORD:
+                    auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
+                    break;
+
+                case FULLTEXT:
+                    auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX), value);
+                    break;
+
+                default:
+                    //  Unexpected indexing hint.
+                    String errorMessage = "Unexpected Elasticsearch indexing hint. Expected " + AuditIndexingHint.FULLTEXT + " or " + AuditIndexingHint.FULLTEXT + " but received '" + indexingHint.toString() + "'";
+                    LOG.error(errorMessage);
+                    throw new RuntimeException(errorMessage);
+            }
+        } else {
+            //  Indexing hint is null.
+            auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
+        }
     }
 
     @Override

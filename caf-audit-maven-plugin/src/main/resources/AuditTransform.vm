@@ -54,6 +54,7 @@ package $package;
 
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.AuditIndexingHint;
 
 import java.util.Date;
 
@@ -96,6 +97,7 @@ public final class AuditLog
             ##
             #set($name="")
             #set($type="")
+            #set($indexingHint="")
             #set($minLength="")
             #set($maxLength="")
             #set($columnName="")
@@ -103,6 +105,7 @@ public final class AuditLog
             ##
             #set($name = $param.getChild("Name",$namespace).getText())
             #set($type = $param.getChild("Type",$namespace).getText())
+            #set($indexingHint = $param.getChild("IndexingHint",$namespace).getText())
             #set($minLength = $param.getChild("Constraints",$namespace).getChild("MinLength",$namespace).getText())
             #set($maxLength = $param.getChild("Constraints",$namespace).getChild("MaxLength",$namespace).getText())
             #set($columnName = $param.getChild("ColumnName",$namespace).getText())
@@ -134,18 +137,60 @@ public final class AuditLog
             #else
                 #set($columnNameParam = """$columnName""")
             #end
-            #if (( $type == "string" ) && ($minLength != "" || $maxLength != ""))
-
+            #if ($type == "string")
+                ## string type so check for optional indexing hint and constraints.
+                #if( "$!indexingHint" == "" )
+                    ## indexing hint not specified.
+                    #set($indexingHintParam = "")
+                #else
+                    ## indexing hint specified.
+                    #if ($indexingHint == "fulltext")
+                        #set($indexingHintParam = "AuditIndexingHint.FULLTEXT")
+                    #else
+                        #set($indexingHintParam = "AuditIndexingHint.KEYWORD")
+                    #end
+                #end
+                #if ($minLength != "" || $maxLength != "")
+                    ## minLength and/or maxLength constraints specified.
                     #if( "$!minLength" == "" )
                         ## minLength not specified.
-                        #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, -1, $maxLength);$newline")                    #else
+                        #if( "$!indexingHintParam" == "" )
+                            ## minLength and indexing hint not specified.
+                            #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, -1, $maxLength);$newline")
+                        #else
+                            ## maxLength and indexing hint specified.
+                            #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $indexingHintParam, -1, $maxLength);$newline")
+                        #end
+                    #else
+                        ## minLength specified.
                         #if ("$!maxLength" == "")
                             ## maxLength not specified.
-                            #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $minLength, -1);$newline")
+                            #if( "$!indexingHintParam" == "" )
+                                ## maxLength and indexingHint not specified.
+                                #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $minLength, -1);$newline")
+                            #else
+                                ## minLength and indexing hint specified.
+                                #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $indexingHintParam, $minLength, -1);$newline")
+                            #end
                         #else
-                            #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $minLength, $maxLength);$newline")
+                            ## minLength and maxLength specified.
+                            #if( "$!indexingHintParam" == "" )
+                                ## indexingHint not specified.
+                                #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $minLength, $maxLength);$newline")
+                            #else
+                                #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $indexingHintParam, $minLength, $maxLength);$newline")
+                            #end
                         #end
                     #end
+                #else
+                    ## minLength and maxLength constraints not specified.
+                    #if( "$!indexingHintParam" == "" )
+                        ## indexing hint not specified.
+                        #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name);$newline")
+                    #else
+                        #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name, $indexingHintParam);$newline")
+                    #end
+                #end
             #else
                 #set($eventParamsList = "$eventParamsList        auditEventBuilder.addEventParameter(""$name"", $columnNameParam, $name);$newline")
             #end

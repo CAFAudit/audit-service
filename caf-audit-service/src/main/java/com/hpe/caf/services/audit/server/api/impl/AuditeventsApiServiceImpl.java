@@ -17,7 +17,12 @@ package com.hpe.caf.services.audit.server.api.impl;
 
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
-import com.hpe.caf.auditing.*;
+import com.hpe.caf.auditing.AuditConnection;
+import com.hpe.caf.auditing.AuditChannel;
+import com.hpe.caf.auditing.AuditConnectionFactory;
+import com.hpe.caf.auditing.AuditCoreMetadataProvider;
+import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.elastic.ElasticAuditConfiguration;
 import com.hpe.caf.services.audit.server.api.*;
 import com.hpe.caf.services.audit.server.api.exceptions.BadRequestException;
@@ -307,7 +312,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     /**
      * Adds custom field data to the audit event builder.
      */
-    private void addCustomFieldsToAuditEventMessage(AuditEventBuilder auditEventBuilder, final NewAuditEvent newAuditEvent) throws Exception, BadRequestException {
+    private void addCustomFieldsToAuditEventMessage(AuditEventBuilder auditEventBuilder, final NewAuditEvent newAuditEvent) throws BadRequestException {
 
         //  Iterate through the list of custom event parameter fields and add field data values to the audit event message.
         for (EventParam ep : newAuditEvent.getEventParams()) {
@@ -324,7 +329,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
             EventParam.ParamTypeEnum epParamType = ep.getParamType();
 
             try {
-                //  Add event paramter details to the audit event builder object by type.
+                //  Add event parameter details to the audit event builder object by type.
                 switch (epParamType) {
                     case STRING:
                         //  Has an indexing hint been specified.
@@ -340,7 +345,9 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
                                 default:
                                     // Only FULLTEXT and KEYWORD supported.
-                                    //  Nothing to do here.
+                                    String unexpectedParamIndexingHintErrorMessage = "Unexpected parameter indexing hint: " + ep.getParamIndexingHint().toString();
+                                    LOG.error(unexpectedParamIndexingHintErrorMessage);
+                                    throw new RuntimeException(unexpectedParamIndexingHintErrorMessage);
                             }
                         } else {
                             auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue);

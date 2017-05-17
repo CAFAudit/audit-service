@@ -331,7 +331,7 @@ public class AuditIT {
     private void assertField(String fieldName, final boolean isCustom, final EventParam.ParamIndexingHintEnum indexingHint, final String expectedValue, final Map<String, Object> searchResult){
 
         if (isCustom) {
-            if (indexingHint == EventParam.ParamIndexingHintEnum.KEYWORD){
+            if (indexingHint == null || indexingHint == EventParam.ParamIndexingHintEnum.KEYWORD){
                 fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX);
             } else {
                 fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX);

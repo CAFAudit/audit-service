@@ -104,11 +104,11 @@ The following is an example of an audit event definition file used throughout th
 	        <Param>
 	          <Name>authorisedBy</Name>
 	          <Type>string</Type>
-			  <IndexingHint>keyword</IndexingHint>
-			  <Constraints>
-				<MinLength>1</MinLength>
-				<MaxLength>256</MaxLength>
-			  </Constraints>
+	          <IndexingHint>keyword</IndexingHint>
+	          <Constraints>
+	            <MinLength>1</MinLength>
+	            <MaxLength>256</MaxLength>
+	          </Constraints>
 	          <Description>User who authorised the deletion</Description>
 	        </Param>
 	      </Params>

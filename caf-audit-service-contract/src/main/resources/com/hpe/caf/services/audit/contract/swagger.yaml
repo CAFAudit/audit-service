@@ -123,7 +123,6 @@ definitions:
       paramIndexingHint:
         type: string
         description: Indexing hint for audit event parameter storage. Applies to parameters of type string only.
-        default: keyword
         enum:
           - fulltext
           - keyword

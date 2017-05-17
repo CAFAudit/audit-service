@@ -100,21 +100,26 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     }
 
     @Override
-    public void addEventParameter(String name, String columnName, String value, AuditIndexingHint indexingHint) throws Exception {
-        switch (indexingHint) {
-            case KEYWORD:
-                auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
-                break;
+    public void addEventParameter(String name, String columnName, String value, AuditIndexingHint indexingHint) {
+        if (indexingHint != null) {
+            switch (indexingHint) {
+                case KEYWORD:
+                    auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
+                    break;
 
-            case FULLTEXT:
-                auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX), value);
-                break;
+                case FULLTEXT:
+                    auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX), value);
+                    break;
 
-            default:
-                //  Unexpected indexing hint.
-                String errorMessage = "Unexpected Elasticsearch indexing hint. Expected " + AuditIndexingHint.FULLTEXT + " or " + AuditIndexingHint.FULLTEXT + " but received '" + indexingHint.toString() + "'";
-                LOG.error(errorMessage);
-                throw new Exception(errorMessage);
+                default:
+                    //  Unexpected indexing hint.
+                    String errorMessage = "Unexpected Elasticsearch indexing hint. Expected " + AuditIndexingHint.FULLTEXT + " or " + AuditIndexingHint.FULLTEXT + " but received '" + indexingHint.toString() + "'";
+                    LOG.error(errorMessage);
+                    throw new RuntimeException(errorMessage);
+            }
+        } else {
+            //  Indexing hint is null.
+            auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
         }
     }
 

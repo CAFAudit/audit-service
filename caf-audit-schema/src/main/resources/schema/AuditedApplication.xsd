@@ -54,7 +54,7 @@
     <sequence>
       <element name="Name" type="string" />
       <element name="Type" type="aa:AuditEventParamType" />
-      <element name="IndexingHint" type="aa:AuditEventParamIndexingHint" minOccurs="0"/>	  
+      <element name="IndexingHint" type="aa:AuditEventParamIndexingHint" minOccurs="0"/>
       <element name="Constraints" type="aa:AuditEventParamConstraints" minOccurs="0"/>
       <element name="ColumnName" type="string" minOccurs="0" />
       <element name="Description" type="string" />
@@ -87,5 +87,5 @@
       <enumeration value="keyword" />
     </restriction>
   </simpleType>
-  
+
 </schema>

@@ -39,11 +39,11 @@ public interface AuditEventBuilder
     );
 
     void addEventParameter(
-            String name,
-            String columnName,
-            String value,
-            AuditIndexingHint indexingHint
-    ) throws Exception;
+        String name,
+        String columnName,
+        String value,
+        AuditIndexingHint indexingHint
+    );
 
     default void addEventParameter(
         String name,
@@ -58,13 +58,14 @@ public interface AuditEventBuilder
     }
 
     default void addEventParameter(
-            String name,
-            String columnName,
-            String value,
-            AuditIndexingHint indexingHint,
-            int minLength,
-            int maxLength
-    ) throws Exception {
+        String name,
+        String columnName,
+        String value,
+        AuditIndexingHint indexingHint,
+        int minLength,
+        int maxLength
+    )
+    {
         AuditValidator.validateString(name, value, minLength, maxLength);
         addEventParameter(name, columnName, value, indexingHint);
     }

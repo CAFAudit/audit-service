@@ -35,13 +35,13 @@ provided next.
         <Param>
           <Name>policyName</Name>
           <Type>string</Type>
-		  <IndexingHint>keyword</IndexingHint>
+          <IndexingHint>keyword</IndexingHint>
           <Description>Policy Name</Description >
         </Param>
         <Param>
           <Name>policyDef</Name>
           <Type>string</Type>
-		  <IndexingHint>fulltext</IndexingHint>
+          <IndexingHint>fulltext</IndexingHint>
           <ColumnName>policyDefinition</ColumnName>
           <Description>Policy definition</Description >
         </Param>

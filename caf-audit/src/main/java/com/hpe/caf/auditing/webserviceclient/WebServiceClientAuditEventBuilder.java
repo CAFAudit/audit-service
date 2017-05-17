@@ -17,6 +17,7 @@ package com.hpe.caf.auditing.webserviceclient;
 
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -117,6 +118,11 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
     @Override
     public void addEventParameter(String name, String columnName, String value) {
         auditEventParams.add(new EventParam(name, "string", columnName, value));
+    }
+
+    @Override
+    public void addEventParameter(String name, String columnName, String value, AuditIndexingHint indexingHint) {
+        auditEventParams.add(new EventParam(name, "string", columnName, value, indexingHint));
     }
 
     @Override
@@ -262,11 +268,16 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
         if (auditEventParams != null && !auditEventParams.isEmpty()) {
             jsonBuilder.startArray("eventParams");
             for (EventParam auditEventParam : auditEventParams) {
-                jsonBuilder.startObject()
+                XContentBuilder customEventParamBuilder = jsonBuilder.startObject()
                         .field("paramName", auditEventParam.getParamName())
-                        .field("paramType", auditEventParam.getParamType())
+                        .field("paramType", auditEventParam.getParamType());
+                // If the audit event param has an indexing hint set, lower case and add it to paramIndexingHint field
+                if (auditEventParam.getParamIndexingHint() != null) {
+                    customEventParamBuilder.field("paramIndexingHint",
+                            auditEventParam.getParamIndexingHint().toString().toLowerCase());
+                }
+                customEventParamBuilder.field("paramValue", auditEventParam.getParamValue())
                         .field("paramColumnName", auditEventParam.getParamColumnName())
-                        .field("paramValue", auditEventParam.getParamValue())
                         .endObject();
             }
             jsonBuilder.endArray();
@@ -279,8 +290,16 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
     private class EventParam {
 
-        public EventParam(String paramName, String paramType, String paramColumnName,
-                          Object paramValue) {
+        public EventParam(String paramName, String paramType, String paramColumnName, Object paramValue,
+                          AuditIndexingHint paramIndexingHint) {
+            this.paramName = paramName;
+            this.paramType = paramType;
+            this.paramColumnName = paramColumnName;
+            this.paramValue = paramValue;
+            this.paramIndexingHint = paramIndexingHint;
+        }
+
+        public EventParam(String paramName, String paramType, String paramColumnName, Object paramValue) {
             this.paramName = paramName;
             this.paramType = paramType;
             this.paramColumnName = paramColumnName;
@@ -291,6 +310,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
         private String paramType;
         private String paramColumnName;
         private Object paramValue;
+        private AuditIndexingHint paramIndexingHint;
 
         public String getParamName() {
             return paramName;
@@ -314,6 +334,14 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
         public void setParamColumnName(String paramColumnName) {
             this.paramColumnName = paramColumnName;
+        }
+
+        public AuditIndexingHint getParamIndexingHint() {
+            return paramIndexingHint;
+        }
+
+        public void setParamIndexingHint(AuditIndexingHint paramIndexingHint) {
+            this.paramIndexingHint = paramIndexingHint;
         }
 
         public Object getParamValue() {

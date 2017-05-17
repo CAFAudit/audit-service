@@ -19,6 +19,7 @@ import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.elastic.ElasticAuditTransportClientFactory;
@@ -149,6 +150,8 @@ public class WebserviceClientAuditIT {
         Random rand = new Random();
 
         String docStringParamValue = "testStringParam";
+        auditEventBuilder.addEventParameter(CUSTOM_DOC_STRING_PARAM_FIELD, null, docStringParamValue,
+                AuditIndexingHint.FULLTEXT);
         auditEventBuilder.addEventParameter(CUSTOM_DOC_STRING_PARAM_FIELD, null, docStringParamValue);
         int docIntParamValue = rand.nextInt();
         auditEventBuilder.addEventParameter(CUSTOM_DOC_INT_PARAM_FIELD, null, docIntParamValue);
@@ -196,14 +199,17 @@ public class WebserviceClientAuditIT {
             verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
 
             //  Verify fixed field data results.
-            verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string");
-            verifyCustomFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int");
-            verifyCustomFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short");
-            verifyCustomFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long");
-            verifyCustomFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float");
-            verifyCustomFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double");
-            verifyCustomFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean");
-            verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date");
+            verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string",
+                    AuditIndexingHint.FULLTEXT);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string",
+                    AuditIndexingHint.KEYWORD);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date", null);
 
             //  Delete test document after verification is complete.
             deleteDocument(transportClient, ES_INDEX, docId);
@@ -222,8 +228,10 @@ public class WebserviceClientAuditIT {
             {
                 Date date = new Date();
                 String correlationId = UUID.randomUUID().toString();
-                AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId, "stringType1",
-                        Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
+                AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId,
+                        "stringType1", "stringType2", "stringType3", "stringType4",
+                        Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true,
+                        date);
 
                 SearchHit searchHit = getAuditEvent(correlationId);
                 Map<String, Object> source = searchHit.getSource();
@@ -233,8 +241,10 @@ public class WebserviceClientAuditIT {
             {
                 Date date = new Date();
                 String correlationId = UUID.randomUUID().toString();
-                AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId, "stringType1",
-                        Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
+                AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId,
+                        "stringType1", "stringType2", "stringType3", "stringType4",
+                        Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true,
+                        date);
 
                 SearchHit searchHit = getAuditEvent(correlationId);
                 Map<String, Object> source = searchHit.getSource();
@@ -377,24 +387,25 @@ public class WebserviceClientAuditIT {
     }
 
     private void verifyTypeMappings(TransportClient transportClient) {
-        String expectedTypeMappings = "{\"cafAuditEvent\":{\"dynamic_templates\":[{\"CAFAuditKeyword\":" +
-                "{\"match\":\"*_CAKyw\",\"mapping\":{\"type\":\"keyword\"}}},{\"CAFAuditText\":" +
-                "{\"match\":\"*_CATxt\",\"mapping\":{\"type\":\"text\"}}},{\"CAFAuditLong\":" +
-                "{\"match\":\"*_CALng\",\"mapping\":{\"type\":\"long\"}}},{\"CAFAuditInteger\":" +
-                "{\"match\":\"*_CAInt\",\"mapping\":{\"type\":\"integer\"}}},{\"CAFAuditShort\":" +
-                "{\"match\":\"*_CAShort\",\"mapping\":{\"type\":\"short\"}}},{\"CAFAuditDouble\":" +
-                "{\"match\":\"*_CADbl\",\"mapping\":{\"type\":\"double\"}}},{\"CAFAuditFloat\":" +
-                "{\"match\":\"*_CAFlt\",\"mapping\":{\"type\":\"float\"}}},{\"CAFAuditDate\":" +
-                "{\"match\":\"*_CADte\",\"mapping\":{\"type\":\"date\"}}},{\"CAFAuditBoolean\":" +
-                "{\"match\":\"*_CABln\",\"mapping\":{\"type\":\"boolean\"}}}],\"properties\":" +
-                "{\"applicationId\":{\"type\":\"keyword\"},\"correlationId\":{\"type\":\"keyword\"}," +
+        String expectedTypeMappings = "{\"cafAuditEvent\":{\"dynamic_templates\":[" +
+                "{\"CAFAuditKeyword\":{\"match\":\"*_CAKyw\",\"mapping\":{\"type\":\"keyword\"}}}," +
+                "{\"CAFAuditText\":{\"match\":\"*_CATxt\",\"mapping\":{\"type\":\"text\"}}}," +
+                "{\"CAFAuditLong\":{\"match\":\"*_CALng\",\"mapping\":{\"type\":\"long\"}}}," +
+                "{\"CAFAuditInteger\":{\"match\":\"*_CAInt\",\"mapping\":{\"type\":\"integer\"}}}," +
+                "{\"CAFAuditShort\":{\"match\":\"*_CAShort\",\"mapping\":{\"type\":\"short\"}}}," +
+                "{\"CAFAuditDouble\":{\"match\":\"*_CADbl\",\"mapping\":{\"type\":\"double\"}}}," +
+                "{\"CAFAuditFloat\":{\"match\":\"*_CAFlt\",\"mapping\":{\"type\":\"float\"}}}," +
+                "{\"CAFAuditDate\":{\"match\":\"*_CADte\",\"mapping\":{\"type\":\"date\"}}}," +
+                "{\"CAFAuditBoolean\":{\"match\":\"*_CABln\",\"mapping\":{\"type\":\"boolean\"}}}]," +
+                "\"properties\":{\"applicationId\":{\"type\":\"keyword\"},\"correlationId\":{\"type\":\"keyword\"}," +
                 "\"docBooleanParam_CABln\":{\"type\":\"boolean\"},\"docDateParam_CADte\":{\"type\":\"date\"}," +
                 "\"docDoubleParam_CADbl\":{\"type\":\"double\"},\"docFloatParam_CAFlt\":{\"type\":\"float\"}," +
                 "\"docIntParam_CAInt\":{\"type\":\"integer\"},\"docLongParam_CALng\":{\"type\":\"long\"}," +
                 "\"docShortParam_CAShort\":{\"type\":\"short\"},\"docStringParam_CAKyw\":{\"type\":\"keyword\"}," +
-                "\"eventCategoryId\":{\"type\":\"keyword\"},\"eventOrder\":{\"type\":\"long\"},\"eventTime\":" +
-                "{\"type\":\"date\"},\"eventTimeSource\":{\"type\":\"keyword\"},\"eventTypeId\":" +
-                "{\"type\":\"keyword\"},\"processId\":{\"type\":\"keyword\"},\"threadId\":{\"type\":\"long\"}," +
+                "\"docStringParam_CATxt\":{\"type\":\"text\"},\"eventCategoryId\":{\"type\":\"keyword\"}," +
+                "\"eventOrder\":{\"type\":\"long\"},\"eventTime\":{\"type\":\"date\"}," +
+                "\"eventTimeSource\":{\"type\":\"keyword\"},\"eventTypeId\":{\"type\":\"keyword\"}," +
+                "\"processId\":{\"type\":\"keyword\"},\"threadId\":{\"type\":\"long\"}," +
                 "\"userId\":{\"type\":\"keyword\"}}}}";
 
         ClusterStateResponse clusterStateResponse =
@@ -435,13 +446,21 @@ public class WebserviceClientAuditIT {
         }
     }
 
-    private static void verifyCustomFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
-            throws ParseException
+    private static void verifyCustomFieldResult(SearchHit[] results, String field, Object expectedValue, String type,
+                                                AuditIndexingHint indexingHint) throws ParseException
     {
         //  Determine entry key to look for based on type supplied.
         switch (type.toLowerCase()) {
             case "string":
-                field = field + ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
+                if (indexingHint != null) {
+                    if (indexingHint == AuditIndexingHint.KEYWORD) {
+                        field = field + ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
+                    } else {
+                        field = field + ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX;
+                    }
+                } else {
+                    throw new RuntimeException("An indexing hint has not been specified.");
+                }
                 break;
             case "short":
                 field = field + ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX;

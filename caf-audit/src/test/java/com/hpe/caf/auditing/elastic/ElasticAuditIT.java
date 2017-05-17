@@ -512,10 +512,14 @@ public class ElasticAuditIT
         //  Determine entry key to look for based on type supplied.
         switch (type.toLowerCase()) {
             case "string":
-                if (indexingHint == AuditIndexingHint.KEYWORD) {
-                    field = field + ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
+                if (indexingHint != null) {
+                    if (indexingHint == AuditIndexingHint.KEYWORD) {
+                        field = field + ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
+                    } else {
+                        field = field + ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX;
+                    }
                 } else {
-                    field = field + ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX;
+                    throw new RuntimeException("An indexing hint has not been specified.");
                 }
                 break;
             case "short":

@@ -38,12 +38,15 @@ public interface AuditEventBuilder
         String value
     );
 
-    void addEventParameter(
+    default void addEventParameter(
         String name,
         String columnName,
         String value,
         AuditIndexingHint indexingHint
-    );
+    )
+    {
+        addEventParameter(name, columnName, value);
+    }
 
     default void addEventParameter(
         String name,

@@ -20,7 +20,30 @@ The number of replica shards (copies) that each primary shard should have. e.g. 
 
 ##### CAF\_AUDIT\_SERVICE\_API\_CONFIG\_PATH
 
-The path to the directory containing the config.properties which can be used as an alternative means of specifying the environment variables. e.g. .\config-props 
+The path to the directory containing the config.properties which can be used as an alternative means of specifying the environment variables. e.g. .\config-props
+
+#### Logging
+
+The Logging within the CAF Audit Web Service has been set to a base level of INFO. This logging configuration can be overridden in order to raise or lower the log levels.
+
+##### Overriding Log Levels with Environment Variables
+
+This service allows the default log level used by the Web Service to be set to a global log level. This is done via an environment variable called `CAF_LOG_LEVEL`. The suitable levels are listed below.
+
+* WARN
+* ERROR
+* INFO
+* TRACE
+* DEBUG
+* ALL
+
+To change the logging level simply set `CAF_LOG_LEVEL` to a level of your choice and re-run the Audit Web Service.
+
+**Note: The value that `CAF_LOG_LEVEL` takes should be in lowercase**
+
+
+For example: `export CAF_LOG_LEVEL=debug`
+
 
 ## Audit Service Links
 

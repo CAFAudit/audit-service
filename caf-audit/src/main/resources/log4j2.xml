@@ -23,7 +23,7 @@
             </Console>
         </Appenders>
         <Loggers>
-            <Root level="${env:CAF_LOG_LEVEL}">
+            <Root level="${env:CAF_LOG_LEVEL:-INFO}">
                 <AppenderRef ref="Console"/>
             </Root> 
         </Loggers>

@@ -12,26 +12,33 @@ The only pre-requisite required to get started is that Docker must be available 
 
 The deployment files are in Docker Compose v3 format, and they are compatible with both Docker Compose and Docker Stack.
 
-The deployment file, at present, only references Elasticsearch.
+As well as the Audit Web Service, the deployment file also references Elasticsearch.
 
 ### Demonstration
 
 The Docker Compose file contains the following services:
 
+![](./images/audit-service-deploy.png)
 
-<table><img src=./images/audit_service_deploy.jpg /></table>
+1. **Audit Web Service**  
+    This is a RESTful Web Service and provides a simple API. It can be used to index audit event messages into Elasticsearch. Each audit event message will comprise a set of fields including the application identifier, the user that triggered the audit event as well as the tenant that the user belongs to.
 
-**Elasticsearch**  
-[Elasticsearch](https://www.elastic.co/products/elasticsearch) is a search engine based on [Lucene](https://lucene.apache.org/core/). It provides a distributed, multi-tenant capable full-text search engine with an HTTP web interface and schema-free JSON documents. Elasticsearch is developed in Java and is released as open source under the terms of the Apache License.
+    By default, port 25080 is used to communicate with the Audit Web Service but if that port is not available then the `AUDIT_SERVICE_PORT` environment variable can be set to have a different port used.
 
-**Audit Web Service**
-The Audit Web Service is a RESTful Web Service and provides a simple API. It can be used to index audit event messages into Elasticsearch. Each audit event message will comprise a set of fields including the application identifier, the user that triggered the audit event as well as the tenant that the user belongs to. 
+2. **Elasticsearch Cluster**  
+    [Elasticsearch](https://www.elastic.co/products/elasticsearch) is a search engine based on [Lucene](https://lucene.apache.org/core/). It provides a distributed, multi-tenant capable full-text search engine with an HTTP web interface and schema-free JSON documents. Elasticsearch is developed in Java and is released as open source under the terms of the Apache License.
 
+    By default, ports 9200 (i.e. HTTP port) and 9300 (i.e. network communication port) are used on Node 1 of the Elasticsearch cluster.
+
+    By default, ports 9201 and 9301 are used on Node 2 of the Elasticsearch cluster.
+
+    By default, ports 9202 and 9302 are used on Node 3 of the Elasticsearch cluster.
+ 
 ### Usage
 
 1. Download the files from this repository  
 You can clone this repository using Git or else you can simply download the files as a Zip using the following link:  
-https://github.com/CAFAudit/audit-service-deploy/archive/develop.zip
+[https://github.com/CAFAudit/audit-service-deploy/archive/develop.zip](https://github.com/CAFAudit/audit-service-deploy/archive/develop.zip)
 
 2. Configure the external parameters if required  
 The following parameters may be set:
@@ -104,15 +111,20 @@ First navigate to the folder where you have downloaded the files to and then run
 4. Check the Health of Elasticsearch  
 The health of the Elasticsearch container and / or cluster can be inspected by issuing the following command:    
     `curl http://<DOCKER_HOST>:<ELASTICSEARCH_HTTP_PORT>/_cat/health`  
-    i.e. `curl http://localhost:9200/_cat/health`  
-    `1493041686 13:48:06 docker-cluster green 2 2 0 0 0 0 0 0 - 100.0%`
+    e.g. `curl http://localhost:9200/_cat/health`
+ 
+    Reponse:
+
+    <pre><code>1493041686 13:48:06 elasticsearch-cluster green 2 2 0 0 0 0 0 0 - 100.0%
+    </code></pre>
 
 5. Index a simple customer document 
     `curl -XPUT '<DOCKER_HOST>:<ELASTICSEARCH_HTTP_PORT>/customer/external/1?pretty' -H 'Content-Type: application/json' -d '{"name": "John Doe"}'`  
-    i.e. `curl -XPUT 'localhost:9200/customer/external/1?pretty' -H 'Content-Type: application/json' -d '{"name": "John Doe"}'`    
+    e.g. `curl -XPUT 'localhost:9200/customer/external/1?pretty' -H 'Content-Type: application/json' -d '{"name": "John Doe"}'`
+ 
     Reponse:
     
-    `{
+    <pre><code>{
          "_index" : "customer",
          "_type" : "external",
          "_id" : "1",
@@ -124,22 +136,22 @@ The health of the Elasticsearch container and / or cluster can be inspected by i
              "failed" : 0
          },
          "created" : true
-    }`
+    }</code></pre>
 
 6. Retrieve a simple customer document  
     `curl -XGET '<DOCKER_HOST>:<ELASTICSEARCH_HTTP_PORT>/customer/external/1?pretty'`  
-    i.e. `curl -XGET 'localhost:9200/customer/external/1?pretty'`  
+    e.g. `curl -XGET 'localhost:9200/customer/external/1?pretty'`
   
     Response:  
   
-    `{
+    <pre><code>{
       "_index" : "customer",
       "_type" : "external",
       "_id" : "1",
       "_version" : 1,
       "found" : true,
       "_source" : { "name": "John Doe" }
-    }`
+    }</code></pre>
 
 7. Navigate to the Audit Web Service UI  
     The Audit Web Service is a RESTful Web Service and is primarily intended for programmatic access, however it also ships with a Swagger-generated user-interface.
@@ -150,30 +162,29 @@ The health of the Elasticsearch container and / or cluster can be inspected by i
 
     Replace `<DOCKER_HOST>` with the name of your own Docker Host and adjust the port if you are not using the default.
 
-8. Index an audit event message into Elasticsearch 
+8. Index an audit event message into Elasticsearch  
     Go to the `POST /auditevents` operation.
 
     - Enter the following audit event message details into the `newAuditEvent` parameter:
 
         <pre><code>{
-		"applicationId": "SampleApp",
-		"processId": "77baef40-2744-46ab-9b69-a349a19930c5",
-		"threadId": 1,
-		"eventOrder": 1,
-		"eventTime": "2017-05-16T12:16:11.174Z",
-		"eventTimeSource": "myHostName",
-		"userId": "12c3d730-f86a-443f-9142-93ec4981b8e1",
-		"tenantId": "123418dc-2e24-406e-91b8-e26122b0a995",
-		"correlationId": "test123",
-		"eventTypeId": "viewDocument",
-		"eventCategoryId": "documentEvents",
-		"eventParams": [
-		{
-		  "paramName": "docId",
-		  "paramType": "long",
-		  "paramValue": "123"
-		}
-		]
+		  "applicationId": "SampleApp",
+		  "processId": "77baef40-2744-46ab-9b69-a349a19930c5",
+		  "threadId": 1,
+		  "eventOrder": 1,
+		  "eventTime": "2017-05-16T12:16:11.174Z",
+		  "eventTimeSource": "myHostName",
+		  "userId": "12c3d730-f86a-443f-9142-93ec4981b8e1",
+		  "tenantId": "123418dc-2e24-406e-91b8-e26122b0a995",
+		  "correlationId": "test123",
+		  "eventTypeId": "viewDocument",
+		  "eventCategoryId": "documentEvents",
+		  "eventParams": [
+		  {
+		    "paramName": "docId",
+		    "paramType": "long",
+		    "paramValue": "123"
+		  } ]
         }</code></pre>
 
 	- Click on the 'Try it out!' button.
@@ -184,7 +195,7 @@ The health of the Elasticsearch container and / or cluster can be inspected by i
   
     Response:  
 
-	`{
+	<pre><code>{
 	  "took" : 33,
 	  "timed_out" : false,
 	  "_shards" : {
@@ -217,7 +228,7 @@ The health of the Elasticsearch container and / or cluster can be inspected by i
 	      }
 	    ]
 	  }
-	}`
+	}</code></pre>
 
 ### Override Files
 Docker Compose supports the concept of override files which can be used to modify the service definitions in the main Docker Compose files, or to add extra service definitions.
@@ -241,10 +252,6 @@ The following override files are supplied alongside the main Docker Compose file
   </tr>
 </table>
 
-Use the -f switch to apply override files.  For example, to start the services with the docker-compose.https.yml file applied run the following command:
-
-    docker-compose -f docker-compose.yml -f docker-compose.https.yml up
-
 #### Activating HTTPS Endpoint
 
 The `docker-compose.https.yml` override file should be used to activate a HTTPS endpoint for secure communication with the Audit Web Service.
@@ -254,7 +261,7 @@ First of all, you need to generate a keystore file. For more information on gene
 
 A default keystore can be generated using the following command. Specify `changeit` when asked for both the keystore and key passwords.
 
-`keytool -genkey -alias tomcat -keystore .keystore -keyalg RSA`
+	keytool -genkey -alias tomcat -keystore .keystore -keyalg RSA
 
 If you generate a keystore with custom passwords instead, then make sure to provide environment variables `AUDIT_SERVICE_KEYSTORE_PASS` and `AUDIT_SERVICE_KEY_PASS` (see override options below).
 
@@ -262,9 +269,9 @@ If you generate a keystore with custom passwords instead, then make sure to prov
 The generated keystore file then needs placed in a folder called `keystore` in audit-service-deploy. Name it `.keystore` or else provide your own custom path by setting `AUDIT_SERVICE_KEYSTORE` (e.g. `./mykeystore/ks.p12`).
 
 ##### Activate
-Run the following command to activate the HTTPS endpoint:
+The override file, `docker-compose.https.yml`, needs applied in order to activate the HTTPS endpoint. Run the following command:
 
-`docker-compose -f docker-compose.yml -f docker-compose.https.yml up`.
+    docker-compose -f docker-compose.yml -f docker-compose.https.yml up
 
 ##### Override Options
 The following table outlines the additional overrides supported in the `docker-compose.https.yml` file:

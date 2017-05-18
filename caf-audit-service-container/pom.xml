@@ -295,7 +295,7 @@
                                     <Git.Commit>${git.revision}</Git.Commit>
                                 </labels>
                                 <env>
-                                    <AUDIT_LIB_MODE>direct</AUDIT_LIB_MODE>
+                                    <CAF_AUDIT_MODE>direct</CAF_AUDIT_MODE>
                                 </env>
                                 <ports>
                                     <port>8080</port>

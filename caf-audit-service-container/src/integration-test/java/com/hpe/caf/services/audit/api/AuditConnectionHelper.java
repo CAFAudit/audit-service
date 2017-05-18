@@ -29,7 +29,7 @@ public class AuditConnectionHelper
 {
 
     /**
-     * Returns an instance of an ElasticsearchAuditConnection (if environment variable AUDIT_LIB_MODE is set to
+     * Returns an instance of an ElasticsearchAuditConnection (if environment variable CAF_AUDIT_MODE is set to
      * 'direct')
      * @param esHostAndPorts comma separated list of Elasticsearch host and ports
      * @param esClusterName the name of the Elasticsearch cluster
@@ -54,7 +54,7 @@ public class AuditConnectionHelper
     }
 
     /**
-     * Returns an instance of an WebServiceClientAuditConnection (if environment variable AUDIT_LIB_MODE is set to
+     * Returns an instance of an WebServiceClientAuditConnection (if environment variable CAF_AUDIT_MODE is set to
      * 'webservice')
      * @param webServiceEndpoint the webservice endpoint
      * @return configured ElasticAuditConnection

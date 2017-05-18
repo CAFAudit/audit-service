@@ -27,37 +27,37 @@ import java.net.MalformedURLException;
 public class AuditConnectionFactory {
 
     /**
-     * Create connection for the Audit application. Returns NoopAuditConnection if an 'AUDIT_LIB_MODE' environment
-     * variable has not been set. If 'AUDIT_LIB_MODE' has been set to 'webservice' this returns a
-     * WebServiceClientAuditConnection. If 'AUDIT_LIB_MODE' has been set to 'direct' this returns an
+     * Create connection for the Audit application. Returns NoopAuditConnection if an 'CAF_AUDIT_MODE' environment
+     * variable has not been set. If 'CAF_AUDIT_MODE' has been set to 'webservice' this returns a
+     * WebServiceClientAuditConnection. If 'CAF_AUDIT_MODE' has been set to 'direct' this returns an
      * ElasticAuditConnection.
      *
      * @param configSource the configuration source
-     * @return the connection to the audit server, depending on the setting of the 'AUDIT_LIB_MODE' environment variable
+     * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable
      * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source
-     * @throws MalformedURLException (if AUDIT_LIB_MODE=webservice) if the webservice endpoint URL, passed via
+     * @throws MalformedURLException (if CAF_AUDIT_MODE=webservice) if the webservice endpoint URL, passed via
      * configuration, is malformed
-     * @throws WebServiceClientException (if AUDIT_LIB_MODE=webservice) if HttpUrlConnection could not be opened
+     * @throws WebServiceClientException (if CAF_AUDIT_MODE=webservice) if HttpUrlConnection could not be opened
      * to the webservice endpoint
      */
     public static AuditConnection createConnection(final ConfigurationSource configSource) throws
             ConfigurationException, MalformedURLException, WebServiceClientException {
-        String auditLibMode = System.getProperty("AUDIT_LIB_MODE", System.getenv("AUDIT_LIB_MODE"));
+        String auditLibMode = System.getProperty("CAF_AUDIT_MODE", System.getenv("CAF_AUDIT_MODE"));
 
-        // If the AUDIT_LIB_MODE environment variable has not been set return the NOOP implementation
+        // If the CAF_AUDIT_MODE environment variable has not been set return the NOOP implementation
         if (auditLibMode == null) {
             return new NoopAuditConnection(configSource);
         }
 
-        // Return WebServiceClientAuditConnection or ElasticAuditConnection impl depending on AUDIT_LIB_MODE's value
+        // Return WebServiceClientAuditConnection or ElasticAuditConnection impl depending on CAF_AUDIT_MODE's value
         switch (auditLibMode.toLowerCase()) {
             case "webservice":
                 return new WebServiceClientAuditConnection(configSource);
             case "direct":
                 return new ElasticAuditConnection(configSource);
             default:
-                // Throw a RuntimeException if an unknown AUDIT_LIB_MODE is specified
-                throw new RuntimeException("Unknown AUDIT_LIB_MODE specified");
+                // Throw a RuntimeException if an unknown CAF_AUDIT_MODE is specified
+                throw new RuntimeException("Unknown CAF_AUDIT_MODE specified");
         }
     }
 }

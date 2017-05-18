@@ -103,7 +103,7 @@ public class WebserviceClientAuditIT {
     @BeforeClass
     public static void setup() throws Exception {
         // Test the Auditing library in webservice mode
-        System.setProperty("AUDIT_LIB_MODE", "webservice");
+        System.setProperty("CAF_AUDIT_MODE", "webservice");
 
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "");

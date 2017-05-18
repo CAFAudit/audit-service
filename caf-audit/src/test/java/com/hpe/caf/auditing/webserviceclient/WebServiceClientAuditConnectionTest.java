@@ -51,7 +51,7 @@ public class WebServiceClientAuditConnectionTest {
     @BeforeClass
     public static void setup() {
         // Test the Auditing library in webservice mode
-        System.setProperty("AUDIT_LIB_MODE", "webservice");
+        System.setProperty("CAF_AUDIT_MODE", "webservice");
     }
 
     @Test(expected = MalformedURLException.class)

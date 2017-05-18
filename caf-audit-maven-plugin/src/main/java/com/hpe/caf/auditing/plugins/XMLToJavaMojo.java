@@ -83,7 +83,11 @@ public class XMLToJavaMojo extends AbstractMojo{
 
             //  Automatically add output directory an additional source directory for the build process.
             if (outputDirectory.exists() && project != null) {
-                project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+                if (generateAsTestResource) {
+                    project.addTestCompileSourceRoot(outputDirectory.getAbsolutePath());
+                } else {
+                    project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+                }
             }
         }
         catch( Exception e )

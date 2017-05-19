@@ -16,16 +16,16 @@
     limitations under the License.
 
 -->
-    <Configuration>
-        <Appenders>
-            <Console name="Console" target="SYSTEM_OUT">
-                <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-            </Console>
-        </Appenders>
-        <Loggers>
-            <Root level="${env:CAF_LOG_LEVEL:-INFO}">
-                <AppenderRef ref="Console"/>
-            </Root> 
-        </Loggers>
-    </Configuration>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="${env:CAF_LOG_LEVEL:-INFO}">
+            <AppenderRef ref="Console"/>
+        </Root> 
+    </Loggers>
+</Configuration>
  

@@ -8,6 +8,12 @@
     <artifactId>caf-audit-service-testing-auditlog</artifactId>
     <version>3.1.0-SNAPSHOT</version>
 
+    <parent>
+        <groupId>com.github.cafaudit</groupId>
+        <artifactId>audit-service-aggregator</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+    </parent>
+
     <properties>
         <!-- Must be the same events XML file used in the test code, see AuditIT.auditXMLConfigFile -->
         <auditXMLConfigFile>./test-case/events.xml</auditXMLConfigFile>

@@ -24,15 +24,20 @@ The path to the directory containing the config.properties which can be used as 
 
 ##### CAF\_LOG\_LEVEL
 
-The Logging within the CAF Audit Web Service has been set to a base level of INFO. This logging configuration can be overridden in order to raise or lower the log levels.
+The logging level for the CAF Audit Web Service. e.g. DEBUG
 
-The default Log Level can be overridden by setting `CAF_LOG_LEVEL` to a level of your choice and re-running the Audit Web Service
+Logging levels support include:
 
-**Note: The value that `CAF_LOG_LEVEL` takes should be in lowercase**
+* WARN
+* ERROR
+* INFO
+* TRACE
+* DEBUG
+* ALL
 
+A default logging level of INFO is applied if this environment variable is not configured.
 
-For example: `export CAF_LOG_LEVEL=debug`
-
+<br></br>
 
 ## Audit Service Links
 

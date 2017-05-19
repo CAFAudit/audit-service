@@ -65,7 +65,7 @@ public class XMLToJavaMojo extends AbstractMojo{
             //  Create instance of class needed to perform XML to Java transform.
             XMLToJavaTransform transform = new XMLToJavaTransform(this.auditXMLConfig, this.packageName);
 
-            // If generateAsTestResource has been set to true, set the output directory to be test resource directory
+            // If generateAsTestResource has been set to true, set the output directory to be test resource directory.
             String transformGenSourcesDir;
             if (generateAsTestResource) {
                 transformGenSourcesDir = TRANSFORM_GENSOURCES_TEST_DIRECTORY;

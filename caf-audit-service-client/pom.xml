@@ -28,9 +28,9 @@
     <name>caf-audit-service-client</name>
 
     <parent>
-        <groupId>com.hpe.caf</groupId>
-        <artifactId>caf-restapi-client-base</artifactId>
-        <version>1.2.0-2</version>
+        <groupId>com.github.cafapi</groupId>
+        <artifactId>swagger-restapi-client-base</artifactId>
+        <version>1.10.0-205</version>
         <relativePath/>
     </parent>
 

@@ -20,7 +20,24 @@ The number of replica shards (copies) that each primary shard should have. e.g. 
 
 ##### CAF\_AUDIT\_SERVICE\_API\_CONFIG\_PATH
 
-The path to the directory containing the config.properties which can be used as an alternative means of specifying the environment variables. e.g. .\config-props 
+The path to the directory containing the config.properties which can be used as an alternative means of specifying the environment variables. e.g. .\config-props
+
+##### CAF\_LOG\_LEVEL
+
+The logging level for the CAF Audit Web Service. e.g. DEBUG
+
+The Logging levels supported are:
+
+* WARN
+* ERROR
+* INFO
+* TRACE
+* DEBUG
+* ALL
+
+A default logging level of INFO is applied if this environment variable is not configured.
+
+<br></br>
 
 ## Audit Service Links
 

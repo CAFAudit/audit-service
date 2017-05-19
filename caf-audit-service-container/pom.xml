@@ -62,7 +62,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit</artifactId>
+            <artifactId>caf-audit-service-testing-auditlog</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

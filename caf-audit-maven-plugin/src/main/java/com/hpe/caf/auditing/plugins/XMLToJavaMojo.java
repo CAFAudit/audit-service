@@ -34,6 +34,7 @@ public class XMLToJavaMojo extends AbstractMojo{
     private static final String TRANSFORM_TEMPLATE_NAME = "AuditTransform.vm";
     private static final String TRANSFORM_OUTPUT_FILENAME = "AuditLog.java";
     private static final String TRANSFORM_GENSOURCES_DIRECTORY = "/generated-sources/src/main/java/";
+    private static final String TRANSFORM_GENSOURCES_TEST_DIRECTORY = "/generated-test-sources/src/test/java/";
 
     @Parameter(defaultValue = "${project}", readonly = true )
     private MavenProject project;
@@ -50,6 +51,13 @@ public class XMLToJavaMojo extends AbstractMojo{
     @Parameter(property = "packageName", defaultValue = "${project.groupId}.auditing")
     private String packageName;
 
+    /**
+     *  Indicates if the generated Java should be added as a test resource. If not set, or set to false, it is added as
+     *  a main resource.
+     */
+    @Parameter(property = "generateAsTestResource", defaultValue = "false")
+    private boolean generateAsTestResource;
+
     public void execute() throws MojoExecutionException, MojoFailureException
     {
         try
@@ -57,9 +65,17 @@ public class XMLToJavaMojo extends AbstractMojo{
             //  Create instance of class needed to perform XML to Java transform.
             XMLToJavaTransform transform = new XMLToJavaTransform(this.auditXMLConfig, this.packageName);
 
+            // If generateAsTestResource has been set to true, set the output directory to be test resource directory.
+            String transformGenSourcesDir;
+            if (generateAsTestResource) {
+                transformGenSourcesDir = TRANSFORM_GENSOURCES_TEST_DIRECTORY;
+            } else {
+                transformGenSourcesDir = TRANSFORM_GENSOURCES_DIRECTORY;
+            }
+
             //  Create generated sources directory for transform output and automatically add as
             //  an additional source directory for the build process.
-            Path path = Paths.get(project.getBuild().getDirectory(),TRANSFORM_GENSOURCES_DIRECTORY,this.packageName.replace(".",File.separator));
+            Path path = Paths.get(project.getBuild().getDirectory(),transformGenSourcesDir,this.packageName.replace(".",File.separator));
             File outputDirectory = new File(path.toString());
 
             //  Perform XML to Java transform.
@@ -67,7 +83,11 @@ public class XMLToJavaMojo extends AbstractMojo{
 
             //  Automatically add output directory an additional source directory for the build process.
             if (outputDirectory.exists() && project != null) {
-                project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+                if (generateAsTestResource) {
+                    project.addTestCompileSourceRoot(outputDirectory.getAbsolutePath());
+                } else {
+                    project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+                }
             }
         }
         catch( Exception e )

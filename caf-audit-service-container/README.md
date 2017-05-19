@@ -26,7 +26,7 @@ The path to the directory containing the config.properties which can be used as 
 
 The logging level for the CAF Audit Web Service. e.g. DEBUG
 
-Logging levels support include:
+The Logging levels supported are:
 
 * WARN
 * ERROR

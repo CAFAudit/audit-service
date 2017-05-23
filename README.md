@@ -10,3 +10,4 @@ Manifest of the components which make up the Audit Service:
 * [caf-audit-service-server-stub-source](caf-audit-service-server-stub-source)
 * [caf-audit-service-ui](caf-audit-service-ui)
 * [caf-audit-service](caf-audit-service)
+* [caf-audit-service-testing-auditlog](caf-audit-service-testing-auditlog)

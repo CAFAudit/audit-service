@@ -1,0 +1,6 @@
+{
+    "hostAndPort": "192.168.56.10:9200",
+    "clusterName": "elasticsearch-cluster",
+    "numberOfShards": "5",
+    "numberOfReplicas": "1"
+}

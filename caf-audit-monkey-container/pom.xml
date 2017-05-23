@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!-- Copyright 2015-2017 Hewlett Packard Enterprise Development LP. Licensed 
+    under the Apache License, Version 2.0 (the "License"); you may not use this 
+    file except in compliance with the License. You may obtain a copy of the 
+    License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by 
+    applicable law or agreed to in writing, software distributed under the License 
+    is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+    KIND, either express or implied. See the License for the specific language 
+    governing permissions and limitations under the License. -->
+<!-- Copyright 2015-2017 Hewlett Packard Enterprise Development LP. Licensed 
+    under the Apache License, Version 2.0 (the "License"); you may not use this 
+    file except in compliance with the License. You may obtain a copy of the 
+    License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by 
+    applicable law or agreed to in writing, software distributed under the License 
+    is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+    KIND, either express or implied. See the License for the specific language 
+    governing permissions and limitations under the License. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>caf-audit-monkey-container</artifactId>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>com.github.cafaudit</groupId>
+        <artifactId>caf-audit-monkey-aggregator</artifactId>
+        <version>3.1.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-monkey</artifactId>
+            <version>3.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.krallin</groupId>
+            <artifactId>tini</artifactId>
+            <scope>runtime</scope>
+            <type>exe</type>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${fabric8.docker.maven.version}</version>
+                <executions>
+                    <execution>
+                        <id>docker-build</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>docker-push</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <autoPull>always</autoPull>
+                    <images>
+                        <image>
+                            <name>rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-monkey:${project.version}</name>
+                            <build>
+                                <maintainer>gregory.lucy@hpe.com</maintainer>
+                                <from>java:8</from>
+                                <labels>
+                                    <Build.Number>${project.version}</Build.Number>
+                                    <Build.Date>${maven.build.timestamp}</Build.Date>
+                                    <Git.Branch>${git.branch}</Git.Branch>
+                                    <Git.Commit>${git.revision}</Git.Commit>
+                                </labels>
+<!--                                 <env> -->
+<!--                                     <CAF_AUDIT_MODE>direct</CAF_AUDIT_MODE> -->
+<!--                                 </env>                                 -->
+                                <entryPoint>
+                                    <exec>
+                                        <args>/maven/tini-${tini.version}.exe</args>
+                                        <args>-v</args>
+                                        <args>--</args>
+                                        <args>/maven/start.sh</args>
+                                    </exec>
+                                </entryPoint>
+                                <assembly>
+                                    <mode>tar</mode>
+                                    <inline>
+                                        <fileSets>
+                                            <fileSet>
+                                                <includes>
+                                                    <include>*.sh</include>
+                                                </includes>
+                                                <fileMode>0755</fileMode>
+                                            </fileSet>
+                                        </fileSets>
+                                        <dependencySets>
+                                            <dependencySet>
+                                                <useProjectArtifact>false</useProjectArtifact>
+                                                <scope>runtime</scope>
+                                                <excludes>
+                                                    <exclude>com.github.krallin:tini</exclude>
+                                                </excludes>
+                                            </dependencySet>
+                                            <dependencySet>
+                                                <useProjectArtifact>false</useProjectArtifact>
+                                                <fileMode>0755</fileMode>
+                                                <includes>
+                                                    <include>com.github.krallin:tini</include>
+                                                </includes>
+                                            </dependencySet>
+                                        </dependencySets>
+                                    </inline>
+                                </assembly>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <!-- <profiles> -->
+    <!-- <profile> -->
+    <!-- <id>integration-test</id> -->
+    <!-- <activation> -->
+    <!-- <property> -->
+    <!-- <name>RE_BUILD_TYPE</name> -->
+    <!-- </property> -->
+    <!-- </activation> -->
+    <!-- <build> -->
+    <!-- <plugins> -->
+    <!-- <plugin> -->
+    <!-- <groupId>io.fabric8</groupId> -->
+    <!-- <artifactId>docker-maven-plugin</artifactId> -->
+    <!-- <version>${fabric8.docker.maven.version}</version> -->
+    <!-- <executions> -->
+    <!-- <execution> -->
+    <!-- <id>start-testing-containers</id> -->
+    <!-- <phase>pre-integration-test</phase> -->
+    <!-- <goals> -->
+    <!-- <goal>start</goal> -->
+    <!-- </goals> -->
+    <!-- <configuration> -->
+    <!-- <skip>false</skip> -->
+    <!-- <image>audit-service,config,elasticsearch</image> -->
+    <!-- </configuration> -->
+    <!-- </execution> -->
+    <!-- <execution> -->
+    <!-- <id>stop-testing-containers</id> -->
+    <!-- <phase>post-integration-test</phase> -->
+    <!-- <goals> -->
+    <!-- <goal>stop</goal> -->
+    <!-- </goals> -->
+    <!-- <configuration> -->
+    <!-- <skip>false</skip> -->
+    <!-- <image>audit-service,config,elasticsearch</image> -->
+    <!-- </configuration> -->
+    <!-- </execution> -->
+    <!-- </executions> -->
+    <!-- </plugin> -->
+    <!-- </plugins> -->
+    <!-- </build> -->
+    <!-- </profile> -->
+
+    <!-- <profile> -->
+    <!-- <id>use-default-fixed-ports</id> -->
+    <!-- <properties> -->
+    <!-- <webservice.adminport>25080</webservice.adminport> -->
+    <!-- <elasticsearch.http.port>9200</elasticsearch.http.port> -->
+    <!-- <elasticsearch.transport.port>9300</elasticsearch.transport.port> -->
+    <!-- </properties> -->
+    <!-- </profile> -->
+    <!-- </profiles> -->
+
+    <!-- <build> -->
+    <!-- <plugins> -->
+    <!-- Compile test sources. -->
+    <!-- <plugin> -->
+    <!-- <groupId>org.apache.maven.plugins</groupId> -->
+    <!-- <artifactId>maven-compiler-plugin</artifactId> -->
+    <!-- <version>${maven.compiler.version}</version> -->
+    <!-- <executions> -->
+    <!-- <execution> -->
+    <!-- <phase>test-compile</phase> -->
+    <!-- <goals> -->
+    <!-- <goal>testCompile</goal> -->
+    <!-- </goals> -->
+    <!-- <configuration> -->
+    <!-- <testCompilerArgument>-parameters</testCompilerArgument> -->
+    <!-- <source>1.8</source> -->
+    <!-- <target>1.8</target> -->
+    <!-- </configuration> -->
+    <!-- </execution> -->
+    <!-- </executions> -->
+    <!-- </plugin> -->
+
+    <!-- Run integration tests. -->
+    <!-- <plugin> -->
+    <!-- <artifactId>maven-failsafe-plugin</artifactId> -->
+    <!-- <version>${maven.failsafe.version}</version> -->
+    <!-- <executions> -->
+    <!-- <execution> -->
+    <!-- <id>webservice-Docker</id> -->
+    <!-- <goals> -->
+    <!-- <goal>integration-test</goal> -->
+    <!-- <goal>verify</goal> -->
+    <!-- </goals> -->
+    <!-- </execution> -->
+    <!-- </executions> -->
+    <!-- <configuration> -->
+    <!-- <systemPropertyVariables> -->
+    <!-- <docker.host.address>${docker.host.address}</docker.host.address> -->
+    <!-- <webservice.adminport>${webservice.adminport}</webservice.adminport> -->
+    <!-- <elasticsearch.transport.port>${elasticsearch.transport.port}</elasticsearch.transport.port> -->
+    <!-- </systemPropertyVariables> -->
+    <!-- <environmentVariables> -->
+    <!-- <CAF_APPNAME>test/auditservice</CAF_APPNAME> -->
+    <!-- <CAF_CONFIG_PATH>${project.basedir}/test-configs</CAF_CONFIG_PATH> -->
+    <!-- <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.transport.port}</CAF_ELASTIC_HOST_AND_PORT> -->
+    <!-- <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME> -->
+    <!-- <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl> -->
+    <!-- </environmentVariables> -->
+    <!-- </configuration> -->
+    <!-- </plugin> -->
+
+    <!-- <plugin> -->
+    <!-- <groupId>io.fabric8</groupId> -->
+    <!-- <artifactId>docker-maven-plugin</artifactId> -->
+    <!-- <version>${fabric8.docker.maven.version}</version> -->
+    <!-- <executions> -->
+    <!-- <execution> -->
+    <!-- <id>build-docker-container</id> -->
+    <!-- <phase>package</phase> -->
+    <!-- <goals> -->
+    <!-- <goal>build</goal> -->
+    <!-- </goals> -->
+    <!-- <configuration> -->
+    <!-- <skip>false</skip> -->
+    <!-- <image>audit-service,config</image> -->
+    <!-- </configuration> -->
+    <!-- </execution> -->
+    <!-- <execution> -->
+    <!-- <id>upload-docker-container</id> -->
+    <!-- <phase>deploy</phase> -->
+    <!-- <goals> -->
+    <!-- <goal>push</goal> -->
+    <!-- </goals> -->
+    <!-- <configuration> -->
+    <!-- <filter>audit-service</filter> -->
+    <!-- </configuration> -->
+    <!-- </execution> -->
+    <!-- </executions> -->
+    <!-- <configuration> -->
+    <!-- <verbose>true</verbose> -->
+    <!-- <autoPull>on</autoPull> -->
+    <!-- <logDate>default</logDate> -->
+    <!-- <watchInterval>500</watchInterval> -->
+    <!-- <images> -->
+    <!-- <image> -->
+    <!-- <alias>config</alias> -->
+    <!-- <name>${project.artifactId}-test-config:${project.version}</name> -->
+    <!-- <build> -->
+    <!-- <maintainer>connor.mulholland@hpe.com</maintainer> -->
+    <!-- <assembly> -->
+    <!-- <basedir>/config</basedir> -->
+    <!-- <inline> -->
+    <!-- <fileSets> -->
+    <!-- <fileSet> -->
+    <!-- <directory>test-configs</directory> -->
+    <!-- <outputDirectory>./</outputDirectory> -->
+    <!-- <includes> -->
+    <!-- <include>*</include> -->
+    <!-- </includes> -->
+    <!-- </fileSet> -->
+    <!-- </fileSets> -->
+    <!-- </inline> -->
+    <!-- </assembly> -->
+    <!-- </build> -->
+    <!-- </image> -->
+    <!-- <image> -->
+    <!-- <alias>audit-service</alias> -->
+    <!-- <name>rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-service:${project.version}</name> -->
+    <!-- <build> -->
+    <!-- <maintainer>connor.mulholland@hpe.com</maintainer> -->
+    <!-- <from>tomcat:jre8</from> -->
+    <!-- <labels> -->
+    <!-- <Build.Number>${project.version}</Build.Number> -->
+    <!-- <Build.Date>${maven.build.timestamp}</Build.Date> -->
+    <!-- <Git.Branch>${git.branch}</Git.Branch> -->
+    <!-- <Git.Commit>${git.revision}</Git.Commit> -->
+    <!-- </labels> -->
+    <!-- <ports> -->
+    <!-- <port>8080</port> -->
+    <!-- </ports> -->
+    <!-- <entryPoint> -->
+    <!-- <exec> -->
+    <!-- <args>/maven/tini-${tini.version}.exe</args> -->
+    <!-- <args>-v</args> -->
+    <!-- <args>\-\-</args> -->
+    <!-- </exec> -->
+    <!-- </entryPoint> -->
+    <!-- <runCmds> -->
+    <!-- <runCmd>mv /opt/*.war $CATALINA_HOME/webapps</runCmd> -->
+    <!-- </runCmds> -->
+    <!-- <cmd>/start.sh</cmd> -->
+    <!-- <assembly> -->
+    <!-- <basedir>/</basedir> -->
+    <!-- <mode>tar</mode> -->
+    <!-- <inline> -->
+    <!-- <fileSets> -->
+    <!-- <fileSet> -->
+    <!-- <lineEnding>unix</lineEnding> -->
+    <!-- <includes> -->
+    <!-- <include>*.sh</include> -->
+    <!-- </includes> -->
+    <!-- <fileMode>0755</fileMode> -->
+    <!-- </fileSet> -->
+    <!-- </fileSets> -->
+    <!-- <dependencySets> -->
+    <!-- <dependencySet> -->
+    <!-- <useProjectArtifact>false</useProjectArtifact> -->
+    <!-- <includes> -->
+    <!-- <include>com.github.cafaudit:caf-audit-service</include> -->
+    <!-- </includes> -->
+    <!-- <outputDirectory>/opt</outputDirectory> -->
+    <!-- <outputFileNameMapping>${webserviceWarName}.war</outputFileNameMapping> -->
+    <!-- </dependencySet> -->
+    <!-- Including the swagger ui in the container image. -->
+    <!-- <dependencySet> -->
+    <!-- <useProjectArtifact>false</useProjectArtifact> -->
+    <!-- <includes> -->
+    <!-- <include>com.github.cafaudit:caf-audit-service-ui</include> -->
+    <!-- </includes> -->
+    <!-- <outputDirectory>/opt</outputDirectory> -->
+    <!-- <outputFileNameMapping>caf-audit-service-ui.war</outputFileNameMapping> -->
+    <!-- </dependencySet> -->
+    <!-- <dependencySet> -->
+    <!-- <useProjectArtifact>false</useProjectArtifact> -->
+    <!-- <fileMode>0755</fileMode> -->
+    <!-- <includes> -->
+    <!-- <include>com.github.krallin:tini</include> -->
+    <!-- </includes> -->
+    <!-- <outputDirectory>/maven</outputDirectory> -->
+    <!-- </dependencySet> -->
+    <!-- </dependencySets> -->
+    <!-- </inline> -->
+    <!-- </assembly> -->
+    <!-- </build> -->
+    <!-- <run> -->
+    <!-- <ports> -->
+    <!-- <port>${webservice.adminport}:8080</port> -->
+    <!-- </ports> -->
+    <!-- <env> -->
+    <!-- <CAF_APPNAME>test/auditservice</CAF_APPNAME> -->
+    <!-- <CAF_CONFIG_PATH>/config</CAF_CONFIG_PATH> -->
+    <!-- <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.transport.port}</CAF_ELASTIC_HOST_AND_PORT> -->
+    <!-- <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME> -->
+    <!-- <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST> -->
+    <!-- </env> -->
+    <!-- <volumes> -->
+    <!-- <from> -->
+    <!-- <image>config</image> -->
+    <!-- </from> -->
+    <!-- </volumes> -->
+    <!-- <links> -->
+    <!-- <link>elasticsearch</link> -->
+    <!-- </links> -->
+    <!-- <log> -->
+    <!-- <enabled>true</enabled> -->
+    <!-- </log> -->
+    <!-- <wait> -->
+    <!-- <http> -->
+    <!-- <url> -->
+    <!-- http://${docker.host.address}:${webservice.adminport} -->
+    <!-- </url> -->
+    <!-- </http> -->
+    <!-- <time>120000</time> -->
+    <!-- <shutdown>500</shutdown> -->
+    <!-- </wait> -->
+    <!-- </run> -->
+    <!-- </image> -->
+
+    <!-- elasticsearch image for running integration tests -->
+    <!-- <image> -->
+    <!-- <alias>elasticsearch</alias> -->
+    <!-- <name>docker.elastic.co/elasticsearch/elasticsearch:5.3.0</name> -->
+    <!-- <run> -->
+    <!-- <hostname>elasticsearch</hostname> -->
+    <!-- <namingStrategy>alias</namingStrategy> -->
+    <!-- <ports> -->
+    <!-- <port>${elasticsearch.http.port}:9200</port> -->
+    <!-- <port>${elasticsearch.transport.port}:9300</port> -->
+    <!-- </ports> -->
+    <!-- <env> -->
+    <!-- <xpack.security.enabled>false</xpack.security.enabled> -->
+    <!-- </env> -->
+    <!-- <wait> -->
+    <!-- <log>Elasticsearch startup complete</log> -->
+    <!-- <http> -->
+    <!-- <url>http://${docker.host.address}:${elasticsearch.http.port}</url> -->
+    <!-- </http> -->
+    <!-- <time>300000</time> -->
+    <!-- <shutdown>500</shutdown> -->
+    <!-- </wait> -->
+    <!-- <log> -->
+    <!-- <enabled>true</enabled> -->
+    <!-- </log> -->
+    <!-- </run> -->
+    <!-- </image> -->
+
+    <!-- </images> -->
+    <!-- </configuration> -->
+    <!-- </plugin> -->
+    <!-- </plugins> -->
+    <!-- </build> -->
+
+</project>

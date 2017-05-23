@@ -25,15 +25,6 @@ Elasticsearch receives application audit events for a tenant and stores them in 
 
 ## Audit Service Component Architecture
 
-The Auditing library can be set-up in the following configuration modes:
-
-- Direct to Elasticsearch
-	- The Auditing library builds and sends audit events directly to Elasticsearch. This configuration is covered in the Getting Started guide [here](Getting-Started).
-- Web Service Client
-	- The Auditing library builds and sends audit events to the Audit Web Service REST API. This configuration is covered in the Web Service guide [here](Web-Service).
-- No-op
-	- The Auditing library does not build audit event messages or send them to an endpoint. This configuration can be useful for testing as Elasticsearch or Audit Web Service components are not required. The Auditing library No-op mode is covered in the Client-side API guide [here](Client-API).
-
 The figure below illustrates the Audit service flow and relationship of components when the Auditing library is set-up to communicate directly with Elasticsearch or with the Audit Web Service REST API.
 
 ![Architecture](images/AuditWebServiceArchitecture.png)
@@ -48,6 +39,16 @@ The figure below illustrates the Audit service flow and relationship of componen
 ## Audit Event Definition File
 
 In order to use Auditing in an application, the application's auditing events must be specified along with the parameters that are associated with each of the events. These events are specified in an audit event definition file. You can read more about the audit event definition file and its XML schema in the [Getting Started Guide](Getting-Started).
+
+## Auditing Library
+
+The Auditing library can be configured to build and send audit events directly to Elasticsearch, which is covered in the Getting Started guide [here](Getting-Started), or via the Audit Web Service API, which is covered in the Web Service guide [here](Web-Service).
+
+## Audit Web Service
+
+The Audit Web Service API provides a RESTful interface for indexing audit event messages into Elasticsearch. Audit events, in the form of REST POST JSON requests, are sent to the Audit Web Service API which then connects to Elasticsearch and indexes the details of the audit event message for the tenant application.
+
+For more information on the Audit Web Service, go [here](Web-Service).
 
 ## Elasticsearch Indexing
 

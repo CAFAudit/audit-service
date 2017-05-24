@@ -24,9 +24,7 @@ import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.elastic.ElasticAuditConfiguration;
-import com.hpe.caf.services.audit.server.api.*;
 import com.hpe.caf.services.audit.server.api.exceptions.BadRequestException;
-import com.hpe.caf.services.audit.server.model.*;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -45,7 +43,21 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JaxRSServerCodegen", date = "2017-04-28T07:15:58.947+01:00")
+import com.hpe.caf.services.audit.server.api.AppConfig;
+import com.hpe.caf.services.audit.server.api.AuditeventsApiService;
+import com.hpe.caf.services.audit.server.api.NotFoundException;
+import com.hpe.caf.services.audit.server.model.EventParam;
+import com.hpe.caf.services.audit.server.model.NewAuditEvent;
+
+import java.util.List;
+import java.io.InputStream;
+
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-05-24T10:10:27.102+01:00")
 public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
     private static final Logger LOG = LogManager.getLogger(AuditeventsApiServiceImpl.class.getName());
@@ -64,6 +76,17 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     private static final String ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED = "Custom audit event fields have not been specified";
     private static final String ERR_MSG_ES_HOST_AND_PORT_MISSING = "The Elasticsearch host and port have not been provided";
     private static final String ERR_MSG_EVEN_PARAM_PARSING = "Error parsing value for audit event parameter: ";
+
+    private static final String EVENT_PARAM_TYPE_STRING = "STRING";
+    private static final String EVENT_PARAM_TYPE_SHORT = "SHORT";
+    private static final String EVENT_PARAM_TYPE_INT = "INT";
+    private static final String EVENT_PARAM_TYPE_LONG = "LONG";
+    private static final String EVENT_PARAM_TYPE_FLOAT = "FLOAT";
+    private static final String EVENT_PARAM_TYPE_DOUBLE = "DOUBLE";
+    private static final String EVENT_PARAM_TYPE_BOOLEAN = "BOOLEAN";
+    private static final String EVENT_PARAM_TYPE_DATE = "DATE";
+    private static final String EVENT_PARAM_INDEXING_HINT_FULLTEXT = "FULLTEXT";
+    private static final String EVENT_PARAM_INDEXING_HINT_KEYWORD = "KEYWORD";
 
     @Override
     public Response auditeventsPost(NewAuditEvent newAuditEvent, SecurityContext securityContext) throws NotFoundException {
@@ -85,9 +108,8 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
      */
     private void AddNewAuditEvent(final NewAuditEvent newAuditEvent) throws Exception, BadRequestException, ConfigurationException {
 
-        //  Make sure fixed audit event fields have been supplied.
-        LOG.debug("Checking that fixed and custom audit event parameters have been provided");
-        areAuditEventFieldsNullOrEmpty(newAuditEvent);
+        //  Validate the incoming new audit event parameter.
+        validateNewAuditEventFields(newAuditEvent);
 
         //  Index audit event message into Elasticsearch.
         try (
@@ -118,6 +140,91 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
         } catch (DateTimeParseException e) {
             throw new BadRequestException(e.getMessage());
         }
+    }
+
+    /**
+     * Throws a BadRequestException if:
+     *  fixed or custom fields have not been supplied OR
+     *  an unsupported event parameter type or indexing hint has been specified
+     */
+    private void validateNewAuditEventFields(final NewAuditEvent newAuditEvent) throws BadRequestException {
+        //  Verify all fixed fields and at least one custom field has been specified.
+        LOG.debug("Checking that fixed and custom audit event parameters have been provided");
+        areAuditEventFieldsNullOrEmpty(newAuditEvent);
+
+        //  Validate custom field event type and indexing hint values.
+        for (EventParam ep : newAuditEvent.getEventParams()) {
+            // Verify the event type matches one of the supported types.
+            LOG.debug("Verifying event parameter type is supported");
+            if (!isEventParameterTypeSupported(ep)) {
+                final String unexpectedParamTypeErrorMessage = "Unexpected parameter type: " + ep.getParamType();
+                LOG.error(unexpectedParamTypeErrorMessage);
+                throw new BadRequestException(unexpectedParamTypeErrorMessage);
+            }
+        }
+    }
+
+    /**
+     * Returns true if the specified event parameter has a supported event type, otherwise false.
+     * Throws a BadRequestException if the event type is of type 'string' but comprises an unsupported indexing hint.
+     */
+    private boolean isEventParameterTypeSupported(final EventParam ep) throws BadRequestException {
+        boolean isSupported = false;
+
+        //  Identify parameter type.
+        final String epParamType = ep.getParamType();
+
+        switch (epParamType.toUpperCase()) {
+            case EVENT_PARAM_TYPE_STRING:
+                //  Has an indexing hint been specified. If so, make sure it is one of the supported hints.
+                if (ep.getParamIndexingHint() != null) {
+                    LOG.debug("Verifying event parameter indexing hint is supported");
+                    if (!isEventParameterIndexingHintSupported(ep.getParamIndexingHint())) {
+                        final String unexpectedParamIndexingHintErrorMessage = "Unexpected parameter indexing hint: "
+                                + ep.getParamIndexingHint();
+                        LOG.error(unexpectedParamIndexingHintErrorMessage);
+                        throw new BadRequestException(unexpectedParamIndexingHintErrorMessage);
+                    }
+                }
+                isSupported = true;
+                break;
+
+            case EVENT_PARAM_TYPE_SHORT:
+            case EVENT_PARAM_TYPE_INT:
+            case EVENT_PARAM_TYPE_LONG:
+            case EVENT_PARAM_TYPE_FLOAT:
+            case EVENT_PARAM_TYPE_DOUBLE:
+            case EVENT_PARAM_TYPE_BOOLEAN:
+            case EVENT_PARAM_TYPE_DATE:
+                isSupported = true;
+                break;
+
+            //  Unexpected parameter event type.
+            default:
+                break;
+        }
+
+        return isSupported;
+    }
+
+    /**
+     * Returns true if the specified eventParameterIndexingHint is a supported indexing hint, otherwise false.
+     */
+    private boolean isEventParameterIndexingHintSupported(final String eventParameterIndexingHint) {
+        boolean isSupported = false;
+
+        switch (eventParameterIndexingHint.toUpperCase()) {
+            case EVENT_PARAM_INDEXING_HINT_FULLTEXT:
+            case EVENT_PARAM_INDEXING_HINT_KEYWORD:
+                isSupported = true;
+                break;
+
+            //  Unexpected parameter event indexing hint.
+            default:
+                break;
+        }
+
+        return isSupported;
     }
 
     /**
@@ -187,6 +294,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
             LOG.error(ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED);
         }
+
     }
 
     /**
@@ -326,20 +434,21 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
             final String epParamColumn = ep.getParamColumnName();
 
             //  Identify parameter type.
-            EventParam.ParamTypeEnum epParamType = ep.getParamType();
+            String epParamType = ep.getParamType();
 
             try {
                 //  Add event parameter details to the audit event builder object by type.
-                switch (epParamType) {
-                    case STRING:
+                switch (epParamType.toUpperCase()) {
+                    case EVENT_PARAM_TYPE_STRING:
                         //  Has an indexing hint been specified.
                         if (ep.getParamIndexingHint() != null) {
-                            switch (ep.getParamIndexingHint()) {
-                                case FULLTEXT:
+                            final String indexingHint = ep.getParamIndexingHint();
+                            switch (indexingHint.toUpperCase()) {
+                                case EVENT_PARAM_INDEXING_HINT_FULLTEXT:
                                     auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue, AuditIndexingHint.FULLTEXT);
                                     break;
 
-                                case KEYWORD:
+                                case EVENT_PARAM_INDEXING_HINT_KEYWORD:
                                     auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue, AuditIndexingHint.KEYWORD);
                                     break;
 
@@ -353,25 +462,25 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
                             auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue);
                         }
                         break;
-                    case SHORT:
+                    case EVENT_PARAM_TYPE_SHORT:
                         auditEventBuilder.addEventParameter(epParamName, epParamColumn, Short.parseShort(epParamValue));
                         break;
-                    case INT:
+                    case EVENT_PARAM_TYPE_INT:
                         auditEventBuilder.addEventParameter(epParamName, epParamColumn, Integer.parseInt(epParamValue));
                         break;
-                    case LONG:
+                    case EVENT_PARAM_TYPE_LONG:
                         auditEventBuilder.addEventParameter(epParamName, epParamColumn, Long.parseLong(epParamValue));
                         break;
-                    case FLOAT:
+                    case EVENT_PARAM_TYPE_FLOAT:
                         auditEventBuilder.addEventParameter(epParamName, epParamColumn, Float.parseFloat(epParamValue));
                         break;
-                    case DOUBLE:
+                    case EVENT_PARAM_TYPE_DOUBLE:
                         auditEventBuilder.addEventParameter(epParamName, epParamColumn, Double.parseDouble(epParamValue));
                         break;
-                    case BOOLEAN:
+                    case EVENT_PARAM_TYPE_BOOLEAN:
                         auditEventBuilder.addEventParameter(epParamName, null, Boolean.parseBoolean(epParamValue));
                         break;
-                    case DATE:
+                    case EVENT_PARAM_TYPE_DATE:
                         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                         df.setTimeZone(TimeZone.getTimeZone("UTC"));
                         auditEventBuilder.addEventParameter(epParamName, epParamColumn, df.parse(epParamValue));

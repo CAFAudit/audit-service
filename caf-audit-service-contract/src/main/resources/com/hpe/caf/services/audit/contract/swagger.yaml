@@ -111,21 +111,9 @@ definitions:
         type: string
         description: Type of audit event parameter.
         default: string
-        enum:
-          - string
-          - short
-          - int
-          - long
-          - float
-          - double
-          - boolean
-          - date
       paramIndexingHint:
         type: string
         description: Indexing hint for audit event parameter storage. Applies to parameters of type string only.
-        enum:
-          - fulltext
-          - keyword
       paramColumnName:
         type: string
         description: Alternative field name to be used in the event that multiple audit events comprise of parameters with the same name.

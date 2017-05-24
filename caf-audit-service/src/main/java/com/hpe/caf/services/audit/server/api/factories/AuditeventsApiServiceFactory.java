@@ -18,13 +18,11 @@ package com.hpe.caf.services.audit.server.api.factories;
 import com.hpe.caf.services.audit.server.api.AuditeventsApiService;
 import com.hpe.caf.services.audit.server.api.impl.AuditeventsApiServiceImpl;
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JaxRSServerCodegen", date = "2017-04-28T07:15:58.947+01:00")
+@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-05-24T10:10:27.102+01:00")
 public class AuditeventsApiServiceFactory {
-
    private final static AuditeventsApiService service = new AuditeventsApiServiceImpl();
 
-   public static AuditeventsApiService getAuditeventsApi()
-   {
+   public static AuditeventsApiService getAuditeventsApi() {
       return service;
    }
 }

@@ -89,11 +89,6 @@ The following parameters may be set:
         <td>25080</td>
         <td>This is the port that the Audit Web Service is configured to listen on.</td>
       </tr>
-	  <tr>
-		<td>CAF_LOG_LEVEL</td>
-		<td>INFO</td>
-	    <td>The logging level for the Audit Web Service. The supported logging levels are WARN, ERROR, INFO, TRACE, DEBUG or ALL.</td>
-	  </tr>
     </table>
 
 3. Deploy the services  

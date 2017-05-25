@@ -49,11 +49,6 @@ import com.hpe.caf.services.audit.server.api.NotFoundException;
 import com.hpe.caf.services.audit.server.model.EventParam;
 import com.hpe.caf.services.audit.server.model.NewAuditEvent;
 
-import java.util.List;
-import java.io.InputStream;
-
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
@@ -488,7 +483,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
                     //  Unexpected type.
                     default:
-                        String unexpectedParamTypeErrorMessage = "Unexpected parameter type: " + epParamType.toString();
+                        String unexpectedParamTypeErrorMessage = "Unexpected parameter type: " + epParamType;
                         LOG.error(unexpectedParamTypeErrorMessage);
                         throw new BadRequestException(unexpectedParamTypeErrorMessage);
                 }

@@ -410,7 +410,7 @@ public class AuditIT {
 
                 default:
                     // Unexpected audit event parameter type.
-                    throw new IllegalArgumentException("Unexpected parameter type: " + epParamType.toString());
+                    throw new IllegalArgumentException("Unexpected parameter type: " + epParamType);
             }
         }
     }
@@ -420,17 +420,19 @@ public class AuditIT {
         assertField(fieldName, isCustom, EVENT_PARAM_INDEXING_HINT_KEYWORD, expectedValue, searchResult);
     }
 
-    private void assertField(String fieldName, final boolean isCustom, final String indexingHint, final String expectedValue, final Map<String, Object> searchResult){
+    private void assertField(final String fieldName, final boolean isCustom, final String indexingHint, final String expectedValue, final Map<String, Object> searchResult){
+
+        String fieldNameWithSuffix = fieldName;
 
         if (isCustom) {
             if (indexingHint == null || indexingHint.equalsIgnoreCase(EVENT_PARAM_INDEXING_HINT_KEYWORD)){
-                fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX);
+                fieldNameWithSuffix = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX);
             } else {
-                fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX);
+                fieldNameWithSuffix = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX);
             }
         }
-        Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
-        Object sourceField = searchResult.get(fieldName);
+        Assert.assertTrue(searchResult.containsKey(fieldNameWithSuffix), String.format("Field %s not found", fieldNameWithSuffix));
+        Object sourceField = searchResult.get(fieldNameWithSuffix);
 
         Assert.assertEquals(String.class, sourceField.getClass());
         String value = (String) sourceField;

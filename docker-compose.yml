@@ -95,9 +95,11 @@ services:
   auditService:
     depends_on:
       - elasticsearch1
+      - elasticsearch2
+      - elasticsearch3
     image: rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-service:3.1.0-SNAPSHOT
     ports:
-      - "${AUDIT_SERVICE_PORT:-25080}:8080"
+      - "${CAF_AUDIT_SERVICE_PORT:-25080}:8080"
     environment:
       CAF_ELASTIC_HOST_AND_PORT: elasticsearch1:${ELASTICSEARCH_NETWORK_PORT_NODE1:-9300},elasticsearch2:${ELASTICSEARCH_NETWORK_PORT_NODE2:-9301},elasticsearch3:${ELASTICSEARCH_NETWORK_PORT_NODE3:-9302}
       CAF_ELASTIC_CLUSTER_NAME: elasticsearch-cluster

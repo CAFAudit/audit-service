@@ -18,6 +18,7 @@ package com.github.cafaudit.auditmonkey;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,7 +31,14 @@ public class MonkeyFactoryTest
     
     @Before
     public void setUp() {
+        System.setProperty(MonkeyConstants.CAF_AUDIT_MODE, MonkeyConstants.DIRECT);
         monkeyConfig = new MonkeyConfig();
+    }
+    
+    @After
+    public void tearDown()
+    {
+        System.clearProperty(MonkeyConstants.CAF_AUDIT_MODE);
     }
     
     @Test

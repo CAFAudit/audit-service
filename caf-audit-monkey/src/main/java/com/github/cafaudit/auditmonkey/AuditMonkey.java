@@ -41,12 +41,6 @@ public class AuditMonkey
     private static MonkeyConfig monkeyConfig;
 
     /**
-     * Default No Args Constructor
-     */
-    public AuditMonkey()
-    {}
-
-    /**
      * Java Main Method
      * @param args
      * @throws Exception
@@ -154,8 +148,6 @@ public class AuditMonkey
                 ElasticAuditConfiguration config = new ElasticAuditConfiguration();
                 config.setClusterName(monkeyConfig.getEsClustername());
                 config.setHostAndPortValues(monkeyConfig.getEsHostnameAndPort());
-                // config.setHostAndPortValues("192.168.56.10:9300,192.168.56.10:9301,192.168.56.10:9302");
-                // config.setHostAndPortValues("elasticsearch1:9300,elasticsearch2:9301,elasticsearch3:9302");
                 return (T) config;
             }
         };

@@ -1,3 +1,4 @@
+#!/bin/sh
 #
 # Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
 #

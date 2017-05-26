@@ -15,6 +15,9 @@
  */
 package com.github.cafaudit.auditmonkey;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,4 +41,17 @@ public class MonkeyFactory
         return monkey;
     }
     
+    public static BlockingQueue<Integer> populateQueue(MonkeyConfig monkeyConfig)
+    {
+        int num = monkeyConfig.getNumOfEvents();
+        BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(num);
+        for(int i = 1; i <= num; i++) {
+            try {
+                queue.put(new Integer(i));
+            } catch (InterruptedException ie) {
+                LOG.error("Error populating work queue for StandardMonkey", ie);
+            }
+        }
+        return queue;
+    }
 }

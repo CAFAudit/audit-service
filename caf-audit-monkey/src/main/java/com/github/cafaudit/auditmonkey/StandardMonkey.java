@@ -15,7 +15,6 @@
  */
 package com.github.cafaudit.auditmonkey;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import org.slf4j.Logger;
@@ -36,7 +35,7 @@ public class StandardMonkey implements Monkey, Runnable
     {
         this.channel = channel;
         this.monkeyConfig = monkeyConfig;
-        populateQueue();
+        this.queue = MonkeyFactory.populateQueue(monkeyConfig);
     }
     
     public void execute(AuditChannel channel, MonkeyConfig monkeyConfig) throws Exception
@@ -55,19 +54,6 @@ public class StandardMonkey implements Monkey, Runnable
             execute(channel, monkeyConfig);
         } catch (Exception e) {
             LOG.error("Error executing a multi-threaded version of the StandardMonkey" + e);
-        }
-    }
-    
-    private void populateQueue()
-    {
-        int num = monkeyConfig.getNumOfEvents();
-        queue = new ArrayBlockingQueue<>(num);
-        for(int i = 1; i <= num; i++) {
-            try {
-                queue.put(new Integer(i));
-            } catch (InterruptedException ie) {
-                LOG.error("Error populating work queue for StandardMonkey", ie);
-            }
         }
     }
 

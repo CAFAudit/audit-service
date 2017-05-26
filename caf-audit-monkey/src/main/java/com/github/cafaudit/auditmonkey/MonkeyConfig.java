@@ -24,6 +24,9 @@ public class MonkeyConfig
 {
     private static final Logger LOG = LoggerFactory.getLogger(MonkeyConfig.class);
     
+    // Audit
+    private String auditMode;
+    
     // Elasticsearch
     private String esClustername;
     private String esHostname;
@@ -50,6 +53,20 @@ public class MonkeyConfig
         
         LOG.info("Setting up Audit Monkey Configuration from supplied Environment Variables");
 
+        /*
+         * Audit Mode
+         */
+        auditMode = System.getProperty(MonkeyConstants.CAF_AUDIT_MODE, System.getenv(MonkeyConstants.CAF_AUDIT_MODE));
+        String auditModeErrorMsg = null;
+        if (null == auditMode || auditMode.isEmpty()) {
+            auditModeErrorMsg = MonkeyConstants.CAF_AUDIT_MODE + " has not been set. " + MonkeyConstants.CAF_AUDIT_MODE + " must be supplied";
+        } else if (!auditMode.equalsIgnoreCase(MonkeyConstants.DIRECT) && !auditMode.equalsIgnoreCase(MonkeyConstants.WEBSERVICE)) {
+            auditModeErrorMsg = "The " + MonkeyConstants.CAF_AUDIT_MODE + " supplied [" + auditMode + "] does not match the available modes [" + MonkeyConstants.DIRECT + ", " + MonkeyConstants.WEBSERVICE + "]";
+        } if (null != auditModeErrorMsg) {
+            LOG.error(auditModeErrorMsg);
+            throw new RuntimeException(auditModeErrorMsg);
+        }
+        
         /*
          * Elasticsearch
          */
@@ -136,7 +153,9 @@ public class MonkeyConfig
             LOG.info("No [" + MonkeyConstants.CAF_AUDIT_MONKEY_MODE + "] supplied defaulting to [" + monkeyMode + "]");
         } 
         else if(!monkeyMode.equalsIgnoreCase(MonkeyConstants.CAF_AUDIT_STANDARD_MONKEY) && !monkeyMode.equalsIgnoreCase(MonkeyConstants.CAF_AUDIT_RANDOM_MONKEY)) {
-            LOG.error("The " + MonkeyConstants.CAF_AUDIT_MONKEY_MODE + " supplied [" + monkeyMode + "] does not match the available modes [" + MonkeyConstants.CAF_AUDIT_STANDARD_MONKEY + "," + MonkeyConstants.CAF_AUDIT_RANDOM_MONKEY + "]");
+            String errorMsg = "The " + MonkeyConstants.CAF_AUDIT_MONKEY_MODE + " supplied [" + monkeyMode + "] does not match the available modes [" + MonkeyConstants.CAF_AUDIT_STANDARD_MONKEY + ", " + MonkeyConstants.CAF_AUDIT_RANDOM_MONKEY + "]"; 
+            LOG.error(errorMsg);
+            throw new RuntimeException(errorMsg);
         }
 
         String numOfEventsStr = System.getProperty(MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_EVENTS, System.getenv(MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_EVENTS));
@@ -169,7 +188,23 @@ public class MonkeyConfig
         LOG.info(this.toString());
     }
     
-    
+    /**
+     * @return the auditMode
+     */
+    public String getAuditMode()
+    {
+        return auditMode;
+    }
+
+
+    /**
+     * @param auditMode the auditMode to set
+     */
+    public void setAuditMode(String auditMode)
+    {
+        this.auditMode = auditMode;
+    }
+
     /**
      * @return the esClustername
      */
@@ -390,12 +425,13 @@ public class MonkeyConfig
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MonkeyConfig [esClustername=").append(esClustername).append(", esHostname=").append(esHostname)
-                .append(", esPort=").append(esPort).append(", esHostnameAndPort=").append(esHostnameAndPort).append(", wsHostname=")
-                .append(wsHostname).append(", wsPort=").append(wsPort).append(", wsHostnameAndPort=").append(wsHostnameAndPort)
-                .append(", tenantId=").append(tenantId).append(", correlationId=").append(correlationId).append(", userId=")
-                .append(userId).append(", monkeyMode=").append(monkeyMode).append(", numOfEvents=").append(numOfEvents)
-                .append(", numOfThreads=").append(numOfThreads).append("]");
+        builder.append("MonkeyConfig [auditMode=").append(auditMode).append(", esClustername=").append(esClustername)
+                .append(", esHostname=").append(esHostname).append(", esPort=").append(esPort).append(", esHostnameAndPort=")
+                .append(esHostnameAndPort).append(", wsHostname=").append(wsHostname).append(", wsPort=").append(wsPort)
+                .append(", wsHostnameAndPort=").append(wsHostnameAndPort).append(", tenantId=").append(tenantId)
+                .append(", correlationId=").append(correlationId).append(", userId=").append(userId).append(", monkeyMode=")
+                .append(monkeyMode).append(", numOfEvents=").append(numOfEvents).append(", numOfThreads=").append(numOfThreads)
+                .append("]");
         return builder.toString();
     }
     

@@ -19,6 +19,8 @@ public class MonkeyConstants
 {
     // Monkey Mode: Direct to Elasticsearch OR Via Webservice
     public static final String CAF_AUDIT_MODE = "CAF_AUDIT_MODE";
+    public static final String DIRECT = "direct";
+    public static final String WEBSERVICE = "webservice";
     
     // Configurable data fields
     public static final String CAF_AUDIT_TENANT_ID = "CAF_AUDIT_TENANT_ID";

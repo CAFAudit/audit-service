@@ -91,33 +91,21 @@ public class AuditMonkey
 
         // Get the CAF_AUDIT_MODE environment variable
         // CAF_AUDIT_MODE should be set to either "direct" or "webservice"
-        String auditMode = System.getProperty(MonkeyConstants.CAF_AUDIT_MODE, System.getenv(MonkeyConstants.CAF_AUDIT_MODE));
-        if (null == auditMode || auditMode.isEmpty()) {
-            String errorMsg = MonkeyConstants.CAF_AUDIT_MODE + " has not been set. " + MonkeyConstants.CAF_AUDIT_MODE
-                    + " must be supplied";
-            LOG.error(errorMsg);
-            throw new RuntimeException(errorMsg);
-        }
+        String auditMode = monkeyConfig.getAuditMode();
 
-        ConfigurationSource configSource;
+        ConfigurationSource configSource = null;
 
-        if (auditMode.equalsIgnoreCase("direct")) {
+        if (auditMode.equalsIgnoreCase(MonkeyConstants.DIRECT)) {
 
             LOG.debug(MonkeyConstants.CAF_AUDIT_MODE + " set to [" + auditMode
                     + "], therefore the Audit Monkey going direct to Elasticsearch");
             configSource = getDirectToElasticConfig();
 
-        } else if (auditMode.equalsIgnoreCase("webservice")) {
+        } else if (auditMode.equalsIgnoreCase(MonkeyConstants.WEBSERVICE)) {
 
             LOG.debug(MonkeyConstants.CAF_AUDIT_MODE + " set to [" + auditMode
                     + "], therefore the Audit Monkey is using the WebService");
             configSource = getWebServiceToElasticConfig();
-
-        } else {
-            String errorMsg = MonkeyConstants.CAF_AUDIT_MODE + " set to [" + auditMode + "], this is not a recognised value for "
-                    + MonkeyConstants.CAF_AUDIT_MODE;
-            LOG.error(errorMsg);
-            throw new RuntimeException(errorMsg);
         }
         return configSource;
     }

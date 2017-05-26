@@ -34,14 +34,14 @@ public class AuditConnectionFactory {
      *
      * @param configSource the configuration source
      * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable
-     * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source
-     * @throws MalformedURLException (if CAF_AUDIT_MODE=webservice) if the webservice endpoint URL, passed via
-     * configuration, is malformed
+     * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source.
+     * Or (if CAF_AUDIT_MODE=webservice) if the webservice endpoint URL, passed via configuration, or if HTTP or HTTPS
+     * Proxy URLs are malformed
      * @throws WebServiceClientException (if CAF_AUDIT_MODE=webservice) if HttpUrlConnection could not be opened
      * to the webservice endpoint
      */
     public static AuditConnection createConnection(final ConfigurationSource configSource) throws
-            ConfigurationException, MalformedURLException, WebServiceClientException {
+            ConfigurationException, WebServiceClientException {
         String auditLibMode = System.getProperty("CAF_AUDIT_MODE", System.getenv("CAF_AUDIT_MODE"));
 
         // If the CAF_AUDIT_MODE environment variable has not been set return the NOOP implementation

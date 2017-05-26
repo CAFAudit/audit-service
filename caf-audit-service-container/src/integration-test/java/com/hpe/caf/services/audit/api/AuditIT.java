@@ -58,6 +58,17 @@ public class AuditIT {
     private static String CAF_ELASTIC_HOST_AND_PORT;
     private static String CAF_ELASTIC_CLUSTER_NAME;
 
+    private static final String EVENT_PARAM_TYPE_STRING = "STRING";
+    private static final String EVENT_PARAM_TYPE_SHORT = "SHORT";
+    private static final String EVENT_PARAM_TYPE_INT = "INT";
+    private static final String EVENT_PARAM_TYPE_LONG = "LONG";
+    private static final String EVENT_PARAM_TYPE_FLOAT = "FLOAT";
+    private static final String EVENT_PARAM_TYPE_DOUBLE = "DOUBLE";
+    private static final String EVENT_PARAM_TYPE_BOOLEAN = "BOOLEAN";
+    private static final String EVENT_PARAM_TYPE_DATE = "DATE";
+    private static final String EVENT_PARAM_INDEXING_HINT_FULLTEXT = "FULLTEXT";
+    private static final String EVENT_PARAM_INDEXING_HINT_KEYWORD = "KEYWORD";
+
     private static AuditEventsApi auditEventsApi;
 
     @BeforeClass
@@ -260,25 +271,25 @@ public class AuditIT {
             //  Set up random test values for custom field data.
             final Random rand = new Random();
 
-            final EventParam stringKeywordEventParam = createEventParam("stringKeywordParam", null, EventParam.ParamTypeEnum.STRING, EventParam.ParamIndexingHintEnum.KEYWORD, "stringKeywordParam-test-value");
+            final EventParam stringKeywordEventParam = createEventParam("stringKeywordParam", null, EVENT_PARAM_TYPE_STRING, EVENT_PARAM_INDEXING_HINT_KEYWORD, "stringKeywordParam-test-value");
             eventParamsList.add(stringKeywordEventParam);
-            final EventParam stringTextEventParam = createEventParam("stringTextParam", null, EventParam.ParamTypeEnum.STRING, EventParam.ParamIndexingHintEnum.FULLTEXT, "stringTextParam-test-value");
+            final EventParam stringTextEventParam = createEventParam("stringTextParam", null, EVENT_PARAM_TYPE_STRING, EVENT_PARAM_INDEXING_HINT_FULLTEXT, "stringTextParam-test-value");
             eventParamsList.add(stringTextEventParam);
-            final EventParam stringDefaultEventParam = createEventParam("stringDefaultParam", null, EventParam.ParamTypeEnum.STRING, null, "stringDefaultParam-test-value");
+            final EventParam stringDefaultEventParam = createEventParam("stringDefaultParam", null, EVENT_PARAM_TYPE_STRING, null, "stringDefaultParam-test-value");
             eventParamsList.add(stringDefaultEventParam);
-            final EventParam intEventParam = createEventParam("intParam", null, EventParam.ParamTypeEnum.INT, null, String.valueOf(rand.nextInt()));
+            final EventParam intEventParam = createEventParam("intParam", null, EVENT_PARAM_TYPE_INT, null, String.valueOf(rand.nextInt()));
             eventParamsList.add(intEventParam);
-            final EventParam shortEventParam = createEventParam("shortParam", null, EventParam.ParamTypeEnum.SHORT, null, String.valueOf((short) rand.nextInt(Short.MAX_VALUE + 1)));
+            final EventParam shortEventParam = createEventParam("shortParam", null, EVENT_PARAM_TYPE_SHORT, null, String.valueOf((short) rand.nextInt(Short.MAX_VALUE + 1)));
             eventParamsList.add(shortEventParam);
-            final EventParam longEventParam = createEventParam("longParam", null, EventParam.ParamTypeEnum.LONG, null, String.valueOf(rand.nextLong()));
+            final EventParam longEventParam = createEventParam("longParam", null, EVENT_PARAM_TYPE_LONG, null, String.valueOf(rand.nextLong()));
             eventParamsList.add(longEventParam);
-            final EventParam floatEventParam = createEventParam("floatParam", null, EventParam.ParamTypeEnum.FLOAT, null, String.valueOf(rand.nextFloat()));
+            final EventParam floatEventParam = createEventParam("floatParam", null, EVENT_PARAM_TYPE_FLOAT, null, String.valueOf(rand.nextFloat()));
             eventParamsList.add(floatEventParam);
-            final EventParam doubleEventParam = createEventParam("doubleParam", null, EventParam.ParamTypeEnum.DOUBLE, null, String.valueOf(rand.nextDouble()));
+            final EventParam doubleEventParam = createEventParam("doubleParam", null, EVENT_PARAM_TYPE_DOUBLE, null, String.valueOf(rand.nextDouble()));
             eventParamsList.add(doubleEventParam);
-            final EventParam booleanEventParam = createEventParam("booleanParam", null, EventParam.ParamTypeEnum.BOOLEAN, null, String.valueOf(rand.nextBoolean()));
+            final EventParam booleanEventParam = createEventParam("booleanParam", null, EVENT_PARAM_TYPE_BOOLEAN, null, String.valueOf(rand.nextBoolean()));
             eventParamsList.add(booleanEventParam);
-            final EventParam dateEventParam = createEventParam("dateParam", null, EventParam.ParamTypeEnum.DATE, null, Instant.now().toString());
+            final EventParam dateEventParam = createEventParam("dateParam", null, EVENT_PARAM_TYPE_DATE, null, Instant.now().toString());
             eventParamsList.add(dateEventParam);
 
             ae.setEventParams(eventParamsList);
@@ -367,31 +378,31 @@ public class AuditIT {
         //  Verify custom field results.
         for (EventParam ep : expected.getEventParams()) {
             //  Identify parameter type.
-            final EventParam.ParamTypeEnum epParamType = ep.getParamType();
+            final String epParamType = ep.getParamType();
 
-            switch(epParamType) {
-                case STRING:
+            switch(epParamType.toUpperCase()) {
+                case EVENT_PARAM_TYPE_STRING:
                     assertField(ep.getParamName(), true, ep.getParamIndexingHint(), ep.getParamValue(), actual);
                     break;
-                case SHORT:
+                case EVENT_PARAM_TYPE_SHORT:
                     assertField(ep.getParamName(), true, Short.parseShort(ep.getParamValue()), actual);
                     break;
-                case INT:
+                case EVENT_PARAM_TYPE_INT:
                     assertField(ep.getParamName(), true, Integer.parseInt(ep.getParamValue()), actual);
                     break;
-                case LONG:
+                case EVENT_PARAM_TYPE_LONG:
                     assertField(ep.getParamName(), true, Long.parseLong(ep.getParamValue()), actual);
                     break;
-                case FLOAT:
+                case EVENT_PARAM_TYPE_FLOAT:
                     assertField(ep.getParamName(), true, Float.parseFloat(ep.getParamValue()), actual);
                     break;
-                case DOUBLE:
+                case EVENT_PARAM_TYPE_DOUBLE:
                     assertField(ep.getParamName(), true, Double.parseDouble(ep.getParamValue()), actual);
                     break;
-                case BOOLEAN:
+                case EVENT_PARAM_TYPE_BOOLEAN:
                     assertField(ep.getParamName(), true, Boolean.parseBoolean(ep.getParamValue()), actual);
                     break;
-                case DATE:
+                case EVENT_PARAM_TYPE_DATE:
                     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
                     df.setTimeZone(TimeZone.getTimeZone("UTC"));
                     assertField(ep.getParamName(), true, df.parse(ep.getParamValue()), actual);
@@ -399,27 +410,29 @@ public class AuditIT {
 
                 default:
                     // Unexpected audit event parameter type.
-                    throw new IllegalArgumentException("Unexpected parameter type: " + epParamType.toString());
+                    throw new IllegalArgumentException("Unexpected parameter type: " + epParamType);
             }
         }
     }
 
 
     private void assertField(String fieldName, final boolean isCustom, final String expectedValue, final Map<String, Object> searchResult) {
-        assertField(fieldName, isCustom, EventParam.ParamIndexingHintEnum.KEYWORD, expectedValue, searchResult);
+        assertField(fieldName, isCustom, EVENT_PARAM_INDEXING_HINT_KEYWORD, expectedValue, searchResult);
     }
 
-    private void assertField(String fieldName, final boolean isCustom, final EventParam.ParamIndexingHintEnum indexingHint, final String expectedValue, final Map<String, Object> searchResult){
+    private void assertField(final String fieldName, final boolean isCustom, final String indexingHint, final String expectedValue, final Map<String, Object> searchResult){
+
+        String fieldNameWithSuffix = fieldName;
 
         if (isCustom) {
-            if (indexingHint == null || indexingHint == EventParam.ParamIndexingHintEnum.KEYWORD){
-                fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX);
+            if (indexingHint == null || indexingHint.equalsIgnoreCase(EVENT_PARAM_INDEXING_HINT_KEYWORD)){
+                fieldNameWithSuffix = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX);
             } else {
-                fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX);
+                fieldNameWithSuffix = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX);
             }
         }
-        Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
-        Object sourceField = searchResult.get(fieldName);
+        Assert.assertTrue(searchResult.containsKey(fieldNameWithSuffix), String.format("Field %s not found", fieldNameWithSuffix));
+        Object sourceField = searchResult.get(fieldNameWithSuffix);
 
         Assert.assertEquals(String.class, sourceField.getClass());
         String value = (String) sourceField;
@@ -520,7 +533,7 @@ public class AuditIT {
     }
 
     //  Returns a new event parameter object.
-    private EventParam createEventParam(final String name, final String columnName, final EventParam.ParamTypeEnum type, final EventParam.ParamIndexingHintEnum indexingHint, final String value) {
+    private EventParam createEventParam(final String name, final String columnName, final String type, final String indexingHint, final String value) {
         EventParam ep = new EventParam();
 
         ep.setParamName(name);

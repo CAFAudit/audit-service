@@ -34,6 +34,8 @@
     <properties>
         <!-- Must be the same events XML file used in the test code, see AuditIT.auditXMLConfigFile -->
         <auditXMLConfigFile>./test-case/events.xml</auditXMLConfigFile>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
     </properties>
 
     <dependencies>

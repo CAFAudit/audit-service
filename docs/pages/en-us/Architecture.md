@@ -13,29 +13,42 @@ banner:
 
 # Architecture
 
-The Audit library logs audit event metadata, belonging to tenant applications, into Elasticsearch.
-
-In order to use Auditing with an application, you must first specify the audit events that the application uses and the parameters that you want to associate with each of the events. The events are specified in an XML file known as the audit event definition file and are used to generate an application-specific, client-side auditing library that sends the application events for auditing to Elasticsearch.
-
-Elasticsearch receives CAF audit events for a tenant from the client-side library and adds the application audit event to the tenant's index.
-
 ## Overview
 
-Auditing is built on Elasticsearch for the messaging and storage of the audit events. Elasticsearch offers high availability, throughput, scalability, and performance to the overall solution. Additionally, Elasticsearch is accessible via RESTful APIs, it offers strong data analytics and monitoring capabilities.
+The Audit library logs audit event metadata, belonging to tenant applications, into Elasticsearch directly or via the Audit Web Service REST API.
+
+In order to use Auditing with an application, you must first specify the audit events that the application uses and the parameters that you want to associate with each of the events. The events are specified in an XML file known as the audit event definition file and are used to generate an application-specific, client-side auditing library that sends the application events for auditing to either Elasticsearch directly or via the Audit Web Service REST API.
+
+Auditing is built on Elasticsearch for the messaging and storage of audit events. Elasticsearch offers high availability, throughput, scalability, and performance to the overall solution. Additionally, Elasticsearch is accessible via RESTful APIs, it offers strong data analytics and monitoring capabilities.
+
+Elasticsearch receives application audit events for a tenant and stores them in the tenant's index.
 
 ## Audit Service Component Architecture
 
-The figure below illustrates the overall flow and relationship of components in the Audit service.
+The figure below illustrates the Audit service flow and relationship of components when the Auditing library is set-up to communicate directly with Elasticsearch or with the Audit Web Service REST API.
 
-![Architecture](images/AuditElasticArchitecture.png)
+![Architecture](images/AuditWebServiceArchitecture.png)
 
 1. Setting up your application for Auditing requires defining an audit event definition XML file. The file is used for the generation of the client-side audit library.
 2. Using the `caf-audit-maven-plugin`, the client-side Java library is generated from the audit event definition XML file.
-3. The audited application makes calls to the generated client-side library to send audit events to Elasticsearch. An Audit event is stored in the tenant index belonging to the application that made the call.
+3. If the Auditing library is configured as direct mode, environment variable `CAF_AUDIT_MODE` set to `direct`, the audited application makes calls to the generated client-side library to build and send audit events to Elasticsearch. An Audit event is stored in the tenant index belonging to the application that made the call.
+4. If the Auditing library is configured as Web Service client mode, environment variable `CAF_AUDIT_MODE` set to `webservice`.
+	1. The audited application makes calls to the generated client-side library to build and send audit events to the Audit Web Service REST API, `/caf-audit-service/v1/auditevents` path, endpoint.
+	2. The Audit Web Service makes calls to Elasticsearch to store audit events received from the client. Each audit event is stored in the tenant index belonging to the application that made the call.
 
 ## Audit Event Definition File
 
 In order to use Auditing in an application, the application's auditing events must be specified along with the parameters that are associated with each of the events. These events are specified in an audit event definition file. You can read more about the audit event definition file and its XML schema in the [Getting Started Guide](Getting-Started).
+
+## Auditing Library
+
+The Auditing library can be configured to build and send audit events directly to Elasticsearch, which is covered in the Getting Started guide [here](Getting-Started), or via the Audit Web Service API, which is covered in the Web Service guide [here](Web-Service).
+
+## Audit Web Service
+
+The Audit Web Service API provides a RESTful interface for indexing audit event messages into Elasticsearch. Audit events, in the form of REST POST JSON requests, are sent to the Audit Web Service API which then connects to Elasticsearch and indexes the details of the audit event message for the tenant application.
+
+For more information on the Audit Web Service, go [here](Web-Service).
 
 ## Elasticsearch Indexing
 

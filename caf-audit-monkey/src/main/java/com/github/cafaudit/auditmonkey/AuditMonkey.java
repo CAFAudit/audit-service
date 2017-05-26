@@ -1,19 +1,20 @@
 /*
  * Copyright 2015-2017 Hewlett Packard Enterprise Development LP.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.github.cafaudit.auditmonkey;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +35,9 @@ import com.hpe.caf.auditing.webserviceclient.WebServiceClientAuditConfiguration;
 public class AuditMonkey
 {
     private static final Logger LOG = LoggerFactory.getLogger(AuditMonkey.class);
-    
-    private static AuditMonkeyConfig auditMonkeyConfig;
-    
+
+    private static MonkeyConfig monkeyConfig;
+
     /**
      * Default No Args Constructor
      */
@@ -52,7 +53,7 @@ public class AuditMonkey
     {
         LOG.info("Audit Monkey Starting...");
         
-        auditMonkeyConfig = new AuditMonkeyConfig();
+        monkeyConfig = new MonkeyConfig();
         
         ConfigurationSource configSource = getConfigSourceBasedOnAuditMode();
 
@@ -64,55 +65,61 @@ public class AuditMonkey
             LOG.debug("Ensuring Audit Queue Exists");
             AuditLog.declareApplication(channel);
             
-            Monkey monkey = selectMonkey(auditMonkeyConfig.getMonkeyMode());
+            Monkey monkey = MonkeyFactory.selectMonkey(channel, monkeyConfig);
             
             LOG.debug("Sending Audit Events...");
             
-            monkey.execute(channel, auditMonkeyConfig);
+            runTheMonkey(channel, monkey, monkeyConfig.getNumOfThreads());
             
-//            AuditLog.auditViewDocument(channel, auditMonkeyConfig.getTenantId(), auditMonkeyConfig.getUserId(), auditMonkeyConfig.getCorrelationId(), 1);
-//            AuditLog.auditViewDocument(channel, auditMonkeyConfig.getTenantId(), "wile.e.coyote@acme.com", auditMonkeyConfig.getCorrelationId(), 1);
-//            AuditLog.auditPolicyApplied(channel, auditMonkeyConfig.getTenantId(), "looney.tunes@acme.com", auditMonkeyConfig.getCorrelationId(), 3, "policyName1", "policyDef1");
             LOG.debug("...Sending of Audit Events Complete");
         }
         
         LOG.info("...Audit Monkey Exiting");
     }
 
-    private static Monkey selectMonkey(String monkeyMode) 
+    protected static void runTheMonkey(AuditChannel channel, Monkey monkey, int numOfThreads)
     {
-        LOG.debug("Selecting type of Monkey to execute");
-        Monkey monkey = MonkeyFactory.selectMonkey(monkeyMode);
-        return monkey;
+        ExecutorService executor = Executors.newFixedThreadPool(numOfThreads);
+        for (int i = 0; i < numOfThreads; i++) {
+            executor.execute((Runnable)monkey);
+        }
+        executor.shutdown();
+        while (!executor.isTerminated()) {
+        }
+        LOG.debug("All threads in the multi-threaded Monkey are now finished");
     }
-    
+
     private static ConfigurationSource getConfigSourceBasedOnAuditMode()
     {
-        LOG.info("Creating the Configuration Source Based on the supplied " + AuditMonkeyConstants.CAF_AUDIT_MODE);
-        
+        LOG.info("Creating the Configuration Source Based on the supplied " + MonkeyConstants.CAF_AUDIT_MODE);
+
         // Get the CAF_AUDIT_MODE environment variable
         // CAF_AUDIT_MODE should be set to either "direct" or "webservice"
-        String auditMode = System.getProperty(AuditMonkeyConstants.CAF_AUDIT_MODE, System.getenv(AuditMonkeyConstants.CAF_AUDIT_MODE));
-        if(null == auditMode || auditMode.isEmpty()) {
-            String errorMsg = AuditMonkeyConstants.CAF_AUDIT_MODE + " has not been set. " + AuditMonkeyConstants.CAF_AUDIT_MODE + " must be supplied";
+        String auditMode = System.getProperty(MonkeyConstants.CAF_AUDIT_MODE, System.getenv(MonkeyConstants.CAF_AUDIT_MODE));
+        if (null == auditMode || auditMode.isEmpty()) {
+            String errorMsg = MonkeyConstants.CAF_AUDIT_MODE + " has not been set. " + MonkeyConstants.CAF_AUDIT_MODE
+                    + " must be supplied";
             LOG.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
-        
+
         ConfigurationSource configSource;
-        
-        if(auditMode.equalsIgnoreCase("direct")) {
-            
-            LOG.debug(AuditMonkeyConstants.CAF_AUDIT_MODE + " set to [" + auditMode +"], therefore the Audit Monkey going direct to Elasticsearch");
+
+        if (auditMode.equalsIgnoreCase("direct")) {
+
+            LOG.debug(MonkeyConstants.CAF_AUDIT_MODE + " set to [" + auditMode
+                    + "], therefore the Audit Monkey going direct to Elasticsearch");
             configSource = getDirectToElasticConfig();
-            
+
         } else if (auditMode.equalsIgnoreCase("webservice")) {
-        
-            LOG.debug(AuditMonkeyConstants.CAF_AUDIT_MODE + " set to [" + auditMode +"], therefore the Audit Monkey is using the WebService");
+
+            LOG.debug(MonkeyConstants.CAF_AUDIT_MODE + " set to [" + auditMode
+                    + "], therefore the Audit Monkey is using the WebService");
             configSource = getWebServiceToElasticConfig();
-            
+
         } else {
-            String errorMsg = AuditMonkeyConstants.CAF_AUDIT_MODE + " set to [" + auditMode +"], this is not a recognised value for " + AuditMonkeyConstants.CAF_AUDIT_MODE;
+            String errorMsg = MonkeyConstants.CAF_AUDIT_MODE + " set to [" + auditMode + "], this is not a recognised value for "
+                    + MonkeyConstants.CAF_AUDIT_MODE;
             LOG.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
@@ -122,13 +129,13 @@ public class AuditMonkey
 
     private static ConfigurationSource getWebServiceToElasticConfig()
     {
-        return new ConfigurationSource()
-        {
+        return new ConfigurationSource() {
+            @SuppressWarnings("unchecked")
             @Override
             public <T> T getConfiguration(Class<T> type) throws ConfigurationException
             {
                 WebServiceClientAuditConfiguration config = new WebServiceClientAuditConfiguration();
-                config.setWebServiceEndpoint("http://" + auditMonkeyConfig.getWsHostnameAndPort() + "/caf-audit-service/v1");
+                config.setWebServiceEndpoint("http://" + monkeyConfig.getWsHostnameAndPort() + "/caf-audit-service/v1");
                 return (T) config;
             }
         };
@@ -137,16 +144,16 @@ public class AuditMonkey
 
     private static ConfigurationSource getDirectToElasticConfig()
     {
-        return new ConfigurationSource()
-        {
+        return new ConfigurationSource() {
+            @SuppressWarnings("unchecked")
             @Override
             public <T> T getConfiguration(Class<T> type) throws ConfigurationException
             {
                 ElasticAuditConfiguration config = new ElasticAuditConfiguration();
-                config.setClusterName(auditMonkeyConfig.getEsClustername());
-                config.setHostAndPortValues(auditMonkeyConfig.getEsHostnameAndPort());
-//                config.setHostAndPortValues("192.168.56.10:9300,192.168.56.10:9301,192.168.56.10:9302");
-//                config.setHostAndPortValues("elasticsearch1:9300,elasticsearch2:9301,elasticsearch3:9302");
+                config.setClusterName(monkeyConfig.getEsClustername());
+                config.setHostAndPortValues(monkeyConfig.getEsHostnameAndPort());
+                // config.setHostAndPortValues("192.168.56.10:9300,192.168.56.10:9301,192.168.56.10:9302");
+                // config.setHostAndPortValues("elasticsearch1:9300,elasticsearch2:9301,elasticsearch3:9302");
                 return (T) config;
             }
         };

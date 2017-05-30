@@ -128,14 +128,18 @@ The following parameters may be set as required:
 
 ### How to Run the Audit Monkey
 1. docker pull rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-monkey:3.1.0-SNAPSHOT
-2. docker run [OPTIONS] [IMAGE\_ID]
+2. docker run [OPTIONS] \<IMAGE\_ID\>
 
 e.g.  
-docker run -e CAF\_AUDIT\_MODE=direct -e CAF\_AUDIT\_MONKEY\_MODE=standard -e CAF\_AUDIT\_MONKEY\_NUM\_OF\_EVENTS=5000 -e CAF\_AUDIT\_MONKEY\_NUM\_OF\_THREADS=10 [IMAGE\_ID]  
+```
+docker run -e CAF_AUDIT_MODE=direct -e CAF_AUDIT_MONKEY_MODE=standard -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=5000 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=10 <IMAGE_ID>
+```
 
 Run the Audit Monkey sending [5000] Audit Events [directly] to Elasticsearch in [Standard] mode using [10] threads
 
 e.g.  
-docker run -e CAF\_AUDIT\_TENANT\_ID=wstest -e CAF\_AUDIT\_MODE=webservice -e WS\_HOSTNAME=192.168.56.10 -e WS\_PORT=25080 -e CAF\_AUDIT\_MONKEY_MODE=random -e CAF\_AUDIT\_MONKEY\_NUM\_OF\_EVENTS=50 -e CAF\_AUDIT\_MONKEY\_NUM\_OF\_THREADS=5 [IMAGE\_ID]  
+```
+docker run -e CAF_AUDIT_TENANT_ID=wsTestId -e CAF_AUDIT_MODE=webservice -e WS_HOSTNAME=192.168.56.10 -e WS_PORT=25080 -e CAF_AUDIT_MONKEY_MODE=random -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=50 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=5 <IMAGE_ID>
+```  
 
-Run the Audit Monkey sending [50] Audit Events through the [Audit WebService] operating on host [192.168.56.10] and port [25080] in [Random] mode using [5] threads
+Run the Audit Monkey sending [50] Audit Events for Tenant Id [wsTestId] through the [Audit WebService] operating on host [192.168.56.10] and port [25080] in [Random] mode using [5] threads

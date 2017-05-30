@@ -17,4 +17,4 @@
 
 
 cd /maven
-java -cp "*" com.github.cafaudit.AuditMonkey
+java -cp "*" com.github.cafaudit.auditmonkey.AuditMonkey

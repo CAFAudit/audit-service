@@ -46,7 +46,7 @@ public class RandomMonkey implements Monkey, Runnable
             int j = 1;
             while (queue.size() > 0 && j <= num) {
                 int i = queue.take();
-                LOG.trace("Sending Audit Event [" + i + "][" + j + "]");
+                LOG.debug("Sending Audit Event [" + i + "][" + j + "]");
                 AuditLog.auditPolicyApplied(channel, monkeyConfig.getTenantId(), monkeyConfig.getUserId(),
                         monkeyConfig.getCorrelationId(), i, Integer.toString(j), "[" + i + "][" + j + "]");
                 j++;

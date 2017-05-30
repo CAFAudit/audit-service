@@ -42,7 +42,7 @@ public class StandardMonkey implements Monkey, Runnable
     {
         while(queue.size() > 0){
             int i = queue.take();
-            LOG.trace("Sending Audit Event [" + i + "]");
+            LOG.debug("Sending Audit Event [" + i + "]");
             AuditLog.auditViewDocument(channel, monkeyConfig.getTenantId(), monkeyConfig.getUserId(), monkeyConfig.getCorrelationId(), i);
         }
     }

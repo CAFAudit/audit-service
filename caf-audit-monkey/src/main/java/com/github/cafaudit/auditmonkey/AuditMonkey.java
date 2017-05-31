@@ -31,8 +31,9 @@ import com.hpe.caf.auditing.elastic.ElasticAuditConfiguration;
 import com.hpe.caf.auditing.webserviceclient.WebServiceClientAuditConfiguration;
 
 /**
- * Exemplar worker. This is the class responsible for processing the text data by the action
- * specified in the task.
+ * Audit Monkey.
+ * This is the main class for the Audit Monkey.
+ * This class orchestrates the operation of the Audit Monkey.
  */
 public class AuditMonkey
 {

@@ -8,7 +8,7 @@ The Audit Monkey also has the ability to generate significant volumes of data as
 ## Configuration
 
 ### Modes
-The Audit Monkey can be run in a number of modes. Details of these modes are outline in the table below.  
+The Audit Monkey can be run in a number of modes. Details of these modes are outlined in the table below.  
 The three key modes cover:  
 
 * Sending Audit Events directly to Elasticsearch or via the Audit WebService
@@ -37,7 +37,7 @@ The three key modes cover:
     <td>
       <ul>
         <li><b>Standard:</b> The Audit Monkey attempts to send the specified number of Audit Events as quickly as possible</li>
-        <li><b>Random:</b> The Audit Monkey attempts to send portions of the overall specified number of Audit Events interlaced with pauses of execution, to create a pseudo randam sequence of Audit Events</li>
+        <li><b>Random:</b> The Audit Monkey attempts to send portions of the overall specified number of Audit Events interlaced with pauses of execution, to create a pseudo-random sequence of Audit Events</li>
       </ul>
     </td>
   </tr>
@@ -80,7 +80,7 @@ The following parameters may be set as required:
   <tr>
     <td>CAF_AUDIT_USER_ID</td>
     <td>road.runner@acme.com, [String]</td>
-    <td>Configurable field, available to the user</td>
+    <td>Configurable field, available to the user. User who triggered the Audit Event</td>
   </tr>
   <tr>
     <td>ES_CLUSTERNAME</td>

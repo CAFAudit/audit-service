@@ -42,20 +42,24 @@ public class WebServiceClientAuditConnection implements AuditConnection {
     /**
      * Audit WebService Client Connection object used to create new instances of the WebService Client Audit Channel
      * @param configSource ConfigurationSource object that contains the properties for creating an Audit Connection
-     * @throws MalformedURLException if webservice endpoint, HTTP Proxy or HTTPS Proxy URLs are malformed
-     * @throws ConfigurationException if the configuration for the Webservice client cannot be retrieved
+     * @throws ConfigurationException if the configuration for the Webservice client cannot be retrieved or if there is
+     * a malformation in the Audit Web Service Endpoint URL, HTTP Proxy URL or HTTPS Proxy URL.
      */
-    public WebServiceClientAuditConnection(final ConfigurationSource configSource) throws
-            MalformedURLException, ConfigurationException {
-        //  Get Webservice endpoint URL
-        this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
-                configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
+    public WebServiceClientAuditConnection(final ConfigurationSource configSource) throws ConfigurationException {
+        try {
+            //  Get Webservice endpoint URL
+            this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
+                    configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
+        } catch (final MalformedURLException mue) {
+            String errorMessage = "Unable to create URL from Audit Web Service Endpoint configuration property";
+            throw new ConfigurationException(errorMessage, mue);
+        }
 
         // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
         this.httpProxy = getProxy(webServiceEndpointUrl);
     }
 
-    private Proxy getProxy(final URL webServiceEndpointUrl) throws MalformedURLException {
+    private Proxy getProxy(final URL webServiceEndpointUrl) throws ConfigurationException {
         String webserviceEndpointUrlProtocol = webServiceEndpointUrl.getProtocol();
         //  If the webservice endpoint is not included in no-proxy, depending on the webservice endpoint protocol
         //  set, return http or https proxy object. Else return null.
@@ -67,7 +71,13 @@ public class WebServiceClientAuditConnection implements AuditConnection {
                 // If a HTTP Proxy has been set and the WS Endpoint Protocol is HTTP, return a Proxy based upon it
                 String httpProxy = getHttpProxy();
                 if (httpProxy != null && !httpProxy.isEmpty()) {
-                    URL httpProxyUrl = new URL(httpProxy);
+                    URL httpProxyUrl;
+                    try {
+                        httpProxyUrl = new URL(httpProxy);
+                    } catch (final MalformedURLException mue) {
+                        String errorMessage = "Unable to create URL for HTTP Proxy: " + httpProxy;
+                        throw new ConfigurationException(errorMessage, mue);
+                    }
                     InetSocketAddress proxyInet = new InetSocketAddress(httpProxyUrl.getHost(),
                             httpProxyUrl.getPort());
                     return new Proxy(Proxy.Type.HTTP, proxyInet);
@@ -76,7 +86,13 @@ public class WebServiceClientAuditConnection implements AuditConnection {
                 // If a HTTPS Proxy has been set and the WS Endpoint Protocol is HTTPS, return a Proxy based upon it
                 String httpsProxy = getHttpsProxy();
                 if (httpsProxy != null && !httpsProxy.isEmpty()) {
-                    URL httpsProxyUrl = new URL(httpsProxy);
+                    URL httpsProxyUrl;
+                    try {
+                        httpsProxyUrl = new URL(httpsProxy);
+                    } catch (final MalformedURLException mue) {
+                        String errorMessage = "Unable to create URL for HTTPS Proxy: " + httpsProxy;
+                        throw new ConfigurationException(errorMessage, mue);
+                    }
                     InetSocketAddress proxyInet = new InetSocketAddress(httpsProxyUrl.getHost(),
                             httpsProxyUrl.getPort());
                     return new Proxy(Proxy.Type.HTTP, proxyInet);

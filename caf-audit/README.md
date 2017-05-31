@@ -1,20 +1,22 @@
 # Overview
 
-![Overview](images/AuditElasticArchitecture.png)
+![Overview](images/AuditWebServiceArchitecture.png)
 
 Applications will define audit events that will occur in the system in an [Audit Event Definition File](../caf-audit-schema/README.md).
 The Audit Event Definition File will be used to generate an application-specific client-side auditing library using a custom maven plugin.
 
 For set-up:
 
-1. Use the [Audit Service Deploy Project](https://github.com/CAFAudit/audit-service-deploy), to launch an Elasticsearch cluster.
+1. Use the [Audit Service Deploy Project](https://github.com/CAFAudit/audit-service-deploy), to launch the Audit Web Service and Elasticsearch.
 2. Define an application's audit events in an Audit Event Definition File.
 3. Generate the client-side auditing library using the audit event definition file and the code generation plugin. 
-4. In your application, use the client-side auditing library to send audit events to Elasticsearch.
+4. In your application, use the client-side auditing library to send audit events to directly to Elasticsearch or via the Audit Web Service.
 
 # Auditing Library
 
-This project builds a library that sends audit events to Elasticsearch. Application specific auditing libraries generated with the [code generation plugin](../caf-audit-maven-plugin) use this to send  their events.
+This project builds a library that sends audit events to directly to Elasticsearch or via the Audit Web Service API.
+
+Application specific auditing libraries generated with the [code generation plugin](../caf-audit-maven-plugin) use the Auditing library to send their events.
 
 ## Generating a Client-side Auditing Library
 

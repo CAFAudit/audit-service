@@ -46,7 +46,7 @@ Here is a sample Maven project file that generates a client-side auditing librar
 	        <dependency>
 	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit</artifactId>
-	            <version>3.0.0</version>
+	            <version>3.1.0</version>
 	        </dependency>
 	    </dependencies>
 	
@@ -55,7 +55,7 @@ Here is a sample Maven project file that generates a client-side auditing librar
 	            <plugin>
 	                <groupId>com.github.cafaudit</groupId>
 	                <artifactId>caf-audit-maven-plugin</artifactId>
-	                <version>3.0.0</version>
+	                <version>3.1.0</version>
 	                <executions>
 	                    <execution>
 	                        <id>generate-code</id>
@@ -90,7 +90,7 @@ The generated library will have a dependency on `caf-audit`, which the generated
 	    <dependency>
 	        <groupId>com.github.cafaudit</groupId>
 	        <artifactId>caf-audit</artifactId>
-	        <version>3.0.0</version>
+	        <version>3.1.0</version>
 	    </dependency>
 	</dependencies>
 
@@ -103,7 +103,7 @@ The `xmltojava` goal of the [code generation plugin](../caf-audit-maven-plugin) 
 	        <plugin>
 	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit-maven-plugin</artifactId>
-	            <version>3.0.0</version>
+	            <version>3.1.0</version>
 	            <executions>
 	                <execution>
 	                    <id>generate-code</id>
@@ -139,30 +139,32 @@ A generated client-side library should be referenced in the normal way in the ap
 	    <version>1.0.0-SNAPSHOT</version>
 	</dependency>
 
-### Audit Connection
+### ConfigurationSource
 
-Regardless of whether you choose to use a generated client-side library, or to use `caf-audit` directly, you must first create an `AuditConnection` object.
+[comment]: <> (The caf-audit Getting-Started.md documentation content contains duplication of the ConfigurationSource section. It is important that any changes here must also be included within the Getting-Started.md content.)
 
-This object represents a logical connection to the datastore (that is, Elasticsearch in the current implementation). It is a thread-safe object. ***Please take into account that this object requires some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
+You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from any of the following:
 
-The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a `ConfigurationSource` parameter, which is the standard method of configuration in CAF.
+- environment variables
+- files
+- a REST service
+- a custom source that better integrates with the host application.
 
-### Configuration in CAF
+A `ConfigurationSource` object is required for the [`AuditConnectionFactory`](#AuditConnectionFactory) object to produce an [`AuditConnection`](#AuditConnection) object.
 
-You may already have a CAF Configuration Source in your application. It is a general framework that abstracts away the source of the configuration, allowing it to come from environment variables, files, a REST service, or potentially a custom source which better integrates with the host application.
-If you're not already using CAF's Configuration mechanism, then here is some sample code to generate a ConfigurationSource object.
+If you're not already using CAF's configuration mechanism, this sample code illustrates the generation of a `ConfigurationSource` object.
 
 	import com.hpe.caf.api.*;
 	import com.hpe.caf.cipher.NullCipherProvider;
 	import com.hpe.caf.config.system.SystemBootstrapConfiguration;
 	import com.hpe.caf.naming.ServicePath;
 	import com.hpe.caf.util.ModuleLoader;
-	
+
 	public static ConfigurationSource createCafConfigSource() throws Exception
 	{
 	    System.setProperty("CAF_CONFIG_PATH", "/etc/sampleapp/config");
 	    System.setProperty("CAF_APPNAME", "sampleappgroup/sampleapp");
-	
+
 	    BootstrapConfiguration bootstrap = new SystemBootstrapConfiguration();
 	    Cipher cipher = ModuleLoader.getService(CipherProvider.class, NullCipherProvider.class).getCipher(bootstrap);
 	    ServicePath path = bootstrap.getServicePath();
@@ -170,7 +172,7 @@ If you're not already using CAF's Configuration mechanism, then here is some sam
 	    return ModuleLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, path, codec);
 	}
 
-To compile the above sample code you will need to add the following dependencies to your POM:
+To compile the above sample code, add the following dependencies to your POM:
 
 	<dependency>
 	    <groupId>com.github.cafapi</groupId>
@@ -198,7 +200,7 @@ To compile the above sample code you will need to add the following dependencies
 	    <version>1.6.0-176</version>
 	</dependency>
 
-To use JSON-encoded files for your configuration you will need to add the following additional dependencies to your POM:
+To use JSON-encoded files for your configuration, add the following additional dependencies to your POM:
 
 	<!-- Runtime-only Dependencies -->
 	<dependency>
@@ -220,14 +222,14 @@ To use JSON-encoded files for your configuration you will need to add the follow
 	    <scope>runtime</scope>
 	</dependency>
 
-### Configuration Required to create the AuditConnection
+#### Direct to Elasticsearch Configuration
 
-In the `ConfigurationSource` above, we used JSON-encoded files with the following parameters:
+In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded files with the following parameters:
 
 - `CAF_CONFIG_PATH: /etc/sampleapp/config`
 - `CAF_APPNAME: sampleappgroup/sampleapp`
 
-Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_ElasticAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
+Given this configuration, you would configure Audit Direct to Elasticsearch by creating a file named `cfg_sampleappgroup_sampleapp_ElasticAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
 
 	{
 	    "hostAndPortValues": "<Elasticsearch_Cluster_Node1>:<ES_Port_Node1>,<Elasticsearch_Cluster_Node2>:<ES_Port_Node2>,<Elasticsearch_Cluster_Node3>:<ES_Port_Node3>",
@@ -243,13 +245,107 @@ where:
 - `numberOfShards` the number of primary shards that an index should have. Defaults to 5.
 - `numberOfReplicas` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
 
-### Audit Channel
+#### Audit Web Service Client Configuration
 
-After you successfully construct an `AuditConnection` object, you must then create an `AuditChannel` object.
+In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded files with the following parameters:
 
-This object represents a logical channel to the datastore (that is, Elasticsearch in this implementation). **It is NOT a thread-safe object and must not be shared across threads without synchronization.** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
+- `CAF_CONFIG_PATH: /etc/sampleapp/config`
+- `CAF_APPNAME: sampleappgroup/sampleapp`
 
-The `AuditChannel` object can be constructed using the `createChannel()` method on the `AuditConnection` object. It does not take any parameters.
+Given this configuration, you would configure Audit Web Service Client by creating a file named `cfg_sampleappgroup_sampleapp_WebSerivceClientAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
+
+	{
+	    "webServiceEndpoint": "http://<Audit_Web_Service_Node>:<Port>/caf-audit-service/v1"
+	}
+
+where:
+
+- `webServiceEndpoint` refers to the Audit Web Service endpoint.
+
+### AuditConnectionFactory
+
+The `AuditConnectionFactory` is an object that can be used to create an implementation of the [`AuditConnection`](#AuditConnection) by setting the [`CAF_AUDIT_MODE Environment Variable`](#CAF_AUDIT_MODE-environment-variable) to the required mode and by passing the [`ConfigurationSource`](#ConfigurationSource) object for that required mode.
+
+#### CAF\_AUDIT\_MODE Environment Variable
+
+Before passing the [`ConfigurationSource`](#ConfigurationSource) object to the [`AuditConnectionFactory`](#AuditConnectionFactory), to create an instance of the required [`AuditConnection`](#AuditConnection) implementation, the `CAF_AUDIT_MODE` environment variable needs to be set appropriately to indicate the required mode. These are the following `CAF_AUDIT_MODE` environment variable options:
+
+|           Mode           | CAF_AUDIT_MODE value |  AuditConnection Implmentation  |                          Required AuditConfiguration                          |
+|:------------------------:|:--------------------:|:-------------------------------:|:-----------------------------------------------------------------------------:|
+|  Direct to Elasticsearch |        direct        |      ElasticAuditConnection     |      [ElasticAuditConfiguration](#direct-to-elasticsearch-configuration)      |
+| Audit Web Service Client |      webservice      | WebServiceClientAuditConnection | [WebServiceClientAuditConfiguration](#audit-web-service-client-configuration) |
+
+#### No-op
+
+If the `CAF_AUDIT_MODE` environment variable is not set then the `NoopAuditConnection` implementation is returned from the AuditConnectionFactory. This mode does not connect to an endpoint or build audit event messages. This mode can be useful for testing as Elasticsearch or Audit Web Service components are not required.
+
+### Audit Connection
+
+Regardless of whether you choose to use a generated client-side library, or to use `caf-audit` directly, you must first create an `AuditConnection` object.
+
+The `AuditConnection` object represents a logical connection to the Audit Web Service API or Elasticsearch datastore endpoint. It is a thread-safe object. ***Please take into account that this connection object requires significant time to construct. The application should hold on to the connection object and re-use it, rather than re-construct it.***
+
+The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a [`ConfigurationSource`](#ConfigurationSource) parameter, which is the standard method of configuration in CAF:
+
+	AuditConnection auditConnection = null;
+    try {
+        // Setup connection
+        auditConnection = new AuditConnectionFactory().createConnection(createCafConfigSource());
+    } catch (Exception e) {
+        System.out.println("Unable to create Audit Connection");
+        e.printStackTrace();
+    }
+
+### AuditChannel
+
+An `AuditChannel` object is constructed from the [`AuditConnection`](#AuditConnection) object.
+
+This object represents a logical channel to the Audit Web Service API or Elasticsearch datastore endpoint. ***It is NOT a thread-safe object and must not be shared across threads without synchronization.*** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
+
+The `AuditChannel` object can be constructed using the `createChannel()` method on the [`AuditConnection`](#AuditConnection) object. It does not take any parameters:
+
+	AuditChannel auditChannel = null;
+	try {
+	    // Setup a connection channel
+	    auditChannel = auditConnection.createChannel();
+	} catch (IOException e) {
+	    System.out.println("Unable to create Audit Channel from Audit Connection");
+	    e.printStackTrace();
+	}
+
+### AuditEventBuilder
+
+An `AuditEventBuilder` object is constructed from the [`AuditChannel`](#AuditChannel) object.
+
+It constructs and sends an audit event. You should have one [`AuditEventBuilder`](#AuditEventBuilder) object for each audit event.
+
+The `AuditEventBuilder` object is created using the `createEventBuilder()` method on the [`AuditChannel`](#AuditChannel) object. It does not take any parameters.
+
+	/*
+	  The following code constructs an application event for a tenant who has deleted a document. It then sends the event to storage.
+	*/
+	// Create an auditEventBuilder object from the AuditChannel
+	final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
+	// Set the Application ID of the event
+	auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);
+	// Set the Tenant ID of the event
+	auditEventBuilder.setTenant(tenantId);
+	// Set the Tenant's User ID
+	auditEventBuilder.setUser(userId);
+	// Set the Correlation ID
+	auditEventBuilder.setCorrelationId(correlationId);
+	// Set the Event Category and Type
+	auditEventBuilder.setEventType("documentEvents", "deleteDocument");
+	// Add Event Parameters
+		// Add an Event Parameter for holding the Document ID that was deleted
+	auditEventBuilder.addEventParameter("docId", null, docId);
+		// Add an Event Parameter for holding the User who authorised the deletion of the document. Include an indexing hint and add length constraints for this parameter as it is of type String
+	auditEventBuilder.addEventParameter("authorisedBy", null, authorisedBy, AuditIndexingHint.KEYWORD, 1, 256);
+
+	// Send the constructed event to storage
+	auditEventBuilder.send();
+
+Typically, this object is only used indirectly. Normally, you generate a type-safe client-side auditing library using the code generation plugin. Internally, the auto-generated code makes use of the `AuditEventBuilder` object.
 
 ### Audit Log
 

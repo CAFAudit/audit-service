@@ -19,7 +19,7 @@ As a type-safe alternative to invoking the Audit Web Service REST API directly, 
 
 ## Deploying the Audit Web Service
 
-For developer deployments of the Audit Web Service and Elasticsearch, please follow the Audit Service Deployment documentation. The documentation covers configuring and starting of the Audit Web Service and Elasticsearch cluster in Docker. For more information on Audit Service Deployment, go [here](https://github.com/CAFAudit/audit-service-deploy).
+For developer deployments of the Audit Web Service and Elasticsearch, please follow the Audit Service Deployment [documentation](https://github.com/CAFAudit/audit-service-deploy). The documentation covers configuring and starting of the Audit Web Service and Elasticsearch cluster in Docker. For more information on Audit Service Deployment, go [here](https://github.com/CAFAudit/audit-service-deploy).
 
 ## Using the Audit Web Service
 
@@ -27,7 +27,7 @@ The Audit Web Service offers a Swagger UI or REST API for sending audit events.
 
 ### Swagger UI
 
-The Audit Web Service is a RESTful Web Service and is primarily intended for programmatic access, however it also ships with a Swagger-generated user-interface that enables the creation of audit events for the purposes of understanding and verifying the set-up of the service.
+The Audit Web Service is a RESTful Web Service and is primarily intended for programmatic access, however it also ships with a Swagger-generated user-interface that enables the creation of audit events for the purposes of understanding and verifying the setup of the service.
 
 Using a web browser, the Audit Web Service Swagger UI is reachable via `http://<Audit_Web_Service_Host>:<Port>/caf-audit-service-ui` URL.
 
@@ -73,7 +73,7 @@ The following CURL command sends an audit event message to the Audit Web Service
       --header 'content-type: application/json' \
       --data '{"applicationId":"SampleApp","processId":"c5f2dfbf-528e-4630-ba6c-3d5fe40cc498","threadId":1,"eventOrder":0,"eventTime":"2017-05-25T11:36:38.544Z","eventTimeSource":"HOST1","userId":"JoeBloggs@yourcompany.com","tenantId":"00000001","correlationId":"correlation1","eventTypeId":"deleteDocument","eventCategoryId":"documentEvents","eventParams":[{"paramName":"docId","paramType":"long","paramColumnName":null,"paramValue":"123456"},{"paramName":"authorisedBy","paramType":"string","paramIndexingHint":"keyword","paramValue":"JoesphBloggins@yourcompany.com","paramColumnName":null}]}'
 
-You can verify that the event message was stored in Elasticsearch by following the [Verification Instructions](verification-instructions).
+You can verify that the audit event message was stored in Elasticsearch by following the [Verification Instructions](#verification-instructions).
 
 ## Audit Web Service Client
 
@@ -85,21 +85,21 @@ The Getting Started guide's [Writing an Application Audit Event Definition File]
 
 ### Using the Audit Web Service Client
 
-Once you have your auditing library (generated or `caf-audit`), you use it to send audit events to the Audit Web Service.
+Once you have your auditing library (generated or `caf-audit`), use it to send audit events to the Audit Web Service.
 
 #### Dependencies
 
-If you generated a client-side library it should be referenced in the normal way in the application's POM file. You shouldn't need to manually add a dependency on `caf-audit` as it will be a transitive dependency of the generated library.
+If you generated a client-side library it should be referenced in the normal way in the application's POM file. You will not need too manually add a dependency on `caf-audit` as it will be a transitive dependency of the generated library.
 
 #### Audit Connection
 
 Regardless of whether you choose to use a generated client-side library, or to use `caf-audit` directly, you must first create an `AuditConnection` object.
 
-This object represents a logical connection to an endpoint which, in this case, is the Audit Web Service. It is a thread-safe object. ***Please take into account that this object requires some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
+This object represents a logical connection to an endpoint which, in this case, is the Audit Web Service. It is a thread-safe object. ***Please take into account that this connection object requires significant time to construct. The application should hold on to the connection object and re-use it, rather than re-construct it.***
 
 The `AuditWebServiceClientConnection` object, which is the `AuditConnection` object implementation for creating a connection to the Audit Web Service, can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a `ConfigurationSource` parameter, which is the standard method of configuration in CAF. To enable the creation of the `AuditWebServiceClientConnection` object, with the `AuditConnectionFactory`, the `CAF_AUDIT_MODE` environment variable must be set to `webservice`.
 
-##### ConfigurationSource
+#### ConfigurationSource
 
 [comment]: <> (The caf-audit Client-API.md documentation content contains duplication of the ConfigurationSource section. It is important that any changes here must also be included within the Client-API.md content.)
 
@@ -180,7 +180,7 @@ To use JSON-encoded files for your configuration, add the following additional d
 	    <scope>runtime</scope>
 	</dependency>
 
-##### Configuration Required for the AuditConnection
+#### Configuration Required for the AuditConnection
 
 In the `ConfigurationSource` above, we used JSON-encoded files with the following parameters:
 

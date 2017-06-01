@@ -84,7 +84,7 @@ The following parameters may be set as required:
   </tr>
   <tr>
     <td>ES_CLUSTERNAME</td>
-    <td>elasticserach-cluster, [String]</td>
+    <td>elasticsearch-cluster, [String]</td>
     <td>Name of the Elasticsearch Cluster the Audit Monkey is to run against</td>
   </tr>
   <tr>
@@ -125,6 +125,11 @@ The following parameters may be set as required:
 </table>
 
 ## Execution
+
+### Prerequisite
+
+1. An instance of Elasticsearch available
+2. Audit WebService, (only required if Audit Events are to be sent via the WebService)
 
 ### How to Run the Audit Monkey
 1. docker pull rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-monkey:3.1.0-SNAPSHOT

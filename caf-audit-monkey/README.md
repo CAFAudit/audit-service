@@ -1,15 +1,15 @@
 # Audit Monkey
 
 ## Description
-The Audit Monkey provides the functional ability to test the Audit Service including the auto-generated AuditLog, (both the direct and webservice variants) and the Audit WebService.  
+The Audit Monkey provides the functional ability to test the Audit Service including the auto-generated AuditLog and the Audit WebService.  
 The Audit Monkey has the ability to send Audit Events both directly to Elasticsearch and via the Audit WebService.
 The Audit Monkey also has the ability to generate significant volumes of data as it can be run in both single-threaded and multi-threaded modes.  
 
 ## Configuration
 
-### Modes
-The Audit Monkey can be run in a number of modes. Details of these modes are outlined in the table below.  
-The three key modes cover:  
+### Functionality
+The Audit Monkey can be run in a number of function configurations. Details of these functional configurations are outlined in the table below.  
+The three key functional configuration cover:  
 
 * Sending Audit Events directly to Elasticsearch or via the Audit WebService
 * Sending Audit Events continuously or in random mode featuring sleeps

@@ -22,8 +22,6 @@ import com.hpe.caf.auditing.noop.NoopAuditConnection;
 import com.hpe.caf.auditing.webserviceclient.WebServiceClientAuditConnection;
 import com.hpe.caf.auditing.webserviceclient.WebServiceClientException;
 
-import java.net.MalformedURLException;
-
 public class AuditConnectionFactory {
 
     /**

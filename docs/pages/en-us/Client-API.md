@@ -7,10 +7,10 @@ title: Client-side API
 
 The `caf-audit` library offers a convenient set of classes for creating a connection and sending audit events to an endpoint such as a Web Service or storage.
 
-These are the following `caf-audit` client-side API connection modes provided by the library:
+The following `caf-audit` client-side API connection modes are provided by the library:
 
 - [Direct to Elasticsearch](#direct-to-elasticsearch-configuration) mode connects directly to Elasticsearch for the storage of audit event messages.
-- [Web Service Client](#audit-web-service-client-configuration) mode connects to the Audit Web Service REST API for the messaging of audit events. The Audit Web Service stores audit event messages into Elasticsearch.
+- [Web Service Client](#audit-web-service-client-configuration) mode connects to the Audit Web Service REST API for the messaging of audit events. The Audit Web Service sends audit event messages into Elasticsearch.
 - [No-op](#no-op) mode which does not connect to an endpoint or build audit event messages. This mode can be useful for testing as Elasticsearch or Audit Web Service components are not required.
 
 ## Using Auditing Objects
@@ -19,7 +19,7 @@ This section covers `caf-audit` library classes and how to use them as objects w
 
 The order of instantiation and use of these objects for sending audit events is as follows:
 
-1. If you do not have an existing [`ConfigurationSource`](#ConfigurationSource) object, create one for retrieving and holding configuration details for the mode that you require.
+1. If you do not have an existing [`ConfigurationSource`](#ConfigurationSource) object, create one for retrieving and holding configuration details for the mode you require.
 2. Use the [`AuditConnectionFactory`](#AuditConnectionFactory) to create the [`AuditConnection`](#AuditConnection) object by setting the [`CAF_AUDIT_MODE Environment Variable`](#CAF_AUDIT_MODE-environment-variable) and pass it the [`ConfigurationSource`](#ConfigurationSource).
 3. Create an [`AuditChannel`](#AuditChannel) object from the [`AuditConnection`](#AuditConnection) object.
 4. Use the [`AuditEventBuilder`](#AuditEventBuilder) object to construct and send audit event messages to the endpoint.
@@ -166,7 +166,8 @@ If the `CAF_AUDIT_MODE` environment variable is not set then the `NoopAuditConne
 
 ### AuditConnection
 
-The `AuditConnection` object represents a logical connection to the Audit Web Service API or Elasticsearch datastore endpoint. It is a thread-safe object. ***You should expect this object to take some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
+The `AuditConnection` object represents a logical connection to the Audit Web Service API or Elasticsearch datastore endpoint. It is a thread-safe object. ***Please take into account that this connection object requires significant time to construct. The application should hold on to the connection object and re-use it, rather than re-construct it.***
+
 
 The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a [`ConfigurationSource`](#ConfigurationSource) parameter, which is the standard method of configuration in CAF:
 

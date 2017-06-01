@@ -8,8 +8,8 @@ The Audit Monkey also has the ability to generate significant volumes of data as
 ## Configuration
 
 ### Functionality
-The Audit Monkey can be run in a number of function configurations. Details of these functional configurations are outlined in the table below.  
-The three key functional configuration cover:  
+The Audit Monkey can be run in a number of functional configurations. Details of these functional configurations are outlined in the table below.  
+The three key functional configurations cover:  
 
 * Sending Audit Events directly to Elasticsearch or via the Audit WebService
 * Sending Audit Events continuously or in random mode featuring sleeps

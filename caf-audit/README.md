@@ -291,3 +291,65 @@ The following is an example for a SampleApp's `viewDocument` event, which takes 
 The name of the event is included in the generated method name. In addition to the custom parameters (document id in this case), the caller must pass the `AuditChannel` object to be used, as well as the tenant id, user id, and correlation id.
 
 The method will throw an exception if the audit event could not be stored for some reason (for example, network failure or supplying unsupported tenantId characters).
+
+# Web Service
+
+The Audit Web Service API provides a RESTful interface for indexing audit event messages into Elasticsearch. Audit events, in the form of REST POST JSON requests, are sent to the Audit Web Service API which then connects to Elasticsearch and indexes the details of the audit event message for the tenant application.
+
+As a type-safe alternative to invoking the Audit Web Service REST API directly, the Auditing Library offers an Audit Web Service Client mode for building and sending audit events to the Audit Web Service REST API.
+
+## Deploying the Audit Web Service
+
+For developer deployments of the Audit Web Service and Elasticsearch, please follow the Audit Service Deployment [documentation](https://github.com/CAFAudit/audit-service-deploy). The documentation covers configuring and starting of the Audit Web Service and Elasticsearch cluster in Docker. For more information on Audit Service Deployment, go [here](https://github.com/CAFAudit/audit-service-deploy).
+
+## Using the Audit Web Service
+
+The Audit Web Service offers a Swagger UI or REST API for sending audit events.
+
+### Swagger UI
+
+The Audit Web Service is a RESTful Web Service and is primarily intended for programmatic access, however it also ships with a Swagger-generated user-interface that enables the creation of audit events for the purposes of understanding and verifying the setup of the service.
+
+Using a web browser, the Audit Web Service Swagger UI is reachable via `http://<Audit_Web_Service_Host>:<Port>/caf-audit-service-ui` URL.
+
+The `/auditevents` operation provides the ability to send an audit event to the Audit Web Service which then stores that audit event in Elasticsearch. The audit event definition JSON schema is provided in the UI, under the Data Type column, and should be used as a reference when constructing the audit event message to send through the Web Service.
+
+The following image is a screenshot of the Audit Web Service Swagger UI with an example audit event that matches the JSON input schema.
+
+![Audit Web Service Swagger UI](images/AuditWebServiceSwaggerUI.PNG)
+
+Use the "Try it out!" button to send an audit event to the Audit Web Service. You can verify that the event message was stored in Elasticsearch by following the [Verification Instructions](#verification-instructions).
+
+### REST API
+
+The Audit Web Service API POST endpoint for sending an audit event message is reachable at `http://<Audit_Web_Service_Host>:<Port>/caf-audit-service/v1/auditevents`. It takes audit event messages as JSON input; the schema is as follows:
+
+    {
+      "applicationId": "string",
+      "processId": "string",
+      "threadId": 0,
+      "eventOrder": 0,
+      "eventTime": "string",
+      "eventTimeSource": "string",
+      "userId": "string",
+      "tenantId": "string",
+      "correlationId": "string",
+      "eventTypeId": "string",
+      "eventCategoryId": "string",
+      "eventParams": [
+        {
+          "paramName": "string",
+          "paramType": "string",
+          "paramIndexingHint": "fulltext",
+          "paramColumnName": "string",
+          "paramValue": "string"
+        }
+      ]
+    }
+
+The following CURL command sends an audit event message to the Audit Web Service `/auditevents` API POST endpoint:
+
+    curl --request POST \
+      --url http://<Audit_Web_Service_Host>:<Port>/caf-audit-service/v1/auditevents \
+      --header 'content-type: application/json' \
+      --data '{"applicationId":"SampleApp","processId":"c5f2dfbf-528e-4630-ba6c-3d5fe40cc498","threadId":1,"eventOrder":0,"eventTime":"2017-05-25T11:36:38.544Z","eventTimeSource":"HOST1","userId":"JoeBloggs@yourcompany.com","tenantId":"00000001","correlationId":"correlation1","eventTypeId":"deleteDocument","eventCategoryId":"documentEvents","eventParams":[{"paramName":"docId","paramType":"long","paramColumnName":null,"paramValue":"123456"},{"paramName":"authorisedBy","paramType":"string","paramIndexingHint":"keyword","paramValue":"JoesphBloggins@yourcompany.com","paramColumnName":null}]}'

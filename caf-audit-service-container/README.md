@@ -47,6 +47,8 @@ A default logging level of INFO is applied if this environment variable is not c
 
 [Getting Started](https://cafaudit.github.io/audit-service/pages/en-us/Getting-Started)
 
+[Web Service](https://cafaudit.github.io/audit-service/pages/en-us/Web-Service)
+
 [Architecture](https://cafaudit.github.io/audit-service/pages/en-us/Architecture)
 
 [API](https://cafaudit.github.io/audit-service/pages/en-us/Client-API)

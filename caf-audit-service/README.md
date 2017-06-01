@@ -10,6 +10,8 @@ The Audit Web Service API is used to index audit event messages into Elasticsear
 
 [Getting Started](https://cafaudit.github.io/audit-service/pages/en-us/Getting-Started)
 
+[Web Service](https://cafaudit.github.io/audit-service/pages/en-us/Web-Service)
+
 [Architecture](https://cafaudit.github.io/audit-service/pages/en-us/Architecture)
 
 [API](https://cafaudit.github.io/audit-service/pages/en-us/Client-API)

@@ -22,7 +22,7 @@ User and system audit events are defined per application.
 The service supports multiple tenants in a secure and scalable way.  Multi-tenancy support also facilitates audit reporting on a per tenant basis and across multiple tenants
 
 ## Auto-Generated Client Library
-The service includes an auto-generated client-side library for type safety.  This client library also makes it easier to send user and system audit events to Elasticsearch.
+The service includes an auto-generated client-side library for type safety.  This client library also makes it easier to send user and system audit events to the Audit Web Service or Elasticsearch.
 
 ## Scalable
 The service is extensively scalable.  Elasticsearch is designed with scalability in mind and can scale horizontally without downtime.
@@ -32,5 +32,8 @@ The service is designed for durability as Elasticsearch provides data redundancy
 
 ## High-Availability
 The service is highly available as Elasticsearch replicates and distributes data across it's scalable, durable cluster.  
+
+## Audit Web Service API and Client
+Audit Web Service for logging application audit events through its RESTful interface which sends them through to Elasticsearch.
 <br/>  
 <br/>  

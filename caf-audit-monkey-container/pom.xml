@@ -34,14 +34,14 @@
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>3.2.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-monkey</artifactId>
-            <version>3.1.0-SNAPSHOT</version>
+            <version>3.2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.krallin</groupId>

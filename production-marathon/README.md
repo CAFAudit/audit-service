@@ -45,7 +45,6 @@ The `marathon.json.b` deployment template file specifies default values for a nu
 In order to deploy the service application, issue the following command from the 'production-marathon' directory:
 
 	source ./marathon.env ; \
-	     cat marathon.json.b \
-	     | perl -pe 's/\$\{(\w+)\}/(exists $ENV{$1}?$ENV{$1}:"NOT_SET_$1")/eg' \
-	     | curl -H "Content-Type: application/json" -d @- http://localhost:8080/v2/groups/
-
+		cat marathon.json.b \
+		| perl -pe 's/\$\{(\w+)\}/(exists $ENV{$1} && length $ENV{$1} > 0 ? $ENV{$1} : "NOT_SET_$1")/eg' \
+		| curl -H "Content-Type: application/json" -d @- http://localhost:8080/v2/groups/

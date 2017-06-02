@@ -29,7 +29,7 @@ For more details on the audit event definition file, see [Getting Started](Getti
 
 ## Audit Library
 
-The audit events definition file is used by a code generation plugin to auto-generate a client-side Java library, which provides type safety and sends audit event messages to an endpoint.
+The audit events definition file is utilized by a code generation plugin to auto-generate a client-side Java library, which enforces type safety and sends audit event messages directly to Elasticsearch or the Audit Web Service API.
 
 For more details on the Java Client-Side Audit Library, see [Getting Started](Getting-Started#generating-a-client-side-auditing-library).
 

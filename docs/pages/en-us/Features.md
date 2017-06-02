@@ -33,7 +33,7 @@ The service is designed for durability as Elasticsearch provides data redundancy
 ## High-Availability
 The service is highly available as Elasticsearch replicates and distributes data across it's scalable, durable cluster.
 
-## Audit Web Service
-Audit Web Service for logging application audit events through its API which sends them through to Elasticsearch.
+## REST API
+RESTful API which allows audit event messages to be indexed within Elasticsearch.
 <br/>  
 <br/>  

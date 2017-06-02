@@ -28,6 +28,14 @@
         },
         {
             "title": {
+                "en-us": "Web Service"
+            },
+            "url": {
+                "en-us": "pages/en-us/Web-Service"
+            }
+        },
+        {
+            "title": {
                 "en-us": "Architecture"
             },
             "url": {

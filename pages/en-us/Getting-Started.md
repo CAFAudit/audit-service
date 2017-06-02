@@ -57,6 +57,7 @@ A list of parameter elements are then defined for each audit event, including th
 - `Name`
 - `Type` (string, short, int, long, float, double, boolean or date)
 - `Description`
+- `IndexingHint` (optional) can be used to specify an indexing hint (fulltext or keyword) when storing audit event parameter data of `Type` string.
 - `ColumnName` (optional) can be used to force the use of a particular database column to store the audit data. 
 - `Constraints` (optional) can be used to specify minimum and/or maximum length constraints for audit event parameters of `Type` string.
 
@@ -64,9 +65,9 @@ A list of parameter elements are then defined for each audit event, including th
 
 If you reference the XML schema file from your audit event definition file, then you should be able to use the validate functionality that is built into most IDEs and XML editors. Validate allows you to easily check for syntax errors in your audit event definition file. Just add the standard `xsi:schemaLocation` attribute to the root `AuditedApplication` element:
 
-	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+	<AuditedApplication xmlns="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.0.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">	                   
+	                    xsi:schemaLocation="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.1.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">	                   
 
 Many IDEs and XML editors use the schema file to provide IntelliSense / Auto-Complete when authoring the definition file.
 
@@ -75,9 +76,9 @@ Many IDEs and XML editors use the schema file to provide IntelliSense / Auto-Com
 The following is an example of an audit event definition file used throughout this guide:
 
 	<?xml version="1.0" encoding="UTF-8"?>
-	<AuditedApplication xmlns="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd"
+	<AuditedApplication xmlns="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="http://www.hpe.com/CAF/Auditing/Schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.0.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">
+	                    xsi:schemaLocation="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.1.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">
 	  <ApplicationId>SampleApp</ApplicationId>
 	  <AuditEvents>
 	    <AuditEvent>
@@ -103,10 +104,11 @@ The following is an example of an audit event definition file used throughout th
 	        <Param>
 	          <Name>authorisedBy</Name>
 	          <Type>string</Type>
-			  <Constraints>
-				<MinLength>1</MinLength>
-				<MaxLength>256</MaxLength>
-			  </Constraints>
+	          <IndexingHint>keyword</IndexingHint>
+	          <Constraints>
+	            <MinLength>1</MinLength>
+	            <MaxLength>256</MaxLength>
+	          </Constraints>
 	          <Description>User who authorised the deletion</Description>
 	        </Param>
 	      </Params>
@@ -140,7 +142,7 @@ The following sample Maven project file generates a client-side auditing library
 	        <dependency>
 	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit</artifactId>
-	            <version>3.0.0</version>
+	            <version>3.1.0</version>
 	        </dependency>
 	    </dependencies>
 	
@@ -149,7 +151,7 @@ The following sample Maven project file generates a client-side auditing library
 	            <plugin>
 	                <groupId>com.github.cafaudit</groupId>
 	                <artifactId>caf-audit-maven-plugin</artifactId>
-	                <version>3.0.0</version>
+	                <version>3.1.0</version>
 	                <executions>
 	                    <execution>
 	                        <id>generate-code</id>
@@ -184,7 +186,7 @@ The generated library has a dependency on `caf-audit`, which the generated code 
 	    <dependency>
 	        <groupId>com.github.cafaudit</groupId>
 	        <artifactId>caf-audit</artifactId>
-	        <version>3.0.0</version>
+	        <version>3.1.0</version>
 	    </dependency>
 	</dependencies>
 
@@ -197,7 +199,7 @@ The `xmltojava` goal of the code generation plugin is used to generate the Java 
 	        <plugin>
 	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit-maven-plugin</artifactId>
-	            <version>3.0.0</version>
+	            <version>3.1.0</version>
 	            <executions>
 	                <execution>
 	                    <id>generate-code</id>

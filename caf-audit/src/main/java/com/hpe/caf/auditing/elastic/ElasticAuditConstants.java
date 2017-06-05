@@ -52,4 +52,11 @@ public final class ElasticAuditConstants {
         public static final String DATE_SUFFIX = "_CADte";
     }
 
+    public final static class ConfigEnvVar {
+        public static final String ES_HOST_AND_PORT_VALS_ENV_VAR = "CAF_ELASTIC_HOST_AND_PORT_VALUES";
+        public static final String ES_CLUSTER_NAME_ENV_VAR = "CAF_ELASTIC_CLUSTER_NAME";
+        public static final String ES_NUM_OF_SHARDS_ENV_VAR = "CAF_ELASTIC_NUMBER_OF_SHARDS";
+        public static final String ES_NUM_OF_REPLICAS_ENV_VAR = "CAF_ELASTIC_NUMBER_OF_REPLICAS";
+    }
+
 }

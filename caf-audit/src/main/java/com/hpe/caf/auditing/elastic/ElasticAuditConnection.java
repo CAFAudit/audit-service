@@ -30,13 +30,49 @@ public class ElasticAuditConnection implements AuditConnection {
 
     public ElasticAuditConnection(ConfigurationSource configSource) throws ConfigurationException {
         //  Get Elasticsearch configuration.
-        final ElasticAuditConfiguration config = configSource.getConfiguration(ElasticAuditConfiguration.class);
+        final ElasticAuditConfiguration config;
+        if (configSource == null) {
+            config = new ElasticAuditConfiguration();
+
+            // Get the Elasticsearch host and port values from env var
+            config.setHostAndPortValues(getStringFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.ES_HOST_AND_PORT_VALS_ENV_VAR));
+
+            // Get the Elasticsearch cluster name from env var
+            config.setClusterName(getStringFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.ES_CLUSTER_NAME_ENV_VAR));
+
+            // Get the Elasticsearch number of shards per index from env var else default to '5'
+            config.setNumberOfShards(getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.ES_NUM_OF_SHARDS_ENV_VAR, 5));
+
+            // Get the Elasticsearch number of replicas per shard from env var else default to '1'
+            config.setNumberOfReplicas(getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.ES_NUM_OF_REPLICAS_ENV_VAR, 1));
+
+        } else {
+            config = configSource.getConfiguration(ElasticAuditConfiguration.class);
+        }
 
         //  Get Elasticsearch connection.
         transportClient = ElasticAuditTransportClientFactory.getTransportClient(config.getHostAndPortValues(), config.getClusterName());
 
         //  Get Elasticsearch index manager.
         indexManager = new ElasticAuditIndexManager(config, transportClient);
+    }
+
+    private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,
+                                                             final int defaultTo) throws ConfigurationException {
+        try {
+            final String envVarValue = getStringFromSysPropertyOrEnvVariable(environmentVariable);
+            if (envVarValue != null) {
+                return Integer.parseInt(envVarValue);
+            }
+        } catch (final NumberFormatException nfe) {
+            throw new ConfigurationException(environmentVariable + " environment variable should only contain " +
+                    "numbers", nfe);
+        }
+        return defaultTo;
+    }
+
+    private static String getStringFromSysPropertyOrEnvVariable(final String environmentVariable) throws ConfigurationException {
+        return System.getProperty(environmentVariable, System.getenv(environmentVariable));
     }
 
     @Override

@@ -18,6 +18,7 @@ package com.hpe.caf.auditing.elastic;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
+import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnectionHelper;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
@@ -177,6 +178,24 @@ public class ElasticAuditIT
     }
 
     @Test
+    public void testESIndexingWithConfigurationPassedAsSystemProps() throws Exception
+    {
+        // Set the system props required to configure the ElasticAuditConnection
+        final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
+        System.setProperty(ElasticAuditConstants.ConfigEnvVar.ES_HOST_AND_PORT_VALS_ENV_VAR, esHostAndPort);
+        System.setProperty(ElasticAuditConstants.ConfigEnvVar.ES_CLUSTER_NAME_ENV_VAR, ES_CLUSTERNAME);
+
+        try (final AuditConnection auditConnection = new ElasticAuditConnection(null);
+             com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
+
+            // Send Audit Event to Elasticsearch
+            AuditEvent auditEvent = new AuditEvent(auditChannel).invoke();
+            // Verify that the Audit Event was stored in Elasticsearch
+            verifyAuditEvent(esHostAndPort, auditEvent);
+        }
+    }
+
+    @Test
     public void testESIndexing() throws Exception
     {
         //  This tests the successful indexing of a sample audit event
@@ -190,79 +209,53 @@ public class ElasticAuditIT
             AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort, ES_CLUSTERNAME);
             com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
 
-            //  Index a sample audit event message into Elasticsearch.
-            AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
+            // Send Audit Event to Elasticsearch
+            AuditEvent auditEvent = new AuditEvent(auditChannel).invoke();
+            // Verify that the Audit Event was stored in Elasticsearch
+            verifyAuditEvent(esHostAndPort, auditEvent);
+        }
+    }
 
-            //  Set up fixed field data for the sample audit event message.
-            auditEventBuilder.setApplication(APPLICATION_ID);
-            auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
-            auditEventBuilder.setCorrelationId(CORRELATION_ID);
-            auditEventBuilder.setTenant(TENANT_ID);
-            auditEventBuilder.setUser(USER_ID);
+    private void verifyAuditEvent(String esHostAndPort, AuditEvent auditEvent) throws Exception {
+        //  Verify the type mappings have been set for the index. Then search for the audit event message in
+        //  Elasticsearch and verify field data matches input.
+        try (TransportClient transportClient
+                     = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
 
-            //  Set up random test values for custom field data.
-            Random rand = new Random();
+            verifyTypeMappings(transportClient);
 
-            String docStringParamValue = "testStringParam";
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_STRING_PARAM_FIELD, null, docStringParamValue);
-            int docIntParamValue = rand.nextInt();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_INT_PARAM_FIELD, null, docIntParamValue);
-            short docShortParamValue = (short) rand.nextInt(Short.MAX_VALUE + 1);
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_SHORT_PARAM_FIELD, null, docShortParamValue);
-            long docLongParamValue = rand.nextLong();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_LONG_PARAM_FIELD, null, docLongParamValue);
-            float docFloatParamValue = rand.nextFloat();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_FLOAT_PARAM_FIELD, null, docFloatParamValue);
-            double docDoubleParamValue = rand.nextDouble();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_DOUBLE_PARAM_FIELD, null, docDoubleParamValue);
-            boolean docBooleanParamValue = rand.nextBoolean();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_BOOLEAN_PARAM_FIELD, null, docBooleanParamValue);
-            Date docDateParamValue = new Date();
-            auditEventBuilder.addEventParameter(CUSTOM_DOC_DATE_PARAM_FIELD, null, docDateParamValue);
+            SearchHit[] hits = new SearchHit[0];
+            hits = searchDocumentInIndex(transportClient,
+                    ES_INDEX,
+                    ElasticAuditConstants.FixedFieldName.USER_ID_FIELD,
+                    USER_ID);
 
-            //  Send audit event message to Elasticsearch.
-            auditEventBuilder.send();
+            //  Expecting a single hit.
+            Assert.assertTrue(hits.length == 1);
 
-            //  Verify the type mappings have been set for the index. Then search for the audit event message in
-            //  Elasticsearch and verify field data matches input.
-            try (TransportClient transportClient
-                = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
+            //  Make a note of the document identifier as we will use this to clean
+            //  up afterwards.
+            final String docId = hits[0].getId();
 
-                verifyTypeMappings(transportClient);
+            //  Verify fixed field data results.
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, APPLICATION_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, USER_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
 
-                SearchHit[] hits = new SearchHit[0];
-                hits = searchDocumentInIndex(transportClient,
-                        ES_INDEX,
-                        ElasticAuditConstants.FixedFieldName.USER_ID_FIELD,
-                        USER_ID);
+            //  Verify fixed field data results.
+            verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, auditEvent.getDocStringParamValue(), "string", AuditIndexingHint.KEYWORD);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, auditEvent.getDocIntParamValue(), "int", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, auditEvent.getDocShortParamValue(), "short", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, auditEvent.getDocLongParamValue(), "long", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, auditEvent.getDocFloatParamValue(), "float", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, auditEvent.getDocDoubleParamValue(), "double", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, auditEvent.isDocBooleanParamValue(), "boolean", null);
+            verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, auditEvent.getDocDateParamValue(), "date", null);
 
-                //  Expecting a single hit.
-                Assert.assertTrue(hits.length == 1);
-
-                //  Make a note of the document identifier as we will use this to clean
-                //  up afterwards.
-                final String docId = hits[0].getId();
-
-                //  Verify fixed field data results.
-                verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, APPLICATION_ID, "string");
-                verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
-                verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
-                verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, USER_ID, "string");
-                verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
-
-                //  Verify fixed field data results.
-                verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string", AuditIndexingHint.KEYWORD);
-                verifyCustomFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int", null);
-                verifyCustomFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short", null);
-                verifyCustomFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long", null);
-                verifyCustomFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float", null);
-                verifyCustomFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double", null);
-                verifyCustomFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean", null);
-                verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date", null);
-
-                //  Delete test document after verification is complete.
-                deleteDocument(transportClient, ES_INDEX, docId);
-            }
+            //  Delete test document after verification is complete.
+            deleteDocument(transportClient, ES_INDEX, docId);
         }
     }
 
@@ -609,4 +602,87 @@ public class ElasticAuditIT
         }
     }
 
+    private class AuditEvent {
+        private AuditChannel auditChannel;
+        private String docStringParamValue;
+        private int docIntParamValue;
+        private short docShortParamValue;
+        private long docLongParamValue;
+        private float docFloatParamValue;
+        private double docDoubleParamValue;
+        private boolean docBooleanParamValue;
+        private Date docDateParamValue;
+
+        public AuditEvent(AuditChannel auditChannel) {
+            this.auditChannel = auditChannel;
+        }
+
+        public String getDocStringParamValue() {
+            return docStringParamValue;
+        }
+
+        public int getDocIntParamValue() {
+            return docIntParamValue;
+        }
+
+        public short getDocShortParamValue() {
+            return docShortParamValue;
+        }
+
+        public long getDocLongParamValue() {
+            return docLongParamValue;
+        }
+
+        public float getDocFloatParamValue() {
+            return docFloatParamValue;
+        }
+
+        public double getDocDoubleParamValue() {
+            return docDoubleParamValue;
+        }
+
+        public boolean isDocBooleanParamValue() {
+            return docBooleanParamValue;
+        }
+
+        public Date getDocDateParamValue() {
+            return docDateParamValue;
+        }
+
+        public AuditEvent invoke() throws Exception {
+            //  Index a sample audit event message into Elasticsearch.
+            AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
+
+            //  Set up fixed field data for the sample audit event message.
+            auditEventBuilder.setApplication(APPLICATION_ID);
+            auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
+            auditEventBuilder.setCorrelationId(CORRELATION_ID);
+            auditEventBuilder.setTenant(TENANT_ID);
+            auditEventBuilder.setUser(USER_ID);
+
+            //  Set up random test values for custom field data.
+            Random rand = new Random();
+
+            docStringParamValue = "testStringParam";
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_STRING_PARAM_FIELD, null, docStringParamValue);
+            docIntParamValue = rand.nextInt();
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_INT_PARAM_FIELD, null, docIntParamValue);
+            docShortParamValue = (short) rand.nextInt(Short.MAX_VALUE + 1);
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_SHORT_PARAM_FIELD, null, docShortParamValue);
+            docLongParamValue = rand.nextLong();
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_LONG_PARAM_FIELD, null, docLongParamValue);
+            docFloatParamValue = rand.nextFloat();
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_FLOAT_PARAM_FIELD, null, docFloatParamValue);
+            docDoubleParamValue = rand.nextDouble();
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_DOUBLE_PARAM_FIELD, null, docDoubleParamValue);
+            docBooleanParamValue = rand.nextBoolean();
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_BOOLEAN_PARAM_FIELD, null, docBooleanParamValue);
+            docDateParamValue = new Date();
+            auditEventBuilder.addEventParameter(CUSTOM_DOC_DATE_PARAM_FIELD, null, docDateParamValue);
+
+            //  Send audit event message to Elasticsearch.
+            auditEventBuilder.send();
+            return this;
+        }
+    }
 }

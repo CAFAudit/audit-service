@@ -22,6 +22,7 @@ import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnectionHelper;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
+import com.hpe.caf.auditing.AuditConnectionFactory;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -185,7 +186,7 @@ public class ElasticAuditIT
         System.setProperty(ElasticAuditConstants.ConfigEnvVar.ES_HOST_AND_PORT_VALS_ENV_VAR, esHostAndPort);
         System.setProperty(ElasticAuditConstants.ConfigEnvVar.ES_CLUSTER_NAME_ENV_VAR, ES_CLUSTERNAME);
 
-        try (final AuditConnection auditConnection = new ElasticAuditConnection(null);
+        try (final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
              com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
 
             // Send Audit Event to Elasticsearch

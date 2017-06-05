@@ -89,7 +89,7 @@ public class ElasticAuditIT
         //  This tests the usage of an unknown host.
         //  An exception is expected to be thrown.
 
-        final String esHostAndPort = "unknown:" + ES_PORT;
+        final String esHostAndPort = "unknownAbc123:" + ES_PORT;
         final AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort, ES_CLUSTERNAME);
     }
 

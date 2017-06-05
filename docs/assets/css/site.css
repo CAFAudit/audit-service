@@ -474,6 +474,10 @@ code {
     color: #11dd48;
 }
 
+.highlight .s2 {
+    color: #fffe00;
+}
+
 /*
     Pagination Controls
 */

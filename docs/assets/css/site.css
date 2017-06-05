@@ -170,6 +170,22 @@ a:visited {
     }
 }
 
+@media (min-width: 1680px) {
+    .splash-page .splash-header .caf-brand {
+        width: 1680px;
+        justify-content: flex-start;     
+		margin-left:200px;
+    }
+}
+
+@media (min-width: 1875px) {
+    .splash-page .splash-header .caf-brand {
+        width: 1875px;
+        justify-content: flex-start;     
+		margin-left:300px;
+    }
+}
+
 @media (min-width: 1900px) {
     .splash-page .splash-header .caf-brand {
         width: 1900px;
@@ -199,6 +215,22 @@ a:visited {
         width: 2500px;
         justify-content: flex-start;     
 		margin-left:610px;
+	}
+}
+
+@media (min-width: 2800px) {
+    .splash-page .splash-header .caf-brand {
+        width: 2800px;
+        justify-content: flex-start;     
+		margin-left:760px;
+	}
+}
+
+@media (min-width: 3000px) {
+    .splash-page .splash-header .caf-brand {
+        width: 3000px;
+        justify-content: flex-start;     
+		margin-left:870px;
 	}
 }
 

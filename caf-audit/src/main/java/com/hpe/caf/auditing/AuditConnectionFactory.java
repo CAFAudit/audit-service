@@ -20,7 +20,6 @@ import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.elastic.ElasticAuditConnection;
 import com.hpe.caf.auditing.noop.NoopAuditConnection;
 import com.hpe.caf.auditing.webserviceclient.WebServiceClientAuditConnection;
-import com.hpe.caf.auditing.webserviceclient.WebServiceClientException;
 
 public class AuditConnectionFactory {
 
@@ -35,11 +34,9 @@ public class AuditConnectionFactory {
      * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source.
      * Or (if CAF_AUDIT_MODE=webservice) if the webservice endpoint URL, passed via configuration, or if HTTP or HTTPS
      * Proxy URLs are malformed
-     * @throws WebServiceClientException (if CAF_AUDIT_MODE=webservice) if HttpUrlConnection could not be opened
-     * to the webservice endpoint
      */
     public static AuditConnection createConnection(final ConfigurationSource configSource) throws
-            ConfigurationException, WebServiceClientException {
+            ConfigurationException {
         String auditLibMode = System.getProperty("CAF_AUDIT_MODE", System.getenv("CAF_AUDIT_MODE"));
 
         // If the CAF_AUDIT_MODE environment variable has not been set return the NOOP implementation

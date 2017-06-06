@@ -83,6 +83,8 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     private static final String EVENT_PARAM_INDEXING_HINT_FULLTEXT = "FULLTEXT";
     private static final String EVENT_PARAM_INDEXING_HINT_KEYWORD = "KEYWORD";
 
+    private AuditConnection auditConnection;
+
     @Override
     public Response auditeventsPost(NewAuditEvent newAuditEvent, SecurityContext securityContext) throws NotFoundException {
         //  Index new audit event into Elasticsearch.
@@ -106,9 +108,13 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
         //  Validate the incoming new audit event parameter.
         validateNewAuditEventFields(newAuditEvent);
 
+        // If an AuditConnection has been been established create one with the ConfigurationSource.
+        if (auditConnection == null) {
+            auditConnection = AuditConnectionFactory.createConnection(getConfigurationSource());
+        }
+
         //  Index audit event message into Elasticsearch.
         try (
-                AuditConnection auditConnection = AuditConnectionFactory.createConnection(getConfigurationSource());
                 AuditChannel auditChannel = auditConnection.createChannel()
         ) {
             LOG.debug("AuditConnection and AuditChannel created");

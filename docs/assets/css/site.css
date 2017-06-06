@@ -168,10 +168,71 @@ a:visited {
         justify-content: flex-start;     
 		margin-left:100px;
     }
-	
-	
 }
 
+@media (min-width: 1680px) {
+    .splash-page .splash-header .caf-brand {
+        width: 1680px;
+        justify-content: flex-start;     
+		margin-left:200px;
+    }
+}
+
+@media (min-width: 1875px) {
+    .splash-page .splash-header .caf-brand {
+        width: 1875px;
+        justify-content: flex-start;     
+		margin-left:300px;
+    }
+}
+
+@media (min-width: 1900px) {
+    .splash-page .splash-header .caf-brand {
+        width: 1900px;
+        justify-content: flex-start;     
+		margin-left:310px;
+	}
+}
+
+@media (min-width: 2120px) {
+    .splash-page .splash-header .caf-brand {
+        width: 2120px;
+        justify-content: flex-start;     
+		margin-left:420px;
+	}
+}
+
+@media (min-width: 2300px) {
+    .splash-page .splash-header .caf-brand {
+        width: 2300px;
+        justify-content: flex-start;     
+		margin-left:510px;
+	}
+}
+
+@media (min-width: 2500px) {
+    .splash-page .splash-header .caf-brand {
+        width: 2500px;
+        justify-content: flex-start;     
+		margin-left:610px;
+	}
+}
+
+@media (min-width: 2800px) {
+    .splash-page .splash-header .caf-brand {
+        width: 2800px;
+        justify-content: flex-start;     
+		margin-left:760px;
+	}
+}
+
+@media (min-width: 3000px) {
+    .splash-page .splash-header .caf-brand {
+        width: 3000px;
+        justify-content: flex-start;     
+		margin-left:870px;
+	}
+}
 
 .splash-page .splash-header .caf-brand .download-caf {
     background-color: #2d8a84;
@@ -443,6 +504,10 @@ code {
 
 .highlight .s {
     color: #11dd48;
+}
+
+.highlight .s2 {
+    color: #fffe00;
 }
 
 /*

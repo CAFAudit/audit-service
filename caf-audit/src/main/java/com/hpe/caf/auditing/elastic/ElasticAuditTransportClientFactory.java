@@ -52,14 +52,19 @@ public class ElasticAuditTransportClientFactory {
      */
     public static TransportClient getTransportClient(String hostAndPortValues, String clusterName) throws ConfigurationException {
         final TransportClient transportClient;
-        Settings settings = Settings.builder()
-                .put("cluster.name", clusterName)
-                .put("client.transport.sniff", true).build();
-        transportClient = new PreBuiltTransportClient(settings);
 
         if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
             //  Split comma separated list of ES hostname and port values.
             final String[] hostAndPortArray = hostAndPortValues.split(",");
+
+            // If there is more than one Elasticsearch host then set the client.transport.sniff to true as we are dealing with a cluster
+            Settings.Builder settingsBuilder = Settings.builder()
+                    .put("cluster.name", clusterName);
+            if (hostAndPortArray.length > 1) {
+                settingsBuilder.put("client.transport.sniff", true);
+            }
+            Settings settings = settingsBuilder.build();
+            transportClient = new PreBuiltTransportClient(settings);
 
             //  For each ES hostname and port, add a transport address that will be used to connect to.
             for (final String hostAndPort : hostAndPortArray) {

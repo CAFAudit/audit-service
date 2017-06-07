@@ -27,7 +27,6 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.List;
 
 /**
  * A factory for Elastic Search TransportClients.
@@ -37,6 +36,8 @@ public class ElasticAuditTransportClientFactory {
     private static final Logger LOG = LogManager.getLogger(ElasticAuditTransportClientFactory.class.getName());
 
     private static final String ES_HOST_AND_PORT_NOT_PROVIDED = "Elasticsearch host and port have not been provided";
+    private static final String ES_HOST_NOT_PROVIDED = "Elasticsearch host has not been provided";
+    private static final String ES_PORT_NOT_PROVIDED = "Elasticsearch port has not been provided";
 
     private ElasticAuditTransportClientFactory() {
     }
@@ -49,49 +50,58 @@ public class ElasticAuditTransportClientFactory {
      * @return TransportClient
      * @throws ConfigurationException exception thrown if host is unknown
      */
-    public static TransportClient getTransportClient(String hostAndPortValues, String clusterName) throws ConfigurationException{
+    public static TransportClient getTransportClient(String hostAndPortValues, String clusterName) throws ConfigurationException {
         final TransportClient transportClient;
+        Settings settings = Settings.builder()
+                .put("cluster.name", clusterName)
+                .put("client.transport.sniff", true).build();
+        transportClient = new PreBuiltTransportClient(settings);
 
-        try {
-            Settings settings = Settings.builder()
-                    .put("cluster.name", clusterName).build();
-            transportClient = new PreBuiltTransportClient(settings);
+        if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
+            //  Split comma separated list of ES hostname and port values.
+            final String[] hostAndPortArray = hostAndPortValues.split(",");
 
-            if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
-                //  Split comma separated list of ES hostname and port values.
-                final String[] hostAndPortArray = hostAndPortValues.split(",");
+            //  For each ES hostname and port, add a transport address that will be used to connect to.
+            for (final String hostAndPort : hostAndPortArray) {
+                final String host;
+                final int port;
+                try {
+                    // Add scheme to make the resulting URI valid.
+                    URI uri = new URI("http://" + hostAndPort);
+                    host = uri.getHost();
+                    port = uri.getPort();
 
-                //  For each ES hostname and port, add a transport address that will be used to connect to.
-                for (final String hostAndPort : hostAndPortArray) {
-                    final String host;
-                    final int port;
+                    if (uri.getHost() == null) {
+                        throw new URISyntaxException(uri.toString(), ES_HOST_NOT_PROVIDED);
+                    } else if (uri.getPort() == -1) {
+                        throw new URISyntaxException(uri.toString(), ES_PORT_NOT_PROVIDED);
+                    }
+
                     try {
-                        // Add scheme to make the resulting URI valid.
-                        URI uri = new URI("http://" + hostAndPort);
-                        host = uri.getHost();
-                        port = uri.getPort();
-
-                        if (uri.getHost() == null || uri.getPort() == -1) {
-                            throw new URISyntaxException(uri.toString(), ES_HOST_AND_PORT_NOT_PROVIDED);
-                        }
-
                         transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));
                         LOG.debug("Elasticsearch initialization - added host: " + host);
-
-                    } catch (URISyntaxException e) {
-                        LOG.error(e.getMessage());
-                        throw new ConfigurationException(e.getMessage(), e);
+                    } catch (UnknownHostException e) {
+                        LOG.error("Host unavailable or unknown: " + e.getMessage(), e);
                     }
+
+                } catch (URISyntaxException e) {
+                    LOG.error(e.getMessage());
+                    throw new ConfigurationException(e.getMessage(), e);
                 }
-                LOG.debug("Elasticsearch client initialized: " + transportClient.listedNodes().toString());
-            } else {
-                //  ES host and port not specified.
-                LOG.error(ES_HOST_AND_PORT_NOT_PROVIDED);
-                throw new ConfigurationException(ES_HOST_AND_PORT_NOT_PROVIDED);
             }
-        } catch (UnknownHostException e) {
-            LOG.error(e.getMessage());
-            throw new ConfigurationException(e.getMessage(), e);
+
+            if (transportClient.listedNodes().isEmpty()) {
+                final String errorMessage = "Elasticsearch transport client is not configured to communicate with " +
+                        "any nodes";
+                LOG.error(errorMessage);
+                throw new ConfigurationException(errorMessage);
+            }
+
+            LOG.debug("Elasticsearch client initialized: " + transportClient.listedNodes().toString());
+        } else {
+            //  ES host and port not specified.
+            LOG.error(ES_HOST_AND_PORT_NOT_PROVIDED);
+            throw new ConfigurationException(ES_HOST_AND_PORT_NOT_PROVIDED);
         }
 
         return transportClient;

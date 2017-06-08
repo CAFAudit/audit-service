@@ -37,8 +37,12 @@ public class ElasticAuditConnection implements AuditConnection {
             // Get the Elasticsearch host and port values from env var
             config.setHostAndPortValues(System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES)));
 
-            // Get the Elasticsearch cluster name from env var
-            config.setClusterName(System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_CLUSTER_NAME, System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_CLUSTER_NAME)));
+            // Get the Elasticsearch cluster name from env var else default to "elasticsearch-cluster"
+            String clusterName = System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_CLUSTER_NAME, System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_CLUSTER_NAME));
+            if (clusterName == null) {
+                clusterName = "elasticsearch-cluster";
+            }
+            config.setClusterName(clusterName);
 
             // Get the Elasticsearch number of shards per index from env var else default to '5'
             config.setNumberOfShards(getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_NUMBER_OF_SHARDS, 5));

@@ -40,6 +40,7 @@ import org.elasticsearch.search.SearchHits;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
@@ -54,13 +55,13 @@ public class WebserviceClientAuditIT {
     private static final Logger LOG = LogManager.getLogger(WebserviceClientAuditIT.class.getName());
 
     private static final String APPLICATION_ID = "aTestApplication";
-    private static final String TENANT_ID = "tTestTenant";
+    private static String TENANT_ID;
     private static final String USER_ID = "aTestUser@testcompany.com";
     private static final String EVENT_CATEGORY_ID = "evDocument";
     private static final String EVENT_TYPE_ID = "etView";
     private static final String CORRELATION_ID = "cTestCorrelation";
 
-    private static final String ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
+    private static String ES_INDEX;
 
     private static final String CUSTOM_DOC_STRING_PARAM_FIELD = "docStringParam";
     private static final String CUSTOM_DOC_INT_PARAM_FIELD = "docIntParam";
@@ -117,6 +118,12 @@ public class WebserviceClientAuditIT {
         ES_PORT = Integer.parseInt(System.getProperty("elasticsearch.transport.port", System.getenv("elasticsearch.transport.port")));
         ES_CLUSTERNAME = System.getProperty("CAF_ELASTIC_CLUSTER_NAME", System.getenv("CAF_ELASTIC_CLUSTER_NAME"));
         ES_HOSTNAME_AND_PORT = String.format("%s:%s", ES_HOSTNAME, ES_PORT);
+    }
+
+    @BeforeMethod
+    public void randomiseTenantId() {
+        TENANT_ID = UUID.randomUUID().toString().replace("-", "");
+        ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
     }
 
     @AfterMethod

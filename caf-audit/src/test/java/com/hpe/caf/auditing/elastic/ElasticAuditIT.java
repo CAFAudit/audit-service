@@ -31,6 +31,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -48,13 +49,13 @@ public class ElasticAuditIT
 {
 
     private static final String APPLICATION_ID = "aTestApplication";
-    private static final String TENANT_ID = "tTestTenant";
+    private static String TENANT_ID;
     private static String USER_ID;
     private static final String EVENT_CATEGORY_ID = "evDocument";
     private static final String EVENT_TYPE_ID = "etView";
     private static final String CORRELATION_ID = "cTestCorrelation";
 
-    private static final String ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
+    private static String ES_INDEX;
 
     private static final String CUSTOM_DOC_STRING_PARAM_FIELD = "docStringParam";
     private static final String CUSTOM_DOC_STRING_KEYWORD_PARAM_FIELD = "docKeywordParam";
@@ -81,6 +82,12 @@ public class ElasticAuditIT
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));
         ES_CLUSTERNAME = System.getProperty("es.cluster.name", System.getenv("es.cluster.name"));
         USER_ID = UUID.randomUUID().toString();
+    }
+
+    @Before
+    public void randomiseTenantId() {
+        TENANT_ID = UUID.randomUUID().toString().replace("-", "");
+        ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
     }
 
     @Test(expected = ConfigurationException.class)

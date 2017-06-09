@@ -15,22 +15,16 @@
  */
 package com.github.cafaudit.auditmonkey;
 
-import java.util.concurrent.BlockingQueue;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cafaudit.AuditLog;
 import com.hpe.caf.auditing.AuditChannel;
 
-public class StandardMonkey implements Monkey, Runnable
+public class StandardMonkey extends AbstractMonkey implements Monkey, Runnable
 {
     private static final Logger LOG = LoggerFactory.getLogger(StandardMonkey.class);
-    
-    private AuditChannel channel;
-    private MonkeyConfig monkeyConfig;
-    private BlockingQueue<Integer> queue;
-    
+        
     public StandardMonkey(AuditChannel channel, MonkeyConfig monkeyConfig)
     {
         this.channel = channel;
@@ -55,38 +49,6 @@ public class StandardMonkey implements Monkey, Runnable
         } catch (Exception e) {
             LOG.error("Error executing a multi-threaded version of the StandardMonkey" + e);
         }
-    }
-
-    /**
-     * @return the channel
-     */
-    public AuditChannel getChannel()
-    {
-        return channel;
-    }
-
-    /**
-     * @param channel the channel to set
-     */
-    public void setChannel(AuditChannel channel)
-    {
-        this.channel = channel;
-    }
-
-    /**
-     * @return the monkeyConfig
-     */
-    public MonkeyConfig getMonkeyConfig()
-    {
-        return monkeyConfig;
-    }
-
-    /**
-     * @param monkeyConfig the monkeyConfig to set
-     */
-    public void setMonkeyConfig(MonkeyConfig monkeyConfig)
-    {
-        this.monkeyConfig = monkeyConfig;
     }
 
 }

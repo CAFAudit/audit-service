@@ -37,6 +37,9 @@ public class MonkeyFactory
         else if(monkeyConfig.getMonkeyMode().equalsIgnoreCase(MonkeyConstants.CAF_AUDIT_RANDOM_MONKEY)) {
             LOG.info("Random Monkey selected");
             monkey = new RandomMonkey(channel, monkeyConfig);
+        } else if(monkeyConfig.getMonkeyMode().equalsIgnoreCase(MonkeyConstants.CAF_AUDIT_DEMO_MONKEY)) {
+            LOG.info("Demo Monkey selected");
+            monkey = new DemoMonkey(channel, monkeyConfig);
         }
         return monkey;
     }

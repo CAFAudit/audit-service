@@ -55,4 +55,18 @@ public class AuditConnectionFactory {
                 throw new RuntimeException("Unknown CAF_AUDIT_MODE specified");
         }
     }
+
+    /**
+     * Create connection for the Audit application. Returns NoopAuditConnection if an 'CAF_AUDIT_MODE' environment
+     * variable has not been set. If 'CAF_AUDIT_MODE' has been set to 'direct' this returns an ElasticAuditConnection
+     * if its required system properties or environment variables for configuration have been set.
+     *
+     * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable
+     * @throws ConfigurationException if the configuration details cannot be retrieved from system properties or
+     * environment variables for building ElasticAuditConfiguration.
+     * @throws WebServiceClientException if 'CAF_AUDIT_MODE' has been set to webservice.
+     */
+    public static AuditConnection createConnection() throws WebServiceClientException, ConfigurationException {
+        return createConnection(null);
+    }
 }

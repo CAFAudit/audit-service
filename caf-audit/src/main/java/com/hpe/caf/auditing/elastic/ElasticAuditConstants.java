@@ -59,4 +59,10 @@ public final class ElasticAuditConstants {
         public static final String CAF_ELASTIC_NUMBER_OF_REPLICAS = "CAF_ELASTIC_NUMBER_OF_REPLICAS";
     }
 
+    public final static class ConfigDefault {
+        public static final String CAF_ELASTIC_CLUSTER_NAME = "elasticsearch-cluster";
+        public static final int CAF_ELASTIC_NUMBER_OF_SHARDS = 5;
+        public static final int CAF_ELASTIC_NUMBER_OF_REPLICAS = 1;
+    }
+
 }

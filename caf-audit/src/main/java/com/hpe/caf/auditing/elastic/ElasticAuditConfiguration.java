@@ -20,9 +20,9 @@ import com.hpe.caf.api.Configuration;
 @Configuration
 public class ElasticAuditConfiguration {
 
-    private static String DEFAULT_CLUSTER_NAME = "elasticsearch-cluster";
-    private static int DEFAULT_NUMBER_OF_SHARDS = 5;
-    private static int DEFAULT_NUMBER_OF_REPLICAS = 1;
+    private static String DEFAULT_CLUSTER_NAME = ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_CLUSTER_NAME;
+    private static int DEFAULT_NUMBER_OF_SHARDS = ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_SHARDS;
+    private static int DEFAULT_NUMBER_OF_REPLICAS = ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS;
 
     public ElasticAuditConfiguration() {
 

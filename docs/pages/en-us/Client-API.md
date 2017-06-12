@@ -19,7 +19,7 @@ This section covers `caf-audit` library classes and how to use them as objects w
 
 The order of instantiation and use of these objects for sending audit events is as follows:
 
-1. If you do not have an existing [`ConfigurationSource`](#ConfigurationSource) object, create one for retrieving and holding configuration details for the mode you require.
+1. If you do not have an existing [`ConfigurationSource`](#ConfigurationSource) object, create one for retrieving and holding configuration details for the mode you require. Optionally, [Direct to Elasticsearch](#direct-to-elasticsearch-configuration) mode can be configured via system or environment variables.
 2. Use the [`AuditConnectionFactory`](#AuditConnectionFactory) to create the [`AuditConnection`](#AuditConnection) object by setting the [`CAF_AUDIT_MODE Environment Variable`](#CAF_AUDIT_MODE-environment-variable) and pass it the [`ConfigurationSource`](#ConfigurationSource).
 3. Create an [`AuditChannel`](#AuditChannel) object from the [`AuditConnection`](#AuditConnection) object.
 4. Use the [`AuditEventBuilder`](#AuditEventBuilder) object to construct and send audit event messages to the endpoint.
@@ -35,7 +35,7 @@ You may already have a CAF configuration source in your application. It is a gen
 - a REST service
 - a custom source that better integrates with the host application.
 
-A `ConfigurationSource` object is required for the [`AuditConnectionFactory`](#AuditConnectionFactory) object to produce an [`AuditConnection`](#AuditConnection) object.
+A `ConfigurationSource` object is required for the [`AuditConnectionFactory`](#AuditConnectionFactory) object `createConnection(ConfigurationSource configSource)` method to produce an [`AuditConnection`](#AuditConnection) object.
 
 If you're not already using CAF's configuration mechanism, this sample code illustrates the generation of a `ConfigurationSource` object.
 
@@ -107,9 +107,13 @@ To use JSON-encoded files for your configuration, add the following additional d
 	    <scope>runtime</scope>
 	</dependency>
 
-#### Direct to Elasticsearch Configuration
+### Direct to Elasticsearch Configuration
 
-In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded files with the following parameters:
+Direct to Elasticsearch mode can be configured with a [`ConfigurationSource`](#ConfigurationSource) object or via environment variables
+
+#### Direct to Elasticsearch ConfigurationSource
+
+In the [`ConfigurationSource`](#ConfigurationSource) section, we used JSON-encoded files with the following parameters:
 
 - `CAF_CONFIG_PATH: /etc/sampleapp/config`
 - `CAF_APPNAME: sampleappgroup/sampleapp`
@@ -130,9 +134,18 @@ where:
 - `numberOfShards` the number of primary shards that an index should have. Defaults to 5.
 - `numberOfReplicas` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
 
-#### Audit Web Service Client Configuration
+#### Direct to Elasticsearch Environment Variables
 
-In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded files with the following parameters:
+As an alternative to creating a [`ConfigurationSource`](#ConfigurationSource), for the `ElasticAuditConnection` or [`AuditConnectionFactory`](#AuditConnectionFactory), the direct to Elasticsearch mode can be configured via the following environment variables:
+
+- `CAF_ELASTIC_HOST_AND_PORT_VALUES` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
+- `CAF_ELASTIC_CLUSTER_NAME` name of the Elasticsearch cluster. Defaults to "elasticsearch-cluster".
+- `CAF_ELASTIC_NUMBER_OF_SHARDS` the number of primary shards that an index should have. Defaults to 5.
+- `CAF_ELASTIC_NUMBER_OF_REPLICAS` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
+
+### Audit Web Service Client Configuration
+
+In the [`ConfigurationSource`](#ConfigurationSource) section, we used JSON-encoded files with the following parameters:
 
 - `CAF_CONFIG_PATH: /etc/sampleapp/config`
 - `CAF_APPNAME: sampleappgroup/sampleapp`

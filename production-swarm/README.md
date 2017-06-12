@@ -19,12 +19,6 @@ The `docker-stack.yml` file specifies default values for a number of additional 
 
 #### Deploy
 
-##### Restart Policy
-* `condition` : One of none, on-failure or any.
-* `delay` : How long to wait between restart attempts, specified as a duration.
-* `max_attempts` : How many times to attempt to restart a container before giving up.
-* `window` : How long to wait before deciding if a restart has succeeded, specified as a duration.
-
 ##### Replicas
 * `mode` : Either global (exactly one container per swarm node) or replicated (a specified number of containers) (default replicated).
 * `replicas` : If the service is replicated (which is the default), specify the number of containers that should be running at any given time.
@@ -49,6 +43,7 @@ To deploy the stack:
   * CAF\_ELASTIC\_CLUSTER\_NAME=<ELASTICSEARCH\_CLUSTER\_NAME>
 * Edit `docker-stack.yml` as necessary to update the properties as required
   * Ensure the version of the CAF Audit Web Service is correctly set
+  * Configure the external parameter, CAF\_AUDIT\_SERVICE\_PORT, if required. This is the port that the CAF Audit Web Service is configured to listen on.
 * Execute `docker stack deploy --compose-file=docker-stack.yml auditWebServiceStack`  
 * The CAF Audit Web Service containers will start up
 

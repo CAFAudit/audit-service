@@ -7,11 +7,6 @@ services:
       - ./elasticsearch.env
     image: cafaudit/audit-service:3.1.0
     deploy:
-      restart_policy:
-        condition: any
-        delay: 10s
-        max_attempts: 5
-        window: 120s    
       mode: replicated
       replicas: 2
       resources:
@@ -20,9 +15,9 @@ services:
           memory: 1536M
         reservations:
           cpus: '0.25'
-          memory: 768M		  
+          memory: 768M
       update_config:
         parallelism: 2
         delay: 10s
     ports:
-      - "25080:8080"
+      - "${CAF_AUDIT_SERVICE_PORT:-25080}:8080"

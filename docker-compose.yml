@@ -106,6 +106,20 @@ services:
       CAF_ELASTIC_NUMBER_OF_SHARDS: 5
       CAF_ELASTIC_NUMBER_OF_REPLICAS: 1
 
+  kibana:
+    depends_on:
+      - elasticsearch1
+    image: docker.elastic.co/kibana/kibana:5.3.1
+    ports:
+      - "${CAF_KIBANA_PORT:-5601}:5601"
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch1:9200
+      # disable X-Pack
+      xpack.security.enabled: "false"
+      xpack.monitoring.enabled: "false"
+      xpack.graph.enabled: "false"
+      xpack.watcher.enabled: "false"
+  
 volumes:
   esdata1:
   esdata2:

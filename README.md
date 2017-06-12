@@ -12,7 +12,7 @@ The only pre-requisite required to get started is that Docker must be available 
 
 The deployment files are in Docker Compose v3 format, and they are compatible with both Docker Compose and Docker Stack.
 
-As well as the Audit Web Service, the deployment file also references Elasticsearch.
+As well as the Audit Web Service, the deployment file also references Elasticsearch and Kibana.
 
 ### Demonstration
 
@@ -33,6 +33,11 @@ The Docker Compose file contains the following services:
     By default, ports 9201 and 9301 are used on Node 2 of the Elasticsearch cluster.
 
     By default, ports 9202 and 9302 are used on Node 3 of the Elasticsearch cluster.
+
+3. **Kibana**  
+	[Kibana](https://www.elastic.co/products/kibana) is an open source, browser based analytics and visualization platform designed to work with Elasticsearch. You use Kibana to search, view, and interact with the audit data stored in Elasticsearch indices. You can perform data analysis and visualize the audit data in a variety of charts, tables, and maps.
+
+    Kibana is served by a back end server and by default port 5601 is used.
  
 ### Usage
 
@@ -88,6 +93,11 @@ The following parameters may be set:
         <td>CAF_AUDIT_SERVICE_PORT</td>
         <td>25080</td>
         <td>This is the port that the Audit Web Service is configured to listen on.</td>
+      </tr>
+      <tr>
+        <td>KIBANA_SERVER_PORT</td>
+        <td>5601</td>
+        <td>This is the port that Kibana is configured to run on.</td>
       </tr>
     </table>
 
@@ -184,6 +194,20 @@ First navigate to the folder where you have downloaded the files to and then run
 		    ]
 		  }
 		}
+
+7. Navigate to the Kibana UI  
+    Kibana is a web application that you [access](https://www.elastic.co/guide/en/kibana/5.3/access.html) through port 5601. Using a browser, navigate to:  
+
+        http://<DOCKER_HOST>:5601
+
+    Replace `<DOCKER_HOST>` with the name of your own Docker Host and adjust the port if you are not using the default.
+
+	When you access Kibana, the `Discover` page loads by default with the default index pattern selected. The time filter is set to the last 15 minutes and the search query is set to match-all (\*).
+
+8. Connect Kibana with Elasticsearch and search for the audit event message  
+    Before you can start using Kibana, you need to tell it which Elasticsearch indices you want to explore. The first time you access Kibana, you are prompted to define an [index pattern](https://www.elastic.co/guide/en/kibana/5.3/connect-to-elasticsearch.html) that matches the name of one or more of your indices. When configuring the index pattern, set the name or pattern to `test_tenant*` and select `eventTime` for the Time-field name. Next browse to the `Discover` page, set the search query to match-all (i.e. `*`) and configure the time filter for `This Year`:
+
+	![](./images/kibana-audit-search-results.png)
 
 ### Override Files
 Docker Compose supports the concept of override files which can be used to modify the service definitions in the main Docker Compose files, or to add extra service definitions.

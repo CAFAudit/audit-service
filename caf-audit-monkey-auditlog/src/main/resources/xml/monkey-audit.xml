@@ -91,7 +91,6 @@
                 <Param>
                     <Name>date</Name>
                     <Type>date</Type>
-                    <ColumnName>DateType</ColumnName>
                     <Description>Date of when the document was created</Description>
                 </Param>
                 <Param>
@@ -126,7 +125,6 @@
                 <Param>
                     <Name>date</Name>
                     <Type>date</Type>
-                    <ColumnName>DateType</ColumnName>
                     <Description>Date of when the document was read</Description>
                 </Param>
                 <Param>
@@ -161,7 +159,6 @@
                 <Param>
                     <Name>date</Name>
                     <Type>date</Type>
-                    <ColumnName>DateType</ColumnName>
                     <Description>Date of when the document was deleted</Description>
                 </Param>
                 <Param>
@@ -196,7 +193,6 @@
                 <Param>
                     <Name>date</Name>
                     <Type>date</Type>
-                    <ColumnName>DateType</ColumnName>
                     <Description>Date of when the document was created</Description>
                 </Param>
                 <Param>
@@ -245,7 +241,6 @@
                 <Param>
                     <Name>date</Name>
                     <Type>date</Type>
-                    <ColumnName>DateType</ColumnName>
                     <Description>Date user created</Description>
                 </Param>
             </Params>
@@ -263,7 +258,6 @@
                 <Param>
                     <Name>date</Name>
                     <Type>date</Type>
-                    <ColumnName>DateType</ColumnName>
                     <Description>Date user deleted</Description>
                 </Param>
             </Params>
@@ -287,7 +281,6 @@
                 <Param>
                     <Name>date</Name>
                     <Type>date</Type>
-                    <ColumnName>DateType</ColumnName>
                     <Description>Date of login</Description>
                 </Param>
             </Params>
@@ -311,7 +304,6 @@
                 <Param>
                     <Name>date</Name>
                     <Type>date</Type>
-                    <ColumnName>DateType</ColumnName>
                     <Description>Date of logout</Description>
                 </Param>
             </Params>

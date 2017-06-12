@@ -30,13 +30,24 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
 {
     private static final Logger LOG = LoggerFactory.getLogger(StandardMonkey.class);
 
-    private static String[] auditEvents = {"createDocument", "createUser", "deleteDocument", "deleteUser", "login", "logout", "moveDocument", "readDocument"};
-    private static String[] tenantIds = {"00001", "00002", "00003", "00004", "00005", "00006", "00007", "00008"};
-    private static String[] workstations = {"laptop-001", "terminal-002", "pc-hpe-003", "apple-hpe-004"};
-    private static String[] directories = {"/docs/company/important", "/docs/company/secrect", "/docs/public/", "/docs/private"};
-    private static User[] users = new User[8];
-    private static Doc[] docs = new Doc[8];
+    /*
+     * Setting up variables for the random generation of Audit Events
+     */
+    private String[] auditEvents = {"createDocument", "createUser", "deleteDocument", "deleteUser", "login", "logout", "moveDocument", "readDocument"};
+    private String[] tenantIds = {"00001", "00002", "00003", "00004", "00005", "00006", "00007", "00008"};
+    private String[] workstations = {"laptop-001", "terminal-002", "pc-hpe-003", "apple-hpe-004"};
+    private String[] directories = {"/docs/company/important", "/docs/company/secrect", "/docs/public/", "/docs/private"};
+    private User[] users = new User[8];
+    private Doc[] docs = new Doc[8];
 
+    /**
+     * Constructor for DemoMonkey. Constructor sets the channel and the configuration, populates the
+     * queue of work for the Monkey and creates the array of user and document objects for the demo
+     * audit events.
+     * 
+     * @param channel
+     * @param monkeyConfig
+     */
     public DemoMonkey(AuditChannel channel, MonkeyConfig monkeyConfig)
     {
         this.channel = channel;
@@ -81,7 +92,6 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
                     AuditLog.auditReadDocument(channel, (String)selectRandom(tenantIds), user.getUserId(), monkeyConfig.getCorrelationId(), doc.getDocId(), doc.getTitle(), doc.getFileType(), randomDate(), user.getUsername());
                     break;
             }
-
         }
     }
 
@@ -95,7 +105,9 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
         }
     }
 
-
+    /**
+     * Populate users array with 8 pre-configured users 
+     */
     private void initialiseUserArray()
     {
         users[0] = new User("1234-0001", "aorange", "aorange@email.com");
@@ -108,6 +120,9 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
         users[7] = new User("1234-0008", "hblue", "hblue@email.com");
     }
     
+    /**
+     * Populate docs array with 8 pre-configured docs
+     */
     private void initialiseDocArray()
     {
         docs[0] = new Doc(1234500001, "A New Hope", "pdf");
@@ -123,6 +138,7 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
 
     /**
      * Randomly select a value from a give Object[] array
+     * 
      * @param array Object array to perform random selection upon
      * @return Randomly select Object from provided array
      */
@@ -135,6 +151,7 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
 
     /**
      * Generates a random Date between today and one move previously
+     * 
      * @return Randomly generated date
      */
     protected Date randomDate()
@@ -145,6 +162,10 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
         return randomDate.toDate();
     }
 
+    /**
+     * Private inner class.
+     * Class represents a basic document object holding the document's Id, title and file type.
+     */
     private class Doc
     {
 
@@ -184,6 +205,10 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
         }
     }
 
+    /**
+     * Private inner class.
+     * Class represents a basic user object holding the user's Id, username and email address.
+     */
     private class User
     {
 

@@ -19,9 +19,24 @@ import com.hpe.caf.auditing.AuditChannel;
 
 public interface Monkey
 {
-
+    /**
+     * Uses the supplied channel and configuration to send audit events directly to Elasticsearch or to the Audit Web Service.
+     * @param channel Channel to send audit events down
+     * @param monkeyConfig Configuration details
+     * @throws Exception Thrown during the sending of audit events
+     */
     public void execute(AuditChannel channel, MonkeyConfig monkeyConfig) throws Exception;
+    
+    /**
+     * Set the channel for auditing
+     * @param channel for the audit events to be sent
+     */
     public void setChannel(AuditChannel channel);
+    
+    /**
+     * Set the config for the instance of the Audit Monkey
+     * @param monkeyConfig configuration for the instance of the Monkey
+     */
     public void setMonkeyConfig(MonkeyConfig monkeyConfig);
     
 }

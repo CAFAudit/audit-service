@@ -30,6 +30,7 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
 {
     private static final Logger LOG = LoggerFactory.getLogger(StandardMonkey.class);
 
+    private static final Random GENERATOR = new Random();
     /*
      * Setting up variables for the random generation of Audit Events
      */
@@ -91,6 +92,8 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
                 case "readDocument":
                     AuditLog.auditReadDocument(channel, (String)selectRandom(tenantIds), user.getUserId(), monkeyConfig.getCorrelationId(), doc.getDocId(), doc.getTitle(), doc.getFileType(), randomDate(), user.getUsername());
                     break;
+                default:
+                    LOG.error("Impossible selection of unknown Audit Event, there must be a Monkey in the works!");
             }
         }
     }
@@ -127,10 +130,10 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
     {
         docs[0] = new Doc(1234500001, "A New Hope", "pdf");
         docs[1] = new Doc(1234500002, "Empire Strikes Back", "msg");
-        docs[2] = new Doc(1234500003, "Retrun of the Jedi", "txt");
+        docs[2] = new Doc(1234500003, "Return of the Jedi", "txt");
         docs[3] = new Doc(1234500004, "The Hobbit", "pdf");
         docs[4] = new Doc(1234500005, "Fellowship of the Ring", "txt");
-        docs[5] = new Doc(1234500006, "Twin Towers", "msg");
+        docs[5] = new Doc(1234500006, "Two Towers", "msg");
         docs[6] = new Doc(1234500007, "Return of the King", "pdf");
         docs[7] = new Doc(1234500008, "Macbeth", "txt");
         
@@ -144,8 +147,24 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
      */
     protected Object selectRandom(Object[] array)
     {
-        Random generator = new Random();
-        int randomIndex = generator.nextInt(array.length);
+        int randomIndex = GENERATOR.nextInt(array.length);
+        int randomNumber = GENERATOR.nextInt(array.length / 3);
+        int randomOperation = GENERATOR.nextInt(1);
+        if (randomOperation == 1) {
+            LOG.debug("RandomOperation: " + randomOperation);
+            randomIndex = randomIndex + randomNumber;
+            if (randomIndex > array.length) {
+                randomIndex = array.length;
+            }
+        }
+        if (randomOperation == 0) {
+            LOG.debug("RandomOperation: " + randomOperation);
+            randomIndex = randomIndex - randomNumber;
+            if (randomIndex < 0) {
+                randomIndex = 0;
+            }
+        }
+        LOG.debug("RandomIndex [ " + randomIndex + "]");
         return array[randomIndex];
     }
 

@@ -63,10 +63,10 @@ public class AuditConnectionFactory {
      *
      * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable
      * @throws ConfigurationException if the configuration details cannot be retrieved from system properties or
-     * environment variables for building ElasticAuditConfiguration.
-     * @throws WebServiceClientException if 'CAF_AUDIT_MODE' has been set to webservice.
+     * environment variables for building ElasticAuditConfiguration. Also thrown if 'CAF_AUDIT_MODE' has been set to
+     * webservice.
      */
-    public static AuditConnection createConnection() throws WebServiceClientException, ConfigurationException {
+    public static AuditConnection createConnection() throws ConfigurationException {
         return createConnection(null);
     }
 }

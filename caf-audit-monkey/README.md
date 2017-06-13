@@ -1,8 +1,8 @@
 # Audit Monkey
 
 ## Description
-The Audit Monkey provides the functional ability to test the Audit Service including the auto-generated AuditLog and the Audit WebService.  
-The Audit Monkey has the ability to send Audit Events both directly to Elasticsearch and via the Audit WebService.
+The Audit Monkey provides the functional ability to test the Audit Service including the auto-generated AuditLog and the Audit Web Service.  
+The Audit Monkey has the ability to send Audit Events both directly to Elasticsearch and via the Audit Web Service.  
 The Audit Monkey also has the ability to generate significant volumes of data as it can be run in both single-threaded and multi-threaded modes.  
 
 ## Configuration
@@ -11,7 +11,7 @@ The Audit Monkey also has the ability to generate significant volumes of data as
 The Audit Monkey can be run in a number of functional configurations. Details of these functional configurations are outlined in the table below.  
 The three key functional configurations cover:  
 
-* Sending Audit Events directly to Elasticsearch or via the Audit WebService
+* Sending Audit Events directly to Elasticsearch or via the Audit Web Service
 * Sending Audit Events continuously or in random mode featuring sleeps
 * Executing as a single-threaded process or as a multi-threaded process
 
@@ -33,11 +33,12 @@ The three key functional configurations cover:
   </tr>
   <tr>
     <td>CAF_AUDIT_MONKEY_MODE</td>
-    <td>standard, random</td>
+    <td>standard, random, demo</td>
     <td>
       <ul>
         <li><b>Standard:</b> The Audit Monkey attempts to send the specified number of Audit Events as quickly as possible</li>
         <li><b>Random:</b> The Audit Monkey attempts to send portions of the overall specified number of Audit Events interlaced with pauses of execution, to create a pseudo-random sequence of Audit Events</li>
+        <li><b>Demo:</b> The Audit Monkey generates random data across a number of tenants, users, and audit events to simulate data generated in a real world scenario</li>
       </ul>
     </td>
   </tr>
@@ -69,22 +70,22 @@ The following parameters may be set as required:
   </tr>
   <tr>
     <td>CAF_AUDIT_TENANT_ID</td>
-    <td>acmecorp, [String]</td>
+    <td>acmecorp, [Any String]</td>
     <td>Tenant Id, forms the index for the Audit Events within Elasticsearch</td>
   </tr>
   <tr>
     <td>CAF_AUDIT_CORRELATION_ID</td>
-    <td>UUID, [Auto Generated UUID, String]</td>
+    <td>UUID, [UUID, Any String]</td>
     <td>Can uniquely identify a particular run of the Audit Monkey</td>
   </tr>
   <tr>
     <td>CAF_AUDIT_USER_ID</td>
-    <td>road.runner@acme.com, [String]</td>
+    <td>road.runner@acme.com, [Any String]</td>
     <td>Configurable field, available to the user. User who triggered the Audit Event</td>
   </tr>
   <tr>
     <td>ES_CLUSTERNAME</td>
-    <td>elasticsearch-cluster, [String]</td>
+    <td>elasticsearch-cluster, [Any String]</td>
     <td>Name of the Elasticsearch Cluster the Audit Monkey is to run against</td>
   </tr>
   <tr>
@@ -109,17 +110,17 @@ The following parameters may be set as required:
   </tr>
   <tr>
     <td>CAF_AUDIT_MONKEY_MODE</td>
-    <td>standard, [standard, random]</td>
+    <td>standard, [standard, random, demo]</td>
     <td>Type of Audit Monkey to run</td>
   </tr>
   <tr>
     <td>CAF_AUDIT_MONKEY_NUM_OF_EVENTS</td>
-    <td>1, [Integer]</td>
+    <td>1, [Any Int]</td>
     <td>Number of Audit Events to produce and send to Elasticsearch</td>
   </tr>
   <tr>
     <td>CAF_AUDIT_MONKEY_NUM_OF_THREADS</td>
-    <td>1, [Integer]</td>
+    <td>1, [Any Int]</td>
     <td>Number of threads to spin up which will send Audit Events</td>
   </tr>
 </table>
@@ -129,10 +130,10 @@ The following parameters may be set as required:
 ### Prerequisite
 
 1. An instance of Elasticsearch available
-2. Audit WebService, (only required if Audit Events are to be sent via the WebService)
+2. Audit Web Service, (only required if Audit Events are to be sent via the Web Service)
 
 ### How to Run the Audit Monkey
-1. docker pull rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-monkey:3.1.0-SNAPSHOT
+1. docker pull cafaudit/audit-monkey:3.1.0
 2. docker run [OPTIONS] \<IMAGE\_ID\>
 
 e.g.  
@@ -140,7 +141,7 @@ e.g.
 docker run -e CAF_AUDIT_MODE=direct -e CAF_AUDIT_MONKEY_MODE=standard -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=5000 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=10 <IMAGE_ID>
 ```
 
-Run the Audit Monkey sending [5000] Audit Events [directly] to Elasticsearch in [Standard] mode using [10] threads
+Run the Audit Monkey sending [5000] Audit Events [direct] to Elasticsearch in [Standard] mode using [10] threads
 
 e.g.  
 ```
@@ -148,3 +149,11 @@ docker run -e CAF_AUDIT_TENANT_ID=wsTestId -e CAF_AUDIT_MODE=webservice -e WS_HO
 ```  
 
 Run the Audit Monkey sending [50] Audit Events for Tenant Id [wsTestId] through the [Audit WebService] operating on host [192.168.56.10] and port [25080] in [Random] mode using [5] threads
+
+e.g.  
+```
+docker run -e CAF_AUDIT_MODE=direct -e CAF_AUDIT_MONKEY_MODE=demo -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=10000 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=25 <IMAGE_ID>
+```
+
+Run the Audit Monkey sending [10,000] Audit Events [direct] to Elasticsearch in [demo] mode using [25] threads
+

@@ -151,20 +151,17 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
         int randomNumber = GENERATOR.nextInt(array.length / 2);
         int randomOperation = GENERATOR.nextInt(2);
         if (randomOperation == 1) {
-            LOG.debug("RandomOperation: " + randomOperation);
             randomIndex = randomIndex + randomNumber;
             if (randomIndex >= array.length) {
                 randomIndex = array.length - 1;
             }
         }
-        if (randomOperation == 0) {
-            LOG.debug("RandomOperation: " + randomOperation);
+        else if (randomOperation == 0) {
             randomIndex = randomIndex - randomNumber;
             if (randomIndex < 0) {
                 randomIndex = 0;
             }
         }
-        LOG.debug("RandomIndex [ " + randomIndex + "]");
         return array[randomIndex];
     }
 

@@ -46,8 +46,8 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
      * queue of work for the Monkey and creates the array of user and document objects for the demo
      * audit events.
      * 
-     * @param channel
-     * @param monkeyConfig
+     * @param channel Channel to send audit events
+     * @param monkeyConfig Configuration for the Monkey
      */
     public DemoMonkey(AuditChannel channel, MonkeyConfig monkeyConfig)
     {
@@ -148,13 +148,13 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
     protected Object selectRandom(Object[] array)
     {
         int randomIndex = GENERATOR.nextInt(array.length);
-        int randomNumber = GENERATOR.nextInt(array.length / 3);
-        int randomOperation = GENERATOR.nextInt(1);
+        int randomNumber = GENERATOR.nextInt(array.length / 2);
+        int randomOperation = GENERATOR.nextInt(2);
         if (randomOperation == 1) {
             LOG.debug("RandomOperation: " + randomOperation);
             randomIndex = randomIndex + randomNumber;
-            if (randomIndex > array.length) {
-                randomIndex = array.length;
+            if (randomIndex >= array.length) {
+                randomIndex = array.length - 1;
             }
         }
         if (randomOperation == 0) {

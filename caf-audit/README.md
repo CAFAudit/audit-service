@@ -150,7 +150,7 @@ You may already have a CAF configuration source in your application. It is a gen
 - a REST service
 - a custom source that better integrates with the host application.
 
-A `ConfigurationSource` object is required for the [`AuditConnectionFactory`](#audit-connection-factory) object to produce an [`AuditConnection`](#audit-connection) object.
+A `ConfigurationSource` object is required for the [`AuditConnectionFactory`](#auditconnectionfactory) object to produce an [`AuditConnection`](#audit-connection) object.
 
 If you're not already using CAF's configuration mechanism, this sample code illustrates the generation of a `ConfigurationSource` object.
 
@@ -224,7 +224,7 @@ To use JSON-encoded files for your configuration, add the following additional d
 
 #### Direct to Elasticsearch Configuration
 
-In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded files with the following parameters:
+In the [`ConfigurationSource`](#configurationsource) above, we used JSON-encoded files with the following parameters:
 
 - `CAF_CONFIG_PATH: /etc/sampleapp/config`
 - `CAF_APPNAME: sampleappgroup/sampleapp`
@@ -247,7 +247,7 @@ where:
 
 #### Audit Web Service Client Configuration
 
-In the [`ConfigurationSource`](#ConfigurationSource) above, we used JSON-encoded files with the following parameters:
+In the [`ConfigurationSource`](#configurationsource) above, we used JSON-encoded files with the following parameters:
 
 - `CAF_CONFIG_PATH: /etc/sampleapp/config`
 - `CAF_APPNAME: sampleappgroup/sampleapp`
@@ -264,11 +264,11 @@ where:
 
 ### AuditConnectionFactory
 
-The `AuditConnectionFactory` is an object that can be used to create an implementation of the [`AuditConnection`](#AuditConnection) by setting the [`CAF_AUDIT_MODE Environment Variable`](#CAF_AUDIT_MODE-environment-variable) to the required mode and by passing the [`ConfigurationSource`](#ConfigurationSource) object for that required mode.
+The `AuditConnectionFactory` is an object that can be used to create an implementation of the [`AuditConnection`](#auditconnection) by setting the [`CAF_AUDIT_MODE Environment Variable`](#caf_audit_mode-environment-variable) to the required mode and by passing the [`ConfigurationSource`](#configurationsource) object for that required mode.
 
 #### CAF\_AUDIT\_MODE Environment Variable
 
-Before passing the [`ConfigurationSource`](#ConfigurationSource) object to the [`AuditConnectionFactory`](#AuditConnectionFactory), to create an instance of the required [`AuditConnection`](#AuditConnection) implementation, the `CAF_AUDIT_MODE` environment variable needs to be set appropriately to indicate the required mode. These are the following `CAF_AUDIT_MODE` environment variable options:
+Before passing the [`ConfigurationSource`](#configurationsource) object to the [`AuditConnectionFactory`](#auditconnectionfactory), to create an instance of the required [`AuditConnection`](#auditconnection) implementation, the `CAF_AUDIT_MODE` environment variable needs to be set appropriately to indicate the required mode. These are the following `CAF_AUDIT_MODE` environment variable options:
 
 |           Mode           | CAF_AUDIT_MODE value |  AuditConnection Implmentation  |                          Required AuditConfiguration                          |
 |:------------------------:|:--------------------:|:-------------------------------:|:-----------------------------------------------------------------------------:|
@@ -285,7 +285,7 @@ Regardless of whether you choose to use a generated client-side library, or to u
 
 The `AuditConnection` object represents a logical connection to the Audit Web Service API or Elasticsearch datastore endpoint. It is a thread-safe object. ***Please take into account that this connection object requires significant time to construct. The application should hold on to the connection object and re-use it, rather than re-construct it.***
 
-The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a [`ConfigurationSource`](#ConfigurationSource) parameter, which is the standard method of configuration in CAF:
+The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a [`ConfigurationSource`](#configurationsource) parameter, which is the standard method of configuration in CAF:
 
 	AuditConnection auditConnection = null;
     try {
@@ -298,11 +298,11 @@ The `AuditConnection` object can be constructed using the static `createConnecti
 
 ### AuditChannel
 
-An `AuditChannel` object is constructed from the [`AuditConnection`](#AuditConnection) object.
+An `AuditChannel` object is constructed from the [`AuditConnection`](#auditconnection) object.
 
 This object represents a logical channel to the Audit Web Service API or Elasticsearch datastore endpoint. ***It is NOT a thread-safe object and must not be shared across threads without synchronization.*** However, you will have no issue constructing multiple `AuditChannel` objects simultaneously on different threads. The objects are lightweight and caching them is not that important.
 
-The `AuditChannel` object can be constructed using the `createChannel()` method on the [`AuditConnection`](#AuditConnection) object. It does not take any parameters:
+The `AuditChannel` object can be constructed using the `createChannel()` method on the [`AuditConnection`](#auditconnection) object. It does not take any parameters:
 
 	AuditChannel auditChannel = null;
 	try {
@@ -315,11 +315,11 @@ The `AuditChannel` object can be constructed using the `createChannel()` method 
 
 ### AuditEventBuilder
 
-An `AuditEventBuilder` object is constructed from the [`AuditChannel`](#AuditChannel) object.
+An `AuditEventBuilder` object is constructed from the [`AuditChannel`](#auditchannel) object.
 
-It constructs and sends an audit event. You should have one [`AuditEventBuilder`](#AuditEventBuilder) object for each audit event.
+It constructs and sends an audit event. You should have one [`AuditEventBuilder`](#auditeventbuilder) object for each audit event.
 
-The `AuditEventBuilder` object is created using the `createEventBuilder()` method on the [`AuditChannel`](#AuditChannel) object. It does not take any parameters.
+The `AuditEventBuilder` object is created using the `createEventBuilder()` method on the [`AuditChannel`](#auditchannel) object. It does not take any parameters.
 
 	/*
 	  The following code constructs an application event for a tenant who has deleted a document. It then sends the event to storage.

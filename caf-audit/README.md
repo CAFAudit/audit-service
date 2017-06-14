@@ -150,7 +150,7 @@ You may already have a CAF configuration source in your application. It is a gen
 - a REST service
 - a custom source that better integrates with the host application.
 
-A `ConfigurationSource` object is required for the [`AuditConnectionFactory`](#AuditConnectionFactory) object to produce an [`AuditConnection`](#AuditConnection) object.
+A `ConfigurationSource` object is required for the [`AuditConnectionFactory`](#audit-connection-factory) object to produce an [`AuditConnection`](#audit-connection) object.
 
 If you're not already using CAF's configuration mechanism, this sample code illustrates the generation of a `ConfigurationSource` object.
 

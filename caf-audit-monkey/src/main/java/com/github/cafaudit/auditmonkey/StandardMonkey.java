@@ -15,15 +15,21 @@
  */
 package com.github.cafaudit.auditmonkey;
 
+import java.util.concurrent.BlockingQueue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cafaudit.AuditLog;
 import com.hpe.caf.auditing.AuditChannel;
 
-public class StandardMonkey extends AbstractMonkey implements Monkey, Runnable
+public class StandardMonkey implements Monkey, Runnable
 {
     private static final Logger LOG = LoggerFactory.getLogger(StandardMonkey.class);
+    
+    private AuditChannel channel;
+    private MonkeyConfig monkeyConfig;
+    private BlockingQueue<Integer> queue;
         
     public StandardMonkey(AuditChannel channel, MonkeyConfig monkeyConfig)
     {

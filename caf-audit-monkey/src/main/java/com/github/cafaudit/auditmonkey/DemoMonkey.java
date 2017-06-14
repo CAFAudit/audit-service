@@ -17,6 +17,7 @@ package com.github.cafaudit.auditmonkey;
 
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.joda.time.LocalDate;
@@ -26,11 +27,15 @@ import org.slf4j.LoggerFactory;
 import com.github.cafaudit.AuditLog;
 import com.hpe.caf.auditing.AuditChannel;
 
-public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
+public class DemoMonkey implements Monkey, Runnable
 {
-    private static final Logger LOG = LoggerFactory.getLogger(StandardMonkey.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DemoMonkey.class);
 
     private static final Random GENERATOR = new Random();
+    
+    private AuditChannel channel;
+    private MonkeyConfig monkeyConfig;
+    private BlockingQueue<Integer> queue;
     /*
      * Setting up variables for the random generation of Audit Events
      */
@@ -94,6 +99,7 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
                     break;
                 default:
                     LOG.error("Impossible selection of unknown Audit Event, there must be a Monkey in the works!");
+                    break;
             }
         }
     }
@@ -104,7 +110,7 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
         try {
             execute(channel, monkeyConfig);
         } catch (Exception e) {
-            LOG.error("Error executing a multi-threaded version of the DemoMonkey" + e);
+            LOG.error("Error executing a multi-threaded version of the DemoMonkey, " + e);
         }
     }
 
@@ -136,7 +142,6 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
         docs[5] = new Doc(1234500006, "Two Towers", "msg");
         docs[6] = new Doc(1234500007, "Return of the King", "pdf");
         docs[7] = new Doc(1234500008, "Macbeth", "txt");
-        
     }    
 
     /**
@@ -177,7 +182,7 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
         LocalDate randomDate = new LocalDate(ThreadLocalRandom.current().nextLong(past.toDate().getTime(), now.toDate().getTime()));
         return randomDate.toDate();
     }
-
+    
     /**
      * Private inner class.
      * Class represents a basic document object holding the document's Id, title and file type.
@@ -263,4 +268,5 @@ public class DemoMonkey extends AbstractMonkey implements Monkey, Runnable
             return emailAddress;
         }
     }
+
 }

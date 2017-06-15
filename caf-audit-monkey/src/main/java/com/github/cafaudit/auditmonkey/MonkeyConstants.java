@@ -36,9 +36,13 @@ public class MonkeyConstants
     public static final String WS_HOSTNAME = "WS_HOSTNAME";
     public static final String WS_PORT = "WS_PORT";
 
-    // Monkey
+    // Monkey Modes
     public static final String CAF_AUDIT_STANDARD_MONKEY = "standard";
     public static final String CAF_AUDIT_RANDOM_MONKEY = "random";
+    public static final String CAF_AUDIT_DEMO_MONKEY = "demo";
+    public static final String[] ARRAY_OF_MONKEYS = new String[]{CAF_AUDIT_STANDARD_MONKEY, CAF_AUDIT_RANDOM_MONKEY, CAF_AUDIT_DEMO_MONKEY};
+    
+    // Monkey environment variables
     public static final String CAF_AUDIT_MONKEY_MODE = "CAF_AUDIT_MONKEY_MODE";
     public static final String CAF_AUDIT_MONKEY_NUM_OF_EVENTS = "CAF_AUDIT_MONKEY_NUM_OF_EVENTS";
     public static final String CAF_AUDIT_MONKEY_NUM_OF_THREADS = "CAF_AUDIT_MONKEY_NUM_OF_THREADS";

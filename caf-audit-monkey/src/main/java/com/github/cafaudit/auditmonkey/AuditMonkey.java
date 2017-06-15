@@ -43,8 +43,8 @@ public class AuditMonkey
 
     /**
      * Java Main Method
-     * @param args
-     * @throws Exception
+     * @param args Array of String arguments
+     * @throws Exception from Main method
      */
     public static void main(String[] args) throws Exception
     {

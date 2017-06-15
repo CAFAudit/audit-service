@@ -30,7 +30,7 @@ public class StandardMonkey implements Monkey, Runnable
     private AuditChannel channel;
     private MonkeyConfig monkeyConfig;
     private BlockingQueue<Integer> queue;
-    
+        
     public StandardMonkey(AuditChannel channel, MonkeyConfig monkeyConfig)
     {
         this.channel = channel;
@@ -55,38 +55,6 @@ public class StandardMonkey implements Monkey, Runnable
         } catch (Exception e) {
             LOG.error("Error executing a multi-threaded version of the StandardMonkey" + e);
         }
-    }
-
-    /**
-     * @return the channel
-     */
-    public AuditChannel getChannel()
-    {
-        return channel;
-    }
-
-    /**
-     * @param channel the channel to set
-     */
-    public void setChannel(AuditChannel channel)
-    {
-        this.channel = channel;
-    }
-
-    /**
-     * @return the monkeyConfig
-     */
-    public MonkeyConfig getMonkeyConfig()
-    {
-        return monkeyConfig;
-    }
-
-    /**
-     * @param monkeyConfig the monkeyConfig to set
-     */
-    public void setMonkeyConfig(MonkeyConfig monkeyConfig)
-    {
-        this.monkeyConfig = monkeyConfig;
     }
 
 }

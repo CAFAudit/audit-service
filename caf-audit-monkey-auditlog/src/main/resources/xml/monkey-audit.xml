@@ -16,31 +16,29 @@
     limitations under the License.
 
 -->
-<!-- Copyright 2015-2017 Hewlett Packard Enterprise Development LP. Licensed 
-    under the Apache License, Version 2.0 (the "License"); you may not use this 
-    file except in compliance with the License. You may obtain a copy of the 
-    License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by 
-    applicable law or agreed to in writing, software distributed under the License 
-    is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-    KIND, either express or implied. See the License for the specific language 
-    governing permissions and limitations under the License. -->
 <AuditedApplication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
     xsi:schemaLocation="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd">
-    
+
     <ApplicationId>AuditMonkey</ApplicationId>
     <AuditEvents>
+
+        <!-- Example Event -->
         <AuditEvent>
             <TypeId>viewDocument</TypeId>
-            <CategoryId>documentEvents</CategoryId>
+            <CategoryId>exampleEvents</CategoryId>
             <Params>
                 <Param>
                     <Name>docId</Name>
                     <Type>long</Type>
-                    <Description>Identifies the document that was viewed</Description>
+                    <Description>Identifies the document that was viewed
+                    </Description>
                 </Param>
             </Params>
         </AuditEvent>
+        <!-- End of Example Event -->
+
+        <!-- Example Policy Event -->
         <AuditEvent>
             <TypeId>policyApplied</TypeId>
             <CategoryId>policyEvents</CategoryId>
@@ -64,5 +62,255 @@
                 </Param>
             </Params>
         </AuditEvent>
+        <!-- End of Example Policy Event -->
+
+        <!--                               -->
+        <!-- Demonstration Document Events -->
+        <!--                               -->
+        <AuditEvent>
+            <TypeId>createDocument</TypeId>
+            <CategoryId>documentEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>docId</Name>
+                    <Type>long</Type>
+                    <Description>Unique Identifier of the document</Description>
+                </Param>
+                <Param>
+                    <Name>title</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Title of the Document</Description>
+                </Param>
+                <Param>
+                    <Name>fileType</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>File type of the document</Description>
+                </Param>
+                <Param>
+                    <Name>date</Name>
+                    <Type>date</Type>
+                    <Description>Date of when the document was created</Description>
+                </Param>
+                <Param>
+                    <Name>username</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Unique username of the user</Description>
+                </Param>
+            </Params>
+        </AuditEvent>
+        <AuditEvent>
+            <TypeId>readDocument</TypeId>
+            <CategoryId>documentEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>docId</Name>
+                    <Type>long</Type>
+                    <Description>Unique Identifier of the document</Description>
+                </Param>
+                <Param>
+                    <Name>title</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Title of the Document</Description>
+                </Param>
+                <Param>
+                    <Name>fileType</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>File type of the document</Description>
+                </Param>
+                <Param>
+                    <Name>date</Name>
+                    <Type>date</Type>
+                    <Description>Date of when the document was read</Description>
+                </Param>
+                <Param>
+                    <Name>username</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Unique username of the user</Description>
+                </Param>
+            </Params>
+        </AuditEvent>
+        <AuditEvent>
+            <TypeId>deleteDocument</TypeId>
+            <CategoryId>documentEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>docId</Name>
+                    <Type>long</Type>
+                    <Description>Unique Identifier of the document</Description>
+                </Param>
+                <Param>
+                    <Name>title</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Title of the Document</Description>
+                </Param>
+                <Param>
+                    <Name>fileType</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>File type of the document</Description>
+                </Param>
+                <Param>
+                    <Name>date</Name>
+                    <Type>date</Type>
+                    <Description>Date of when the document was deleted</Description>
+                </Param>
+                <Param>
+                    <Name>username</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Unique username of the user</Description>
+                </Param>
+            </Params>
+        </AuditEvent>
+        <AuditEvent>
+            <TypeId>moveDocument</TypeId>
+            <CategoryId>documentEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>docId</Name>
+                    <Type>long</Type>
+                    <Description>Unique Identifier of the document</Description>
+                </Param>
+                <Param>
+                    <Name>title</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Title of the Document</Description>
+                </Param>
+                <Param>
+                    <Name>fileType</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>File type of the document</Description>
+                </Param>
+                <Param>
+                    <Name>date</Name>
+                    <Type>date</Type>
+                    <Description>Date of when the document was created</Description>
+                </Param>
+                <Param>
+                    <Name>username</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Unique username of the user</Description>
+                </Param>
+                <Param>
+                    <Name>initialPath</Name>
+                    <Type>string</Type>
+                    <IndexingHint>fulltext</IndexingHint>
+                    <Description>Starting location of the document as a path</Description>
+                </Param>
+                <Param>
+                    <Name>destinationPath</Name>
+                    <Type>string</Type>
+                    <IndexingHint>fulltext</IndexingHint>
+                    <Description>Final location of the document as a path</Description>
+                </Param>
+            </Params>
+        </AuditEvent>
+        <!--                                      -->
+        <!-- End of Demonstration Document Events -->
+        <!--                                      -->
+
+        <!--                           -->
+        <!-- Demonstration User Events -->
+        <!--                           -->
+        <AuditEvent>
+            <TypeId>createUser</TypeId>
+            <CategoryId>userEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>username</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Unique username of the user</Description>
+                </Param>
+                <Param>
+                    <Name>emailAddress</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>User's email address</Description>
+                </Param>
+                <Param>
+                    <Name>date</Name>
+                    <Type>date</Type>
+                    <Description>Date user created</Description>
+                </Param>
+            </Params>
+        </AuditEvent>
+        <AuditEvent>
+            <TypeId>deleteUser</TypeId>
+            <CategoryId>userEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>username</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Unique username of the user</Description>
+                </Param>
+                <Param>
+                    <Name>date</Name>
+                    <Type>date</Type>
+                    <Description>Date user deleted</Description>
+                </Param>
+            </Params>
+        </AuditEvent>
+        <AuditEvent>
+            <TypeId>login</TypeId>
+            <CategoryId>userEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>username</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Unique username of the user</Description>
+                </Param>
+                <Param>
+                    <Name>workstation</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>The DNS address of the workstation the user has logged into</Description>
+                </Param>
+                <Param>
+                    <Name>date</Name>
+                    <Type>date</Type>
+                    <Description>Date of login</Description>
+                </Param>
+            </Params>
+        </AuditEvent>
+        <AuditEvent>
+            <TypeId>logout</TypeId>
+            <CategoryId>userEvents</CategoryId>
+            <Params>
+                <Param>
+                    <Name>username</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>Unique username of the user</Description>
+                </Param>
+                <Param>
+                    <Name>workstation</Name>
+                    <Type>string</Type>
+                    <IndexingHint>keyword</IndexingHint>
+                    <Description>The DNS address of the workstation from which the user logged out</Description>
+                </Param>
+                <Param>
+                    <Name>date</Name>
+                    <Type>date</Type>
+                    <Description>Date of logout</Description>
+                </Param>
+            </Params>
+        </AuditEvent>
+        <!--                                  -->
+        <!-- End of Demonstration User Events -->
+        <!--                                  -->
+
     </AuditEvents>
 </AuditedApplication>

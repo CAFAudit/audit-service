@@ -15,6 +15,7 @@
  */
 package com.github.cafaudit.auditmonkey;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -53,20 +54,116 @@ public class MonkeyConfig
         
         LOG.info("Setting up Audit Monkey Configuration from supplied Environment Variables");
 
+        readAuditProp();
+        
+        readElasticsearchProps();
+        
+        readWebServiceProps();        
+        
+        readAuditEventProps();
+        
+        readMonkeyProps();        
+        
+        
+        LOG.info(this.toString());
+    }
+
+    private void readMonkeyProps()
+    {
         /*
-         * Audit Mode
+         * Monkey
          */
-        auditMode = System.getProperty(MonkeyConstants.CAF_AUDIT_MODE, System.getenv(MonkeyConstants.CAF_AUDIT_MODE));
-        String auditModeErrorMsg = null;
-        if (null == auditMode || auditMode.isEmpty()) {
-            auditModeErrorMsg = MonkeyConstants.CAF_AUDIT_MODE + " has not been set. " + MonkeyConstants.CAF_AUDIT_MODE + " must be supplied";
-        } else if (!auditMode.equalsIgnoreCase(MonkeyConstants.DIRECT) && !auditMode.equalsIgnoreCase(MonkeyConstants.WEBSERVICE)) {
-            auditModeErrorMsg = "The " + MonkeyConstants.CAF_AUDIT_MODE + " supplied [" + auditMode + "] does not match the available modes [" + MonkeyConstants.DIRECT + ", " + MonkeyConstants.WEBSERVICE + "]";
-        } if (null != auditModeErrorMsg) {
-            LOG.error(auditModeErrorMsg);
-            throw new RuntimeException(auditModeErrorMsg);
+        monkeyMode = System.getProperty(MonkeyConstants.CAF_AUDIT_MONKEY_MODE, System.getenv(MonkeyConstants.CAF_AUDIT_MONKEY_MODE));
+        if(null == monkeyMode || monkeyMode.isEmpty()) {
+            monkeyMode = MonkeyConstants.CAF_AUDIT_STANDARD_MONKEY;
+            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_MONKEY_MODE + "] supplied defaulting to [" + monkeyMode + "]");
+        } else if (!isMonkeyMode(monkeyMode))  {
+            String errorMsg = "The " + MonkeyConstants.CAF_AUDIT_MODE + " supplied [" + monkeyMode + "] does not match the available modes [" + Arrays.toString(MonkeyConstants.ARRAY_OF_MONKEYS) + "]"; 
+            LOG.error(errorMsg);
+            throw new RuntimeException(errorMsg);
+        }
+
+        String numOfEventsStr = System.getProperty(MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_EVENTS, System.getenv(MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_EVENTS));
+        if(null == numOfEventsStr || numOfEventsStr.isEmpty()) {
+            numOfEvents = 1; 
+            LOG.warn("No [" + MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_EVENTS + "] supplied defaulting to [" + numOfEvents + "]");
+        }
+        else {
+            numOfEvents = Integer.parseInt(numOfEventsStr);
+            if(numOfEvents <= 0) {
+                numOfEvents = 1;
+                LOG.warn("Invalid [" + MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_EVENTS + "] supplied defaulting to [" + numOfEvents + "]");
+            }
         }
         
+        String numOfThreadsStr = System.getProperty(MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_THREADS, System.getenv(MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_THREADS));
+        if(null == numOfThreadsStr || numOfThreadsStr.isEmpty()) {
+            numOfThreads = 1; 
+            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_THREADS + "] supplied defaulting to [" + numOfThreads + "]");
+        }
+        else {
+            numOfThreads = Integer.parseInt(numOfThreadsStr);
+            if(numOfThreads <= 0) {
+                numOfThreads = 1;
+                LOG.warn("Invalid [" + MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_THREADS + "] supplied defaulting to [" + numOfThreads + "]");
+            }
+        }
+    }
+
+    private void readAuditEventProps()
+    {
+        /*
+         * Audit Events
+         */
+        tenantId = System.getProperty(MonkeyConstants.CAF_AUDIT_TENANT_ID, System.getenv(MonkeyConstants.CAF_AUDIT_TENANT_ID));
+        if(null == tenantId || tenantId.isEmpty()) {
+            tenantId = "acmecorp";
+            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_TENANT_ID + "] supplied defaulting to [" + tenantId + "]");
+        }
+        
+        correlationId = System.getProperty(MonkeyConstants.CAF_AUDIT_CORRELATION_ID, System.getenv(MonkeyConstants.CAF_AUDIT_CORRELATION_ID));
+        if(null == correlationId || correlationId.isEmpty()) {
+            correlationId = UUID.randomUUID().toString();
+            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_CORRELATION_ID + "] supplied defaulting to [" + correlationId + "]");
+        }
+        
+        userId = System.getProperty(MonkeyConstants.CAF_AUDIT_USER_ID, System.getenv(MonkeyConstants.CAF_AUDIT_USER_ID));
+        if(null == userId || userId.isEmpty()) {
+            userId = "road.runner@acme.com";
+            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_USER_ID + "] supplied defaulting to [" + userId + "]");
+        }
+    }
+
+    private void readWebServiceProps()
+    {
+        /*
+         * WebService
+         */
+        wsHostname = System.getProperty(MonkeyConstants.WS_HOSTNAME, System.getenv(MonkeyConstants.WS_HOSTNAME));
+        if(null == wsHostname || wsHostname.isEmpty()) {
+            wsHostname = "192.168.56.10";
+            LOG.info("No [" + MonkeyConstants.WS_HOSTNAME + "] supplied defaulting to [" + wsHostname + "]");
+        }
+        
+        String wsPortStr = System.getProperty(MonkeyConstants.WS_PORT, System.getenv(MonkeyConstants.WS_PORT));
+        if(null == wsPortStr || wsPortStr.isEmpty()) {
+            wsPort = 25080;
+            LOG.info("No [" + MonkeyConstants.WS_PORT + "] supplied defaulting to [" + wsPort + "]");            
+        } 
+        else {
+            wsPort = Integer.parseInt(wsPortStr);
+            if(wsPort == 0 || wsPort < 0 || wsPort > 9999) {
+                wsPort = 25080;
+                LOG.warn("Invalid [" + MonkeyConstants.WS_PORT + "] supplied defaulting to [" + wsPort + "]");
+            }
+        }
+        
+        wsHostnameAndPort = String.format("%s:%s", wsHostname, wsPort);
+        LOG.debug("Audit WebService Hostname and Port set to [" + wsHostnameAndPort + "]");
+    }
+
+    private void readElasticsearchProps()
+    {
         /*
          * Elasticsearch
          */
@@ -97,95 +194,34 @@ public class MonkeyConfig
         
         esHostnameAndPort = String.format("%s:%s", esHostname, esPort);
         LOG.info("Elasticsearch Hostname and Port set to [" + esHostnameAndPort + "]");
-        
-        /*
-         * WebService
-         */
-        wsHostname = System.getProperty(MonkeyConstants.WS_HOSTNAME, System.getenv(MonkeyConstants.WS_HOSTNAME));
-        if(null == wsHostname || wsHostname.isEmpty()) {
-            wsHostname = "192.168.56.10";
-            LOG.info("No [" + MonkeyConstants.WS_HOSTNAME + "] supplied defaulting to [" + wsHostname + "]");
-        }
-        
-        String wsPortStr = System.getProperty(MonkeyConstants.WS_PORT, System.getenv(MonkeyConstants.WS_PORT));
-        if(null == wsPortStr || wsPortStr.isEmpty()) {
-            wsPort = 25080;
-            LOG.info("No [" + MonkeyConstants.WS_PORT + "] supplied defaulting to [" + wsPort + "]");            
-        } 
-        else {
-            wsPort = Integer.parseInt(wsPortStr);
-            if(wsPort == 0 || wsPort < 0 || wsPort > 9999) {
-                wsPort = 25080;
-                LOG.warn("Invalid [" + MonkeyConstants.WS_PORT + "] supplied defaulting to [" + wsPort + "]");
-            }
-        }
-        
-        wsHostnameAndPort = String.format("%s:%s", wsHostname, wsPort);
-        LOG.debug("Audit WebService Hostname and Port set to [" + wsHostnameAndPort + "]");        
-        
-        /*
-         * Audit Events
-         */
-        tenantId = System.getProperty(MonkeyConstants.CAF_AUDIT_TENANT_ID, System.getenv(MonkeyConstants.CAF_AUDIT_TENANT_ID));
-        if(null == tenantId || tenantId.isEmpty()) {
-            tenantId = "acmecorp";
-            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_TENANT_ID + "] supplied defaulting to [" + tenantId + "]");
-        }
-        
-        correlationId = System.getProperty(MonkeyConstants.CAF_AUDIT_CORRELATION_ID, System.getenv(MonkeyConstants.CAF_AUDIT_CORRELATION_ID));
-        if(null == correlationId || correlationId.isEmpty()) {
-            correlationId = UUID.randomUUID().toString();
-            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_CORRELATION_ID + "] supplied defaulting to [" + correlationId + "]");
-        }
-        
-        userId = System.getProperty(MonkeyConstants.CAF_AUDIT_USER_ID, System.getenv(MonkeyConstants.CAF_AUDIT_USER_ID));
-        if(null == userId || userId.isEmpty()) {
-            userId = "road.runner@acme.com";
-            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_USER_ID + "] supplied defaulting to [" + userId + "]");
-        }
-        
-        /*
-         * Monkey
-         */
-        monkeyMode = System.getProperty(MonkeyConstants.CAF_AUDIT_MONKEY_MODE, System.getenv(MonkeyConstants.CAF_AUDIT_MONKEY_MODE));
-        if(null == monkeyMode || monkeyMode.isEmpty()) {
-            monkeyMode = MonkeyConstants.CAF_AUDIT_STANDARD_MONKEY;
-            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_MONKEY_MODE + "] supplied defaulting to [" + monkeyMode + "]");
-        } 
-        else if(!monkeyMode.equalsIgnoreCase(MonkeyConstants.CAF_AUDIT_STANDARD_MONKEY) && !monkeyMode.equalsIgnoreCase(MonkeyConstants.CAF_AUDIT_RANDOM_MONKEY)) {
-            String errorMsg = "The " + MonkeyConstants.CAF_AUDIT_MONKEY_MODE + " supplied [" + monkeyMode + "] does not match the available modes [" + MonkeyConstants.CAF_AUDIT_STANDARD_MONKEY + ", " + MonkeyConstants.CAF_AUDIT_RANDOM_MONKEY + "]"; 
-            LOG.error(errorMsg);
-            throw new RuntimeException(errorMsg);
-        }
+    }
 
-        String numOfEventsStr = System.getProperty(MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_EVENTS, System.getenv(MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_EVENTS));
-        if(null == numOfEventsStr || numOfEventsStr.isEmpty()) {
-            numOfEvents = 1; 
-            LOG.warn("No [" + MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_EVENTS + "] supplied defaulting to [" + numOfEvents + "]");
+    private void readAuditProp()
+    {
+        /*
+         * Audit Mode
+         */
+        auditMode = System.getProperty(MonkeyConstants.CAF_AUDIT_MODE, System.getenv(MonkeyConstants.CAF_AUDIT_MODE));
+        String auditModeErrorMsg = null;
+        if (null == auditMode || auditMode.isEmpty()) {
+            auditModeErrorMsg = MonkeyConstants.CAF_AUDIT_MODE + " has not been set. " + MonkeyConstants.CAF_AUDIT_MODE + " must be supplied";
+        } else if (!auditMode.equalsIgnoreCase(MonkeyConstants.DIRECT) && !auditMode.equalsIgnoreCase(MonkeyConstants.WEBSERVICE)) {
+            auditModeErrorMsg = "The " + MonkeyConstants.CAF_AUDIT_MODE + " supplied [" + auditMode + "] does not match the available modes [" + MonkeyConstants.DIRECT + ", " + MonkeyConstants.WEBSERVICE + "]";
+        } if (null != auditModeErrorMsg) {
+            LOG.error(auditModeErrorMsg);
+            throw new RuntimeException(auditModeErrorMsg);
         }
-        else {
-            numOfEvents = Integer.parseInt(numOfEventsStr);
-            if(numOfEvents <= 0) {
-                numOfEvents = 1;
-                LOG.warn("Invalid [" + MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_EVENTS + "] supplied defaulting to [" + numOfEvents + "]");
+    }
+    
+    private boolean isMonkeyMode(String auditMode) {
+        boolean bool = false;
+        for(String mode : MonkeyConstants.ARRAY_OF_MONKEYS) {
+            if(mode.equalsIgnoreCase(auditMode)) {
+                bool = true;
+                break;
             }
         }
-        
-        String numOfThreadsStr = System.getProperty(MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_THREADS, System.getenv(MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_THREADS));
-        if(null == numOfThreadsStr || numOfThreadsStr.isEmpty()) {
-            numOfThreads = 1; 
-            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_THREADS + "] supplied defaulting to [" + numOfThreads + "]");
-        }
-        else {
-            numOfThreads = Integer.parseInt(numOfThreadsStr);
-            if(numOfThreads <= 0) {
-                numOfThreads = 1;
-                LOG.warn("Invalid [" + MonkeyConstants.CAF_AUDIT_MONKEY_NUM_OF_THREADS + "] supplied defaulting to [" + numOfThreads + "]");
-            }
-        }        
-        
-        
-        LOG.info(this.toString());
+        return bool;
     }
     
     /**

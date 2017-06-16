@@ -60,10 +60,9 @@ public class MonkeyConfig
         
         readWebServiceProps();        
         
+        readMonkeyProps();
+        
         readAuditEventProps();
-        
-        readMonkeyProps();        
-        
         
         LOG.info(this.toString());
     }
@@ -115,10 +114,24 @@ public class MonkeyConfig
         /*
          * Audit Events
          */
-        tenantId = System.getProperty(MonkeyConstants.CAF_AUDIT_TENANT_ID, System.getenv(MonkeyConstants.CAF_AUDIT_TENANT_ID));
-        if(null == tenantId || tenantId.isEmpty()) {
-            tenantId = "acmecorp";
-            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_TENANT_ID + "] supplied defaulting to [" + tenantId + "]");
+        if (monkeyMode.equals(MonkeyConstants.CAF_AUDIT_DEMO_MONKEY)) {
+            tenantId = "Operating in Demo Mode";
+            userId = "Operating in Demo Mode";
+            LOG.info("Audit Monkey runnning in [" + MonkeyConstants.CAF_AUDIT_DEMO_MONKEY + "] mode, therefore ignoring any supplied ["
+                    + MonkeyConstants.CAF_AUDIT_TENANT_ID + "] or [" + MonkeyConstants.CAF_AUDIT_USER_ID
+                    + "] as the Audit Monkey generates these itself in [" + MonkeyConstants.CAF_AUDIT_DEMO_MONKEY + "] mode");
+        } else {
+            tenantId = System.getProperty(MonkeyConstants.CAF_AUDIT_TENANT_ID, System.getenv(MonkeyConstants.CAF_AUDIT_TENANT_ID));
+            if(null == tenantId || tenantId.isEmpty()) {
+                tenantId = "acmecorp";
+                LOG.info("No [" + MonkeyConstants.CAF_AUDIT_TENANT_ID + "] supplied defaulting to [" + tenantId + "]");
+            }
+
+            userId = System.getProperty(MonkeyConstants.CAF_AUDIT_USER_ID, System.getenv(MonkeyConstants.CAF_AUDIT_USER_ID));
+            if(null == userId || userId.isEmpty()) {
+                userId = "road.runner@acme.com";
+                LOG.info("No [" + MonkeyConstants.CAF_AUDIT_USER_ID + "] supplied defaulting to [" + userId + "]");
+            }
         }
         
         correlationId = System.getProperty(MonkeyConstants.CAF_AUDIT_CORRELATION_ID, System.getenv(MonkeyConstants.CAF_AUDIT_CORRELATION_ID));
@@ -127,11 +140,6 @@ public class MonkeyConfig
             LOG.info("No [" + MonkeyConstants.CAF_AUDIT_CORRELATION_ID + "] supplied defaulting to [" + correlationId + "]");
         }
         
-        userId = System.getProperty(MonkeyConstants.CAF_AUDIT_USER_ID, System.getenv(MonkeyConstants.CAF_AUDIT_USER_ID));
-        if(null == userId || userId.isEmpty()) {
-            userId = "road.runner@acme.com";
-            LOG.info("No [" + MonkeyConstants.CAF_AUDIT_USER_ID + "] supplied defaulting to [" + userId + "]");
-        }
     }
 
     private void readWebServiceProps()

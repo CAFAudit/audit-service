@@ -19,25 +19,17 @@ banner:
 
 You need to perform the following steps to get started with Kibana reporting.
 
-1. Use the [Audit Service Deploy](https://github.com/CAFAudit/audit-service-deploy) Project to deploy the Elasticsearch cluster and Kibana.
-2. Utilise the [Audit Monkey](https://github.com/CAFAudit/audit-service/tree/develop/caf-audit-monkey) to send audit event messages to Elasticsearch.
-3. Define an index pattern in Kibana. 
-4. Import the set of [saved dashboards, saved searches and visualizations](https://github.com/CAFAudit/audit-service-deploy/blob/develop/kibana/saved-objects.json) into Kibana which can be used to explore and visualize the audit data in several ways.
-5. Explore and visualize the audit event messages using Kibana dashboards.
-
-These steps are explained in more detail in subsequent sections:
-
-- [Deploying Elasticsearch and Kibana](#deploying-elasticsearch-and-kibana)
-- [Loading a Sample Data Set into Elasticsearch](#loading-a-sample-data-set-into-elasticsearch)
-- [Defining an Index Pattern in Kibana](#defining-an-index-pattern-in-kibana)
-- [Importing Saved Objects into Kibana](#importing-saved-objects-into-kibana)
-- [Exploring and Visualizing the Sample Data Set](#exploring-and-visualizing-the-sample-data-set)
+1. [Deploy Elasticsearch and Kibana](#deploying-elasticsearch-and-kibana)
+2. [Load a sample data set into Elasticsearch](#loading-a-sample-data-set-into-elasticsearch)
+3. [Define an index pattern in Kibana](#defining-an-index-pattern-in-kibana)
+4. [Import saved dashboards, saved searches and visualizations into Kibana](#importing-saved-objects-into-kibana)
+5. [Explore and visualize the sample data set](#exploring-and-visualizing-the-sample-data-set)
 
 ## Deploying Elasticsearch and Kibana
 For developer deployments of Elasticsearch and Kibana, please follow the Audit Service Deployment [documentation](https://github.com/CAFAudit/audit-service-deploy). This includes configuration and running guidelines for the Audit Web Service, Elasticsearch cluster and Kibana in Docker.
 
 ## Loading a Sample Data Set into Elasticsearch
-The Audit Monkey can be used to generate and send significant volumes of audit event messages to Elasticsearch. Configuration and usage instructions are provided [here](https://github.com/CAFAudit/audit-service/tree/develop/caf-audit-monkey). For the purposes of demonstrating Kibana reporting capability, the Audit Monkey should be run in **[demo]** mode.
+The Audit Monkey can be used to generate and send significant volumes of audit event messages to Elasticsearch. Configuration and usage instructions are provided [here](https://github.com/CAFAudit/audit-service/tree/develop/caf-audit-monkey). For the purposes of demonstrating Kibana reporting capability, the Audit Monkey should be run in **demo** mode.
 
 ## Defining an Index Pattern in Kibana
 Before you can start using Kibana, you need to tell it which Elasticsearch indices you want to explore. The first time you access Kibana, you are prompted to define an index pattern that matches the name of one or more of your indices. To configure which Elasticsearch indices you want to access, follow the steps below:

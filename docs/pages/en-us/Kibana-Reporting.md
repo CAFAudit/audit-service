@@ -13,7 +13,7 @@ banner:
 
 # Kibana Reporting
 
-[Kibana](https://www.elastic.co/products/kibana/) provides reporting capability for audit events data indexed into Elasticsearch. It is a browser based analytics and visualization platform  which can be used to search, view, and interact with the audit data stored in Elasticsearch indices. Kibana provides the ability to perform data analysis and visualize this audit data in a variety of charts, tables, and maps.
+[Kibana](https://www.elastic.co/products/kibana/) provides reporting capability for audit event data indexed into Elasticsearch. It is a browser based analytics and visualization platform  which can be used to search, view, and interact with the audit data stored in Elasticsearch indices. Kibana provides the ability to perform data analysis and visualize this audit data in a variety of charts, tables, and maps.
 
 ## Getting Started
 

@@ -14,7 +14,7 @@ The `marathon.env` file supports configurable property settings necessary for se
 
 - `CAF_AUDIT_SERVICE_PORT`: This property configures the port that the CAF Audit Web Service listens on. 
 
-- `CAF_ELASTIC_HOST_AND_PORT`: This setting configures a comma separated list of Elasticsearch HOST:PORT value pairs. e.g. 192.168.56.10:9300,192.168.56.20:9300.
+- `CAF_ELASTIC_HOST_AND_PORT`: This setting configures a comma separated list of Elasticsearch HOST:TRANSPORT_PORT value pairs. e.g. 192.168.56.10:9300,192.168.56.20:9300.
 
 - `CAF_ELASTIC_CLUSTER_NAME`: This configures the name of the Elasticsearch cluster. e.g. elasticsearch. 
 
@@ -47,4 +47,4 @@ In order to deploy the service application, issue the following command from the
 	source ./marathon.env ; \
 		cat marathon.json.b \
 		| perl -pe 's/\$\{(\w+)\}/(exists $ENV{$1} && length $ENV{$1} > 0 ? $ENV{$1} : "NOT_SET_$1")/eg' \
-		| curl -H "Content-Type: application/json" -d @- http://localhost:8080/v2/groups/
+		| curl -H "Content-Type: application/json" -d @- http://localhost:8080/v2/groups/caf

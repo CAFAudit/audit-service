@@ -1,21 +1,34 @@
 # Production Docker Swarm Deployment
 
-The Production Docker Stack Deployment supports the deployment of the CAF Audit Web Service on Docker Swarm. This folder contains the `docker-stack.yml` file and environment file for Elasticsearch.
+The Production Docker Stack Deployment supports the deployment of the CAF Audit Web Service on Docker Swarm. This folder contains the `docker-stack.yml` file and an `environment.sh` file.
 
 ## Service Configuration
 
 ### Docker Stack
-The `docker-stack.yml` file describes the Docker deployment information required for the CAF Audit Web Service. The file uses property substitution to retrieve values from Environment variables. A number of these Environment variables are **required** for the CAF Audit Web Service deployment. These Environment variables are configurable in the Elasticsearch environment file.
+The `docker-stack.yml` file describes the Docker deployment information required for the CAF Audit Web Service. The file uses property substitution to retrieve values from Environment variables. A number of these Environment variables are **required** for the CAF Audit Web Service deployment. These Environment variables are configurable in the `environment.sh` file.
 
 ### Docker Environment
-The `elasticsearch.env` file supports configurable property settings necessary for service deployment.
-* `CAF_ELASTIC_HOST_AND_PORT` : A comma separated list of Elasticsearch HOST:PORT value pairs  
-* `CAF_ELASTIC_CLUSTER_NAME` : The name of the Elasticsearch cluster  
-* `CAF_ELASTIC_NUMBER_OF_SHARDS` : The number of primary shards that an Elasticsearch index should have  
-* `CAF_ELASTIC_NUMBER_OF_REPLICAS` : The number of replica shards (copies) that each primary shard should have  
+The `environment.sh` file supports configurable property settings necessary for service deployment.
+	#!/usr/bin/env bash
+	
+	###
+	# CAF Audit Service 
+	###
+	export CAF_AUDIT_SERVICE_PORT=25080
+	
+	###
+	# Elasticsearch
+	###
+	## A comma separated list of Elasticsearch HOST:PORT value pairs.
+	export CAF_ELASTIC_HOST_AND_PORT=192.168.56.10:9300
+	## The name of the Elasticsearch cluster.
+	export CAF_ELASTIC_CLUSTER_NAME=elasticsearch-cluster
+	## The number of primary shards that an Elasticsearch index should have.
+	export CAF_ELASTIC_NUMBER_OF_SHARDS=5
+	## The number of replica shards (copies) that each primary shard should have.
+	export CAF_ELASTIC_NUMBER_OF_REPLICAS=1
 
-### Additional Docker Configuration
-The `docker-stack.yml` file specifies default values for a number of additional settings which you may choose to modify directly for your custom deployment. These include:  
+The `environment.sh` file specifies default values for the environment variables, however these values may require updating depending on the deployment environment.
 
 #### Deploy
 
@@ -38,12 +51,9 @@ The `docker-stack.yml` file specifies default values for a number of additional 
 ## Execution
 
 To deploy the stack:
-* Edit `elasticsearch.env` to ensure that the CAF Audit Web Service is connected to the correct Elasticsearch cluster
-  * CAF\_ELASTIC\_HOST\_AND\_PORT=<ELASTICSEARCH\_HOST\_AND\_PORT> 
-  * CAF\_ELASTIC\_CLUSTER\_NAME=<ELASTICSEARCH\_CLUSTER\_NAME>
-* Edit `docker-stack.yml` as necessary to update the properties as required
-  * Ensure the version of the CAF Audit Web Service is correctly set
-  * Configure the external parameter, CAF\_AUDIT\_SERVICE\_PORT, if required. This is the port that the CAF Audit Web Service is configured to listen on.
+* Edit the `environment.sh` to ensure that the CAF Audit Web Service is connected to the correct Elasticsearch cluster.
+* Ensure the version of the CAF Audit Web Service in `docker-stack.yml` is the correct version to be deployed
+* Execute `source environment.sh`
 * Execute `docker stack deploy --compose-file=docker-stack.yml auditWebServiceStack`  
 * The CAF Audit Web Service containers will start up
 

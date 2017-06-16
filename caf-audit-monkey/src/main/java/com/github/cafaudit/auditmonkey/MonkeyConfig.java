@@ -152,7 +152,7 @@ public class MonkeyConfig
         } 
         else {
             wsPort = Integer.parseInt(wsPortStr);
-            if(wsPort == 0 || wsPort < 0 || wsPort > 9999) {
+            if(wsPort == 0 || wsPort < 0 || wsPort > 99999) {
                 wsPort = 25080;
                 LOG.warn("Invalid [" + MonkeyConstants.WS_PORT + "] supplied defaulting to [" + wsPort + "]");
             }

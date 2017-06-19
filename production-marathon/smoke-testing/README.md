@@ -33,7 +33,7 @@ In order to deploy Elasticsearch, issue the following command from the 'producti
 
 ## CAF Audit Web Service Deployment
 
-After Elasticsearch has started follow the 'production-marathon/README.md' for deployment of the CAF Audit Web Service and configure the `marathon.env` properties to match with the Elasticsearch deployed for smoke testing.
+After Elasticsearch has started follow the [production-marathon/README.md](../README.md) for deployment of the CAF Audit Web Service and configure the `marathon.env` properties to match with the Elasticsearch deployed for smoke testing.
 
 ## CAF Audit Monkey Usage
 

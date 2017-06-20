@@ -2,15 +2,17 @@
 
 The Production Marathon deployment supports the deployment of the CAF Audit Web Service on Mesos/Marathon. This folder contains the marathon environment and template files that are required to deploy the service application.
 
+## Prerequisites
+
+If you do not have a production ready deployment of Elasticsearch to test the production CAF Audit Web Service deployment against, follow the [production-prereqs/README.md](production-prereqs/README.md). These instructions will guide you on how to setup a non-production instance of Elasticsearch on Mesos/Marathon for the purposes of smoke testing.
+
 ## Service Configuration
 
 ### Marathon Template
 The `marathon.json.b` template file describes the marathon deployment information required for the CAF Audit Web Service. The template file uses property substitution to get values for configurable properties **required** for service deployment. These properties are configured in the marathon environment file. 
 
 ### Marathon Environment
-The `marathon.env` file supports configurable property settings necessary for service deployment. These include:
-
-- `DOCKER_REGISTRY`: This setting configures the docker repository that the CAF Audit Web Service image will be pulled from. 
+The `environment.sh` file supports configurable property settings necessary for service deployment. These include:
 
 - `CAF_AUDIT_SERVICE_PORT`: This property configures the port that the CAF Audit Web Service listens on. 
 
@@ -39,12 +41,16 @@ The `marathon.json.b` deployment template file specifies default values for a nu
 
 ##### Logging Level
 
-- `CAF_LOG_LEVEL`: This property setting controls the logging level for the CAF Audit Web Service. The logging levels supported include WARN, ERROR, INFO, TRACE, DEBUG and ALL. Default value: INFO. 
+- `CAF_LOG_LEVEL`: This property setting controls the logging level for the CAF Audit Web Service. The logging levels supported include WARN, ERROR, INFO, TRACE, DEBUG and ALL. Default value: INFO.
 
 ## Service Deployment
 In order to deploy the service application, issue the following command from the 'production-marathon' directory:
 
-	source ./marathon.env ; \
+	source ./environment.sh ; \
 		cat marathon.json.b \
 		| perl -pe 's/\$\{(\w+)\}/(exists $ENV{$1} && length $ENV{$1} > 0 ? $ENV{$1} : "NOT_SET_$1")/eg' \
 		| curl -H "Content-Type: application/json" -d @- http://localhost:8080/v2/groups/caf
+
+## Smoke Testing
+
+After the CAF Audit Web Service has been deployed for production use, the smoke testing instructions should be followed to ensure service operation [production-smoke-testing/README.md](production-smoke-testing/README.md).

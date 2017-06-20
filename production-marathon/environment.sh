@@ -1,8 +1,5 @@
 # The following properties MUST be configured before the CAF Audit Web Service can be deployed.
 
-# The docker repository that the CAF Audit Web Service image will be pulled from.
-export DOCKER_REGISTRY=
-
 # The port that the CAF Audit Web Service is configured to listen on.
 export CAF_AUDIT_SERVICE_PORT=
 

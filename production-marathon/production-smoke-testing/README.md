@@ -1,39 +1,10 @@
-# Deployment for Smoke Testing
+# Smoke Testing
 
-This guide covers the deployment of Elasticsearch with the CAF Audit Web Service and CAF Audit Monkey for smoke testing. The CAF Audit Monkey is used to test the logging of audit events directly to Elastic and through the CAF Audit Web Service.
-
-This folder contains the marathon environment and template files that are required to deploy Elasticsearch for smoke testing of the CAF Audit Web Service on Mesos/Marathon.
-
-## Elasticsearch Configuration
-
-### Marathon Template
-
-The `marathon-testing-elasticsearch.json.b` template file describes the marathon deployment information required for Elasticsearch. The template file uses property substitution to get values for configurable properties **required** for service deployment. These properties are configured in the marathon-testing environment file. 
-
-### Marathon Environment
-
-The `marathon-testing.env` file supports configurable property settings necessary for Elasticsearch deployment. These include:
-
-- `CAF_TESTING_ELASTICSEARCH_HTTP_SERVICE_PORT`: This property configures the port that the Elasticsearch HTTP Service is configured to listen on. 
-
-- `CAF_TESTING_ELASTICSEARCH_TRANSPORT_SERVICE_PORT`: This property configures the port that the Elasticsearch Transport Service is configured to listen on. 
-
-- `CAF_ELASTIC_CLUSTER_NAME`: This configures the name of the Elasticsearch cluster. e.g. audit-smoketest-elasticsearch. 
-
-Please note that Elasticsearch cannot be deployed unless all of the above properties are configured in the marathon environment file.
-
-## Elasticsearch Deployment
-
-In order to deploy Elasticsearch, issue the following command from the 'production-marathon/smoke-testing' directory:
-
-	source ./marathon-testing.env ; \
-		cat marathon-testing-elasticsearch.json.b \
-		| perl -pe 's/\$\{(\w+)\}/(exists $ENV{$1} && length $ENV{$1} > 0 ? $ENV{$1} : "NOT_SET_$1")/eg' \
-		| curl -H "Content-Type: application/json" -d @- http://localhost:8080/v2/groups/caf
+This guide covers the deployment and usage of CAF Audit Monkey for smoke testing of production Elasticsearch CAF Audit Web Service via Docker. The CAF Audit Monkey is used to test the logging of audit events directly to Elasticsearch and through the CAF Audit Web Service.
 
 ## CAF Audit Web Service Deployment
 
-After Elasticsearch has started follow the [production-marathon/README.md](../README.md) for deployment of the CAF Audit Web Service and configure the `marathon.env` properties to match with the Elasticsearch deployed for smoke testing.
+If you have not already done so, follow the [production-marathon/README.md](../README.md) for deployment of the production CAF Audit Web Service prior to smoke testing.
 
 ## CAF Audit Monkey Usage
 

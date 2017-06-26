@@ -4,10 +4,10 @@ This project is a Java library to communicate with the [CAF Audit Web Service](h
 
 ## Usage
 
-This project builds a Java library that can be used to make calls to the Audit Web Service. The library should take a dependency on `caf-audit-client` using the following Maven coordinates:
+This project builds a Java library that can be used to make calls to the Audit Web Service. The library should take a dependency on `caf-audit-service-client` using the following Maven coordinates:
 
 	<dependency>
 		<groupId>com.github.cafaudit</groupId>
-		<artifactId>caf-audit-client</artifactId>
+		<artifactId>caf-audit-service-client</artifactId>
 		<version>3.0.0</version>
 	</dependency>

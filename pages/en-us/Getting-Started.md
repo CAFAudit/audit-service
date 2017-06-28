@@ -239,7 +239,13 @@ Regardless of whether you choose to use a generated client-side library, or to u
 
 This object represents a logical connection to the datastore (that is, Elasticsearch in the current implementation). It is a thread-safe object. ***Please take into account that this object requires some time to construct. The application should hold on to it and re-use it, rather than constantly re-construct it.***
 
-The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a `ConfigurationSource` parameter, which is the standard method of configuration in CAF.
+The `AuditConnection` object, for direct to Elasticseach, can be constructed by setting the `CAF_AUDIT_MODE` environment variable to `direct` and then using one of the static `createConnection()` methods in the `AuditConnectionFactory` class:
+- `createConnection(ConfigurationSource configSource)` method takes a [`ConfigurationSource`](#configurationsource) parameter, which is the standard method of configuration in CAF. 
+- `createConnection()` method has no parameters and requires the following environment variables to be set when creating a connection for direct to Elasticsearch:
+	- `CAF_ELASTIC_HOST_AND_PORT_VALUES` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
+	- `CAF_ELASTIC_CLUSTER_NAME` name of the Elasticsearch cluster. Defaults to "elasticsearch-cluster".
+	- `CAF_ELASTIC_NUMBER_OF_SHARDS` the number of primary shards that an index should have. Defaults to 5.
+	- `CAF_ELASTIC_NUMBER_OF_REPLICAS` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
 
 #### ConfigurationSource
 

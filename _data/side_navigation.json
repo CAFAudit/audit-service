@@ -52,6 +52,14 @@
         },
         {
             "title": {
+                "en-us": "Kibana Reporting"
+            },
+            "url": {
+                "en-us": "pages/en-us/Kibana-Reporting"
+            }
+        },
+        {
+            "title": {
                 "en-us": "Blog"
             },
             "url": {

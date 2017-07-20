@@ -97,7 +97,7 @@ services:
       - elasticsearch1
       - elasticsearch2
       - elasticsearch3
-    image: rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-service:3.2.0-SNAPSHOT
+    image: cafaudit/audit-service
     ports:
       - "${CAF_AUDIT_SERVICE_PORT:-25080}:8080"
     environment:

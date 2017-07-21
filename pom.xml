@@ -63,6 +63,7 @@
     </developers>
 
     <modules>
+        <module>deploy</module>
         <module>docs</module>
         <module>caf-audit-schema</module>
         <module>caf-audit-maven-plugin</module>

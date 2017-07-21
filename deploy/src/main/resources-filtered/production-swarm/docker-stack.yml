@@ -8,7 +8,7 @@ services:
       CAF_ELASTIC_CLUSTER_NAME: "${CAF_ELASTIC_CLUSTER_NAME}"
       CAF_ELASTIC_NUMBER_OF_SHARDS: "${CAF_ELASTIC_NUMBER_OF_SHARDS}"
       CAF_ELASTIC_NUMBER_OF_REPLICAS: "${CAF_ELASTIC_NUMBER_OF_REPLICAS}"
-    image: cafaudit/audit-service:3.1.0
+    image: cafaudit/audit-service:${project.version}
     deploy:
       mode: replicated
       replicas: 2

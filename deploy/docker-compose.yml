@@ -1,0 +1,126 @@
+version: '3'
+
+services:
+
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.1
+    ports:
+      - "${ELASTICSEARCH_HTTP_PORT_NODE1:-9200}:9200"
+      - "${ELASTICSEARCH_NETWORK_PORT_NODE1:-9300}:9300"
+    environment:
+      cluster.name: "elasticsearch-cluster"
+      ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
+      discovery.zen.ping.unicast.hosts: "elasticsearch2:9300,elasticsearch3:9300"
+      # disable X-Pack
+      # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
+      #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
+      xpack.security.enabled: "false"
+      xpack.monitoring.enabled: "false"
+      xpack.graph.enabled: "false"
+      xpack.watcher.enabled: "false"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    deploy:
+      resources:
+        limit:
+          memory: 1gb
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.1
+    ports:
+      - "${ELASTICSEARCH_HTTP_PORT_NODE2:-9201}:9200"
+      - "${ELASTICSEARCH_NETWORK_PORT_NODE2:-9301}:9300"
+    environment:
+      cluster.name: "elasticsearch-cluster"
+      ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
+      discovery.zen.ping.unicast.hosts: "elasticsearch1:9300,elasticsearch3:9300"
+      # disable X-Pack
+      # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
+      #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
+      xpack.security.enabled: "false"
+      xpack.monitoring.enabled: "false"
+      xpack.graph.enabled: "false"
+      xpack.watcher.enabled: "false"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    deploy:
+      resources:
+        limit:
+          memory: 1gb
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+
+  elasticsearch3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.1
+    ports:
+      - "${ELASTICSEARCH_HTTP_PORT_NODE3:-9202}:9200"
+      - "${ELASTICSEARCH_NETWORK_PORT_NODE3:-9302}:9300"
+    environment:
+      cluster.name: "elasticsearch-cluster"
+      ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
+      discovery.zen.ping.unicast.hosts: "elasticsearch1:9300,elasticsearch2:9300"
+      # disable X-Pack
+      # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
+      #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
+      xpack.security.enabled: "false"
+      xpack.monitoring.enabled: "false"
+      xpack.graph.enabled: "false"
+      xpack.watcher.enabled: "false"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    deploy:
+      resources:
+        limit:
+          memory: 1gb
+    volumes:
+      - esdata3:/usr/share/elasticsearch/data
+
+  auditService:
+    depends_on:
+      - elasticsearch1
+      - elasticsearch2
+      - elasticsearch3
+    image: cafaudit/audit-service:3.2
+    ports:
+      - "${CAF_AUDIT_SERVICE_PORT:-25080}:8080"
+    environment:
+      CAF_ELASTIC_HOST_AND_PORT: elasticsearch1:9300,elasticsearch2:9300,elasticsearch3:9300
+      CAF_ELASTIC_CLUSTER_NAME: elasticsearch-cluster
+      CAF_ELASTIC_NUMBER_OF_SHARDS: 5
+      CAF_ELASTIC_NUMBER_OF_REPLICAS: 1
+
+  kibana:
+    depends_on:
+      - elasticsearch1
+    image: docker.elastic.co/kibana/kibana:5.3.1
+    ports:
+      - "${CAF_KIBANA_PORT:-5601}:5601"
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch1:9200
+      # disable X-Pack
+      xpack.security.enabled: "false"
+      xpack.monitoring.enabled: "false"
+      xpack.graph.enabled: "false"
+      xpack.watcher.enabled: "false"
+  
+volumes:
+  esdata1:
+  esdata2:
+  esdata3:

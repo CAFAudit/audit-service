@@ -98,7 +98,7 @@
                     <autoPull>always</autoPull>
                     <images>
                         <image>
-                            <name>rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-monkey:${project.version}</name>
+                            <name>${dockerCafAuditOrg}audit-monkey${dockerProjectVersion}</name>
                             <build>
                                 <maintainer>gregory.lucy@hpe.com</maintainer>
                                 <from>java:8</from>

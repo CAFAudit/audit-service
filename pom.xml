@@ -86,4 +86,10 @@
         <url>https://github.com/CAFAudit/audit-service</url>
     </scm>
 
+    <properties>
+        <dockerHubOrganization>cafaudit</dockerHubOrganization>
+        <dockerCafAuditOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerCafAuditOrg>
+        <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
+    </properties>
+
 </project>

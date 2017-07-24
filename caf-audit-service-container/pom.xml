@@ -284,7 +284,7 @@
                         </image>
                         <image>
                             <alias>audit-service</alias>
-                            <name>rh7-artifactory.svs.hpeswlab.net:8443/caf/audit-service:${project.version}</name>
+                            <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
                                 <maintainer>connor.mulholland@hpe.com</maintainer>
                                 <from>tomcat:jre8</from>

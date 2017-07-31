@@ -280,7 +280,7 @@ The override file, `docker-compose.https.yml`, needs applied in order to activat
     docker-compose -f docker-compose.yml -f docker-compose.https.yml up
 
 ##### Override Options
-The following table outlines the additional overrides supported in the `docker-compose.https.yml` file:
+Additional external parameters can be set and used within the `docker-compose.https.yml` override file. These are described below:
 
 <table>
   <tr>

@@ -33,6 +33,11 @@
         <version>1.10.0-205</version>
         <relativePath/>
     </parent>
+    
+    <organization>
+        <name>EntIT Software LLC, a Micro Focus company</name>
+        <url>https://www.microfocus.com</url>
+    </organization>
 
     <properties>
         <swagger-contract-artifactId>caf-audit-service-contract</swagger-contract-artifactId>

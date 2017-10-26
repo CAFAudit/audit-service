@@ -18,12 +18,8 @@
 # Check if the SSL_TOMCAT_CA_CERT_LOCATION environment variable is set, if so, run the setup-tomcat-ssl-cert.sh script.
 if [ -n "${SSL_TOMCAT_CA_CERT_LOCATION}" ]
 then
-    log "Tomcat CA Cert provided at location: ${SSL_TOMCAT_CA_CERT_LOCATION}"
+    echo "Tomcat CA Cert provided at location: ${SSL_TOMCAT_CA_CERT_LOCATION}"
     /container-cert-script/setup-tomcat-ssl-cert.sh
 fi
 
-/usr/share/tomcat/bin/catalina.sh run |& sed -ue 's/^/Audit Service: /'
-
-function log() {
-	echo "start.sh: $@"
-}
+/usr/share/tomcat/bin/catalina.sh run

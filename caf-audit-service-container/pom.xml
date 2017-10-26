@@ -49,12 +49,6 @@
             <type>war</type>
         </dependency>
         <dependency>
-            <groupId>com.github.krallin</groupId>
-            <artifactId>tini</artifactId>
-            <scope>runtime</scope>
-            <type>exe</type>
-        </dependency>
-        <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>transport</artifactId>
             <version>5.3.0</version>
@@ -287,7 +281,7 @@
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
                                 <maintainer>connor.mulholland@hpe.com</maintainer>
-                                <from>tomcat:jre8</from>
+                                <from>cafinternal/prereleases:opensuse-tomcat-1.1.0-logging-SNAPSHOT</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
@@ -300,15 +294,8 @@
                                 <ports>
                                     <port>8080</port>
                                 </ports>
-                                <entryPoint>
-                                    <exec>
-                                        <args>/maven/tini-${tini.version}.exe</args>
-                                        <args>-v</args>
-                                        <args>--</args>
-                                    </exec>
-                                </entryPoint>
                                 <runCmds>
-                                    <runCmd>mv /opt/*.war $CATALINA_HOME/webapps</runCmd>
+                                    <runCmd>mv /opt/*.war /usr/share/tomcat/webapps</runCmd>
                                 </runCmds>
                                 <cmd>/start.sh</cmd>
                                 <assembly>
@@ -341,14 +328,6 @@
                                                 </includes>
                                                 <outputDirectory>/opt</outputDirectory>
                                                 <outputFileNameMapping>caf-audit-service-ui.war</outputFileNameMapping>
-                                            </dependencySet>
-                                            <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                                <fileMode>0755</fileMode>
-                                                <includes>
-                                                    <include>com.github.krallin:tini</include>
-                                                </includes>
-                                                <outputDirectory>/maven</outputDirectory>
                                             </dependencySet>
                                             <!-- Unpack container-cert-script needed to expose HTTPS endpoint-->
                                             <dependencySet>

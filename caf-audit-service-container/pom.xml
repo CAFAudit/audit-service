@@ -295,7 +295,7 @@
                                     <port>8080</port>
                                 </ports>
                                 <runCmds>
-                                    <runCmd>mv -v /opt/*.war /usr/share/apache-tomcat-8.5.23/webapps</runCmd>
+                                    <runCmd>mv -v /opt/*.war /usr/share/tomcat/webapps</runCmd>
                                 </runCmds>
                                 <cmd>/start.sh</cmd>
                                 <assembly>

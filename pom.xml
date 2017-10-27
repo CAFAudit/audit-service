@@ -80,9 +80,6 @@
         <module>caf-audit-service</module>
         <module>caf-audit-service-testing-auditlog</module>
         <module>caf-audit-service-container</module>
-        <module>caf-audit-monkey-auditlog</module>
-        <module>caf-audit-monkey</module>
-        <module>caf-audit-monkey-container</module>
     </modules>
 
     <scm>

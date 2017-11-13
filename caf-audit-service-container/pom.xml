@@ -274,7 +274,7 @@
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
                                 <maintainer>connor.mulholland@hpe.com</maintainer>
-                                <from>cafinternal/prereleases:opensuse-tomcat-2.0.0-SNAPSHOT</from>
+                                <from>cafapi/opensuse-tomcat:2.0</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>

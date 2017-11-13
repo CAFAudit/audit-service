@@ -92,13 +92,6 @@
             <artifactId>log4j-core</artifactId>
             <version>2.7</version>
         </dependency>
-        <!--Used to expose HTTPS endpoint-->
-        <dependency>
-            <groupId>com.github.cafapi</groupId>
-            <artifactId>container-cert-script</artifactId>
-            <type>tar.gz</type>
-            <scope>runtime</scope>
-        </dependency>
     </dependencies>
 
     <profiles>
@@ -281,7 +274,7 @@
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
                                 <maintainer>connor.mulholland@hpe.com</maintainer>
-                                <from>cafinternal/prereleases:opensuse-tomcat-1.1.0-SNAPSHOT</from>
+                                <from>cafinternal/prereleases:opensuse-tomcat-2.0.0-SNAPSHOT</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
@@ -291,71 +284,32 @@
                                 <env>
                                     <CAF_AUDIT_MODE>direct</CAF_AUDIT_MODE>
                                 </env>
-                                <ports>
-                                    <port>8080</port>
-                                </ports>
-                                <runCmds>
-                                    <runCmd>mv -v /opt/*.war /usr/share/tomcat/webapps</runCmd>
-                                </runCmds>
-                                <cmd>/start.sh</cmd>
+                                <healthCheck>
+                                    <mode>none</mode>
+                                </healthCheck>
                                 <assembly>
-                                    <basedir>/</basedir>
+                                    <basedir>/usr/share/tomcat</basedir>
                                     <mode>tar</mode>
                                     <inline>
-                                        <fileSets>
-                                            <fileSet>
-                                                <lineEnding>unix</lineEnding>
-                                                <includes>
-                                                    <include>*.sh</include>
-                                                </includes>
-                                                <fileMode>0755</fileMode>
-                                            </fileSet>
-                                        </fileSets>
                                         <dependencySets>
                                             <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
+                                                <outputDirectory>webapps/audit-service</outputDirectory>
                                                 <includes>
                                                     <include>com.github.cafaudit:caf-audit-service</include>
                                                 </includes>
-                                                <outputDirectory>/opt</outputDirectory>
-                                                <outputFileNameMapping>${webserviceWarName}.war</outputFileNameMapping>
+                                                <unpack>true</unpack>
+                                                <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
                                             <!-- Including the swagger ui in the container image. -->
                                             <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
+                                                <outputDirectory>webapps/audit-service-ui</outputDirectory>
                                                 <includes>
                                                     <include>com.github.cafaudit:caf-audit-service-ui</include>
                                                 </includes>
-                                                <outputDirectory>/opt</outputDirectory>
-                                                <outputFileNameMapping>caf-audit-service-ui.war</outputFileNameMapping>
-                                            </dependencySet>
-                                            <!-- Unpack container-cert-script needed to expose HTTPS endpoint-->
-                                            <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                                <scope>runtime</scope>
-                                                <useTransitiveDependencies>true</useTransitiveDependencies>
-                                                <useTransitiveFiltering>true</useTransitiveFiltering>
-                                                <excludes>
-                                                    <exclude>com.github.cafapi:container-cert-script</exclude>
-                                                </excludes>
-                                            </dependencySet>
-                                            <dependencySet>
-                                                <includes>
-                                                    <include>com.github.cafapi:container-cert-script</include>
-                                                </includes>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                                <useTransitiveFiltering>true</useTransitiveFiltering>
                                                 <unpack>true</unpack>
+                                                <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
                                         </dependencySets>
-                                        <!-- Overwrite existing tomcat server file (i.e. found in /usr/local/tomcat/conf) with the one -->
-                                        <!-- with the one provided in this project. -->
-                                        <files>
-                                            <file>
-                                                <source>src/main/resources/server.xml</source>
-                                                <outputDirectory>/usr/local/tomcat/conf</outputDirectory>
-                                            </file>
-                                        </files>
                                     </inline>
                                 </assembly>
                             </build>

@@ -258,11 +258,12 @@
                             <alias>keystore</alias>
                             <name>${project.artifactId}-keystore:${project.version}</name>
                             <build>
-                                <from>java:8</from>
+                                <from>cafapi/opensuse-jre8:1.2</from>
                                 <maintainer>connor.mulholland@hpe.com</maintainer>
                                 <runCmds>
                                     <runCmd>mkdir /test-keystore</runCmd>
-                                    <runCmd>$JAVA_HOME/bin/keytool -genkey -noprompt -alias tomcat -dname "CN=myname, OU=myorganisational.unit, O=myorganisation, L=mycity, S=myprovince, C=GB" -keystore /test-keystore/tomcat.keystore -storepass changeit -keypass changeit -keyalg RSA</runCmd>
+                                    <runCmd>keytool -genkey -noprompt -alias tomcat -dname "CN=myname, OU=myorganisational.unit, O=myorganisation, L=mycity, S=myprovince, C=GB" -keystore /test-keystore/tomcat.keystore -storepass changeit -keypass changeit -keyalg RSA</runCmd>
+                                    <runCmd>keytool -importkeystore -srckeystore /test-keystore/tomcat.keystore -srcstorepass changeit -destkeystore /test-keystore/tomcat.keystore -deststoretype pkcs12</runCmd>
                                 </runCmds>
                                 <volumes>
                                     <volume>/test-keystore</volume>

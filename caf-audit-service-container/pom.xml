@@ -294,7 +294,7 @@
                                     <inline>
                                         <dependencySets>
                                             <dependencySet>
-                                                <outputDirectory>webapps/audit-service</outputDirectory>
+                                                <outputDirectory>webapps/caf-audit-service</outputDirectory>
                                                 <includes>
                                                     <include>com.github.cafaudit:caf-audit-service</include>
                                                 </includes>
@@ -303,7 +303,7 @@
                                             </dependencySet>
                                             <!-- Including the swagger ui in the container image. -->
                                             <dependencySet>
-                                                <outputDirectory>webapps/audit-service-ui</outputDirectory>
+                                                <outputDirectory>webapps/caf-audit-service-ui</outputDirectory>
                                                 <includes>
                                                     <include>com.github.cafaudit:caf-audit-service-ui</include>
                                                 </includes>

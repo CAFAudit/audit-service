@@ -296,16 +296,16 @@
                                             <dependencySet>
                                                 <outputDirectory>webapps/${webserviceWarName}</outputDirectory>
                                                 <includes>
-                                                    <include>com.github.cafaudit:${webserviceWarName}</include>
+                                                    <include>com.github.cafaudit:caf-audit-service</include>
                                                 </includes>
                                                 <unpack>true</unpack>
                                                 <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
                                             <!-- Including the swagger ui in the container image. -->
                                             <dependencySet>
-                                                <outputDirectory>webapps/${webserviceWarName}-ui</outputDirectory>
+                                                <outputDirectory>webapps/caf-audit-service-ui</outputDirectory>
                                                 <includes>
-                                                    <include>com.github.cafaudit:${webserviceWarName}-ui</include>
+                                                    <include>com.github.cafaudit:caf-audit-service-ui</include>
                                                 </includes>
                                                 <unpack>true</unpack>
                                                 <useProjectArtifact>false</useProjectArtifact>

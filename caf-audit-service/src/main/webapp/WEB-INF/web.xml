@@ -60,11 +60,6 @@
 
     <load-on-startup>2</load-on-startup>
   </servlet>
-  <servlet>
-    <servlet-name>Bootstrap</servlet-name>
-    <servlet-class>com.hpe.caf.services.audit.server.api.Bootstrap</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
   <servlet-mapping>
     <servlet-name>jersey</servlet-name>
     <url-pattern>/v1/*</url-pattern>

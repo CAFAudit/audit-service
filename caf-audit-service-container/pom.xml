@@ -49,12 +49,6 @@
             <type>war</type>
         </dependency>
         <dependency>
-            <groupId>com.github.krallin</groupId>
-            <artifactId>tini</artifactId>
-            <scope>runtime</scope>
-            <type>exe</type>
-        </dependency>
-        <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>transport</artifactId>
             <version>5.3.0</version>
@@ -97,13 +91,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.7</version>
-        </dependency>
-        <!--Used to expose HTTPS endpoint-->
-        <dependency>
-            <groupId>com.github.cafapi</groupId>
-            <artifactId>container-cert-script</artifactId>
-            <type>tar.gz</type>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 
@@ -271,11 +258,12 @@
                             <alias>keystore</alias>
                             <name>${project.artifactId}-keystore:${project.version}</name>
                             <build>
-                                <from>java:8</from>
+                                <from>cafapi/opensuse-jre8:1.2</from>
                                 <maintainer>connor.mulholland@hpe.com</maintainer>
                                 <runCmds>
                                     <runCmd>mkdir /test-keystore</runCmd>
-                                    <runCmd>$JAVA_HOME/bin/keytool -genkey -noprompt -alias tomcat -dname "CN=myname, OU=myorganisational.unit, O=myorganisation, L=mycity, S=myprovince, C=GB" -keystore /test-keystore/tomcat.keystore -storepass changeit -keypass changeit -keyalg RSA</runCmd>
+                                    <runCmd>keytool -genkey -noprompt -alias tomcat -dname "CN=myname, OU=myorganisational.unit, O=myorganisation, L=mycity, S=myprovince, C=GB" -keystore /test-keystore/tomcat.keystore -storepass changeit -keypass changeit -keyalg RSA</runCmd>
+                                    <runCmd>keytool -importkeystore -srckeystore /test-keystore/tomcat.keystore -srcstorepass changeit -destkeystore /test-keystore/tomcat.keystore -deststoretype pkcs12</runCmd>
                                 </runCmds>
                                 <volumes>
                                     <volume>/test-keystore</volume>
@@ -287,7 +275,7 @@
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
                                 <maintainer>connor.mulholland@hpe.com</maintainer>
-                                <from>tomcat:jre8</from>
+                                <from>cafapi/opensuse-tomcat:2.0</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>
                                     <Build.Date>${maven.build.timestamp}</Build.Date>
@@ -297,86 +285,32 @@
                                 <env>
                                     <CAF_AUDIT_MODE>direct</CAF_AUDIT_MODE>
                                 </env>
-                                <ports>
-                                    <port>8080</port>
-                                </ports>
-                                <entryPoint>
-                                    <exec>
-                                        <args>/maven/tini-${tini.version}.exe</args>
-                                        <args>-v</args>
-                                        <args>--</args>
-                                    </exec>
-                                </entryPoint>
-                                <runCmds>
-                                    <runCmd>mv /opt/*.war $CATALINA_HOME/webapps</runCmd>
-                                </runCmds>
-                                <cmd>/start.sh</cmd>
+                                <healthCheck>
+                                    <mode>none</mode>
+                                </healthCheck>
                                 <assembly>
-                                    <basedir>/</basedir>
+                                    <basedir>/usr/share/tomcat</basedir>
                                     <mode>tar</mode>
                                     <inline>
-                                        <fileSets>
-                                            <fileSet>
-                                                <lineEnding>unix</lineEnding>
-                                                <includes>
-                                                    <include>*.sh</include>
-                                                </includes>
-                                                <fileMode>0755</fileMode>
-                                            </fileSet>
-                                        </fileSets>
                                         <dependencySets>
                                             <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
+                                                <outputDirectory>webapps/${webserviceWarName}</outputDirectory>
                                                 <includes>
                                                     <include>com.github.cafaudit:caf-audit-service</include>
                                                 </includes>
-                                                <outputDirectory>/opt</outputDirectory>
-                                                <outputFileNameMapping>${webserviceWarName}.war</outputFileNameMapping>
+                                                <unpack>true</unpack>
+                                                <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
                                             <!-- Including the swagger ui in the container image. -->
                                             <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
+                                                <outputDirectory>webapps/caf-audit-service-ui</outputDirectory>
                                                 <includes>
                                                     <include>com.github.cafaudit:caf-audit-service-ui</include>
                                                 </includes>
-                                                <outputDirectory>/opt</outputDirectory>
-                                                <outputFileNameMapping>caf-audit-service-ui.war</outputFileNameMapping>
-                                            </dependencySet>
-                                            <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                                <fileMode>0755</fileMode>
-                                                <includes>
-                                                    <include>com.github.krallin:tini</include>
-                                                </includes>
-                                                <outputDirectory>/maven</outputDirectory>
-                                            </dependencySet>
-                                            <!-- Unpack container-cert-script needed to expose HTTPS endpoint-->
-                                            <dependencySet>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                                <scope>runtime</scope>
-                                                <useTransitiveDependencies>true</useTransitiveDependencies>
-                                                <useTransitiveFiltering>true</useTransitiveFiltering>
-                                                <excludes>
-                                                    <exclude>com.github.cafapi:container-cert-script</exclude>
-                                                </excludes>
-                                            </dependencySet>
-                                            <dependencySet>
-                                                <includes>
-                                                    <include>com.github.cafapi:container-cert-script</include>
-                                                </includes>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                                <useTransitiveFiltering>true</useTransitiveFiltering>
                                                 <unpack>true</unpack>
+                                                <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
                                         </dependencySets>
-                                        <!-- Overwrite existing tomcat server file (i.e. found in /usr/local/tomcat/conf) with the one -->
-                                        <!-- with the one provided in this project. -->
-                                        <files>
-                                            <file>
-                                                <source>src/main/resources/server.xml</source>
-                                                <outputDirectory>/usr/local/tomcat/conf</outputDirectory>
-                                            </file>
-                                        </files>
                                     </inline>
                                 </assembly>
                             </build>

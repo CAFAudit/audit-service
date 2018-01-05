@@ -97,11 +97,11 @@
                                 <env>
                                     <CAF_AUDIT_MODE>direct</CAF_AUDIT_MODE>
                                 </env>
-                                <entryPoint>
+                                <cmd>
                                     <exec>
                                         <args>/maven/start.sh</args>
                                     </exec>
-                                </entryPoint>
+                                </cmd>
                                 <assembly>
                                     <mode>tar</mode>
                                     <inline>

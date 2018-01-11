@@ -17,4 +17,4 @@
 
 
 cd /maven
-java -cp "*" com.github.cafaudit.auditmonkey.AuditMonkey
+java $CAF_AUDIT_MONKEY_JAVA_OPTS -cp "*" com.github.cafaudit.auditmonkey.AuditMonkey

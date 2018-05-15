@@ -88,13 +88,14 @@
     <scm>
         <connection>scm:git:https://github.com/CAFAudit/audit-service.git</connection>
         <developerConnection>scm:git:https://github.com/CAFAudit/audit-service.git</developerConnection>
-        <url>https://github.com/CAFAudit/audit-service</url>
+        <url>${gitRepo}</url>
     </scm>
 
     <properties>
         <dockerHubOrganization>cafaudit</dockerHubOrganization>
         <dockerCafAuditOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerCafAuditOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
+        <gitRepo>https://github.com/CAFAudit/audit-service</gitRepo>
     </properties>
 
 </project>

@@ -86,7 +86,6 @@
                         <image>
                             <name>${dockerCafAuditOrg}audit-monkey${dockerProjectVersion}</name>
                             <build>
-                                <maintainer>gregory.lucy@hpe.com</maintainer>
                                 <from>cafapi/opensuse-jre8:1.2</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>

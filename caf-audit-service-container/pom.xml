@@ -236,7 +236,6 @@
                             <alias>config</alias>
                             <name>${project.artifactId}-test-config:${project.version}</name>
                             <build>
-                                <maintainer>connor.mulholland@hpe.com</maintainer>
                                 <assembly>
                                     <basedir>/config</basedir>
                                     <inline>
@@ -259,7 +258,6 @@
                             <name>${project.artifactId}-keystore:${project.version}</name>
                             <build>
                                 <from>cafapi/opensuse-jre8:1.2</from>
-                                <maintainer>connor.mulholland@hpe.com</maintainer>
                                 <runCmds>
                                     <runCmd>mkdir /test-keystore</runCmd>
                                     <runCmd>keytool -genkey -noprompt -alias tomcat -dname "CN=myname, OU=myorganisational.unit, O=myorganisation, L=mycity, S=myprovince, C=GB" -keystore /test-keystore/tomcat.keystore -storepass changeit -keypass changeit -keyalg RSA</runCmd>
@@ -274,7 +272,6 @@
                             <alias>audit-service</alias>
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
-                                <maintainer>connor.mulholland@hpe.com</maintainer>
                                 <from>cafapi/opensuse-tomcat:2.0</from>
                                 <labels>
                                     <Build.Number>${project.version}</Build.Number>

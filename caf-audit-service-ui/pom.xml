@@ -31,18 +31,10 @@
         <version>3.3.0-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <swagger.contract.groupId>com.github.cafaudit</swagger.contract.groupId>
-        <swagger.contract.artifactId>caf-audit-service-contract</swagger.contract.artifactId>
-        <swagger.contract.version>${project.version}</swagger.contract.version>
-        <swagger.contract.path>/com/hpe/caf/services/audit/contract</swagger.contract.path>
-    </properties>
-
     <dependencies>
         <dependency>
-            <groupId>${swagger.contract.groupId}</groupId>
-            <artifactId>${swagger.contract.artifactId}</artifactId>
-            <version>${swagger.contract.version}</version>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-service-contract</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -72,9 +64,9 @@
                                     <excludes>**/META-INF/**</excludes>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>${swagger.contract.groupId}</groupId>
-                                    <artifactId>${swagger.contract.artifactId}</artifactId>
-                                    <version>${swagger.contract.version}</version>
+                                    <groupId>com.github.cafaudit</groupId>
+                                    <artifactId>caf-audit-service-contract</artifactId>
+                                    <version>3.3.0-SNAPSHOT</version>
                                     <outputDirectory>${project.build.directory}/swagger-contract</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
@@ -94,7 +86,7 @@
                             <directory>${project.build.directory}/swagger-ui</directory>
                         </resource>
                         <resource>
-                            <directory>${project.build.directory}/swagger-contract${swagger.contract.path}</directory>
+                            <directory>${project.build.directory}/swagger-contract/com/hpe/caf/services/audit/contract</directory>
                             <targetPath>api-docs</targetPath>
                         </resource>
                     </webResources>

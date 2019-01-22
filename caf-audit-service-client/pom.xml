@@ -42,19 +42,13 @@
     <properties>
         <copyrightYear>2018</copyrightYear>
         <copyrightNotice>Copyright ${project.inceptionYear}-${copyrightYear} Micro Focus or one of its affiliates.</copyrightNotice>
-        <swagger-contract-artifactId>caf-audit-service-contract</swagger-contract-artifactId>
-        <swagger-contract-version>${project.version}</swagger-contract-version>
-        <swagger-codegen-inputSpec>/com/hpe/caf/services/audit/contract/swagger.yaml</swagger-codegen-inputSpec>
-        <swagger-codegen-modelPackage>com.hpe.caf.services.audit.client.model</swagger-codegen-modelPackage>
-        <swagger-codegen-apiPackage>com.hpe.caf.services.audit.client.api</swagger-codegen-apiPackage>
-        <swagger-codegen-invokerPackage>com.hpe.caf.services.audit.client</swagger-codegen-invokerPackage>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>${swagger-contract-artifactId}</artifactId>
-            <version>${swagger-contract-version}</version>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-service-contract</artifactId>
+            <version>3.3.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -67,9 +61,9 @@
                 <version>${swagger-codegen-maven-plugin-version}</version>
                 <dependencies>
                     <dependency>
-                        <groupId>${project.groupId}</groupId>
-                        <artifactId>${swagger-contract-artifactId}</artifactId>
-                        <version>${swagger-contract-version}</version>
+                        <groupId>com.github.cafaudit</groupId>
+                        <artifactId>caf-audit-service-contract</artifactId>
+                        <version>3.3.0-SNAPSHOT</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -79,11 +73,11 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${swagger-codegen-inputSpec}</inputSpec>
+                            <inputSpec>/com/hpe/caf/services/audit/contract/swagger.yaml</inputSpec>
                             <language>java</language>
-                            <modelPackage>${swagger-codegen-modelPackage}</modelPackage>
-                            <apiPackage>${swagger-codegen-apiPackage}</apiPackage>
-                            <invokerPackage>${swagger-codegen-invokerPackage}</invokerPackage>
+                            <modelPackage>com.hpe.caf.services.audit.client.model</modelPackage>
+                            <apiPackage>com.hpe.caf.services.audit.client.api</apiPackage>
+                            <invokerPackage>com.hpe.caf.services.audit.client</invokerPackage>
                             <configOptions>
                                 <groupId>${project.groupId}</groupId>
                                 <artifactId>${project.artifactId}</artifactId>

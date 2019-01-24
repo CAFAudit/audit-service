@@ -46,15 +46,6 @@
             <artifactId>caf-audit-service-ui</artifactId>
             <type>war</type>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-jersey2-jaxrs</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <!--Logging Dependencies-->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

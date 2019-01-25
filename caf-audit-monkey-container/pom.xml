@@ -20,19 +20,23 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>caf-audit-monkey-container</artifactId>
-    <packaging>pom</packaging>
-
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
         <version>3.3.0-SNAPSHOT</version>
     </parent>
 
+    <artifactId>caf-audit-monkey-container</artifactId>
+    <packaging>pom</packaging>
+
     <dependencies>
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-monkey</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
         </dependency>
         <!-- The container requires log4j Version 2.7 or greater -->
         <dependency>
@@ -47,10 +51,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
-        </dependency>          
     </dependencies>
 
     <build>

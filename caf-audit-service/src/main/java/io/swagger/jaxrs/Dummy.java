@@ -15,8 +15,17 @@
  */
 package io.swagger.jaxrs;
 
+/**
+ * This class under package named io.swagger.jaxrs created to avoid compilation 
+ * error in swagger generated Api class com.hpe.caf.services.audit.server.api.AuditeventsApi. 
+ * The error is due to unused import io.swagger.jaxrs.*.
+ * For this, the dependency io.swagger:swagger-jersey2-jaxrs should be declared as compile time dependency.
+ * But io.swagger:swagger-jersey2-jaxrs is required as runtime dependency 
+ * to use io.swagger.jersey.config.JerseyJaxrsConfig in web.xml.
+ */
 final class Dummy {
 
     private Dummy() {
+        
     }
 }

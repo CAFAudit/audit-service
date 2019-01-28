@@ -21,15 +21,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.github.cafaudit</groupId>
+    <artifactId>caf-audit-service-container</artifactId>
+    <packaging>pom</packaging>
+
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
         <version>3.3.0-SNAPSHOT</version>
     </parent>
-
-    <groupId>com.github.cafaudit</groupId>
-    <artifactId>caf-audit-service-container</artifactId>
-    <packaging>pom</packaging>
 
     <properties>
         <webserviceWarName>caf-audit-service</webserviceWarName>
@@ -55,20 +55,11 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
         </dependency>
-        <!-- Test dependencies -->
+        
+        <!-- Testing dependencies -->
         <dependency>
-            <groupId>com.github.cafapi.codec</groupId>
-            <artifactId>codec-json</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafapi.config</groupId>
-            <artifactId>config-file</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-service-client</artifactId>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -77,8 +68,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>transport</artifactId>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-service-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafapi.config</groupId>
+            <artifactId>config-file</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafapi.codec</groupId>
+            <artifactId>codec-json</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -87,6 +88,59 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>integration-test</id>
+            <activation>
+                <property>
+                    <name>RE_BUILD_TYPE</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>${fabric8.docker.maven.version}</version>
+                        <executions>
+                            <execution>
+                                <id>start-testing-containers</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <image>audit-service,config,elasticsearch</image>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>stop-testing-containers</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <image>audit-service,config,elasticsearch</image>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>use-default-fixed-ports</id>
+            <properties>
+                <webservice.adminport>25080</webservice.adminport>
+                <elasticsearch.http.port>9200</elasticsearch.http.port>
+                <elasticsearch.transport.port>9300</elasticsearch.transport.port>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -280,7 +334,9 @@
                                 </log>
                                 <wait>
                                     <http>
-                                        <url>http://${docker.host.address}:${webservice.adminport}</url>
+                                        <url>
+                                            http://${docker.host.address}:${webservice.adminport}
+                                        </url>
                                     </http>
                                     <time>120000</time>
                                     <shutdown>500</shutdown>
@@ -321,58 +377,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>integration-test</id>
-            <activation>
-                <property>
-                    <name>RE_BUILD_TYPE</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <version>${fabric8.docker.maven.version}</version>
-                        <executions>
-                            <execution>
-                                <id>start-testing-containers</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                                <configuration>
-                                    <skip>false</skip>
-                                    <image>audit-service,config,elasticsearch</image>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>stop-testing-containers</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                                <configuration>
-                                    <skip>false</skip>
-                                    <image>audit-service,config,elasticsearch</image>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>use-default-fixed-ports</id>
-            <properties>
-                <webservice.adminport>25080</webservice.adminport>
-                <elasticsearch.http.port>9200</elasticsearch.http.port>
-                <elasticsearch.transport.port>9300</elasticsearch.transport.port>
-            </properties>
-        </profile>
-    </profiles>
 
 </project>

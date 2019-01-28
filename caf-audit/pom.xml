@@ -21,14 +21,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>com.github.cafaudit</groupId>
+    <artifactId>caf-audit</artifactId>
+
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
         <version>3.3.0-SNAPSHOT</version>
     </parent>
-
-    <groupId>com.github.cafaudit</groupId>
-    <artifactId>caf-audit</artifactId>
 
     <dependencies>
         <dependency>
@@ -39,6 +39,18 @@
             <groupId>com.github.cafapi.util</groupId>
             <artifactId>util-process-identifier</artifactId>
         </dependency>
+
+        <!-- Elasticsearch -->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+        </dependency>
+
+        <!-- Elasticsearch uses Log4j 2 for logging -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
         <!-- In memory cache support -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -48,23 +60,11 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
-
-        <!-- Elasticsearch uses Log4j 2 for logging -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
         </dependency>
-
-        <!-- Elasticsearch -->
-        <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>transport</artifactId>
-        </dependency>
-
+        
         <!-- Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -77,6 +77,69 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>integration-test</id>
+            <activation>
+                <property>
+                    <name>RE_BUILD_TYPE</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>${fabric8.docker.maven.version}</version>
+                        <executions>
+                            <execution>
+                                <id>start-testing-containers</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <image>elasticsearch</image>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>stop-testing-containers</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <image>elasticsearch</image>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.19</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <environmentVariables>
+                                <docker.host.address>${docker.host.address}</docker.host.address>
+                                <es.port>${elasticsearch.transport.port}</es.port>
+                                <es.cluster.name>docker-cluster</es.cluster.name>
+                            </environmentVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -193,68 +256,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>integration-test</id>
-            <activation>
-                <property>
-                    <name>RE_BUILD_TYPE</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <version>${fabric8.docker.maven.version}</version>
-                        <executions>
-                            <execution>
-                                <id>start-testing-containers</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                                <configuration>
-                                    <skip>false</skip>
-                                    <image>elasticsearch</image>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>stop-testing-containers</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                                <configuration>
-                                    <skip>false</skip>
-                                    <image>elasticsearch</image>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.19</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <environmentVariables>
-                                <docker.host.address>${docker.host.address}</docker.host.address>
-                                <es.port>${elasticsearch.transport.port}</es.port>
-                                <es.cluster.name>docker-cluster</es.cluster.name>
-                            </environmentVariables>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>

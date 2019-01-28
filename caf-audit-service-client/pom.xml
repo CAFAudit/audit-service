@@ -21,19 +21,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.github.cafapi</groupId>
-        <artifactId>swagger-restapi-client-base</artifactId>
-        <version>1.14.0-1</version>
-        <relativePath></relativePath>
-    </parent>
-
     <groupId>com.github.cafaudit</groupId>
     <artifactId>caf-audit-service-client</artifactId>
     <version>3.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>caf-audit-service-client</name>
 
+    <parent>
+        <groupId>com.github.cafapi</groupId>
+        <artifactId>swagger-restapi-client-base</artifactId>
+        <version>1.14.0-1</version>
+        <relativePath/>
+    </parent>
+    
     <organization>
         <name>EntIT Software LLC, a Micro Focus company</name>
         <url>https://www.microfocus.com</url>
@@ -59,6 +59,13 @@
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
                 <version>${swagger-codegen-maven-plugin-version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.github.cafaudit</groupId>
+                        <artifactId>caf-audit-service-contract</artifactId>
+                        <version>3.3.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <id>generate-java-client-code</id>
@@ -79,13 +86,6 @@
                         </configuration>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.github.cafaudit</groupId>
-                        <artifactId>caf-audit-service-contract</artifactId>
-                        <version>3.3.0-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>com.mycila</groupId>

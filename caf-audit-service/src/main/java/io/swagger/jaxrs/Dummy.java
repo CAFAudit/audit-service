@@ -21,7 +21,7 @@ package io.swagger.jaxrs;
  * The error is due to unused import io.swagger.jaxrs.*.
  * For this, the dependency io.swagger:swagger-jersey2-jaxrs should be declared as compile time dependency.
  * But io.swagger:swagger-jersey2-jaxrs is required as runtime dependency 
- * to use io.swagger.jersey.config.JerseyJaxrsConfig in web.xml.
+ * to use io.swagger.jersey.config.JerseyJaxrsConfig class in web.xml.
  */
 final class Dummy {
 

@@ -19,6 +19,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.io.ByteStreams;
+import com.hpe.caf.auditing.constants.CafAutditConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ResourceAlreadyExistsException;
@@ -66,9 +67,9 @@ public class ElasticAuditIndexManager {
         byte[] cafAuditEventTenantIndexMappingsBytes;
         try {
             cafAuditEventTenantIndexMappingsBytes = ByteStreams.toByteArray(getClass().getClassLoader()
-                    .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE));
+                    .getResourceAsStream(CafAutditConstants.Index.TYPE_MAPPING_RESOURCE));
         } catch (IOException e) {
-            String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
+            String errorMessage = "Unable to read bytes from " + CafAutditConstants.Index.TYPE_MAPPING_RESOURCE;
             LOG.error(errorMessage);
             throw new RuntimeException(errorMessage, e);
         }
@@ -80,7 +81,7 @@ public class ElasticAuditIndexManager {
             parser.close();
             return XContentFactory.jsonBuilder().copyCurrentStructure(parser);
         } catch (IOException e) {
-            String errorMessage = "Unable to parse JSON from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
+            String errorMessage = "Unable to parse JSON from " + CafAutditConstants.Index.TYPE_MAPPING_RESOURCE;
             LOG.error(errorMessage);
             throw new RuntimeException(errorMessage, e);
         }
@@ -126,7 +127,7 @@ public class ElasticAuditIndexManager {
         }
 
         //  Add the type mappings to the index request
-        indexRequest.mapping(ElasticAuditConstants.Index.TYPE, cafAuditEventTenantIndexMappingsBuilder);
+        indexRequest.mapping(CafAutditConstants.Index.TYPE, cafAuditEventTenantIndexMappingsBuilder);
 
         try {
             //  Use IndicesAdminClient to create the new index. This operation

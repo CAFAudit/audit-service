@@ -17,9 +17,7 @@ package com.hpe.caf.auditing;
 
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
-import com.hpe.caf.auditing.elastic.ElasticAuditConnection;
 import com.hpe.caf.auditing.noop.NoopAuditConnection;
-import com.hpe.caf.auditing.webserviceclient.WebServiceClientAuditConnection;
 
 public class AuditConnectionFactory {
 
@@ -47,9 +45,9 @@ public class AuditConnectionFactory {
         // Return WebServiceClientAuditConnection or ElasticAuditConnection impl depending on CAF_AUDIT_MODE's value
         switch (auditLibMode.toLowerCase()) {
             case "webservice":
-                return new WebServiceClientAuditConnection(configSource);
+//                return new WebServiceClientAuditConnection(configSource);
             case "direct":
-                return new ElasticAuditConnection(configSource);
+//                return new ElasticAuditConnection(configSource);
             default:
                 // Throw a RuntimeException if an unknown CAF_AUDIT_MODE is specified
                 throw new RuntimeException("Unknown CAF_AUDIT_MODE specified");

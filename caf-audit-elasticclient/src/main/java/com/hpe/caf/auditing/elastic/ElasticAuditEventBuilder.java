@@ -18,6 +18,7 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
+import com.hpe.caf.auditing.constants.CafAutditConstants;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.apache.logging.log4j.LogManager;
@@ -49,21 +50,21 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
     private void addCommonFields(AuditCoreMetadataProvider coreMetadataProvider)
     {
-        auditEvent.put(ElasticAuditConstants.FixedFieldName.PROCESS_ID_FIELD, coreMetadataProvider.getProcessId().toString());
-        auditEvent.put(ElasticAuditConstants.FixedFieldName.THREAD_ID_FIELD, coreMetadataProvider.getThreadId());
-        auditEvent.put(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD, coreMetadataProvider.getEventOrder());
-        auditEvent.put(ElasticAuditConstants.FixedFieldName.EVENT_TIME_FIELD, coreMetadataProvider.getEventTime().toString());
-        auditEvent.put(ElasticAuditConstants.FixedFieldName.EVENT_TIME_SOURCE_FIELD, coreMetadataProvider.getEventTimeSource());
+        auditEvent.put(CafAutditConstants.FixedFieldName.PROCESS_ID_FIELD, coreMetadataProvider.getProcessId().toString());
+        auditEvent.put(CafAutditConstants.FixedFieldName.THREAD_ID_FIELD, coreMetadataProvider.getThreadId());
+        auditEvent.put(CafAutditConstants.FixedFieldName.EVENT_ORDER_FIELD, coreMetadataProvider.getEventOrder());
+        auditEvent.put(CafAutditConstants.FixedFieldName.EVENT_TIME_FIELD, coreMetadataProvider.getEventTime().toString());
+        auditEvent.put(CafAutditConstants.FixedFieldName.EVENT_TIME_SOURCE_FIELD, coreMetadataProvider.getEventTimeSource());
     }
 
     @Override
     public void setApplication(String applicationId) {
-        auditEvent.put(ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, applicationId);
+        auditEvent.put(CafAutditConstants.FixedFieldName.APPLICATION_ID_FIELD, applicationId);
     }
 
     @Override
     public void setUser(String userId) {
-        auditEvent.put(ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, userId);
+        auditEvent.put(CafAutditConstants.FixedFieldName.USER_ID_FIELD, userId);
     }
 
     @Override
@@ -80,23 +81,23 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
         this.tenantId = tenantId.toLowerCase();
 
         // Create Elasticsearch index for the specified tenant.
-        indexManager.getIndex(this.tenantId.concat(ElasticAuditConstants.Index.SUFFIX));
+        indexManager.getIndex(this.tenantId.concat(CafAutditConstants.Index.SUFFIX));
     }
 
     @Override
     public void setCorrelationId(String correlationId) {
-        auditEvent.put(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId);
+        auditEvent.put(CafAutditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId);
     }
 
     @Override
     public void setEventType(String eventCategoryId, String eventTypeId) {
-        auditEvent.put(ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, eventCategoryId);
-        auditEvent.put(ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, eventTypeId);
+        auditEvent.put(CafAutditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, eventCategoryId);
+        auditEvent.put(CafAutditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, eventTypeId);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, String value) {
-        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
     }
 
     @Override
@@ -104,11 +105,11 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
         if (indexingHint != null) {
             switch (indexingHint) {
                 case KEYWORD:
-                    auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
+                    auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
                     break;
 
                 case FULLTEXT:
-                    auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX), value);
+                    auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.TEXT_SUFFIX), value);
                     break;
 
                 default:
@@ -119,43 +120,43 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
             }
         } else {
             //  Indexing hint is null.
-            auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
+            auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.KEYWORD_SUFFIX), value);
         }
     }
 
     @Override
     public void addEventParameter(String name, String columnName, short value) {
-        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.SHORT_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, int value) {
-        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.INT_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.INT_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, long value) {
-        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.LONG_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.LONG_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, float value) {
-        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.FLOAT_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.FLOAT_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, double value) {
-        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.DOUBLE_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.DOUBLE_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, boolean value) {
-        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX), value);
     }
 
     @Override
     public void addEventParameter(String name, String columnName, Date value) {
-        auditEvent.put(getEventParamName(name, columnName).concat(ElasticAuditConstants.CustomFieldSuffix.DATE_SUFFIX), value);
+        auditEvent.put(getEventParamName(name, columnName).concat(CafAutditConstants.CustomFieldSuffix.DATE_SUFFIX), value);
     }
 
     private static String getEventParamName
@@ -172,7 +173,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
         try {
             //  Index audit event message into Elasticsearch.
             final IndexResponse indexResponse = transportClient
-                    .prepareIndex(tenantId.concat(ElasticAuditConstants.Index.SUFFIX), ElasticAuditConstants.Index.TYPE)
+                    .prepareIndex(tenantId.concat(CafAutditConstants.Index.SUFFIX), CafAutditConstants.Index.TYPE)
                     .setSource(auditEvent)
                     .get();
 

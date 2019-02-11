@@ -23,7 +23,6 @@ import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
-import com.hpe.caf.auditing.elastic.ElasticAuditConfiguration;
 import com.hpe.caf.services.audit.server.api.exceptions.BadRequestException;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

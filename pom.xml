@@ -78,6 +78,8 @@
         <module>caf-audit-monkey-auditlog</module>
         <module>caf-audit-monkey</module>
         <module>caf-audit-monkey-container</module>
+        <module>caf-audit-elasticclient</module>
+        <module>caf-audit-webserviceclient</module>
     </modules>
 
     <scm>

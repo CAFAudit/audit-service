@@ -95,7 +95,7 @@
         <dockerCafAuditOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerCafAuditOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
         <gitRepo>https://github.com/CAFAudit/audit-service</gitRepo>
-        <enforceCorrectDependencies>true</enforceCorrectDependencies>
+<!--        <enforceCorrectDependencies>true</enforceCorrectDependencies>-->
         <apache-maven-version>3.3.3</apache-maven-version>
         <elastic-search-version>5.3.0</elastic-search-version>
         <jackson-version>2.8.7</jackson-version>
@@ -117,6 +117,16 @@
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit</artifactId>
+                <version>3.3.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafaudit</groupId>
+                <artifactId>caf-audit-elasticclient</artifactId>
+                <version>3.3.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafaudit</groupId>
+                <artifactId>caf-audit-webserviceclient</artifactId>
                 <version>3.3.0-SNAPSHOT</version>
             </dependency>
             <dependency>

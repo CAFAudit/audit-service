@@ -19,6 +19,7 @@ import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionHelper;
 import com.hpe.caf.auditing.constants.CafAutditConstants;
+import com.hpe.caf.services.audit.api.AuditLog;
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;

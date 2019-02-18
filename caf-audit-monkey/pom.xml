@@ -61,7 +61,14 @@
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-elasticclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-webserviceclient</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

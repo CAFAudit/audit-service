@@ -73,6 +73,9 @@ public class AuditIT {
 
     @BeforeClass
     public static void setup() throws Exception {
+        AUDIT_WEBSERVICE_HTTP_BASE_PATH = System.getenv("webserviceurl");
+        AUDIT_WEBSERVICE_HTTPS_BASE_PATH = System.getenv("webserviceurlhttps");
+        
         CAF_ELASTIC_HOST_AND_PORT = System.getenv("CAF_ELASTIC_HOST_AND_PORT");
         CAF_ELASTIC_CLUSTER_NAME = System.getenv("CAF_ELASTIC_CLUSTER_NAME");
 

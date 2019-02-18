@@ -50,6 +50,7 @@
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-webserviceclient</artifactId>
         </dependency>
+        <!-- End of Auditting Implemenations -->
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-service-ui</artifactId>
@@ -333,7 +334,7 @@
                                     <CAF_CONFIG_PATH>/config</CAF_CONFIG_PATH>
                                     <CAF_ELASTIC_HOST_AND_PORT>elasticsearch:9300</CAF_ELASTIC_HOST_AND_PORT>
                                     <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
-                                    <DOCKER_HOST>http://192.168.56.10:2375</DOCKER_HOST>
+                                    <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
                                     <SSL_TOMCAT_CA_CERT_LOCATION>/test-keystore/tomcat.keystore</SSL_TOMCAT_CA_CERT_LOCATION>
                                     <CAF_SERVICE_JAVA_OPTS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005</CAF_SERVICE_JAVA_OPTS>
                                 </env>

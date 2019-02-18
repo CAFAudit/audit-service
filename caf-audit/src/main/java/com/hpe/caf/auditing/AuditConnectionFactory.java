@@ -47,11 +47,11 @@ public class AuditConnectionFactory
         final Collection<AuditConnection> auditConnectionImpls = ModuleLoader.getServices(AuditConnection.class);
         if (auditConnectionImpls == null || auditConnectionImpls.isEmpty()) {
             // Throw a RuntimeException if an unknown CAF_AUDIT_MODE is specified
-            throw new RuntimeException("Unknown CAF_AUDIT_MODE specified");
+            throw new RuntimeException("No Auditting implementations have been provided.");
         }
         final Map<String, AuditConnection> auditConnectionImplementations
             = auditConnectionImpls.stream().collect(Collectors.toMap(e -> e.getClass().getSimpleName(), e -> e));
-
+        auditConnectionImplementations.entrySet().stream().forEach(e -> System.out.println("AMCG****  " + e.getKey()));
         // Return WebServiceClientAuditConnection or ElasticAuditConnection impl depending on CAF_AUDIT_MODE's value
         final AuditConnection connection;
         switch (auditLibMode.toLowerCase()) {

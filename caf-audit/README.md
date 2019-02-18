@@ -272,7 +272,7 @@ Before passing the [`ConfigurationSource`](#configurationsource) object to the [
 
 |           Mode           | CAF_AUDIT_MODE value |  AuditConnection Implmentation  |                          Required AuditConfiguration                          |
 |:------------------------:|:--------------------:|:-------------------------------:|:-----------------------------------------------------------------------------:|
-|  Direct to Elasticsearch |        direct        |      ElasticAuditConnection     |      [ElasticAuditConfiguration](#direct-to-elasticsearch-configuration)      |
+|  Direct to Elasticsearch |        elasticsearch        |      ElasticAuditConnection     |      [ElasticAuditConfiguration](#direct-to-elasticsearch-configuration)      |
 | Audit Web Service Client |      webservice      | WebServiceClientAuditConnection | [WebServiceClientAuditConfiguration](#audit-web-service-client-configuration) |
 
 #### No-op

@@ -96,7 +96,7 @@ public class AuditMonkey
 
         ConfigurationSource configSource = null;
 
-        if (auditMode.equalsIgnoreCase(MonkeyConstants.DIRECT)) {
+        if (auditMode.equalsIgnoreCase(MonkeyConstants.ELASTICSEARCH)) {
 
             LOG.debug(MonkeyConstants.CAF_AUDIT_MODE + " set to [" + auditMode
                     + "], therefore the Audit Monkey going direct to Elasticsearch");

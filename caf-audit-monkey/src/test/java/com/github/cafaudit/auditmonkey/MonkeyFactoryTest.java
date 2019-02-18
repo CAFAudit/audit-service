@@ -31,7 +31,7 @@ public class MonkeyFactoryTest
     
     @Before
     public void setUp() {
-        System.setProperty(MonkeyConstants.CAF_AUDIT_MODE, MonkeyConstants.DIRECT);
+        System.setProperty(MonkeyConstants.CAF_AUDIT_MODE, MonkeyConstants.ELASTICSEARCH);
         monkeyConfig = new MonkeyConfig();
     }
     

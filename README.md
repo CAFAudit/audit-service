@@ -2,6 +2,8 @@
 
 Manifest of the components which make up the Audit Service:
 * [caf-audit](caf-audit)
+* [caf-audit-webserviceclient](caf-audit-webserviceclient)
+* [caf-audit-elasticclient](caf-audit-elasticclient)
 * [caf-audit-maven-plugin](caf-audit-maven-plugin)
 * [caf-audit-schema](caf-audit-schema)
 * [caf-audit-service-client](caf-audit-service-client)

@@ -213,8 +213,8 @@ public class MonkeyConfig
         String auditModeErrorMsg = null;
         if (null == auditMode || auditMode.isEmpty()) {
             auditModeErrorMsg = MonkeyConstants.CAF_AUDIT_MODE + " has not been set. " + MonkeyConstants.CAF_AUDIT_MODE + " must be supplied";
-        } else if (!auditMode.equalsIgnoreCase(MonkeyConstants.DIRECT) && !auditMode.equalsIgnoreCase(MonkeyConstants.WEBSERVICE)) {
-            auditModeErrorMsg = "The " + MonkeyConstants.CAF_AUDIT_MODE + " supplied [" + auditMode + "] does not match the available modes [" + MonkeyConstants.DIRECT + ", " + MonkeyConstants.WEBSERVICE + "]";
+        } else if (!auditMode.equalsIgnoreCase(MonkeyConstants.ELASTICSEARCH) && !auditMode.equalsIgnoreCase(MonkeyConstants.WEBSERVICE)) {
+            auditModeErrorMsg = "The " + MonkeyConstants.CAF_AUDIT_MODE + " supplied [" + auditMode + "] does not match the available modes [" + MonkeyConstants.ELASTICSEARCH + ", " + MonkeyConstants.WEBSERVICE + "]";
         } if (null != auditModeErrorMsg) {
             LOG.error(auditModeErrorMsg);
             throw new RuntimeException(auditModeErrorMsg);

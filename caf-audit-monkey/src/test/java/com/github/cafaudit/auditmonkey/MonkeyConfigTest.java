@@ -26,7 +26,7 @@ public class MonkeyConfigTest
     @Before
     public void setUp()
     {
-        System.setProperty(MonkeyConstants.CAF_AUDIT_MODE, MonkeyConstants.DIRECT);
+        System.setProperty(MonkeyConstants.CAF_AUDIT_MODE, MonkeyConstants.ELASTICSEARCH);
     }
     
     @After
@@ -38,7 +38,7 @@ public class MonkeyConfigTest
     @Test
     public void shouldEnsureDefaultValuesAreSet() {
         MonkeyConfig monkeyConfig = new MonkeyConfig();
-        assertEquals(MonkeyConstants.DIRECT, monkeyConfig.getAuditMode());
+        assertEquals(MonkeyConstants.ELASTICSEARCH, monkeyConfig.getAuditMode());
         assertEquals("elasticsearch-cluster", monkeyConfig.getEsClustername());
         assertEquals("192.168.56.10", monkeyConfig.getEsHostname());
         assertEquals("192.168.56.10:9300", monkeyConfig.getEsHostnameAndPort());

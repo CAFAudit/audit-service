@@ -35,4 +35,9 @@ public final class NoopAuditConnection implements AuditConnection
     public void close()
     {
     }
+
+    @Override
+    public void initialize(final ConfigurationSource configSource)
+    {
+    }
 }

@@ -149,5 +149,9 @@
             <artifactId>jersey-media-moxy</artifactId>
             <version>2.5.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-elasticclient</artifactId>
+        </dependency>
     </dependencies>
 </project>

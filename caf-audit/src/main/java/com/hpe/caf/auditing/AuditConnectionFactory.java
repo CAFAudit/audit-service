@@ -53,15 +53,20 @@ public class AuditConnectionFactory
             = auditConnectionImpls.stream().collect(Collectors.toMap(e -> e.getClass().getSimpleName(), e -> e));
 
         // Return WebServiceClientAuditConnection or ElasticAuditConnection impl depending on CAF_AUDIT_MODE's value
+        final AuditConnection connection;
         switch (auditLibMode.toLowerCase()) {
             case "webservice":
-                return auditConnectionImplementations.get("WebServiceClientAuditConnection");
+                connection = auditConnectionImplementations.get("WebServiceClientAuditConnection");
+                break;
             case "elasticsearch":
-                return auditConnectionImplementations.get("ElasticAuditConnection");
+                connection = auditConnectionImplementations.get("ElasticAuditConnection");
+                break;
             default:
                 // Throw a RuntimeException if an unknown CAF_AUDIT_MODE is specified
                 throw new RuntimeException("Unknown CAF_AUDIT_MODE specified");
         }
+        connection.initialize(configSource);
+        return connection;
     }
 
     /**

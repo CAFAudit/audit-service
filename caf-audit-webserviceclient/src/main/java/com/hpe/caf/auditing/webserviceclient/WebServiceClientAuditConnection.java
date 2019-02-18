@@ -26,37 +26,25 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.logging.Level;
 
 public class WebServiceClientAuditConnection implements AuditConnection {
 
     private static final Logger LOG = LogManager.getLogger(WebServiceClientAuditConnection.class.getName());
 
-    private static final String NO_PROXY = "NO_PROXY";
-    private static final String HTTP_PROXY = "HTTP_PROXY";
-    private static final String HTTPS_PROXY = "HTTPS_PROXY";
+    private static String NO_PROXY = "NO_PROXY";
+    private static String HTTP_PROXY = "HTTP_PROXY";
+    private static String HTTPS_PROXY = "HTTPS_PROXY";
 
-    private final Proxy httpProxy;
+    private Proxy httpProxy;
 
-    private final URL webServiceEndpointUrl;
+    private URL webServiceEndpointUrl;
 
     /**
      * Audit WebService Client Connection object used to create new instances of the WebService Client Audit Channel
-     * @param configSource ConfigurationSource object that contains the properties for creating an Audit Connection
-     * @throws ConfigurationException if the configuration for the Webservice client cannot be retrieved or if there is
-     * a malformation in the Audit Web Service Endpoint URL, HTTP Proxy URL or HTTPS Proxy URL.
      */
-    public WebServiceClientAuditConnection(final ConfigurationSource configSource) throws ConfigurationException {
-        try {
-            //  Get Webservice endpoint URL
-            this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
-                    configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
-        } catch (final MalformedURLException mue) {
-            String errorMessage = "Unable to create URL from Audit Web Service Endpoint configuration property";
-            throw new ConfigurationException(errorMessage, mue);
-        }
+    public WebServiceClientAuditConnection(){
 
-        // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
-        this.httpProxy = getProxy(webServiceEndpointUrl);
     }
 
     private Proxy getProxy(final URL webServiceEndpointUrl) throws ConfigurationException {
@@ -151,5 +139,22 @@ public class WebServiceClientAuditConnection implements AuditConnection {
     @Override
     public void close() {
         // Do nothing
+    }
+
+    @Override
+    public void initialize(final ConfigurationSource configSource)
+    {
+        try {
+            //  Get Webservice endpoint URL
+            this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
+                configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
+
+        // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
+        this.httpProxy = getProxy(webServiceEndpointUrl);
+        }catch (final MalformedURLException mue) {
+            throw new RuntimeException("Unable to create URL from Audit Web Service Endpoint configuration property", mue);
+        } catch (final ConfigurationException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

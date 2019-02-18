@@ -27,9 +27,9 @@ public class AuditConnectionFactory
 {
 
     /**
-     * Create connection for the Audit application. Returns NoopAuditConnection if an 'CAF_AUDIT_MODE' environment variable has not been
-     * set. If 'CAF_AUDIT_MODE' has been set to 'webservice' this returns a WebServiceClientAuditConnection. If 'CAF_AUDIT_MODE' has been
-     * set to 'direct' this returns an ElasticAuditConnection.
+     * Create connection for the Audit application. Returns NoopAuditConnection if an 'CAF_AUDIT_MODE' environment variable has been
+     * set to 'NONE'. If 'CAF_AUDIT_MODE' has been set to 'webservice' this returns a WebServiceClientAuditConnection. If 'CAF_AUDIT_MODE' has been
+     * set to 'elasticsearch' this returns an ElasticAuditConnection.
      *
      * @param configSource the configuration source
      * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable
@@ -70,7 +70,7 @@ public class AuditConnectionFactory
 
     /**
      * Create connection for the Audit application. Returns NoopAuditConnection if an 'CAF_AUDIT_MODE' environment variable has not been
-     * set. If 'CAF_AUDIT_MODE' has been set to 'direct' this returns an ElasticAuditConnection if its required system properties or
+     * set. If 'CAF_AUDIT_MODE' has been set to 'elasticsearch' this returns an ElasticAuditConnection if its required system properties or
      * environment variables for configuration have been set.
      *
      * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable

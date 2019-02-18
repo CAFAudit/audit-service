@@ -206,7 +206,6 @@
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
                         <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/${webserviceWarName}/v1</webserviceurlhttps>
                     </environmentVariables>
-                    <!--<debugForkedProcess>true</debugForkedProcess>-->
                 </configuration>
             </plugin>
 
@@ -327,7 +326,6 @@
                                 <ports>
                                     <port>${webservice.adminport}:8080</port>
                                     <port>${webservice.https.adminport}:8443</port>
-                                    <port>1701:5005</port>
                                 </ports>
                                 <env>
                                     <CAF_APPNAME>test/auditservice</CAF_APPNAME>
@@ -336,7 +334,6 @@
                                     <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
                                     <SSL_TOMCAT_CA_CERT_LOCATION>/test-keystore/tomcat.keystore</SSL_TOMCAT_CA_CERT_LOCATION>
-                                    <CAF_SERVICE_JAVA_OPTS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005</CAF_SERVICE_JAVA_OPTS>
                                 </env>
                                 <volumes>
                                     <from>

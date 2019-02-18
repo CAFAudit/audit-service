@@ -15,6 +15,7 @@
  */
 package com.hpe.caf.auditing;
 
+import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
 import java.io.IOException;
 
@@ -31,6 +32,7 @@ public interface AuditConnection extends AutoCloseable
     /**
      * Initialize new audit channel.
      * @param configSource Configuration source used to obtain configuration required to establish a connection.
+     * @throws ConfigurationException When there is an error obtaining required configuration from the configSource provided.
      */
-    void initialize(ConfigurationSource configSource);
+    void initialize(ConfigurationSource configSource) throws ConfigurationException;
 }

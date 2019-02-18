@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.logging.Level;
 
 public class WebServiceClientAuditConnection implements AuditConnection {
 
@@ -142,19 +141,16 @@ public class WebServiceClientAuditConnection implements AuditConnection {
     }
 
     @Override
-    public void initialize(final ConfigurationSource configSource)
+    public void initialize(final ConfigurationSource configSource) throws ConfigurationException
     {
         try {
             //  Get Webservice endpoint URL
             this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
                 configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
-
+        } catch (final MalformedURLException mue) {
+            throw new RuntimeException("Unable to create URL from Audit Web Service Endpoint configuration property", mue);
+        }
         // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
         this.httpProxy = getProxy(webServiceEndpointUrl);
-        }catch (final MalformedURLException mue) {
-            throw new RuntimeException("Unable to create URL from Audit Web Service Endpoint configuration property", mue);
-        } catch (final ConfigurationException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 }

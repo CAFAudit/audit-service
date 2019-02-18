@@ -51,7 +51,6 @@ public class AuditConnectionFactory
         }
         final Map<String, AuditConnection> auditConnectionImplementations
             = auditConnectionImpls.stream().collect(Collectors.toMap(e -> e.getClass().getSimpleName(), e -> e));
-        auditConnectionImplementations.entrySet().stream().forEach(e -> System.out.println("AMCG****  " + e.getKey()));
         // Return WebServiceClientAuditConnection or ElasticAuditConnection impl depending on CAF_AUDIT_MODE's value
         final AuditConnection connection;
         switch (auditLibMode.toLowerCase()) {

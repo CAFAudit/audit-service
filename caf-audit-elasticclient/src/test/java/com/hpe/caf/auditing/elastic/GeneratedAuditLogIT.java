@@ -53,7 +53,7 @@ public class GeneratedAuditLogIT {
     @BeforeClass
     public static void setup() throws Exception {
         // Test the Auditing library in direct mode
-        System.setProperty("CAF_AUDIT_MODE", "direct");
+        System.setProperty("CAF_AUDIT_MODE", "elasticsearch");
 
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));

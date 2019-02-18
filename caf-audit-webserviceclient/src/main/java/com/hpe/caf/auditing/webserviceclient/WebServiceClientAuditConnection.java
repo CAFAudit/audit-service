@@ -148,7 +148,7 @@ public class WebServiceClientAuditConnection implements AuditConnection {
             this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
                 configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
         } catch (final MalformedURLException mue) {
-            throw new RuntimeException("Unable to create URL from Audit Web Service Endpoint configuration property", mue);
+            throw new ConfigurationException("Unable to create URL from Audit Web Service Endpoint configuration property", mue);
         }
         // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
         this.httpProxy = getProxy(webServiceEndpointUrl);

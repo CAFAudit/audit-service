@@ -46,7 +46,7 @@ public class AuditConnectionFactory
         }
         final Collection<AuditConnection> auditConnectionImpls = ModuleLoader.getServices(AuditConnection.class);
         if (auditConnectionImpls == null || auditConnectionImpls.isEmpty()) {
-            // Throw a RuntimeException if an unknown CAF_AUDIT_MODE is specified
+            // Throw a RuntimeException if there are no auditing implementations available
             throw new RuntimeException("No Auditting implementations have been provided.");
         }
         final Map<String, AuditConnection> auditConnectionImplementations

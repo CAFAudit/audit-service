@@ -138,9 +138,5 @@
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-elasticclient</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-elasticclient</artifactId>
-        </dependency>
     </dependencies>
 </project>

@@ -42,8 +42,17 @@ public class WebServiceClientAuditConnection implements AuditConnection {
     /**
      * Audit WebService Client Connection object used to create new instances of the WebService Client Audit Channel
      */
-    public WebServiceClientAuditConnection(){
-
+    public WebServiceClientAuditConnection(final ConfigurationSource configSource) throws ConfigurationException
+    {
+        try {
+            //  Get Webservice endpoint URL
+            this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
+                configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
+        } catch (final MalformedURLException mue) {
+            throw new ConfigurationException("Unable to create URL from Audit Web Service Endpoint configuration property", mue);
+        }
+        // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
+        this.httpProxy = getProxy(webServiceEndpointUrl);
     }
 
     private Proxy getProxy(final URL webServiceEndpointUrl) throws ConfigurationException {
@@ -138,19 +147,5 @@ public class WebServiceClientAuditConnection implements AuditConnection {
     @Override
     public void close() {
         // Do nothing
-    }
-
-    @Override
-    public void initialize(final ConfigurationSource configSource) throws ConfigurationException
-    {
-        try {
-            //  Get Webservice endpoint URL
-            this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
-                configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
-        } catch (final MalformedURLException mue) {
-            throw new ConfigurationException("Unable to create URL from Audit Web Service Endpoint configuration property", mue);
-        }
-        // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
-        this.httpProxy = getProxy(webServiceEndpointUrl);
     }
 }

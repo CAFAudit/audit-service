@@ -42,30 +42,32 @@ public class AuditConnectionFactory
         final String auditLibMode = System.getProperty("CAF_AUDIT_MODE", System.getenv("CAF_AUDIT_MODE"));
         // If the CAF_AUDIT_MODE environment variable has been set to NONE return the NO-OP implementation
         if (auditLibMode.equals("NONE")) {
-            return new NoopAuditConnection(configSource);
+            return new NoopAuditConnection();
         }
-        final Collection<AuditConnection> auditConnectionImpls = ModuleLoader.getServices(AuditConnection.class);
+        final Collection<AuditConnectionProvider> auditConnectionImpls = ModuleLoader.getServices(AuditConnectionProvider.class);
         if (auditConnectionImpls == null || auditConnectionImpls.isEmpty()) {
             // Throw a RuntimeException if there are no auditing implementations available
             throw new RuntimeException("No Auditting implementations have been provided.");
         }
-        final Map<String, AuditConnection> auditConnectionImplementations
+        final Map<String, AuditConnectionProvider> auditConnectionImplementations
             = auditConnectionImpls.stream().collect(Collectors.toMap(e -> e.getClass().getSimpleName(), e -> e));
         // Return WebServiceClientAuditConnection or ElasticAuditConnection impl depending on CAF_AUDIT_MODE's value
-        final AuditConnection connection;
+        final AuditConnectionProvider connection;
         switch (auditLibMode.toLowerCase()) {
             case "webservice":
-                connection = auditConnectionImplementations.get("WebServiceClientAuditConnection");
+                connection = auditConnectionImplementations.get("WebServiceClientAuditConnectionProvider");
                 break;
             case "elasticsearch":
-                connection = auditConnectionImplementations.get("ElasticAuditConnection");
+                connection = auditConnectionImplementations.get("ElasticAuditConnectionProvider");
                 break;
             default:
                 // Throw a RuntimeException if an unknown CAF_AUDIT_MODE is specified
                 throw new RuntimeException("Unknown CAF_AUDIT_MODE specified");
         }
-        connection.initialize(configSource);
-        return connection;
+        if (connection == null) {
+            throw new ConfigurationException("Specified auditing implementation could not be found.");
+        }
+        return connection.getConnection(configSource);
     }
 
     /**

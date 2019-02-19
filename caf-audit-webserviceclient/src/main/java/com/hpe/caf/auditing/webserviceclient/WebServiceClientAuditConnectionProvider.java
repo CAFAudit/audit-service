@@ -13,27 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.noop;
+package com.hpe.caf.auditing.webserviceclient;
 
+import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
-import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
+import com.hpe.caf.auditing.AuditConnectionProvider;
 
-public final class NoopAuditConnection implements AuditConnection
+public class WebServiceClientAuditConnectionProvider implements AuditConnectionProvider
 {
-    public NoopAuditConnection()
-    {
-    }
-
     @Override
-    public AuditChannel createChannel()
+    public AuditConnection getConnection(final ConfigurationSource configSource) throws ConfigurationException
     {
-        return new NoopAuditChannel();
-    }
-
-    @Override
-    public void close()
-    {
+        return new WebServiceClientAuditConnection(configSource);
     }
 
 }

@@ -28,32 +28,7 @@ public class ElasticAuditConnection implements AuditConnection {
     private TransportClient transportClient;
     private ElasticAuditIndexManager indexManager;
 
-    public ElasticAuditConnection() {
-
-    }
-
-    private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,
-                                                             final int defaultTo) throws ConfigurationException {
-        try {
-            final String envVarValue = System.getProperty(environmentVariable, System.getenv(environmentVariable));
-            if (envVarValue != null) {
-                return Integer.parseInt(envVarValue);
-            }
-        } catch (final NumberFormatException nfe) {
-            throw new ConfigurationException(environmentVariable + " environment variable should only contain " +
-                    "numbers", nfe);
-        }
-        return defaultTo;
-    }
-
-    @Override
-    public AuditChannel createChannel() throws IOException {
-        //  Share the Elasticsearch transport client across channels.
-        return new ElasticAuditChannel(transportClient, indexManager);
-    }
-    
-    @Override
-    public void initialize(final ConfigurationSource configSource) throws ConfigurationException
+    public ElasticAuditConnection(final ConfigurationSource configSource) throws ConfigurationException
     {
         //  Get Elasticsearch configuration.
         final ElasticAuditConfiguration config;
@@ -93,6 +68,26 @@ public class ElasticAuditConnection implements AuditConnection {
 
         //  Get Elasticsearch index manager.
         indexManager = new ElasticAuditIndexManager(config, transportClient);
+    }
+
+    private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,
+                                                             final int defaultTo) throws ConfigurationException {
+        try {
+            final String envVarValue = System.getProperty(environmentVariable, System.getenv(environmentVariable));
+            if (envVarValue != null) {
+                return Integer.parseInt(envVarValue);
+            }
+        } catch (final NumberFormatException nfe) {
+            throw new ConfigurationException(environmentVariable + " environment variable should only contain " +
+                    "numbers", nfe);
+        }
+        return defaultTo;
+    }
+
+    @Override
+    public AuditChannel createChannel() throws IOException {
+        //  Share the Elasticsearch transport client across channels.
+        return new ElasticAuditChannel(transportClient, indexManager);
     }
 
     @Override

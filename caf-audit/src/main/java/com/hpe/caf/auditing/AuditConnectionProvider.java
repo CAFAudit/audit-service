@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.noop;
+package com.hpe.caf.auditing;
 
+import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
-import com.hpe.caf.auditing.AuditChannel;
-import com.hpe.caf.auditing.AuditConnection;
 
-public final class NoopAuditConnection implements AuditConnection
+public interface AuditConnectionProvider
 {
-    public NoopAuditConnection()
-    {
-    }
 
-    @Override
-    public AuditChannel createChannel()
-    {
-        return new NoopAuditChannel();
-    }
-
-    @Override
-    public void close()
-    {
-    }
-
+    /**
+     * @param configSource source of configuration to use when initializing auditing implementations
+     * @return an itialized instance of an audit connection implementation
+     * @throws ConfigurationException when an error occurs attempting to retrieve required configuration from the source provided.
+     */
+    public AuditConnection getConnection(ConfigurationSource configSource) throws ConfigurationException;
 }

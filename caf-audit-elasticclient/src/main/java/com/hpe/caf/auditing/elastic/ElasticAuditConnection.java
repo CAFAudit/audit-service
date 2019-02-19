@@ -25,8 +25,8 @@ import java.io.IOException;
 
 public class ElasticAuditConnection implements AuditConnection {
 
-    private TransportClient transportClient;
-    private ElasticAuditIndexManager indexManager;
+    private final TransportClient transportClient;
+    private final ElasticAuditIndexManager indexManager;
 
     public ElasticAuditConnection(final ConfigurationSource configSource) throws ConfigurationException
     {

@@ -35,9 +35,9 @@ public class WebServiceClientAuditConnection implements AuditConnection {
     private static String HTTP_PROXY = "HTTP_PROXY";
     private static String HTTPS_PROXY = "HTTPS_PROXY";
 
-    private Proxy httpProxy;
+    private final Proxy httpProxy;
 
-    private URL webServiceEndpointUrl;
+    private final URL webServiceEndpointUrl;
 
     /**
      * Audit WebService Client Connection object used to create new instances of the WebService Client Audit Channel

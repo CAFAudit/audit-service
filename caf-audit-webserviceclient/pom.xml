@@ -42,8 +42,11 @@
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>5.3.0</version>
-            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId> com.github.cafapi</groupId>
+            <artifactId>caf-api</artifactId>
+            <version>1.15.0-1</version>
         </dependency>
     </dependencies>
     <build>

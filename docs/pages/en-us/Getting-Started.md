@@ -188,6 +188,21 @@ The generated library has a dependency on `caf-audit`, which the generated code 
 	        <artifactId>caf-audit</artifactId>
 	        <version>3.1.0</version>
 	    </dependency>
+	</dependencies>  
+
+The library for audit must also take a dependency on either the webservice, elasticsearch or both auditing implementations. These jars must be available to the client at runtime.  
+
+	<dependencies>
+	    <dependency>
+	        <groupId>com.github.cafaudit</groupId>
+	        <artifactId>caf-audit-elasticclient</artifactId>
+	        <version>3.3.0-SNAPSHOT</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>com.github.cafaudit</groupId>
+	        <artifactId>caf-audit-webserviceclient</artifactId>
+	        <version>3.3.0-SNAPSHOT</version>
+	    </dependency>
 	</dependencies>
 
 ### Code Generation Plugin

@@ -31,7 +31,7 @@ The figure below illustrates the Audit service flow and relationship of componen
 
 1. Setting up your application for Auditing requires defining an audit event definition XML file. The file is used for the generation of the client-side audit library.
 2. Using the `caf-audit-maven-plugin`, the client-side Java library is generated from the audit event definition XML file.
-3. If the Auditing library is configured as direct mode, environment variable `CAF_AUDIT_MODE` set to `direct`, the audited application makes calls to the generated client-side library to build and send audit events to Elasticsearch. An Audit event is stored in the tenant index belonging to the application that made the call.
+3. If the Auditing library is configured as elasticsearch mode, environment variable `CAF_AUDIT_MODE` set to `elasticsearch`, the audited application makes calls to the generated client-side library to build and send audit events to Elasticsearch. An Audit event is stored in the tenant index belonging to the application that made the call.
 4. If the Auditing library is configured as Web Service client mode, environment variable `CAF_AUDIT_MODE` set to `webservice`.
 	1. The audited application makes calls to the generated client-side library to build and send audit events to the Audit Web Service REST API, `/caf-audit-service/v1/auditevents` path, endpoint.
 	2. The Audit Web Service makes calls to Elasticsearch to store audit events received from the client. Each audit event is stored in the tenant index belonging to the application that made the call.

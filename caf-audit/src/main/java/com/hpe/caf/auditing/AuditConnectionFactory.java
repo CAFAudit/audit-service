@@ -31,8 +31,9 @@ public class AuditConnectionFactory
      * set to 'elasticsearch' this returns an ElasticAuditConnection.
      *
      * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable
-     * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source. Or (if
-     * CAF_AUDIT_MODE=webservice) if the webservice endpoint URL, passed via configuration, or if HTTP or HTTPS Proxy URLs are malformed
+     * @throws ConfigurationException if the audit server details cannot be retrieved from environment variable. Or (if
+     * CAF_AUDIT_MODE=webservice) if the webservice endpoint URL, passed via environment variable, or if HTTP or HTTPS Proxy URLs 
+     * are malformed
      */
     public static AuditConnection createConnection() throws
         ConfigurationException

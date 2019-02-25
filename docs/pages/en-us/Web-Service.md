@@ -97,12 +97,12 @@ Regardless of whether you choose to use a generated client-side library, or to u
 
 This object represents a logical connection to an endpoint which, in this case, is the Audit Web Service. It is a thread-safe object. ***Please take into account that this connection object requires significant time to construct. The application should hold on to the connection object and re-use it, rather than re-construct it.***
 
-The `AuditWebServiceClientConnection` object, which is the `AuditConnection` object implementation for creating a connection to the Audit Web Service, can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a `ConfigurationSource` parameter, which is the standard method of configuration in CAF. To enable the creation of the `AuditWebServiceClientConnection` object, with the `AuditConnectionFactory`, the `CAF_AUDIT_MODE` environment variable must be set to `webservice`.
+The `AuditWebServiceClientConnection` object, which is the `AuditConnection` object implementation for creating a connection to the Audit Web Service, can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. To enable the creation of the `AuditWebServiceClientConnection` object, with the `AuditConnectionFactory`, the `CAF_AUDIT_MODE` environment variable must be set to `webservice`.
 
 #### Configuration Required for the AuditConnection  
 
 Configuration required to be supplied via environment variable:  
-- *CAF_AUDIT_WEBSERVICE_ENDPOINT_URL*: The CAF Audit webservice URL endpoint to use when issuing audit events.
+- `CAF_AUDIT_WEBSERVICE_ENDPOINT_URL`: The CAF Audit webservice URL endpoint to use when issuing audit events.
 
 #### Audit Channel
 

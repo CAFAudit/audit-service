@@ -320,7 +320,7 @@ Every time an `AuditLog` method is called, a new application audit event is ente
 
 Elasticsearch offers a RESTful interface for querying index entries. For more information on the Elasticsearch REST Search API, go [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html).
 
-Using the configuration source details above, the following Search API operation, `http://<Elasticsearch_Cluster_Node1>:<ES_Port_Node1>/00000001_audit/cafAuditEvent/_search`, can be run to display all audit event entries belonging to tenantId `00000001`:
+Using the configuration details above, the following Search API operation, `http://<Elasticsearch_Cluster_Node1>:<ES_Port_Node1>/00000001_audit/cafAuditEvent/_search`, can be run to display all audit event entries belonging to tenantId `00000001`:
 
 ![Tenant 00000001_audit all audit event index entries](images/GetTenantIndexAuditEvents.PNG)
 

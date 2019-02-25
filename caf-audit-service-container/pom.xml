@@ -65,13 +65,11 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
         </dependency>
-        
-        <!-- Testing dependencies -->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>transport</artifactId>
-            <scope>test</scope>
         </dependency>
+        <!-- Testing dependencies -->
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-service-testing-auditlog</artifactId>
@@ -277,12 +275,6 @@
                                     <inline>
                                         <dependencySets>
                                             <dependencySet>
-                                                <outputDirectory>/maven</outputDirectory>
-                                                <includes>
-                                                    <include>com.github.cafaudit:caf-audit-elasticclient</include>
-                                                </includes>
-                                            </dependencySet>
-                                            <dependencySet>
                                                 <outputDirectory>webapps/${webserviceWarName}</outputDirectory>
                                                 <includes>
                                                     <include>com.github.cafaudit:caf-audit-service</include>
@@ -297,6 +289,14 @@
                                                     <include>com.github.cafaudit:caf-audit-service-ui</include>
                                                 </includes>
                                                 <unpack>true</unpack>
+                                                <useProjectArtifact>false</useProjectArtifact>
+                                            </dependencySet>
+                                            <dependencySet>
+                                                <outputDirectory>webapps/${webserviceWarName}/WEB-INF/lib</outputDirectory>
+                                                <excludes>
+                                                    <exclude>com.github.cafaudit:caf-audit-service</exclude>
+                                                    <exclude>com.github.cafaudit:caf-audit-service-ui</exclude>
+                                                </excludes>
                                                 <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
                                         </dependencySets>

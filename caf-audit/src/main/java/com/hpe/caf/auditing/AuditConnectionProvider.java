@@ -16,15 +16,13 @@
 package com.hpe.caf.auditing;
 
 import com.hpe.caf.api.ConfigurationException;
-import com.hpe.caf.api.ConfigurationSource;
 
 public interface AuditConnectionProvider
 {
 
     /**
-     * @param configSource source of configuration to use when initializing auditing implementations
      * @return an itialized instance of an audit connection implementation
-     * @throws ConfigurationException when an error occurs attempting to retrieve required configuration from the source provided.
+     * @throws ConfigurationException when an error occurs attempting to retrieve required configuration.
      */
-    public AuditConnection getConnection(ConfigurationSource configSource) throws ConfigurationException;
+    public AuditConnection getConnection() throws ConfigurationException;
 }

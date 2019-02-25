@@ -58,8 +58,8 @@ public class WebServiceClientAuditConnectionTest {
     public void testWebServiceClientBadWebserviceEndpoint() throws Exception {
 
         String invalidWebServiceEndpoint = "thisIsNotAValidEndpointUrl";
-
-        AuditConnectionHelper.getWebserviceAuditConnection(invalidWebServiceEndpoint);
+        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", invalidWebServiceEndpoint);
+        AuditConnectionFactory.createConnection();
     }
 
     @Test(expected = UnknownHostException.class)
@@ -68,8 +68,8 @@ public class WebServiceClientAuditConnectionTest {
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "");
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("https_proxy", "https://a-https-proxy:8081");
-
-        AuditConnection auditConnection = AuditConnectionHelper.getWebserviceAuditConnection(testWebServiceHttpsEndpoint);
+        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpsEndpoint);
+        AuditConnection auditConnection = AuditConnectionFactory.createConnection();
         AuditChannel auditChannel = auditConnection.createChannel();
 
         // Create new Audit Event Builder
@@ -85,8 +85,8 @@ public class WebServiceClientAuditConnectionTest {
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "");
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("https_proxy", "notAValidUrl");
-
-        AuditConnectionHelper.getWebserviceAuditConnection(testWebServiceHttpsEndpoint);
+        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpsEndpoint);
+        AuditConnectionFactory.createConnection();
     }
 
     @Test(expected = ConfigurationException.class)
@@ -96,8 +96,8 @@ public class WebServiceClientAuditConnectionTest {
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "notAValidUrl");
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("https_proxy", "");
-
-        AuditConnectionHelper.getWebserviceAuditConnection(testWebServiceHttpEndpoint);
+        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpEndpoint);
+        AuditConnectionFactory.createConnection();
     }
 
 }

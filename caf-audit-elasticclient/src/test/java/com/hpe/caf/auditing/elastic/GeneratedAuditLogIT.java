@@ -17,7 +17,7 @@ package com.hpe.caf.auditing.elastic;
 
 import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
-import com.hpe.caf.auditing.AuditConnectionHelper;
+import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.constants.CafAutditConstants;
 import com.hpe.caf.services.audit.api.AuditLog;
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
@@ -75,8 +75,7 @@ public class GeneratedAuditLogIT {
         Date date = new Date();
         String correlationId = getCorrelationId();
 
-        try (AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(ES_HOSTNAME_AND_PORT,
-                        ES_CLUSTERNAME);
+        try (AuditConnection auditConnection = AuditConnectionFactory.createConnection();
              com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             AuditLog.auditTestEvent1(auditChannel, testTenant, "user1", correlationId,
                     "stringType1", "stringType2", "stringType3", "stringType4",
@@ -119,8 +118,7 @@ public class GeneratedAuditLogIT {
         int event2Order;
 
         try (
-                AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(ES_HOSTNAME_AND_PORT,
-                        ES_CLUSTERNAME);
+                AuditConnection auditConnection = AuditConnectionFactory.createConnection();
                 com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             {
                 Date date = new Date();

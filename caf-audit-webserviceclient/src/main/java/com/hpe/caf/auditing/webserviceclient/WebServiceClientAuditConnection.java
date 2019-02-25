@@ -41,13 +41,15 @@ public class WebServiceClientAuditConnection implements AuditConnection {
 
     /**
      * Audit WebService Client Connection object used to create new instances of the WebService Client Audit Channel
+     * @throws ConfigurationException When the url provided via system property or environment variable causes a malformed URL exception.
      */
-    public WebServiceClientAuditConnection(final ConfigurationSource configSource) throws ConfigurationException
+    public WebServiceClientAuditConnection() throws ConfigurationException
     {
         try {
             //  Get Webservice endpoint URL
             this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
-                configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
+                System.getProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL",
+                                   System.getenv("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL"))));
         } catch (final MalformedURLException mue) {
             throw new ConfigurationException("Unable to create URL from Audit Web Service Endpoint configuration property", mue);
         }

@@ -16,7 +16,6 @@
 package com.hpe.caf.auditing;
 
 import com.hpe.caf.api.ConfigurationException;
-import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.noop.NoopAuditConnection;
 import com.hpe.caf.util.ModuleLoader;
 import java.util.Collection;
@@ -31,12 +30,11 @@ public class AuditConnectionFactory
      * set to 'NONE'. If 'CAF_AUDIT_MODE' has been set to 'webservice' this returns a WebServiceClientAuditConnection. If 'CAF_AUDIT_MODE' has been
      * set to 'elasticsearch' this returns an ElasticAuditConnection.
      *
-     * @param configSource the configuration source
      * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable
      * @throws ConfigurationException if the audit server details cannot be retrieved from the configuration source. Or (if
      * CAF_AUDIT_MODE=webservice) if the webservice endpoint URL, passed via configuration, or if HTTP or HTTPS Proxy URLs are malformed
      */
-    public static AuditConnection createConnection(final ConfigurationSource configSource) throws
+    public static AuditConnection createConnection() throws
         ConfigurationException
     {
         final String auditLibMode = System.getProperty("CAF_AUDIT_MODE", System.getenv("CAF_AUDIT_MODE"));
@@ -67,20 +65,6 @@ public class AuditConnectionFactory
         if (connection == null) {
             throw new ConfigurationException("Specified auditing implementation could not be found.");
         }
-        return connection.getConnection(configSource);
-    }
-
-    /**
-     * Create connection for the Audit application. Returns NoopAuditConnection if an 'CAF_AUDIT_MODE' environment variable has not been
-     * set. If 'CAF_AUDIT_MODE' has been set to 'elasticsearch' this returns an ElasticAuditConnection if its required system properties or
-     * environment variables for configuration have been set.
-     *
-     * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable
-     * @throws ConfigurationException if the configuration details cannot be retrieved from system properties or environment variables for
-     * building ElasticAuditConfiguration. Also thrown if 'CAF_AUDIT_MODE' has been set to webservice.
-     */
-    public static AuditConnection createConnection() throws ConfigurationException
-    {
-        return createConnection(null);
+        return connection.getConnection();
     }
 }

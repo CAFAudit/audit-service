@@ -83,16 +83,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.config</groupId>
-            <artifactId>config-file</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafapi.codec</groupId>
-            <artifactId>codec-json</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <scope>test</scope>
@@ -200,7 +190,6 @@
                     </systemPropertyVariables>
                     <environmentVariables>
                         <CAF_APPNAME>test/auditservice</CAF_APPNAME>
-                        <CAF_CONFIG_PATH>${project.basedir}/test-configs</CAF_CONFIG_PATH>
                         <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.transport.port}</CAF_ELASTIC_HOST_AND_PORT>
                         <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
@@ -242,26 +231,6 @@
                     <logDate>default</logDate>
                     <watchInterval>500</watchInterval>
                     <images>
-                        <image>
-                            <alias>config</alias>
-                            <name>${project.artifactId}-test-config:${project.version}</name>
-                            <build>
-                                <assembly>
-                                    <basedir>/config</basedir>
-                                    <inline>
-                                        <fileSets>
-                                            <fileSet>
-                                                <directory>test-configs</directory>
-                                                <outputDirectory>./</outputDirectory>
-                                                <includes>
-                                                    <include>*</include>
-                                                </includes>
-                                            </fileSet>
-                                        </fileSets>
-                                    </inline>
-                                </assembly>
-                            </build>
-                        </image>
                         <!--Build image for test keystore-->
                         <image>
                             <alias>keystore</alias>
@@ -292,6 +261,12 @@
                                 </labels>
                                 <env>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>
+                                    <_JAVA_OPTIONS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</_JAVA_OPTIONS>
+                                    <CAF_ELASTIC_HOST_AND_PORT_VALUES>elasticsearch:9300</CAF_ELASTIC_HOST_AND_PORT_VALUES>
+                                    <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
+                                    <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
+                                    <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
+                                    <CAF_LOG_LEVEL>DEBUG</CAF_LOG_LEVEL>
                                 </env>
                                 <healthCheck>
                                     <mode>none</mode>
@@ -301,6 +276,12 @@
                                     <mode>tar</mode>
                                     <inline>
                                         <dependencySets>
+                                            <dependencySet>
+                                                <outputDirectory>/maven</outputDirectory>
+                                                <includes>
+                                                    <include>com.github.cafaudit:caf-audit-elasticclient</include>
+                                                </includes>
+                                            </dependencySet>
                                             <dependencySet>
                                                 <outputDirectory>webapps/${webserviceWarName}</outputDirectory>
                                                 <includes>
@@ -326,6 +307,7 @@
                                 <ports>
                                     <port>${webservice.adminport}:8080</port>
                                     <port>${webservice.https.adminport}:8443</port>
+                                    <port>1701:5005</port>
                                 </ports>
                                 <env>
                                     <CAF_APPNAME>test/auditservice</CAF_APPNAME>
@@ -337,7 +319,6 @@
                                 </env>
                                 <volumes>
                                     <from>
-                                        <image>config</image>
                                         <image>keystore</image>
                                     </from>
                                 </volumes>

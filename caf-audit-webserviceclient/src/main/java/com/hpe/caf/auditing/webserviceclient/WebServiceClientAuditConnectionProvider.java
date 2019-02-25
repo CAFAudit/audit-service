@@ -16,16 +16,15 @@
 package com.hpe.caf.auditing.webserviceclient;
 
 import com.hpe.caf.api.ConfigurationException;
-import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionProvider;
 
 public class WebServiceClientAuditConnectionProvider implements AuditConnectionProvider
 {
     @Override
-    public AuditConnection getConnection(final ConfigurationSource configSource) throws ConfigurationException
+    public AuditConnection getConnection() throws ConfigurationException
     {
-        return new WebServiceClientAuditConnection(configSource);
+        return new WebServiceClientAuditConnection();
     }
 
 }

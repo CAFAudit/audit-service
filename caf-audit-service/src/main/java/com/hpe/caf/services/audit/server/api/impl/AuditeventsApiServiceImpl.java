@@ -107,7 +107,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
         // If an AuditConnection has been been established create one with the ConfigurationSource.
         if (auditConnection == null) {
-            auditConnection = AuditConnectionFactory.createConnection(getConfigurationSource());
+            auditConnection = AuditConnectionFactory.createConnection();
         }
 
         //  Index audit event message into Elasticsearch.

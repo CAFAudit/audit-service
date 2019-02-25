@@ -24,141 +24,17 @@ The order of instantiation and use of these objects for sending audit events is 
 3. Create an [`AuditChannel`](#AuditChannel) object from the [`AuditConnection`](#AuditConnection) object.
 4. Use the [`AuditEventBuilder`](#AuditEventBuilder) object to construct and send audit event messages to the endpoint.
 
-### ConfigurationSource
+#### Direct to Elasticsearch Configuration  
+Configuration required to be supplied via environment variable:  
+- *CAF_ELASTIC_HOST_AND_PORT_VALUES*: A comma separated list of hostnames and ports to use when contacting elasticsearch. eg. localhost:9200,otherHost:9200  
+- *CAF_ELASTIC_CLUSTER_NAME*: The name of the elasticsearch cluster to use.  
+- *CAF_ELASTIC_NUMBER_OF_SHARDS*: The number of shards elasticsearch is configured to use.  
+- *CAF_ELASTIC_NUMBER_OF_REPLICAS*: The number of replicas configured for elasticsearch.  
 
-[comment]: <> (The caf-audit Getting-Started.md documentation content contains duplication of the ConfigurationSource section. It is important that any changes here must also be included within the Getting-Started.md content.)
 
-You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from any of the following:
-
-- environment variables
-- files
-- a REST service
-- a custom source that better integrates with the host application.
-
-A `ConfigurationSource` object is required for the [`AuditConnectionFactory`](#AuditConnectionFactory) object `createConnection(ConfigurationSource configSource)` method to produce an [`AuditConnection`](#AuditConnection) object.
-
-If you're not already using CAF's configuration mechanism, this sample code illustrates the generation of a `ConfigurationSource` object.
-
-	import com.hpe.caf.api.*;
-	import com.hpe.caf.cipher.NullCipherProvider;
-	import com.hpe.caf.config.system.SystemBootstrapConfiguration;
-	import com.hpe.caf.naming.ServicePath;
-	import com.hpe.caf.util.ModuleLoader;
-	
-	public static ConfigurationSource createCafConfigSource() throws Exception
-	{
-	    System.setProperty("CAF_CONFIG_PATH", "/etc/sampleapp/config");
-	    System.setProperty("CAF_APPNAME", "sampleappgroup/sampleapp");
-	
-	    BootstrapConfiguration bootstrap = new SystemBootstrapConfiguration();
-	    Cipher cipher = ModuleLoader.getService(CipherProvider.class, NullCipherProvider.class).getCipher(bootstrap);
-	    ServicePath path = bootstrap.getServicePath();
-	    Codec codec = ModuleLoader.getService(Codec.class);
-	    return ModuleLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, path, codec);
-	}
-
-To compile the above sample code, add the following dependencies to your POM:
-
-	<dependency>
-	    <groupId>com.github.cafapi</groupId>
-	    <artifactId>caf-api</artifactId>
-	    <version>1.6.0-176</version>
-	</dependency>
-	<dependency>
-	    <groupId>com.github.cafapi.cipher</groupId>
-	    <artifactId>cipher-null</artifactId>
-	    <version>1.6.0-176</version>
-	</dependency>
-	<dependency>
-	    <groupId>com.github.cafapi.config</groupId>
-	    <artifactId>config-system</artifactId>
-	    <version>1.6.0-176</version>
-	</dependency>
-	<dependency>
-	    <groupId>com.github.cafapi.util</groupId>
-	    <artifactId>util-moduleloader</artifactId>
-	    <version>1.6.0-176</version>
-	</dependency>
-	<dependency>
-	    <groupId>com.github.cafapi.util</groupId>
-	    <artifactId>util-naming</artifactId>
-	    <version>1.6.0-176</version>
-	</dependency>
-
-To use JSON-encoded files for your configuration, add the following additional dependencies to your POM:
-
-	<!-- Runtime-only Dependencies -->
-	<dependency>
-	    <groupId>com.github.cafapi.config</groupId>
-	    <artifactId>config-file</artifactId>
-	    <version>1.6.0-176</version>
-	    <scope>runtime</scope>
-	</dependency>
-	<dependency>
-	    <groupId>com.github.cafapi.codec</groupId>
-	    <artifactId>codec-json</artifactId>
-	    <version>1.6.0-176</version>
-	    <scope>runtime</scope>
-	</dependency>
-	<dependency>
-	    <groupId>io.dropwizard</groupId>
-	    <artifactId>dropwizard-core</artifactId>
-	    <version>0.8.4</version>
-	    <scope>runtime</scope>
-	</dependency>
-
-### Direct to Elasticsearch Configuration
-
-Direct to Elasticsearch mode can be configured with a [`ConfigurationSource`](#ConfigurationSource) object or via environment variables
-
-#### Direct to Elasticsearch ConfigurationSource
-
-In the [`ConfigurationSource`](#ConfigurationSource) section, we used JSON-encoded files with the following parameters:
-
-- `CAF_CONFIG_PATH: /etc/sampleapp/config`
-- `CAF_APPNAME: sampleappgroup/sampleapp`
-
-Given this configuration, you would configure Audit Direct to Elasticsearch by creating a file named `cfg_sampleappgroup_sampleapp_ElasticAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
-
-	{
-	    "hostAndPortValues": "<Elasticsearch_Cluster_Node1>:<ES_Port_Node1>,<Elasticsearch_Cluster_Node2>:<ES_Port_Node2>,<Elasticsearch_Cluster_Node3>:<ES_Port_Node3>",
-	    "clusterName": "elasticsearch-cluster",
-	    "numberOfShards": "5",
-	    "numberOfReplicas": "1"
-	}
-
-where:
-
-- `hostAndPortValues` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
-- `clusterName` name of the Elasticsearch cluster. Defaults to "elasticsearch-cluster".
-- `numberOfShards` the number of primary shards that an index should have. Defaults to 5.
-- `numberOfReplicas` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
-
-#### Direct to Elasticsearch Environment Variables
-
-As an alternative to creating a [`ConfigurationSource`](#ConfigurationSource), for the `ElasticAuditConnection` or [`AuditConnectionFactory`](#AuditConnectionFactory), the direct to Elasticsearch mode can be configured via the following environment variables:
-
-- `CAF_ELASTIC_HOST_AND_PORT_VALUES` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
-- `CAF_ELASTIC_CLUSTER_NAME` name of the Elasticsearch cluster. Defaults to "elasticsearch-cluster".
-- `CAF_ELASTIC_NUMBER_OF_SHARDS` the number of primary shards that an index should have. Defaults to 5.
-- `CAF_ELASTIC_NUMBER_OF_REPLICAS` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
-
-### Audit Web Service Client Configuration
-
-In the [`ConfigurationSource`](#ConfigurationSource) section, we used JSON-encoded files with the following parameters:
-
-- `CAF_CONFIG_PATH: /etc/sampleapp/config`
-- `CAF_APPNAME: sampleappgroup/sampleapp`
-
-Given this configuration, you would configure Audit Web Service Client by creating a file named `cfg_sampleappgroup_sampleapp_WebSerivceClientAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
-
-	{
-	    "webServiceEndpoint": "http://<Audit_Web_Service_Node>:<Port>/caf-audit-service/v1"
-	}
-
-where:
-
-- `webServiceEndpoint` refers to the Audit Web Service endpoint.
+#### Audit Web Service Client Configuration  
+Configuration required to be supplied via environment variable:  
+- *CAF_AUDIT_WEBSERVICE_ENDPOINT_URL*: The CAF Audit webservice URL endpoint to use when issuing audit events.  
 
 ### AuditConnectionFactory
 

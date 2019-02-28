@@ -23,7 +23,7 @@
         <artifactId>audit-service-aggregator</artifactId>
         <version>3.3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>caf-audit-webserviceclient</artifactId>
+    <artifactId>caf-audit-binding-webservice</artifactId>
 
     <dependencies>
         <dependency>

@@ -72,8 +72,8 @@
         <module>caf-audit-service-ui</module>
         <module>caf-audit-service-client</module>
         <module>caf-audit-service-server-stub-source</module>
-        <module>caf-audit-elasticclient</module>
-        <module>caf-audit-webserviceclient</module>
+        <module>caf-audit-binding-elasticsearch</module>
+        <module>caf-audit-binding-webservice</module>
         <module>caf-audit-service</module>
         <module>caf-audit-service-testing-auditlog</module>
         <module>caf-audit-service-container</module>
@@ -121,12 +121,12 @@
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
-                <artifactId>caf-audit-elasticclient</artifactId>
+                <artifactId>caf-audit-binding-elasticsearch</artifactId>
                 <version>3.3.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
-                <artifactId>caf-audit-webserviceclient</artifactId>
+                <artifactId>caf-audit-binding-webservice</artifactId>
                 <version>3.3.0-SNAPSHOT</version>
             </dependency>
             <dependency>

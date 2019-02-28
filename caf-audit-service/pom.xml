@@ -136,7 +136,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-elasticclient</artifactId>
+            <artifactId>caf-audit-binding-elasticsearch</artifactId>
         </dependency>
     </dependencies>
 </project>

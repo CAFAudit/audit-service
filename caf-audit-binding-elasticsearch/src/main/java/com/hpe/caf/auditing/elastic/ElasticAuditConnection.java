@@ -28,7 +28,7 @@ public class ElasticAuditConnection implements AuditConnection {
     private final TransportClient transportClient;
     private ElasticAuditIndexManager indexManager;
 
-    public ElasticAuditConnection(final ConfigurationSource configSource) throws ConfigurationException {
+    public ElasticAuditConnection(ConfigurationSource configSource) throws ConfigurationException {
         //  Get Elasticsearch configuration.
         final ElasticAuditConfiguration config;
         if (configSource == null) {

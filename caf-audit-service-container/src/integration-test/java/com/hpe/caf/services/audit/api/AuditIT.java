@@ -15,7 +15,7 @@
  */
 package com.hpe.caf.services.audit.api;
 
-import com.hpe.caf.auditing.constants.CafAutditConstants;
+import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.elastic.ElasticAuditTransportClientFactory;
 import com.hpe.caf.services.audit.client.ApiException;
@@ -306,7 +306,7 @@ public class AuditIT {
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
             hits = client.prepareSearch(indexId.toLowerCase())
-                    .setTypes(CafAutditConstants.Index.TYPE)
+                    .setTypes(ElasticAuditConstants.Index.TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
                     .setFrom(0).setSize(10)
@@ -339,7 +339,7 @@ public class AuditIT {
             DeleteResponse response = client
                     .prepareDelete()
                     .setIndex(indexId.toLowerCase())
-                    .setType(CafAutditConstants.Index.TYPE)
+                    .setType(ElasticAuditConstants.Index.TYPE)
                     .setId(documentId)
                     .execute()
                     .actionGet();
@@ -363,16 +363,16 @@ public class AuditIT {
     private void verifySearchResults(final NewAuditEvent expected, final Map<String, Object> actual) throws Exception {
 
         //  Verify fixed field results.
-        assertField(CafAutditConstants.FixedFieldName.APPLICATION_ID_FIELD, false, expected.getApplicationId(), actual);
-        assertField(CafAutditConstants.FixedFieldName.PROCESS_ID_FIELD, false, expected.getProcessId(), actual);
-        assertField(CafAutditConstants.FixedFieldName.THREAD_ID_FIELD, false, expected.getThreadId(), actual);
-        assertField(CafAutditConstants.FixedFieldName.EVENT_ORDER_FIELD, false, expected.getEventOrder(), actual);
-        assertField(CafAutditConstants.FixedFieldName.EVENT_TIME_FIELD, false, expected.getEventTime(), actual);
-        assertField(CafAutditConstants.FixedFieldName.EVENT_TIME_SOURCE_FIELD, false, expected.getEventTimeSource(), actual);
-        assertField(CafAutditConstants.FixedFieldName.USER_ID_FIELD, false, expected.getUserId(), actual);
-        assertField(CafAutditConstants.FixedFieldName.CORRELATION_ID_FIELD, false, expected.getCorrelationId(), actual);
-        assertField(CafAutditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, false, expected.getEventTypeId(), actual);
-        assertField(CafAutditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, false, expected.getEventCategoryId(), actual);
+        assertField(ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, false, expected.getApplicationId(), actual);
+        assertField(ElasticAuditConstants.FixedFieldName.PROCESS_ID_FIELD, false, expected.getProcessId(), actual);
+        assertField(ElasticAuditConstants.FixedFieldName.THREAD_ID_FIELD, false, expected.getThreadId(), actual);
+        assertField(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD, false, expected.getEventOrder(), actual);
+        assertField(ElasticAuditConstants.FixedFieldName.EVENT_TIME_FIELD, false, expected.getEventTime(), actual);
+        assertField(ElasticAuditConstants.FixedFieldName.EVENT_TIME_SOURCE_FIELD, false, expected.getEventTimeSource(), actual);
+        assertField(ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, false, expected.getUserId(), actual);
+        assertField(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, false, expected.getCorrelationId(), actual);
+        assertField(ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, false, expected.getEventTypeId(), actual);
+        assertField(ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, false, expected.getEventCategoryId(), actual);
 
         //  Verify custom field results.
         for (EventParam ep : expected.getEventParams()) {
@@ -425,9 +425,9 @@ public class AuditIT {
 
         if (isCustom) {
             if (indexingHint == null || indexingHint.equalsIgnoreCase(EVENT_PARAM_INDEXING_HINT_KEYWORD)){
-                fieldNameWithSuffix = fieldName.concat(CafAutditConstants.CustomFieldSuffix.KEYWORD_SUFFIX);
+                fieldNameWithSuffix = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX);
             } else {
-                fieldNameWithSuffix = fieldName.concat(CafAutditConstants.CustomFieldSuffix.TEXT_SUFFIX);
+                fieldNameWithSuffix = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX);
             }
         }
         Assert.assertTrue(searchResult.containsKey(fieldNameWithSuffix), String.format("Field %s not found", fieldNameWithSuffix));
@@ -440,7 +440,7 @@ public class AuditIT {
 
     private void assertField(String fieldName, final boolean isCustom, final Short expectedValue, final Map<String, Object> searchResult){
         if (isCustom) {
-            fieldName = fieldName.concat(CafAutditConstants.CustomFieldSuffix.SHORT_SUFFIX);
+            fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
@@ -453,7 +453,7 @@ public class AuditIT {
 
     private void assertField(String fieldName, final boolean isCustom, final Integer expectedValue, final Map<String, Object> searchResult){
         if (isCustom) {
-            fieldName = fieldName.concat(CafAutditConstants.CustomFieldSuffix.INT_SUFFIX);
+            fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.INT_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
@@ -466,7 +466,7 @@ public class AuditIT {
 
     private void assertField(String fieldName, final boolean isCustom, final Long expectedValue, final Map<String, Object> searchResult){
         if (isCustom) {
-            fieldName = fieldName.concat(CafAutditConstants.CustomFieldSuffix.LONG_SUFFIX);
+            fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.LONG_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
@@ -478,7 +478,7 @@ public class AuditIT {
 
     private void assertField(String fieldName, final boolean isCustom, final Float expectedValue, final Map<String, Object> searchResult){
         if (isCustom) {
-            fieldName = fieldName.concat(CafAutditConstants.CustomFieldSuffix.FLOAT_SUFFIX);
+            fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.FLOAT_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
@@ -491,7 +491,7 @@ public class AuditIT {
 
     private void assertField(String fieldName, final boolean isCustom, final Double expectedValue, final Map<String, Object> searchResult){
         if (isCustom) {
-            fieldName = fieldName.concat(CafAutditConstants.CustomFieldSuffix.DOUBLE_SUFFIX);
+            fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.DOUBLE_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
@@ -504,7 +504,7 @@ public class AuditIT {
 
     private void assertField(String fieldName, final boolean isCustom, final Boolean expectedValue, final Map<String, Object> searchResult){
         if (isCustom) {
-            fieldName = fieldName.concat(CafAutditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX);
+            fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
@@ -517,7 +517,7 @@ public class AuditIT {
 
     private void assertField(String fieldName, final boolean isCustom, final Date expectedValue, final Map<String, Object> searchResult) throws ParseException {
         if (isCustom) {
-            fieldName = fieldName.concat(CafAutditConstants.CustomFieldSuffix.DATE_SUFFIX);
+            fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.DATE_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));

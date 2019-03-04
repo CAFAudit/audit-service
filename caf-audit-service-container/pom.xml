@@ -97,11 +97,6 @@
             <artifactId>testng</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <profiles>

@@ -41,21 +41,24 @@ public class WebServiceClientAuditConnection implements AuditConnection {
 
     /**
      * Audit WebService Client Connection object used to create new instances of the WebService Client Audit Channel
+     * @param configSource ConfigurationSource object that contains the properties for creating an Audit Connection
+     * @throws ConfigurationException if the configuration for the Webservice client cannot be retrieved or if there is
+     * a malformation in the Audit Web Service Endpoint URL, HTTP Proxy URL or HTTPS Proxy URL.
      */
     public WebServiceClientAuditConnection(final ConfigurationSource configSource) throws ConfigurationException
     {
         try {
             //  Get Webservice endpoint URL
             this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
-                configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
+                     configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
         } catch (final MalformedURLException mue) {
             String errorMessage = "Unable to create URL from Audit Web Service Endpoint configuration property";
             throw new ConfigurationException(errorMessage, mue);
         }
+
         // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
         this.httpProxy = getProxy(webServiceEndpointUrl);
     }
-
 
     private Proxy getProxy(final URL webServiceEndpointUrl) throws ConfigurationException {
         String webserviceEndpointUrlProtocol = webServiceEndpointUrl.getProtocol();

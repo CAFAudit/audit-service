@@ -40,8 +40,9 @@
             <artifactId>util-process-identifier</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.util</groupId>
-            <artifactId>util-moduleloader</artifactId>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.11</version>
         </dependency>
     </dependencies>
 </project>

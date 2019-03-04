@@ -20,11 +20,12 @@ import com.hpe.caf.api.ConfigurationSource;
 
 public interface AuditConnectionProvider
 {
-
     /**
+     * Creates an AuditConnection object of a specific type
+     * 
      * @param configSource source of configuration to use when initializing auditing implementations
-     * @return an itialized instance of an audit connection implementation
+     * @return an initialized instance of an audit connection implementation
      * @throws ConfigurationException when an error occurs attempting to retrieve required configuration from the source provided.
      */
-    public AuditConnection getConnection(ConfigurationSource configSource) throws ConfigurationException;
+    AuditConnection getConnection(ConfigurationSource configSource) throws ConfigurationException;
 }

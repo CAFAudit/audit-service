@@ -19,7 +19,9 @@ import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionProvider;
+import com.hpe.caf.auditing.AuditImplementation;
 
+@AuditImplementation(value="webservice")
 public class WebServiceClientAuditConnectionProvider implements AuditConnectionProvider
 {
     @Override

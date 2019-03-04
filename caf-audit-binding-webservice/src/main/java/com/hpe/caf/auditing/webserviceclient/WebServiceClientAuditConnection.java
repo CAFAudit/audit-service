@@ -31,9 +31,9 @@ public class WebServiceClientAuditConnection implements AuditConnection {
 
     private static final Logger LOG = LogManager.getLogger(WebServiceClientAuditConnection.class.getName());
 
-    private static String NO_PROXY = "NO_PROXY";
-    private static String HTTP_PROXY = "HTTP_PROXY";
-    private static String HTTPS_PROXY = "HTTPS_PROXY";
+    private static final String NO_PROXY = "NO_PROXY";
+    private static final String HTTP_PROXY = "HTTP_PROXY";
+    private static final String HTTPS_PROXY = "HTTPS_PROXY";
 
     private final Proxy httpProxy;
 
@@ -49,11 +49,13 @@ public class WebServiceClientAuditConnection implements AuditConnection {
             this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
                 configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
         } catch (final MalformedURLException mue) {
-            throw new ConfigurationException("Unable to create URL from Audit Web Service Endpoint configuration property", mue);
+            String errorMessage = "Unable to create URL from Audit Web Service Endpoint configuration property";
+            throw new ConfigurationException(errorMessage, mue);
         }
         // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
         this.httpProxy = getProxy(webServiceEndpointUrl);
     }
+
 
     private Proxy getProxy(final URL webServiceEndpointUrl) throws ConfigurationException {
         String webserviceEndpointUrlProtocol = webServiceEndpointUrl.getProtocol();

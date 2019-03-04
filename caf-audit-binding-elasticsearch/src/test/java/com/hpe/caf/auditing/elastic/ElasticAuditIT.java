@@ -23,7 +23,6 @@ import com.hpe.caf.auditing.AuditConnectionHelper;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.AuditConnectionFactory;
-import com.hpe.caf.auditing.constants.CafAutditConstants;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -90,7 +89,7 @@ public class ElasticAuditIT
     @Before
     public void randomiseTenantId() {
         TENANT_ID = UUID.randomUUID().toString().replace("-", "");
-        ES_INDEX = TENANT_ID + CafAutditConstants.Index.SUFFIX;
+        ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
     }
 
     @Test(expected = ConfigurationException.class)
@@ -236,7 +235,7 @@ public class ElasticAuditIT
             SearchHit[] hits = new SearchHit[0];
             hits = searchDocumentInIndex(transportClient,
                     ES_INDEX,
-                    CafAutditConstants.FixedFieldName.USER_ID_FIELD,
+                    ElasticAuditConstants.FixedFieldName.USER_ID_FIELD,
                     USER_ID);
 
             //  Expecting a single hit.
@@ -247,11 +246,11 @@ public class ElasticAuditIT
             final String docId = hits[0].getId();
 
             //  Verify fixed field data results.
-            verifyFixedFieldResult(hits, CafAutditConstants.FixedFieldName.APPLICATION_ID_FIELD, APPLICATION_ID, "string");
-            verifyFixedFieldResult(hits, CafAutditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
-            verifyFixedFieldResult(hits, CafAutditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
-            verifyFixedFieldResult(hits, CafAutditConstants.FixedFieldName.USER_ID_FIELD, USER_ID, "string");
-            verifyFixedFieldResult(hits, CafAutditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, APPLICATION_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, USER_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
 
             //  Verify fixed field data results.
             verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, testAuditEvent.getStringParamValue(), "string", AuditIndexingHint.KEYWORD);
@@ -294,9 +293,9 @@ public class ElasticAuditIT
 
         // Get the CAF Audit Event type mapping for the tenant index
         CompressedXContent indexMapping = clusterStateResponse.getState().getMetaData()
-                .index((TENANT_ID + CafAutditConstants.Index.SUFFIX).toLowerCase())
+                .index((TENANT_ID + ElasticAuditConstants.Index.SUFFIX).toLowerCase())
                 .getMappings()
-                .get(CafAutditConstants.Index.TYPE)
+                .get(ElasticAuditConstants.Index.TYPE)
                 .source();
 
         Assert.assertEquals("Expected type mappings and actual type mappings should match", expectedTypeMappings,
@@ -353,15 +352,15 @@ public class ElasticAuditIT
                          = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
 
                 String[] tenantIndexIds = new String[2];
-                tenantIndexIds[0] = tenant1Id + CafAutditConstants.Index.SUFFIX;
-                tenantIndexIds[1] = tenant2Id + CafAutditConstants.Index.SUFFIX;
+                tenantIndexIds[0] = tenant1Id + ElasticAuditConstants.Index.SUFFIX;
+                tenantIndexIds[1] = tenant2Id + ElasticAuditConstants.Index.SUFFIX;
 
                 ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
                 SearchHit[] tenantIndicesHits;
                 while (retrySearch.shouldRetry()) {
                     tenantIndicesHits = searchDocumentInIndices(transportClient,
                             tenantIndexIds,
-                            CafAutditConstants.FixedFieldName.APPLICATION_ID_FIELD,
+                            ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD,
                             testApplicationId);
 
                     int numberOfTenantIndexHits = tenantIndicesHits.length;
@@ -438,7 +437,7 @@ public class ElasticAuditIT
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
             hits = client.prepareSearch(indices)
-                    .setTypes(CafAutditConstants.Index.TYPE)
+                    .setTypes(ElasticAuditConstants.Index.TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
                     .setFrom(0).setSize(10)
@@ -466,7 +465,7 @@ public class ElasticAuditIT
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
             hits = client.prepareSearch(indexId.toLowerCase())
-                    .setTypes(CafAutditConstants.Index.TYPE)
+                    .setTypes(ElasticAuditConstants.Index.TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
                     .setFrom(0).setSize(10)
@@ -520,34 +519,34 @@ public class ElasticAuditIT
             case "string":
                 if (indexingHint != null) {
                     if (indexingHint == AuditIndexingHint.KEYWORD) {
-                        field = field + CafAutditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
+                        field = field + ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
                     } else {
-                        field = field + CafAutditConstants.CustomFieldSuffix.TEXT_SUFFIX;
+                        field = field + ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX;
                     }
                 } else {
                     throw new RuntimeException("An indexing hint has not been specified.");
                 }
                 break;
             case "short":
-                field = field + CafAutditConstants.CustomFieldSuffix.SHORT_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX;
                 break;
             case "int":
-                field = field + CafAutditConstants.CustomFieldSuffix.INT_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.INT_SUFFIX;
                 break;
             case "long":
-                field = field + CafAutditConstants.CustomFieldSuffix.LONG_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.LONG_SUFFIX;
                 break;
             case "float":
-                field = field + CafAutditConstants.CustomFieldSuffix.FLOAT_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.FLOAT_SUFFIX;
                 break;
             case "double":
-                field = field + CafAutditConstants.CustomFieldSuffix.DOUBLE_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.DOUBLE_SUFFIX;
                 break;
             case "boolean":
-                field = field + CafAutditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX;
                 break;
             case "date":
-                field = field + CafAutditConstants.CustomFieldSuffix.DATE_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.DATE_SUFFIX;
                 break;
         }
 
@@ -593,7 +592,7 @@ public class ElasticAuditIT
             DeleteResponse response = client
                     .prepareDelete()
                     .setIndex(indexId.toLowerCase())
-                    .setType(CafAutditConstants.Index.TYPE)
+                    .setType(ElasticAuditConstants.Index.TYPE)
                     .setId(documentId)
                     .execute()
                     .actionGet();

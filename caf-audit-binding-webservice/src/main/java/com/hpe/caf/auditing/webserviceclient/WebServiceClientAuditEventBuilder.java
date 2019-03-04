@@ -18,7 +18,6 @@ package com.hpe.caf.auditing.webserviceclient;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
-import com.hpe.caf.auditing.constants.CafAutditConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -72,21 +71,21 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
     private void addCommonFields(AuditCoreMetadataProvider coreMetadataProvider)
     {
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.PROCESS_ID_FIELD, coreMetadataProvider.getProcessId().toString());
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.THREAD_ID_FIELD, coreMetadataProvider.getThreadId());
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.EVENT_ORDER_FIELD, coreMetadataProvider.getEventOrder());
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.EVENT_TIME_FIELD, coreMetadataProvider.getEventTime().toString());
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.EVENT_TIME_SOURCE_FIELD, coreMetadataProvider.getEventTimeSource());
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.PROCESS_ID_FIELD, coreMetadataProvider.getProcessId().toString());
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.THREAD_ID_FIELD, coreMetadataProvider.getThreadId());
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.EVENT_ORDER_FIELD, coreMetadataProvider.getEventOrder());
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.EVENT_TIME_FIELD, coreMetadataProvider.getEventTime().toString());
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.EVENT_TIME_SOURCE_FIELD, coreMetadataProvider.getEventTimeSource());
     }
 
     @Override
     public void setApplication(String applicationId) {
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.APPLICATION_ID_FIELD, applicationId);
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.APPLICATION_ID_FIELD, applicationId);
     }
 
     @Override
     public void setUser(String userId) {
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.USER_ID_FIELD, userId);
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.USER_ID_FIELD, userId);
     }
 
     @Override
@@ -101,18 +100,18 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
             throw new IllegalArgumentException(errorMessage);
         }
 
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.TENANT_ID_FIELD, tenantId.toLowerCase());
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.TENANT_ID_FIELD, tenantId.toLowerCase());
     }
 
     @Override
     public void setCorrelationId(String correlationId) {
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId);
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId);
     }
 
     @Override
     public void setEventType(String eventCategoryId, String eventTypeId) {
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, eventCategoryId);
-        auditEventCommonFields.put(CafAutditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, eventTypeId);
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, eventCategoryId);
+        auditEventCommonFields.put(WebServiceClientConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, eventTypeId);
     }
 
     @Override

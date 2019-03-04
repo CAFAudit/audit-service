@@ -41,7 +41,7 @@
             <artifactId>caf-audit-service</artifactId>
             <type>war</type>
         </dependency>
-        <!-- Auditting Implemenations -->
+        <!-- Auditing Implementations -->
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-binding-elasticsearch</artifactId>
@@ -50,7 +50,7 @@
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-binding-webservice</artifactId>
         </dependency>
-        <!-- End of Auditting Implemenations -->
+        <!-- End of Auditing Implementations -->
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-service-ui</artifactId>

@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.noop;
+package com.hpe.caf.auditing;
 
-import com.hpe.caf.api.ConfigurationSource;
-import com.hpe.caf.auditing.AuditChannel;
-import com.hpe.caf.auditing.AuditConnection;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public final class NoopAuditConnection implements AuditConnection
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface AuditImplementation
 {
-    public NoopAuditConnection(final ConfigurationSource configSource)
-    {
-    }
-
-    @Override
-    public AuditChannel createChannel()
-    {
-        return new NoopAuditChannel();
-    }
-
-    @Override
-    public void close()
-    {
-    }
+    String value();
 }

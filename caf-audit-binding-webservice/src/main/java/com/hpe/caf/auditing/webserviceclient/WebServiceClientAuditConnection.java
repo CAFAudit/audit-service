@@ -55,7 +55,6 @@ public class WebServiceClientAuditConnection implements AuditConnection {
             throw new ConfigurationException(errorMessage, mue);
         }
 
-
         // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
         this.httpProxy = getProxy(webServiceEndpointUrl);
     }

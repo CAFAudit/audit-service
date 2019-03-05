@@ -61,7 +61,7 @@ public class AuditConnectionFactory
             final AuditConnectionProvider connectionProvider = (AuditConnectionProvider) implementations.iterator().next().newInstance();
             return connectionProvider.getConnection(configSource);
         } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException("Unable to instantiate provider for the requested auditing implemenation.", ex);
         }        
     }
 

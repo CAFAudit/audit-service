@@ -262,6 +262,7 @@ The `AuditConnection` object, for direct to Elasticseach, can be constructed by 
         - `CAF_ELASTIC_CLUSTER_NAME` name of the Elasticsearch cluster. Defaults to "elasticsearch-cluster".
         - `CAF_ELASTIC_NUMBER_OF_SHARDS` the number of primary shards that an index should have. Defaults to 5.
         - `CAF_ELASTIC_NUMBER_OF_REPLICAS` the number of replica shards (copies) that each primary shard should have. Defaults to 1.  
+  
 Or the following environment variable when using with the webservice audit implementation:  
         - `CAF_AUDIT_WEBSERVICE_ENDPOINT_URL` refers to the URL of the CAF audit web service.  
 

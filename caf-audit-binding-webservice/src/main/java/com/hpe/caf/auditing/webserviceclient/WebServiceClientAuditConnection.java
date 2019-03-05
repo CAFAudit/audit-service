@@ -50,7 +50,7 @@ public class WebServiceClientAuditConnection implements AuditConnection {
         try {
             //  Get Webservice endpoint URL
             this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
-                     configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
+                    configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
         } catch (final MalformedURLException mue) {
             String errorMessage = "Unable to create URL from Audit Web Service Endpoint configuration property";
             throw new ConfigurationException(errorMessage, mue);

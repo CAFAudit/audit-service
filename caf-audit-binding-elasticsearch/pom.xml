@@ -130,7 +130,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <debugForkedProcess>true</debugForkedProcess>
+                            <!--<debugForkedProcess>true</debugForkedProcess>-->
                             <environmentVariables>
                                 <docker.host.address>${docker.host.address}</docker.host.address>
                                 <es.port>${elasticsearch.transport.port}</es.port>

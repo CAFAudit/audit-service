@@ -20,7 +20,7 @@ import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
-import com.hpe.caf.auditing.constants.CafAutditConstants;
+import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.elastic.ElasticAuditTransportClientFactory;
 import com.hpe.caf.auditing.webserviceclient.WebServiceClientException;
@@ -123,7 +123,7 @@ public class WebserviceClientAuditIT {
     @BeforeMethod
     public void randomiseTenantId() {
         TENANT_ID = UUID.randomUUID().toString().replace("-", "");
-        ES_INDEX = TENANT_ID + CafAutditConstants.Index.SUFFIX;
+        ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
     }
 
     @AfterMethod
@@ -188,7 +188,7 @@ public class WebserviceClientAuditIT {
             SearchHit[] hits = new SearchHit[0];
             hits = searchDocumentInIndex(transportClient,
                     ES_INDEX,
-                    CafAutditConstants.FixedFieldName.USER_ID_FIELD,
+                    ElasticAuditConstants.FixedFieldName.USER_ID_FIELD,
                     USER_ID);
 
             //  Expecting a single hit.
@@ -199,11 +199,11 @@ public class WebserviceClientAuditIT {
             final String docId = hits[0].getId();
 
             //  Verify fixed field data results.
-            verifyFixedFieldResult(hits, CafAutditConstants.FixedFieldName.APPLICATION_ID_FIELD, APPLICATION_ID, "string");
-            verifyFixedFieldResult(hits, CafAutditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
-            verifyFixedFieldResult(hits, CafAutditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
-            verifyFixedFieldResult(hits, CafAutditConstants.FixedFieldName.USER_ID_FIELD, USER_ID, "string");
-            verifyFixedFieldResult(hits, CafAutditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, APPLICATION_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, USER_ID, "string");
+            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
 
             //  Verify fixed field data results.
             verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string",
@@ -242,7 +242,7 @@ public class WebserviceClientAuditIT {
 
                 SearchHit searchHit = getAuditEvent(correlationId);
                 Map<String, Object> source = searchHit.getSource();
-                event1Order = (Integer) source.get(CafAutditConstants.FixedFieldName.EVENT_ORDER_FIELD);
+                event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
             }
 
             {
@@ -255,7 +255,7 @@ public class WebserviceClientAuditIT {
 
                 SearchHit searchHit = getAuditEvent(correlationId);
                 Map<String, Object> source = searchHit.getSource();
-                event2Order = (Integer) source.get(CafAutditConstants.FixedFieldName.EVENT_ORDER_FIELD);
+                event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
             }
 
             Assert.assertTrue(event1Order < event2Order, "Event 1 order was not less than event 2 order");
@@ -285,11 +285,11 @@ public class WebserviceClientAuditIT {
         try (TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
-            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch("*" + CafAutditConstants.Index.SUFFIX)
-                    .setTypes(CafAutditConstants.Index.TYPE)
+            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch("*" + ElasticAuditConstants.Index.SUFFIX)
+                    .setTypes(ElasticAuditConstants.Index.TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setFetchSource(true)
-                    .setQuery(QueryBuilders.matchQuery(CafAutditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId));
+                    .setQuery(QueryBuilders.matchQuery(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId));
 
             SearchHits searchHits = searchRequestBuilder.get().getHits();
             for (int attempts = 0; attempts < 5; attempts++) {
@@ -345,7 +345,7 @@ public class WebserviceClientAuditIT {
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
             hits = client.prepareSearch(indexId.toLowerCase())
-                    .setTypes(CafAutditConstants.Index.TYPE)
+                    .setTypes(ElasticAuditConstants.Index.TYPE)
                     .setSearchType(SearchType.QUERY_THEN_FETCH)
                     .setQuery(QueryBuilders.matchQuery(field, value))
                     .setFrom(0).setSize(10)
@@ -375,7 +375,7 @@ public class WebserviceClientAuditIT {
             DeleteResponse response = client
                     .prepareDelete()
                     .setIndex(indexId.toLowerCase())
-                    .setType(CafAutditConstants.Index.TYPE)
+                    .setType(ElasticAuditConstants.Index.TYPE)
                     .setId(documentId)
                     .execute()
                     .actionGet();
@@ -420,9 +420,9 @@ public class WebserviceClientAuditIT {
 
         // Get the CAF Audit Event type mapping for the tenant index
         CompressedXContent indexMapping = clusterStateResponse.getState().getMetaData()
-                .index((TENANT_ID + CafAutditConstants.Index.SUFFIX).toLowerCase())
+                .index((TENANT_ID + ElasticAuditConstants.Index.SUFFIX).toLowerCase())
                 .getMappings()
-                .get(CafAutditConstants.Index.TYPE)
+                .get(ElasticAuditConstants.Index.TYPE)
                 .source();
 
         Assert.assertEquals(indexMapping.toString(), expectedTypeMappings,
@@ -461,34 +461,34 @@ public class WebserviceClientAuditIT {
             case "string":
                 if (indexingHint != null) {
                     if (indexingHint == AuditIndexingHint.KEYWORD) {
-                        field = field + CafAutditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
+                        field = field + ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX;
                     } else {
-                        field = field + CafAutditConstants.CustomFieldSuffix.TEXT_SUFFIX;
+                        field = field + ElasticAuditConstants.CustomFieldSuffix.TEXT_SUFFIX;
                     }
                 } else {
                     throw new RuntimeException("An indexing hint has not been specified.");
                 }
                 break;
             case "short":
-                field = field + CafAutditConstants.CustomFieldSuffix.SHORT_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX;
                 break;
             case "int":
-                field = field + CafAutditConstants.CustomFieldSuffix.INT_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.INT_SUFFIX;
                 break;
             case "long":
-                field = field + CafAutditConstants.CustomFieldSuffix.LONG_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.LONG_SUFFIX;
                 break;
             case "float":
-                field = field + CafAutditConstants.CustomFieldSuffix.FLOAT_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.FLOAT_SUFFIX;
                 break;
             case "double":
-                field = field + CafAutditConstants.CustomFieldSuffix.DOUBLE_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.DOUBLE_SUFFIX;
                 break;
             case "boolean":
-                field = field + CafAutditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX;
                 break;
             case "date":
-                field = field + CafAutditConstants.CustomFieldSuffix.DATE_SUFFIX;
+                field = field + ElasticAuditConstants.CustomFieldSuffix.DATE_SUFFIX;
                 break;
         }
 

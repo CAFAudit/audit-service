@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.noop;
+package com.hpe.caf.auditing.elastic.exception;
 
-import com.hpe.caf.auditing.AuditChannel;
-import com.hpe.caf.auditing.AuditConnection;
+import com.hpe.caf.auditing.exception.AuditingImplementationException;
 
-public final class NoopAuditConnection implements AuditConnection
+public class ElasticsearchAuditingImplementationException extends AuditingImplementationException
 {
-    public NoopAuditConnection()
+    public ElasticsearchAuditingImplementationException(final String message, final Throwable throwable)
     {
+        super(message, throwable);
     }
-
-    @Override
-    public AuditChannel createChannel()
+    public ElasticsearchAuditingImplementationException(final String message)
     {
-        return new NoopAuditChannel();
-    }
-
-    @Override
-    public void close()
-    {
+        super(message, new Exception());
     }
 }

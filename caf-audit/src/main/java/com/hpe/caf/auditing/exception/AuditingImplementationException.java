@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2018 Micro Focus or one of its affiliates.
+ * Copyright 2019 EntIT Software LLC, a Micro Focus company.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.noop;
+package com.hpe.caf.auditing.exception;
 
-import com.hpe.caf.auditing.AuditChannel;
-import com.hpe.caf.auditing.AuditConnection;
-
-public final class NoopAuditConnection implements AuditConnection
+public class AuditingImplementationException extends Exception
 {
-    public NoopAuditConnection()
+    public AuditingImplementationException(final String message, final Throwable throwable)
     {
-    }
-
-    @Override
-    public AuditChannel createChannel()
-    {
-        return new NoopAuditChannel();
-    }
-
-    @Override
-    public void close()
-    {
+        super(message, throwable);
     }
 }

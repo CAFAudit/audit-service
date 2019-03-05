@@ -15,14 +15,15 @@
  */
 package com.hpe.caf.services.audit.api;
 
-import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
+import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.elastic.ElasticAuditTransportClientFactory;
+import com.hpe.caf.auditing.elastic.exception.ElasticsearchAuditingImplementationException;
 import com.hpe.caf.auditing.webserviceclient.WebServiceClientException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -127,7 +128,7 @@ public class WebserviceClientAuditIT {
     }
 
     @AfterMethod
-    public void cleanUp() throws ConfigurationException {
+    public void cleanUp() throws ElasticsearchAuditingImplementationException {
         TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME);
         try {
@@ -139,8 +140,8 @@ public class WebserviceClientAuditIT {
 
     @Test
     public void testWebserviceClient() throws Exception {
-
-        AuditConnection auditConnection = AuditConnectionHelper.getWebServiceAuditConnection(WS_ENDPOINT);
+        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", WS_ENDPOINT);
+        AuditConnection auditConnection = AuditConnectionFactory.createConnection();
         AuditChannel auditChannel = auditConnection.createChannel();
 
         // Create new Audit Event Builder
@@ -227,11 +228,10 @@ public class WebserviceClientAuditIT {
     public void eventOrderTest() throws Exception{
         int event1Order;
         int event2Order;
-
+        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", WS_ENDPOINT);
         try (
-                AuditConnection auditConnection =
-                        AuditConnectionHelper.getWebServiceAuditConnection(WS_ENDPOINT);
-                com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
+                final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
+                final AuditChannel auditChannel = auditConnection.createChannel()) {
             {
                 Date date = new Date();
                 String correlationId = UUID.randomUUID().toString();
@@ -265,7 +265,8 @@ public class WebserviceClientAuditIT {
     @Test(expectedExceptions = WebServiceClientException.class)
     public void testWebserviceClientBadAuditEvent() throws Exception {
 
-        AuditConnection auditConnection = AuditConnectionHelper.getWebServiceAuditConnection(WS_ENDPOINT);
+        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", WS_ENDPOINT);
+        AuditConnection auditConnection = AuditConnectionFactory.createConnection();
         AuditChannel auditChannel = auditConnection.createChannel();
 
         // Create new Audit Event Builder
@@ -281,7 +282,7 @@ public class WebserviceClientAuditIT {
         auditEventBuilder.send();
     }
 
-    private SearchHit getAuditEvent(String correlationId) throws ConfigurationException {
+    private SearchHit getAuditEvent(String correlationId) throws ElasticsearchAuditingImplementationException {
         try (TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch

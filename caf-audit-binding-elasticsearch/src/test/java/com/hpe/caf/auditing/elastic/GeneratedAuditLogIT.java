@@ -15,9 +15,9 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
-import com.hpe.caf.auditing.AuditConnectionHelper;
+import com.hpe.caf.auditing.AuditConnectionFactory;
+import com.hpe.caf.auditing.elastic.exception.ElasticsearchAuditingImplementationException;
 import com.hpe.caf.services.audit.api.AuditLog;
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -62,7 +62,7 @@ public class GeneratedAuditLogIT {
     }
 
     @After
-    public void cleanUp() throws ConfigurationException {
+    public void cleanUp() throws ElasticsearchAuditingImplementationException {
         try (TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             deleteIndex(transportClient, testTenant + ElasticAuditConstants.Index.SUFFIX);
@@ -74,8 +74,7 @@ public class GeneratedAuditLogIT {
         Date date = new Date();
         String correlationId = getCorrelationId();
 
-        try (AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(ES_HOSTNAME_AND_PORT,
-                        ES_CLUSTERNAME);
+        try (AuditConnection auditConnection = AuditConnectionFactory.createConnection();
              com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             AuditLog.auditTestEvent1(auditChannel, testTenant, "user1", correlationId,
                     "stringType1", "stringType2", "stringType3", "stringType4",
@@ -118,8 +117,7 @@ public class GeneratedAuditLogIT {
         int event2Order;
 
         try (
-                AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(ES_HOSTNAME_AND_PORT,
-                        ES_CLUSTERNAME);
+                AuditConnection auditConnection = AuditConnectionFactory.createConnection();
                 com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             {
                 Date date = new Date();
@@ -153,7 +151,7 @@ public class GeneratedAuditLogIT {
         return UUID.randomUUID().toString();
     }
 
-    private SearchHit getAuditEvent(String correlationId) throws ConfigurationException {
+    private SearchHit getAuditEvent(String correlationId) throws ElasticsearchAuditingImplementationException {
         try (TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch

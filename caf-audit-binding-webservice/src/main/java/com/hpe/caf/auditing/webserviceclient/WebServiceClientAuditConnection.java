@@ -15,10 +15,9 @@
  */
 package com.hpe.caf.auditing.webserviceclient;
 
-import com.hpe.caf.api.ConfigurationException;
-import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
+import com.hpe.caf.auditing.exception.WebServiceAuditingImplementationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,25 +40,26 @@ public class WebServiceClientAuditConnection implements AuditConnection {
 
     /**
      * Audit WebService Client Connection object used to create new instances of the WebService Client Audit Channel
-     * @param configSource ConfigurationSource object that contains the properties for creating an Audit Connection
-     * @throws ConfigurationException if the configuration for the Webservice client cannot be retrieved or if there is
+     * @throws WebServiceAuditingImplementationException if the configuration for the Webservice client cannot be retrieved or if there is
      * a malformation in the Audit Web Service Endpoint URL, HTTP Proxy URL or HTTPS Proxy URL.
      */
-    public WebServiceClientAuditConnection(final ConfigurationSource configSource) throws ConfigurationException {
+    public WebServiceClientAuditConnection() throws WebServiceAuditingImplementationException
+    {
         try {
             //  Get Webservice endpoint URL
             this.webServiceEndpointUrl = new URL(getWebServiceEndpointFullPath(
-                    configSource.getConfiguration(WebServiceClientAuditConfiguration.class).getWebServiceEndpoint()));
+                System.getProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL",
+                                   System.getenv("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL"))));
         } catch (final MalformedURLException mue) {
             String errorMessage = "Unable to create URL from Audit Web Service Endpoint configuration property";
-            throw new ConfigurationException(errorMessage, mue);
+            throw new WebServiceAuditingImplementationException(errorMessage, mue);
         }
 
         // Get Proxy object based on NO_PROXY, HTTP_PROXY and HTTPS_PROXY environment variables
         this.httpProxy = getProxy(webServiceEndpointUrl);
     }
 
-    private Proxy getProxy(final URL webServiceEndpointUrl) throws ConfigurationException {
+    private Proxy getProxy(final URL webServiceEndpointUrl) throws WebServiceAuditingImplementationException {
         String webserviceEndpointUrlProtocol = webServiceEndpointUrl.getProtocol();
         //  If the webservice endpoint is not included in no-proxy, depending on the webservice endpoint protocol
         //  set, return http or https proxy object. Else return null.
@@ -76,7 +76,7 @@ public class WebServiceClientAuditConnection implements AuditConnection {
                         httpProxyUrl = new URL(httpProxy);
                     } catch (final MalformedURLException mue) {
                         String errorMessage = "Unable to create URL for HTTP Proxy: " + httpProxy;
-                        throw new ConfigurationException(errorMessage, mue);
+                        throw new WebServiceAuditingImplementationException(errorMessage, mue);
                     }
                     InetSocketAddress proxyInet = new InetSocketAddress(httpProxyUrl.getHost(),
                             httpProxyUrl.getPort());
@@ -91,7 +91,7 @@ public class WebServiceClientAuditConnection implements AuditConnection {
                         httpsProxyUrl = new URL(httpsProxy);
                     } catch (final MalformedURLException mue) {
                         String errorMessage = "Unable to create URL for HTTPS Proxy: " + httpsProxy;
-                        throw new ConfigurationException(errorMessage, mue);
+                        throw new WebServiceAuditingImplementationException(errorMessage, mue);
                     }
                     InetSocketAddress proxyInet = new InetSocketAddress(httpsProxyUrl.getHost(),
                             httpsProxyUrl.getPort());

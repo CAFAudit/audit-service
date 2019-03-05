@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.webserviceclient;
+package com.hpe.caf.auditing.exception;
 
-import com.hpe.caf.auditing.AuditConnection;
-import com.hpe.caf.auditing.AuditConnectionProvider;
-import com.hpe.caf.auditing.AuditImplementation;
-import com.hpe.caf.auditing.exception.WebServiceAuditingImplementationException;
-
-@AuditImplementation(value="webservice")
-public class WebServiceClientAuditConnectionProvider implements AuditConnectionProvider
+public class WebServiceAuditingImplementationException extends AuditingImplementationException
 {
-    @Override
-    public AuditConnection getConnection() throws WebServiceAuditingImplementationException
+    public WebServiceAuditingImplementationException(final String message, final Throwable throwable)
     {
-        return new WebServiceClientAuditConnection();
+        super(message, throwable);
     }
-
 }

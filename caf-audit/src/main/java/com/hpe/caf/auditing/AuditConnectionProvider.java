@@ -15,14 +15,14 @@
  */
 package com.hpe.caf.auditing;
 
-import com.hpe.caf.api.ConfigurationException;
+import com.hpe.caf.auditing.exception.AuditingImplementationException;
 
 public interface AuditConnectionProvider
 {
-
     /**
-     * @return an itialized instance of an audit connection implementation
-     * @throws ConfigurationException when an error occurs attempting to retrieve required configuration.
+     * Creates an AuditConnection object of a specific type
+     * 
+     * @return an initialized instance of an audit connection implementation
      */
-    public AuditConnection getConnection() throws ConfigurationException;
+    AuditConnection getConnection() throws AuditingImplementationException;
 }

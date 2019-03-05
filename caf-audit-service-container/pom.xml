@@ -41,22 +41,17 @@
             <artifactId>caf-audit-service</artifactId>
             <type>war</type>
         </dependency>
-        <!-- Auditting Implemenations -->
+        <!-- Auditing Implementations -->
         <dependency>
             <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-elasticclient</artifactId>
+            <artifactId>caf-audit-binding-elasticsearch</artifactId>
         </dependency>
+        <!-- Elasticsearch -->
         <dependency>
-            <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-webserviceclient</artifactId>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
         </dependency>
-        <!-- End of Auditting Implemenations -->
-        <dependency>
-            <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-service-ui</artifactId>
-            <type>war</type>
-        </dependency>
-        <!--Logging Dependencies-->
+        <!-- Elasticsearch uses Log4j 2 for logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -65,11 +60,19 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
         </dependency>
+        <!-- End of Auditing Implementations -->
         <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>transport</artifactId>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-service-ui</artifactId>
+            <type>war</type>
         </dependency>
+        
         <!-- Testing dependencies -->
+        <dependency>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-binding-webservice</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-service-testing-auditlog</artifactId>
@@ -83,11 +86,6 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -187,7 +185,6 @@
                         <elasticsearch.transport.port>${elasticsearch.transport.port}</elasticsearch.transport.port>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <CAF_APPNAME>test/auditservice</CAF_APPNAME>
                         <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.transport.port}</CAF_ELASTIC_HOST_AND_PORT>
                         <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
@@ -259,7 +256,6 @@
                                 </labels>
                                 <env>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>
-                                    <_JAVA_OPTIONS>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</_JAVA_OPTIONS>
                                     <CAF_ELASTIC_HOST_AND_PORT_VALUES>elasticsearch:9300</CAF_ELASTIC_HOST_AND_PORT_VALUES>
                                     <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
@@ -307,11 +303,8 @@
                                 <ports>
                                     <port>${webservice.adminport}:8080</port>
                                     <port>${webservice.https.adminport}:8443</port>
-                                    <port>1701:5005</port>
                                 </ports>
                                 <env>
-                                    <CAF_APPNAME>test/auditservice</CAF_APPNAME>
-                                    <CAF_CONFIG_PATH>/config</CAF_CONFIG_PATH>
                                     <CAF_ELASTIC_HOST_AND_PORT>elasticsearch:9300</CAF_ELASTIC_HOST_AND_PORT>
                                     <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>

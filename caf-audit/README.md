@@ -141,25 +141,24 @@ A generated client-side library should be referenced in the normal way in the ap
 
 #### Direct to Elasticsearch Configuration  
 Configuration required to be supplied via environment variable:  
-- *CAF_ELASTIC_HOST_AND_PORT_VALUES*: A comma separated list of hostnames and ports to use when contacting elasticsearch. eg. localhost:9200,otherHost:9200  
-- *CAF_ELASTIC_CLUSTER_NAME*: The name of the elasticsearch cluster to use.  
-- *CAF_ELASTIC_NUMBER_OF_SHARDS*: The number of shards elasticsearch is configured to use.  
-- *CAF_ELASTIC_NUMBER_OF_REPLICAS*: The number of replicas configured for elasticsearch.  
+- `CAF_ELASTIC_HOST_AND_PORT_VALUES`: A comma separated list of hostnames and ports to use when contacting elasticsearch. eg. localhost:9200,otherHost:9200  
+- `CAF_ELASTIC_CLUSTER_NAME`: The name of the elasticsearch cluster to use.  
+- `CAF_ELASTIC_NUMBER_OF_SHARDS`: The number of shards elasticsearch is configured to use.  
+- `CAF_ELASTIC_NUMBER_OF_REPLICAS`: The number of replicas configured for elasticsearch.  
 
 
 #### Audit Web Service Client Configuration 
 Configuration required to be supplied via environment variable:   
-- *CAF_AUDIT_WEBSERVICE_ENDPOINT_URL*: The CAF Audit webservice URL endpoint to use when issuing audit events.  
+- `CAF_AUDIT_WEBSERVICE_ENDPOINT_URL`: The CAF Audit webservice URL endpoint to use when issuing audit events.  
 
 #### CAF\_AUDIT\_MODE Environment Variable  
 
 Before passing the [`ConfigurationSource`](#configurationsource) object to the [`AuditConnectionFactory`](#auditconnectionfactory), to create an instance of the required [`AuditConnection`](#auditconnection) implementation, the `CAF_AUDIT_MODE` environment variable needs to be set appropriately to indicate the required mode. These are the following `CAF_AUDIT_MODE` environment variable options:
 
-|           Mode           | CAF_AUDIT_MODE value |  AuditConnection Implmentation  |                          Required AuditConfiguration                          |
-|:------------------------:|:--------------------:|:-------------------------------:|:-----------------------------------------------------------------------------:|
-|  Direct to Elasticsearch |        elasticsearch        |      ElasticAuditConnection     |      [ElasticAuditConfiguration](#direct-to-elasticsearch-configuration)      |
-| Audit Web Service Client |      webservice      | WebServiceClientAuditConnection | [WebServiceClientAuditConfiguration](#audit-web-service-client-configuration) |
-|  Direct to Elasticsearch |        elasticsearch        |      ElasticAuditConnection     |      [ElasticAuditConfiguration](#direct-to-elasticsearch-configuration)      |
+|           Mode           | CAF_AUDIT_MODE value |  AuditConnection Implmentation  |                          Required AuditConfiguration                          |    Implementation Binding    |  
+|:------------------------:|:--------------------:|:-------------------------------:|:-----------------------------------------------------------------------------:|:------------------------------------:|  
+|  Direct to Elasticsearch |        elasticsearch        |      ElasticAuditConnection     |      [ElasticAuditConfiguration](#direct-to-elasticsearch-configuration)      |    caf-audit-binding-elasticsearch    |  
+| Audit Web Service Client |      webservice      | WebServiceClientAuditConnection | [WebServiceClientAuditConfiguration](#audit-web-service-client-configuration) |    caf-audit-binding-webservice    |  
 
 #### No-op
 

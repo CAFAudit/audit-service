@@ -90,7 +90,7 @@
                                     <Git.Commit>${git.revision}</Git.Commit>
                                 </labels>
                                 <env>
-                                    <CAF_AUDIT_MODE>direct</CAF_AUDIT_MODE>
+                                    <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>
                                 </env>
                                 <cmd>
                                     <exec>

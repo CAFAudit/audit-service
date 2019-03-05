@@ -15,7 +15,6 @@
  */
 package com.hpe.caf.auditing.noop;
 
-import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 
@@ -35,5 +34,4 @@ public final class NoopAuditConnection implements AuditConnection
     public void close()
     {
     }
-
 }

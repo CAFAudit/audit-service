@@ -45,6 +45,7 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
+        
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -56,6 +57,7 @@
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>

@@ -15,7 +15,6 @@
  */
 package com.hpe.caf.services.audit.server.api.impl;
 
-import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnectionFactory;
@@ -31,6 +30,9 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.TimeZone;
 import java.util.UUID;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -93,7 +95,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     /**
      * Indexes a new audit event message into Elasticsearch.
      */
-    private void AddNewAuditEvent(final NewAuditEvent newAuditEvent) throws Exception, BadRequestException, ConfigurationException {
+    private void AddNewAuditEvent(final NewAuditEvent newAuditEvent) throws Exception, BadRequestException {
 
         //  Validate the incoming new audit event parameter.
         validateNewAuditEventFields(newAuditEvent);

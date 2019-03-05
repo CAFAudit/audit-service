@@ -15,57 +15,49 @@
  */
 package com.hpe.caf.auditing;
 
-import com.hpe.caf.api.ConfigurationException;
+import com.hpe.caf.auditing.exception.AuditingImplementationException;
 import com.hpe.caf.auditing.noop.NoopAuditConnection;
-import com.hpe.caf.util.ModuleLoader;
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import org.reflections.Reflections;
 
 public class AuditConnectionFactory
 {
 
     /**
-     * Create connection for the Audit application. Returns NoopAuditConnection if an 'CAF_AUDIT_MODE' environment variable has been
-     * set to 'NONE'. If 'CAF_AUDIT_MODE' has been set to 'webservice' this returns a WebServiceClientAuditConnection. If 'CAF_AUDIT_MODE' has been
-     * set to 'elasticsearch' this returns an ElasticAuditConnection.
+     * Create connection for the Audit application. Returns NoopAuditConnection if an 'CAF_AUDIT_MODE' environment variable has been set
+     * to 'NONE'. If 'CAF_AUDIT_MODE' has been set to 'webservice' this returns a WebServiceClientAuditConnection. If 'CAF_AUDIT_MODE' has
+     * been set to 'elasticsearch' this returns an ElasticAuditConnection.
      *
      * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable
-     * @throws ConfigurationException if the audit server details cannot be retrieved from environment variable. Or (if
-     * CAF_AUDIT_MODE=webservice) if the webservice endpoint URL, passed via environment variable, or if HTTP or HTTPS Proxy URLs 
-     * are malformed
+     * @throws AuditingImplementationException if the audit server details cannot be retrieved.
      */
-    public static AuditConnection createConnection() throws
-        ConfigurationException
+    public static AuditConnection createConnection() throws AuditingImplementationException
     {
         final String auditLibMode = System.getProperty("CAF_AUDIT_MODE", System.getenv("CAF_AUDIT_MODE"));
         // If the CAF_AUDIT_MODE environment variable has been set to NONE return the NO-OP implementation
         if (auditLibMode.equals("NONE")) {
             return new NoopAuditConnection();
         }
-        final Collection<AuditConnectionProvider> auditConnectionImpls = ModuleLoader.getServices(AuditConnectionProvider.class);
-        if (auditConnectionImpls == null || auditConnectionImpls.isEmpty()) {
-            // Throw a RuntimeException if there are no auditing implementations available
-            throw new RuntimeException("No Auditting implementations have been provided.");
+        final Reflections reflections = new Reflections("com.hpe.caf.auditing");
+        final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(AuditImplementation.class);
+        if(annotatedClasses == null | annotatedClasses.isEmpty()){
+            throw new RuntimeException("No implemenation for auditing have been provided.");
         }
-        final Map<String, AuditConnectionProvider> auditConnectionImplementations
-            = auditConnectionImpls.stream().collect(Collectors.toMap(e -> e.getClass().getSimpleName(), e -> e));
-        // Return WebServiceClientAuditConnection or ElasticAuditConnection impl depending on CAF_AUDIT_MODE's value
-        final AuditConnectionProvider connection;
-        switch (auditLibMode.toLowerCase()) {
-            case "webservice":
-                connection = auditConnectionImplementations.get("WebServiceClientAuditConnectionProvider");
-                break;
-            case "elasticsearch":
-                connection = auditConnectionImplementations.get("ElasticAuditConnectionProvider");
-                break;
-            default:
-                // Throw a RuntimeException if an unknown CAF_AUDIT_MODE is specified
-                throw new RuntimeException("Unknown CAF_AUDIT_MODE specified");
+        final List<Class<?>> implementations = annotatedClasses.stream()
+            .filter(e -> e.getAnnotation(AuditImplementation.class).value().equals(auditLibMode) == true).collect(Collectors.toList());
+        if (implementations.size() > 1) {
+            throw new RuntimeException("More than one implementation has been found for the audit mode selected.");
         }
-        if (connection == null) {
-            throw new ConfigurationException("Specified auditing implementation could not be found.");
+        if (implementations.isEmpty()) {
+            throw new RuntimeException("No auditing implementations have been found for the mode selected.");
         }
-        return connection.getConnection();
+        try {
+            final AuditConnectionProvider connectionProvider = (AuditConnectionProvider) implementations.iterator().next().newInstance();
+            return connectionProvider.getConnection();
+        } catch (final InstantiationException | IllegalAccessException ex) {
+            throw new AuditingImplementationException("Unable to instantiate provider for the requested auditing implemenation.", ex);
+        }        
     }
 }

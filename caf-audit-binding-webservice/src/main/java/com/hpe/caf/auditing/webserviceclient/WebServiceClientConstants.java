@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 EntIT Software LLC, a Micro Focus company.
+ * Copyright 2015-2018 Micro Focus or one of its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.hpe.caf.auditing.webserviceclient;
 
 public final class WebServiceClientConstants

@@ -44,7 +44,8 @@ public class AuditConnectionFactory
         if (auditLibMode.equals("NONE")) {
             return new NoopAuditConnection(configSource);
         }
-        final Set<Class<?>> annotatedClasses = new Reflections().getTypesAnnotatedWith(AuditImplementation.class);
+        final Reflections reflections = new Reflections("com.hpe.caf.auditing");
+        final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(AuditImplementation.class);
         if(annotatedClasses == null | annotatedClasses.isEmpty()){
             throw new RuntimeException("No implemenation for auditing have been provided.");
         }

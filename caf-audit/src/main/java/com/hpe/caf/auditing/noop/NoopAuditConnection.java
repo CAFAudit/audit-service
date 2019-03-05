@@ -20,7 +20,7 @@ import com.hpe.caf.auditing.AuditConnection;
 
 public final class NoopAuditConnection implements AuditConnection
 {
-    public NoopAuditConnection()
+    public NoopAuditConnection(final ConfigurationSource configSource)
     {
     }
 

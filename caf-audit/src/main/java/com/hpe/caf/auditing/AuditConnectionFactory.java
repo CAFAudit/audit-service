@@ -38,7 +38,7 @@ public class AuditConnectionFactory
         final String auditLibMode = System.getProperty("CAF_AUDIT_MODE", System.getenv("CAF_AUDIT_MODE"));
         // If the CAF_AUDIT_MODE environment variable has been set to NONE return the NO-OP implementation
         if (auditLibMode.equals("NONE")) {
-            return new NoopAuditConnection();
+            return new NoopAuditConnection(configSource);
         }
         final Reflections reflections = new Reflections("com.hpe.caf.auditing");
         final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(AuditImplementation.class);

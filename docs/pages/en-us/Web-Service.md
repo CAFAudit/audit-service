@@ -97,105 +97,12 @@ Regardless of whether you choose to use a generated client-side library, or to u
 
 This object represents a logical connection to an endpoint which, in this case, is the Audit Web Service. It is a thread-safe object. ***Please take into account that this connection object requires significant time to construct. The application should hold on to the connection object and re-use it, rather than re-construct it.***
 
-The `AuditWebServiceClientConnection` object, which is the `AuditConnection` object implementation for creating a connection to the Audit Web Service, can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a `ConfigurationSource` parameter, which is the standard method of configuration in CAF. To enable the creation of the `AuditWebServiceClientConnection` object, with the `AuditConnectionFactory`, the `CAF_AUDIT_MODE` environment variable must be set to `webservice`.
+The `AuditWebServiceClientConnection` object, which is the `AuditConnection` object implementation for creating a connection to the Audit Web Service, can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. To enable the creation of the `AuditWebServiceClientConnection` object, with the `AuditConnectionFactory`, the `CAF_AUDIT_MODE` environment variable must be set to `webservice`.
 
-#### ConfigurationSource
+#### Configuration Required for the AuditConnection  
 
-[comment]: <> (The caf-audit Client-API.md documentation content contains duplication of the ConfigurationSource section. It is important that any changes here must also be included within the Client-API.md content.)
-
-You may already have a CAF configuration source in your application. It is a general framework that abstracts the source of the configuration, allowing it to come from any of the following:
-
-* environment variables
-* files
-* a REST service
-* a custom source that better integrates with the host application.
-
-If you're not already using CAF's configuration mechanism, this sample code illustrates the generation of a ConfigurationSource object.
-
-	import com.hpe.caf.api.*;
-	import com.hpe.caf.cipher.NullCipherProvider;
-	import com.hpe.caf.config.system.SystemBootstrapConfiguration;
-	import com.hpe.caf.naming.ServicePath;
-	import com.hpe.caf.util.ModuleLoader;
-	
-	public static ConfigurationSource createCafConfigSource() throws Exception
-	{
-	    System.setProperty("CAF_CONFIG_PATH", "/etc/sampleapp/config");
-	    System.setProperty("CAF_APPNAME", "sampleappgroup/sampleapp");
-	
-	    BootstrapConfiguration bootstrap = new SystemBootstrapConfiguration();
-	    Cipher cipher = ModuleLoader.getService(CipherProvider.class, NullCipherProvider.class).getCipher(bootstrap);
-	    ServicePath path = bootstrap.getServicePath();
-	    Codec codec = ModuleLoader.getService(Codec.class);
-	    return ModuleLoader.getService(ConfigurationSourceProvider.class).getConfigurationSource(bootstrap, cipher, path, codec);
-	}
-
-To compile the above sample code, add the following dependencies to your POM:
-
-	<dependency>
-	    <groupId>com.github.cafapi</groupId>
-	    <artifactId>caf-api</artifactId>
-	    <version>1.6.0-176</version>
-	</dependency>
-	<dependency>
-	    <groupId>com.github.cafapi.cipher</groupId>
-	    <artifactId>cipher-null</artifactId>
-	    <version>1.6.0-176</version>
-	</dependency>
-	<dependency>
-	    <groupId>com.github.cafapi.config</groupId>
-	    <artifactId>config-system</artifactId>
-	    <version>1.6.0-176</version>
-	</dependency>
-	<dependency>
-	    <groupId>com.github.cafapi.util</groupId>
-	    <artifactId>util-moduleloader</artifactId>
-	    <version>1.6.0-176</version>
-	</dependency>
-	<dependency>
-	    <groupId>com.github.cafapi.util</groupId>
-	    <artifactId>util-naming</artifactId>
-	    <version>1.6.0-176</version>
-	</dependency>
-
-To use JSON-encoded files for your configuration, add the following additional dependencies to your POM:
-
-	<!-- Runtime-only Dependencies -->
-	<dependency>
-	    <groupId>com.github.cafapi.config</groupId>
-	    <artifactId>config-file</artifactId>
-	    <version>1.6.0-176</version>
-	    <scope>runtime</scope>
-	</dependency>
-	<dependency>
-	    <groupId>com.github.cafapi.codec</groupId>
-	    <artifactId>codec-json</artifactId>
-	    <version>1.6.0-176</version>
-	    <scope>runtime</scope>
-	</dependency>
-	<dependency>
-	    <groupId>io.dropwizard</groupId>
-	    <artifactId>dropwizard-core</artifactId>
-	    <version>0.8.4</version>
-	    <scope>runtime</scope>
-	</dependency>
-
-#### Configuration Required for the AuditConnection
-
-In the `ConfigurationSource` above, we used JSON-encoded files with the following parameters:
-
-- `CAF_CONFIG_PATH: /etc/sampleapp/config`
-- `CAF_APPNAME: sampleappgroup/sampleapp`
-
-Given this configuration, you would configure Auditing by creating a file named `cfg_sampleappgroup_sampleapp_WebSerivceClientAuditConfiguration` in the `/etc/sampleapp/config/` directory. The contents of this file should be similar to the following:
-
-	{
-	    "webServiceEndpoint": "http://<Audit_Web_Service_Node>:<Port>/caf-audit-service/v1"
-	}
-
-where:
-
-- `webServiceEndpoint` refers to the Audit Web Service endpoint.
+Configuration required to be supplied via environment variable:  
+- `CAF_AUDIT_WEBSERVICE_ENDPOINT_URL`: The CAF Audit webservice URL endpoint to use when issuing audit events.
 
 #### Audit Channel
 

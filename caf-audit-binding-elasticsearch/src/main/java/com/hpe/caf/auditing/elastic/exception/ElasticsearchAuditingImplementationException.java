@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.elastic;
+package com.hpe.caf.auditing.elastic.exception;
 
-import org.junit.Assert;
-import org.junit.Test;
+import com.hpe.caf.auditing.exception.AuditingImplementationException;
 
-public class ElasticAuditConfigurationTest {
-
-    @Test
-    public void testGetClusterName() throws Exception {
-        ElasticAuditConfiguration config = new ElasticAuditConfiguration();
-        String defaultClusterName = config.getClusterName();
-        Assert.assertEquals("elasticsearch-cluster", defaultClusterName);
+public class ElasticsearchAuditingImplementationException extends AuditingImplementationException
+{
+    public ElasticsearchAuditingImplementationException(final String message, final Throwable throwable)
+    {
+        super(message, throwable);
     }
-
+    public ElasticsearchAuditingImplementationException(final String message)
+    {
+        super(message, new Exception());
+    }
 }

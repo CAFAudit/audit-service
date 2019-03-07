@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.webserviceclient;
+package com.hpe.caf.auditing.exception;
 
-import com.hpe.caf.api.Configuration;
-
-@Configuration
-public class WebServiceClientAuditConfiguration {
-
-    public WebServiceClientAuditConfiguration() {
-
-    }
-
-    //  WebService host:port value.
-    private String webServiceEndpoint;
-
-    public String getWebServiceEndpoint() { return webServiceEndpoint; }
-
-    public void setWebServiceEndpoint(String webServiceEndpoint) {
-        this.webServiceEndpoint = webServiceEndpoint;
+public class AuditingImplementationException extends Exception
+{
+    public AuditingImplementationException(final String message, final Throwable throwable)
+    {
+        super(message, throwable);
     }
 }

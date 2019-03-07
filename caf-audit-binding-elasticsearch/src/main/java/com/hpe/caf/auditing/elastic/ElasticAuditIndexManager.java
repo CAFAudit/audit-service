@@ -39,13 +39,16 @@ public class ElasticAuditIndexManager {
 
     private final TransportClient transportClient;
     private final LoadingCache<String, String> indexCache;
-    private final ElasticAuditConfiguration config;
+
+    private final int numberOfShards;
+    private final int numberOfReplicas;
 
     private XContentBuilder cafAuditEventTenantIndexMappingsBuilder;
 
-    public ElasticAuditIndexManager(ElasticAuditConfiguration config, TransportClient transportClient) {
+    public ElasticAuditIndexManager(final int numberOfShards, final int numberOfReplicas, TransportClient transportClient) {
         this.transportClient = transportClient;
-        this.config = config;
+        this.numberOfShards = numberOfShards;
+        this.numberOfReplicas = numberOfReplicas;
 
         //  Configure in memory cache to hold list of Elasticsearch indexes already created.
         indexCache = CacheBuilder
@@ -114,8 +117,8 @@ public class ElasticAuditIndexManager {
 
         //  Configure the number of shards and replicas the new index should have.
         Settings indexSettings = Settings.builder()
-                .put("number_of_shards", config.getNumberOfShards())
-                .put("number_of_replicas", config.getNumberOfReplicas())
+                .put("number_of_shards", numberOfShards)
+                .put("number_of_replicas", numberOfReplicas)
                 .build();
         CreateIndexRequest indexRequest = new CreateIndexRequest(indexName, indexSettings);
 

@@ -15,19 +15,18 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-import com.hpe.caf.api.ConfigurationException;
-import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionProvider;
 import com.hpe.caf.auditing.AuditImplementation;
+import com.hpe.caf.auditing.elastic.exception.ElasticsearchAuditingImplementationException;
 
 @AuditImplementation(value="elasticsearch")
 public class ElasticAuditConnectionProvider implements AuditConnectionProvider
 {
     @Override
-    public AuditConnection getConnection(final ConfigurationSource configSource) throws ConfigurationException
+    public AuditConnection getConnection() throws ElasticsearchAuditingImplementationException
     {
-        return new ElasticAuditConnection(configSource);
+        return new ElasticAuditConnection();
     }
 
 }

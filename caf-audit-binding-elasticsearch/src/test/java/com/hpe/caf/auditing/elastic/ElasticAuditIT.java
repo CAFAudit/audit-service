@@ -16,13 +16,12 @@
 package com.hpe.caf.auditing.elastic;
 
 import com.google.common.util.concurrent.UncheckedExecutionException;
-import com.hpe.caf.api.ConfigurationException;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditChannel;
-import com.hpe.caf.auditing.AuditConnectionHelper;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.AuditConnectionFactory;
+import com.hpe.caf.auditing.elastic.exception.ElasticsearchAuditingImplementationException;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -92,14 +91,15 @@ public class ElasticAuditIT
         ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
     }
 
-    @Test(expected = ConfigurationException.class)
+    @Test(expected = ElasticsearchAuditingImplementationException.class)
     public void testUnknownESHost() throws Exception
     {
         //  This tests the usage of an unknown host.
         //  An exception is expected to be thrown.
 
         final String esHostAndPort = "unknownAbc123:" + ES_PORT;
-        final AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort, ES_CLUSTERNAME);
+        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, esHostAndPort);
+        final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
     }
 
     @Test(expected = Exception.class)
@@ -109,9 +109,9 @@ public class ElasticAuditIT
         //  An exception is expected to be thrown.
 
         final String esHostAndPort = ES_HOSTNAME + ":10000";
-
+        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, esHostAndPort);
         try (
-            AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort, ES_CLUSTERNAME);
+            AuditConnection auditConnection = AuditConnectionFactory.createConnection();
             com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             //  Index a sample audit event message into Elasticsearch.
             AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
@@ -139,9 +139,9 @@ public class ElasticAuditIT
 
         final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
         final String invalidTenantIdContainingCommas = "t,test,tenant";
-
+        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, esHostAndPort);
         try (
-            AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort, ES_CLUSTERNAME);
+            AuditConnection auditConnection = AuditConnectionFactory.createConnection();
             com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             //  Index a sample audit event message into Elasticsearch.
             AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
@@ -167,9 +167,8 @@ public class ElasticAuditIT
                 "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters" +
                 "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters";
 
-        try (
-                AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort,
-                        ES_CLUSTERNAME);
+        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, esHostAndPort);
+        try (final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
                 com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
             //  Index a sample audit event message into Elasticsearch.
             AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
@@ -212,9 +211,9 @@ public class ElasticAuditIT
         //  data indexed into ES. Afterwards the document is removed from ES.
 
         final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
-
+        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, esHostAndPort);
         try (
-            AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort, ES_CLUSTERNAME);
+            AuditConnection auditConnection = AuditConnectionFactory.createConnection();
             com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
 
             // Send Audit Event to Elasticsearch
@@ -312,10 +311,10 @@ public class ElasticAuditIT
 
         final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
 
-        try (
-                AuditConnection auditConnection = AuditConnectionHelper.getElasticAuditConnection(esHostAndPort,
-                        ES_CLUSTERNAME);
-                com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
+        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, esHostAndPort);
+        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_CLUSTER_NAME, ES_CLUSTERNAME);
+        try (final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
+             com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
 
             //  Index a sample audit event message into Elasticsearch.
             AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
@@ -349,7 +348,7 @@ public class ElasticAuditIT
             // Search across all indices for the applicationId field in Elasticsearch and verify that the expected
             // number of hits are returned.
             try (TransportClient transportClient
-                         = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
+                = ElasticAuditTransportClientFactory.getTransportClient(esHostAndPort, ES_CLUSTERNAME)) {
 
                 String[] tenantIndexIds = new String[2];
                 tenantIndexIds[0] = tenant1Id + ElasticAuditConstants.Index.SUFFIX;
@@ -359,9 +358,9 @@ public class ElasticAuditIT
                 SearchHit[] tenantIndicesHits;
                 while (retrySearch.shouldRetry()) {
                     tenantIndicesHits = searchDocumentInIndices(transportClient,
-                            tenantIndexIds,
-                            ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD,
-                            testApplicationId);
+                                                                tenantIndexIds,
+                                                                ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD,
+                                                                testApplicationId);
 
                     int numberOfTenantIndexHits = tenantIndicesHits.length;
 
@@ -377,12 +376,12 @@ public class ElasticAuditIT
                     } else if (numberOfTenantIndexHits > 2) {
                         deleteIndices(transportClient, tenantIndexIds);
                         Assert.fail("Expecting only two hits to be returned from Audit, however "
-                                + numberOfTenantIndexHits + " hits were returned from Elastic");
+                            + numberOfTenantIndexHits + " hits were returned from Elastic");
                     }
 
                     //  Expecting two hits.
                     Assert.assertTrue("Expected two hits, one for each tenant index, to be returned from Elastic",
-                            numberOfTenantIndexHits == 2);
+                                      numberOfTenantIndexHits == 2);
                     break;
                 }
 

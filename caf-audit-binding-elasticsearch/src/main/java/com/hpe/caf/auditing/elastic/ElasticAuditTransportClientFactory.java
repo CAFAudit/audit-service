@@ -15,7 +15,7 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-import com.hpe.caf.api.ConfigurationException;
+import com.hpe.caf.auditing.elastic.exception.ElasticsearchAuditingImplementationException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -48,9 +48,10 @@ public class ElasticAuditTransportClientFactory {
      * @param hostAndPortValues comma separated list of Elasticsearch host:port values
      * @param clusterName Elasticsearch cluster name
      * @return TransportClient
-     * @throws ConfigurationException exception thrown if host is unknown
+     * @throws ElasticsearchAuditingImplementationException exception thrown if host is unknown
      */
-    public static TransportClient getTransportClient(String hostAndPortValues, String clusterName) throws ConfigurationException {
+    public static TransportClient getTransportClient(String hostAndPortValues, String clusterName)
+        throws ElasticsearchAuditingImplementationException {
         final TransportClient transportClient;
 
         if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
@@ -91,7 +92,7 @@ public class ElasticAuditTransportClientFactory {
 
                 } catch (URISyntaxException e) {
                     LOG.error(e.getMessage());
-                    throw new ConfigurationException(e.getMessage(), e);
+                    throw new ElasticsearchAuditingImplementationException(e.getMessage(), e);
                 }
             }
 
@@ -99,14 +100,14 @@ public class ElasticAuditTransportClientFactory {
                 final String errorMessage = "Elasticsearch transport client is not configured to communicate with " +
                         "any nodes";
                 LOG.error(errorMessage);
-                throw new ConfigurationException(errorMessage);
+                throw new ElasticsearchAuditingImplementationException(errorMessage);
             }
 
             LOG.debug("Elasticsearch client initialized: " + transportClient.listedNodes().toString());
         } else {
             //  ES host and port not specified.
             LOG.error(ES_HOST_AND_PORT_NOT_PROVIDED);
-            throw new ConfigurationException(ES_HOST_AND_PORT_NOT_PROVIDED);
+            throw new ElasticsearchAuditingImplementationException(ES_HOST_AND_PORT_NOT_PROVIDED);
         }
 
         return transportClient;

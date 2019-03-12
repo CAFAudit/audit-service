@@ -53,13 +53,7 @@ public class MonkeyConfig
     public MonkeyConfig() {
         
         LOG.info("Setting up Audit Monkey Configuration from supplied Environment Variables");
-
-        readAuditProp();
-        
-        readElasticsearchProps();
-        
-        readWebServiceProps();        
-        
+      
         readMonkeyProps();
         
         readAuditEventProps();
@@ -140,85 +134,6 @@ public class MonkeyConfig
             LOG.info("No [" + MonkeyConstants.CAF_AUDIT_CORRELATION_ID + "] supplied defaulting to [" + correlationId + "]");
         }
         
-    }
-
-    private void readWebServiceProps()
-    {
-        /*
-         * WebService
-         */
-        wsHostname = System.getProperty(MonkeyConstants.WS_HOSTNAME, System.getenv(MonkeyConstants.WS_HOSTNAME));
-        if(null == wsHostname || wsHostname.isEmpty()) {
-            wsHostname = "192.168.56.10";
-            LOG.info("No [" + MonkeyConstants.WS_HOSTNAME + "] supplied defaulting to [" + wsHostname + "]");
-        }
-        
-        String wsPortStr = System.getProperty(MonkeyConstants.WS_PORT, System.getenv(MonkeyConstants.WS_PORT));
-        if(null == wsPortStr || wsPortStr.isEmpty()) {
-            wsPort = 25080;
-            LOG.info("No [" + MonkeyConstants.WS_PORT + "] supplied defaulting to [" + wsPort + "]");            
-        } 
-        else {
-            wsPort = Integer.parseInt(wsPortStr);
-            if(wsPort == 0 || wsPort < 0 || wsPort > 99999) {
-                wsPort = 25080;
-                LOG.warn("Invalid [" + MonkeyConstants.WS_PORT + "] supplied defaulting to [" + wsPort + "]");
-            }
-        }
-        
-        wsHostnameAndPort = String.format("%s:%s", wsHostname, wsPort);
-        LOG.debug("Audit WebService Hostname and Port set to [" + wsHostnameAndPort + "]");
-    }
-
-    private void readElasticsearchProps()
-    {
-        /*
-         * Elasticsearch
-         */
-        esHostname = System.getProperty(MonkeyConstants.ES_HOSTNAME, System.getenv(MonkeyConstants.ES_HOSTNAME));
-        if(null == esHostname || esHostname.isEmpty()) {
-            esHostname = "192.168.56.10";
-            LOG.info("No [" + MonkeyConstants.ES_HOSTNAME + "] supplied defaulting to [" + esHostname + "]");
-        }
-        
-        String esPortStr = System.getProperty(MonkeyConstants.ES_PORT, System.getenv(MonkeyConstants.ES_PORT));
-        if(null == esPortStr || esPortStr.isEmpty()) {
-            esPort = 9300;
-            LOG.info("No [" + MonkeyConstants.ES_PORT + "] supplied defaulting to [" + esPort + "]");
-        }
-        else {
-            esPort = Integer.parseInt(esPortStr);
-            if(esPort == 0 || esPort < 0 || esPort > 99999) {
-                esPort = 9200;
-                LOG.warn("Invalid [" + MonkeyConstants.ES_PORT + "] supplied defaulting to [" + esPort + "]");
-            }
-        }
-        
-        esClustername = System.getProperty(MonkeyConstants.ES_CLUSTERNAME, System.getenv(MonkeyConstants.ES_CLUSTERNAME));
-        if(null == esClustername || esClustername.isEmpty()) {
-            esClustername = "elasticsearch-cluster";
-            LOG.info("No [" + MonkeyConstants.ES_CLUSTERNAME + "] supplied defaulting to [" + esClustername + "]");
-        }
-        
-        esHostnameAndPort = String.format("%s:%s", esHostname, esPort);
-        LOG.info("Elasticsearch Hostname and Port set to [" + esHostnameAndPort + "]");
-    }
-
-    private void readAuditProp()
-    {
-        /*
-         * Audit Mode
-         */
-        auditMode = System.getProperty(MonkeyConstants.CAF_AUDIT_MODE, System.getenv(MonkeyConstants.CAF_AUDIT_MODE));
-        String auditModeErrorMsg = null;
-        if (null == auditMode || auditMode.isEmpty()) {
-            auditModeErrorMsg = MonkeyConstants.CAF_AUDIT_MODE + " has not been set. " + MonkeyConstants.CAF_AUDIT_MODE + " must be supplied";
-        } else if (!auditMode.equalsIgnoreCase(MonkeyConstants.ELASTICSEARCH) && !auditMode.equalsIgnoreCase(MonkeyConstants.WEBSERVICE)) {
-            auditModeErrorMsg = "The " + MonkeyConstants.CAF_AUDIT_MODE + " supplied [" + auditMode + "] does not match the available modes [" + MonkeyConstants.ELASTICSEARCH + ", " + MonkeyConstants.WEBSERVICE + "]";
-        } if (null != auditModeErrorMsg) {
-            LOG.error(auditModeErrorMsg);
-            throw new RuntimeException(auditModeErrorMsg);
-        }
     }
     
     private boolean isMonkeyMode(String auditMode) {

@@ -38,17 +38,9 @@ public class MonkeyConfigTest
     @Test
     public void shouldEnsureDefaultValuesAreSet() {
         MonkeyConfig monkeyConfig = new MonkeyConfig();
-        assertEquals(MonkeyConstants.ELASTICSEARCH, monkeyConfig.getAuditMode());
-        assertEquals("elasticsearch-cluster", monkeyConfig.getEsClustername());
-        assertEquals("192.168.56.10", monkeyConfig.getEsHostname());
-        assertEquals("192.168.56.10:9300", monkeyConfig.getEsHostnameAndPort());
-        assertEquals(9300, monkeyConfig.getEsPort());
         assertEquals(MonkeyConstants.CAF_AUDIT_STANDARD_MONKEY, monkeyConfig.getMonkeyMode());
         assertEquals(1, monkeyConfig.getNumOfEvents());
         assertEquals("acmecorp", monkeyConfig.getTenantId());
         assertEquals("road.runner@acme.com", monkeyConfig.getUserId());
-        assertEquals("192.168.56.10", monkeyConfig.getWsHostname());
-        assertEquals("192.168.56.10:25080", monkeyConfig.getWsHostnameAndPort());
-        assertEquals(25080, monkeyConfig.getWsPort());
     }
 }

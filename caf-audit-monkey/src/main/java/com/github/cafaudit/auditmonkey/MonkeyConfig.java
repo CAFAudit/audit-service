@@ -24,21 +24,7 @@ import org.slf4j.LoggerFactory;
 public class MonkeyConfig
 {
     private static final Logger LOG = LoggerFactory.getLogger(MonkeyConfig.class);
-    
-    // Audit
-    private String auditMode;
-    
-    // Elasticsearch
-    private String esClustername;
-    private String esHostname;
-    private int esPort;
-    private String esHostnameAndPort;
-    
-    // Audit WebService
-    private String wsHostname;
-    private int wsPort;
-    private String wsHostnameAndPort;
-    
+
     // Audit Events
     private String tenantId;
     private String correlationId;
@@ -53,13 +39,7 @@ public class MonkeyConfig
     public MonkeyConfig() {
         
         LOG.info("Setting up Audit Monkey Configuration from supplied Environment Variables");
-
-        readAuditProp();
-        
-        readElasticsearchProps();
-        
-        readWebServiceProps();        
-        
+      
         readMonkeyProps();
         
         readAuditEventProps();
@@ -141,85 +121,6 @@ public class MonkeyConfig
         }
         
     }
-
-    private void readWebServiceProps()
-    {
-        /*
-         * WebService
-         */
-        wsHostname = System.getProperty(MonkeyConstants.WS_HOSTNAME, System.getenv(MonkeyConstants.WS_HOSTNAME));
-        if(null == wsHostname || wsHostname.isEmpty()) {
-            wsHostname = "192.168.56.10";
-            LOG.info("No [" + MonkeyConstants.WS_HOSTNAME + "] supplied defaulting to [" + wsHostname + "]");
-        }
-        
-        String wsPortStr = System.getProperty(MonkeyConstants.WS_PORT, System.getenv(MonkeyConstants.WS_PORT));
-        if(null == wsPortStr || wsPortStr.isEmpty()) {
-            wsPort = 25080;
-            LOG.info("No [" + MonkeyConstants.WS_PORT + "] supplied defaulting to [" + wsPort + "]");            
-        } 
-        else {
-            wsPort = Integer.parseInt(wsPortStr);
-            if(wsPort == 0 || wsPort < 0 || wsPort > 99999) {
-                wsPort = 25080;
-                LOG.warn("Invalid [" + MonkeyConstants.WS_PORT + "] supplied defaulting to [" + wsPort + "]");
-            }
-        }
-        
-        wsHostnameAndPort = String.format("%s:%s", wsHostname, wsPort);
-        LOG.debug("Audit WebService Hostname and Port set to [" + wsHostnameAndPort + "]");
-    }
-
-    private void readElasticsearchProps()
-    {
-        /*
-         * Elasticsearch
-         */
-        esHostname = System.getProperty(MonkeyConstants.ES_HOSTNAME, System.getenv(MonkeyConstants.ES_HOSTNAME));
-        if(null == esHostname || esHostname.isEmpty()) {
-            esHostname = "192.168.56.10";
-            LOG.info("No [" + MonkeyConstants.ES_HOSTNAME + "] supplied defaulting to [" + esHostname + "]");
-        }
-        
-        String esPortStr = System.getProperty(MonkeyConstants.ES_PORT, System.getenv(MonkeyConstants.ES_PORT));
-        if(null == esPortStr || esPortStr.isEmpty()) {
-            esPort = 9300;
-            LOG.info("No [" + MonkeyConstants.ES_PORT + "] supplied defaulting to [" + esPort + "]");
-        }
-        else {
-            esPort = Integer.parseInt(esPortStr);
-            if(esPort == 0 || esPort < 0 || esPort > 99999) {
-                esPort = 9200;
-                LOG.warn("Invalid [" + MonkeyConstants.ES_PORT + "] supplied defaulting to [" + esPort + "]");
-            }
-        }
-        
-        esClustername = System.getProperty(MonkeyConstants.ES_CLUSTERNAME, System.getenv(MonkeyConstants.ES_CLUSTERNAME));
-        if(null == esClustername || esClustername.isEmpty()) {
-            esClustername = "elasticsearch-cluster";
-            LOG.info("No [" + MonkeyConstants.ES_CLUSTERNAME + "] supplied defaulting to [" + esClustername + "]");
-        }
-        
-        esHostnameAndPort = String.format("%s:%s", esHostname, esPort);
-        LOG.info("Elasticsearch Hostname and Port set to [" + esHostnameAndPort + "]");
-    }
-
-    private void readAuditProp()
-    {
-        /*
-         * Audit Mode
-         */
-        auditMode = System.getProperty(MonkeyConstants.CAF_AUDIT_MODE, System.getenv(MonkeyConstants.CAF_AUDIT_MODE));
-        String auditModeErrorMsg = null;
-        if (null == auditMode || auditMode.isEmpty()) {
-            auditModeErrorMsg = MonkeyConstants.CAF_AUDIT_MODE + " has not been set. " + MonkeyConstants.CAF_AUDIT_MODE + " must be supplied";
-        } else if (!auditMode.equalsIgnoreCase(MonkeyConstants.DIRECT) && !auditMode.equalsIgnoreCase(MonkeyConstants.WEBSERVICE)) {
-            auditModeErrorMsg = "The " + MonkeyConstants.CAF_AUDIT_MODE + " supplied [" + auditMode + "] does not match the available modes [" + MonkeyConstants.DIRECT + ", " + MonkeyConstants.WEBSERVICE + "]";
-        } if (null != auditModeErrorMsg) {
-            LOG.error(auditModeErrorMsg);
-            throw new RuntimeException(auditModeErrorMsg);
-        }
-    }
     
     private boolean isMonkeyMode(String auditMode) {
         boolean bool = false;
@@ -231,136 +132,7 @@ public class MonkeyConfig
         }
         return bool;
     }
-    
-    /**
-     * @return the auditMode
-     */
-    public String getAuditMode()
-    {
-        return auditMode;
-    }
-
-
-    /**
-     * @param auditMode the auditMode to set
-     */
-    public void setAuditMode(String auditMode)
-    {
-        this.auditMode = auditMode;
-    }
-
-    /**
-     * @return the esClustername
-     */
-    public String getEsClustername()
-    {
-        return esClustername;
-    }
-    
-    /**
-     * @param esClustername the esClustername to set
-     */
-    public void setEsClustername(String esClustername)
-    {
-        this.esClustername = esClustername;
-    }
-    
-    /**
-     * @return the esHostname
-     */
-    public String getEsHostname()
-    {
-        return esHostname;
-    }
-    
-    /**
-     * @param esHostname the esHostname to set
-     */
-    public void setEsHostname(String esHostname)
-    {
-        this.esHostname = esHostname;
-    }
-    
-    /**
-     * @return the esPort
-     */
-    public int getEsPort()
-    {
-        return esPort;
-    }
-    
-    /**
-     * @param esPort the esPort to set
-     */
-    public void setEsPort(int esPort)
-    {
-        this.esPort = esPort;
-    }
-    
-    /**
-     * @return the esHostnameAndPort
-     */
-    public String getEsHostnameAndPort()
-    {
-        return esHostnameAndPort;
-    }
-    
-    /**
-     * @param esHostnameAndPort the esHostnameAndPort to set
-     */
-    public void setEsHostnameAndPort(String esHostnameAndPort)
-    {
-        this.esHostnameAndPort = esHostnameAndPort;
-    }
-    
-    /**
-     * @return the wsHostname
-     */
-    public String getWsHostname()
-    {
-        return wsHostname;
-    }
-    
-    /**
-     * @param wsHostname the wsHostname to set
-     */
-    public void setWsHostname(String wsHostname)
-    {
-        this.wsHostname = wsHostname;
-    }
-    
-    /**
-     * @return the wsPort
-     */
-    public int getWsPort()
-    {
-        return wsPort;
-    }
-    
-    /**
-     * @param wsPort the wsPort to set
-     */
-    public void setWsPort(int wsPort)
-    {
-        this.wsPort = wsPort;
-    }
-    
-    /**
-     * @return the wsHostnameAndPort
-     */
-    public String getWsHostnameAndPort()
-    {
-        return wsHostnameAndPort;
-    }
-    
-    /**
-     * @param wsHostnameAndPort the wsHostnameAndPort to set
-     */
-    public void setWsHostnameAndPort(String wsHostnameAndPort)
-    {
-        this.wsHostnameAndPort = wsHostnameAndPort;
-    }
-    
+ 
     /**
      * @return the tenantId
      */
@@ -469,13 +241,9 @@ public class MonkeyConfig
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MonkeyConfig [auditMode=").append(auditMode).append(", esClustername=").append(esClustername)
-                .append(", esHostname=").append(esHostname).append(", esPort=").append(esPort).append(", esHostnameAndPort=")
-                .append(esHostnameAndPort).append(", wsHostname=").append(wsHostname).append(", wsPort=").append(wsPort)
-                .append(", wsHostnameAndPort=").append(wsHostnameAndPort).append(", tenantId=").append(tenantId)
-                .append(", correlationId=").append(correlationId).append(", userId=").append(userId).append(", monkeyMode=")
-                .append(monkeyMode).append(", numOfEvents=").append(numOfEvents).append(", numOfThreads=").append(numOfThreads)
-                .append("]");
+        builder.append("MonkeyConfig [auditMode=").append(tenantId).append(", correlationId=").append(correlationId).append(", userId=")
+            .append(userId).append(", monkeyMode=").append(monkeyMode).append(", numOfEvents=").append(numOfEvents)
+            .append(", numOfThreads=").append(numOfThreads).append("]");
         return builder.toString();
     }
     

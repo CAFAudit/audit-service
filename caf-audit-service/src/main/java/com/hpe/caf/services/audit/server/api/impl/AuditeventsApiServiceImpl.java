@@ -15,19 +15,13 @@
  */
 package com.hpe.caf.services.audit.server.api.impl;
 
-import com.hpe.caf.api.ConfigurationException;
-import com.hpe.caf.api.ConfigurationSource;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
-import com.hpe.caf.auditing.elastic.ElasticAuditConfiguration;
 import com.hpe.caf.services.audit.server.api.exceptions.BadRequestException;
-import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -43,7 +37,6 @@ import javax.ws.rs.core.SecurityContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.hpe.caf.services.audit.server.api.AppConfig;
 import com.hpe.caf.services.audit.server.api.AuditeventsApiService;
 import com.hpe.caf.services.audit.server.api.NotFoundException;
 import com.hpe.caf.services.audit.server.model.EventParam;
@@ -69,7 +62,6 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     private static final String ERR_MSG_EVENT_TYPE_ID_NOT_SPECIFIED = "The event type identifier has not been specified";
     private static final String ERR_MSG_EVENT_CATEGORY_ID_NOT_SPECIFIED = "The event category identifier has not been specified";
     private static final String ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED = "Custom audit event fields have not been specified";
-    private static final String ERR_MSG_ES_HOST_AND_PORT_MISSING = "The Elasticsearch host and port have not been provided";
     private static final String ERR_MSG_EVEN_PARAM_PARSING = "Error parsing value for audit event parameter: ";
 
     private static final String EVENT_PARAM_TYPE_STRING = "STRING";
@@ -103,14 +95,14 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     /**
      * Indexes a new audit event message into Elasticsearch.
      */
-    private void AddNewAuditEvent(final NewAuditEvent newAuditEvent) throws Exception, BadRequestException, ConfigurationException {
+    private void AddNewAuditEvent(final NewAuditEvent newAuditEvent) throws Exception, BadRequestException {
 
         //  Validate the incoming new audit event parameter.
         validateNewAuditEventFields(newAuditEvent);
 
         // If an AuditConnection has been been established create one with the ConfigurationSource.
         if (auditConnection == null) {
-            auditConnection = AuditConnectionFactory.createConnection(getConfigurationSource());
+            auditConnection = AuditConnectionFactory.createConnection();
         }
 
         //  Index audit event message into Elasticsearch.
@@ -303,72 +295,6 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
      */
     private boolean isNullOrEmpty(String str) {
         return str == null || str.isEmpty();
-    }
-
-    /**
-     * Load required inputs from config.properties or environment variables.
-     */
-    private AppConfig getAppConfigProperties() throws ConfigurationException {
-        AppConfig appConfig;
-
-        LOG.debug("Load application configuration");
-        AnnotationConfigApplicationContext propertiesApplicationContext = new AnnotationConfigApplicationContext();
-        propertiesApplicationContext.register(PropertySourcesPlaceholderConfigurer.class);
-        RootBeanDefinition beanDefinition = new RootBeanDefinition();
-        beanDefinition.setBeanClass(AppConfig.class);
-        propertiesApplicationContext.registerBeanDefinition("AppConfig", beanDefinition);
-        propertiesApplicationContext.refresh();
-
-        appConfig = propertiesApplicationContext.getBean(AppConfig.class);
-
-        //  Make sure Elasticsearch host and port have been provided.
-        try {
-            if (appConfig.getElasticHostAndPortValues() == null) {
-                LOG.error(ERR_MSG_ES_HOST_AND_PORT_MISSING);
-                throw new ConfigurationException(ERR_MSG_ES_HOST_AND_PORT_MISSING);
-            }
-        } catch (NullPointerException npe) {
-            LOG.error(ERR_MSG_ES_HOST_AND_PORT_MISSING);
-            throw new ConfigurationException(ERR_MSG_ES_HOST_AND_PORT_MISSING);
-        }
-
-        return appConfig;
-    }
-
-    /**
-     * Returns a ConfigurationSource instance.
-     */
-    private ConfigurationSource getConfigurationSource(){
-        final ConfigurationSource configSource = new ConfigurationSource()
-        {
-            private String DEFAULT_CLUSTER_NAME = "elasticsearch";
-            private int DEFAULT_NUMBER_OF_SHARDS = 5;
-            private int DEFAULT_NUMBER_OF_REPLICAS = 1;
-
-            @Override
-            public <T> T getConfiguration(Class<T> type) throws ConfigurationException
-            {
-                AppConfig appConfig = getAppConfigProperties();
-
-                //  Host and port must always be provided.
-                String hostAndPort = appConfig.getElasticHostAndPortValues();
-
-                //  Support for optional configuration properties and defaults.
-                String clusterName = (appConfig.getElasticClusterName() != null) ? appConfig.getElasticClusterName() : DEFAULT_CLUSTER_NAME;
-                int numberOfShards = (appConfig.getElasticNumberOfShards() != 0) ? appConfig.getElasticNumberOfShards() : DEFAULT_NUMBER_OF_SHARDS;
-                int numberOfReplicas = (appConfig.getElasticNumberOfReplicas() != 0) ? appConfig.getElasticNumberOfReplicas() : DEFAULT_NUMBER_OF_REPLICAS;
-
-                //  Create and return audit configuration source instance.
-                ElasticAuditConfiguration config = new ElasticAuditConfiguration();
-                config.setClusterName(clusterName);
-                config.setHostAndPortValues(hostAndPort);
-                config.setNumberOfShards(numberOfShards);
-                config.setNumberOfReplicas(numberOfReplicas);
-                return (T) config;
-            }
-        };
-
-        return configSource;
     }
 
     /**

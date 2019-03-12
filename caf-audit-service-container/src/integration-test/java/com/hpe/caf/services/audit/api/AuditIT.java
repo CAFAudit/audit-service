@@ -73,7 +73,6 @@ public class AuditIT {
 
     @BeforeClass
     public static void setup() throws Exception {
-        //  Read environment variable settings
         AUDIT_WEBSERVICE_HTTP_BASE_PATH = System.getenv("webserviceurl");
         AUDIT_WEBSERVICE_HTTPS_BASE_PATH = System.getenv("webserviceurlhttps");
 

@@ -50,7 +50,15 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-1.2-api</artifactId>
-        </dependency>          
+        </dependency>
+        <dependency>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-binding-elasticsearch</artifactId>
+        </dependency>    
+        <dependency>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-binding-webservice</artifactId>
+        </dependency>    
     </dependencies>
 
     <build>
@@ -89,9 +97,6 @@
                                     <Git.Branch>${git.branch}</Git.Branch>
                                     <Git.Commit>${git.revision}</Git.Commit>
                                 </labels>
-                                <env>
-                                    <CAF_AUDIT_MODE>direct</CAF_AUDIT_MODE>
-                                </env>
                                 <cmd>
                                     <exec>
                                         <args>/maven/start.sh</args>

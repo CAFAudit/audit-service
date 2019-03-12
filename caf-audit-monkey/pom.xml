@@ -45,10 +45,6 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.github.cafapi</groupId>
-            <artifactId>caf-api</artifactId>
-        </dependency>
         
         <!-- Test dependencies -->
         <dependency>

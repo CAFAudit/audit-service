@@ -24,21 +24,7 @@ import org.slf4j.LoggerFactory;
 public class MonkeyConfig
 {
     private static final Logger LOG = LoggerFactory.getLogger(MonkeyConfig.class);
-    
-    // Audit
-    private String auditMode;
-    
-    // Elasticsearch
-    private String esClustername;
-    private String esHostname;
-    private int esPort;
-    private String esHostnameAndPort;
-    
-    // Audit WebService
-    private String wsHostname;
-    private int wsPort;
-    private String wsHostnameAndPort;
-    
+
     // Audit Events
     private String tenantId;
     private String correlationId;
@@ -146,136 +132,7 @@ public class MonkeyConfig
         }
         return bool;
     }
-    
-    /**
-     * @return the auditMode
-     */
-    public String getAuditMode()
-    {
-        return auditMode;
-    }
-
-
-    /**
-     * @param auditMode the auditMode to set
-     */
-    public void setAuditMode(String auditMode)
-    {
-        this.auditMode = auditMode;
-    }
-
-    /**
-     * @return the esClustername
-     */
-    public String getEsClustername()
-    {
-        return esClustername;
-    }
-    
-    /**
-     * @param esClustername the esClustername to set
-     */
-    public void setEsClustername(String esClustername)
-    {
-        this.esClustername = esClustername;
-    }
-    
-    /**
-     * @return the esHostname
-     */
-    public String getEsHostname()
-    {
-        return esHostname;
-    }
-    
-    /**
-     * @param esHostname the esHostname to set
-     */
-    public void setEsHostname(String esHostname)
-    {
-        this.esHostname = esHostname;
-    }
-    
-    /**
-     * @return the esPort
-     */
-    public int getEsPort()
-    {
-        return esPort;
-    }
-    
-    /**
-     * @param esPort the esPort to set
-     */
-    public void setEsPort(int esPort)
-    {
-        this.esPort = esPort;
-    }
-    
-    /**
-     * @return the esHostnameAndPort
-     */
-    public String getEsHostnameAndPort()
-    {
-        return esHostnameAndPort;
-    }
-    
-    /**
-     * @param esHostnameAndPort the esHostnameAndPort to set
-     */
-    public void setEsHostnameAndPort(String esHostnameAndPort)
-    {
-        this.esHostnameAndPort = esHostnameAndPort;
-    }
-    
-    /**
-     * @return the wsHostname
-     */
-    public String getWsHostname()
-    {
-        return wsHostname;
-    }
-    
-    /**
-     * @param wsHostname the wsHostname to set
-     */
-    public void setWsHostname(String wsHostname)
-    {
-        this.wsHostname = wsHostname;
-    }
-    
-    /**
-     * @return the wsPort
-     */
-    public int getWsPort()
-    {
-        return wsPort;
-    }
-    
-    /**
-     * @param wsPort the wsPort to set
-     */
-    public void setWsPort(int wsPort)
-    {
-        this.wsPort = wsPort;
-    }
-    
-    /**
-     * @return the wsHostnameAndPort
-     */
-    public String getWsHostnameAndPort()
-    {
-        return wsHostnameAndPort;
-    }
-    
-    /**
-     * @param wsHostnameAndPort the wsHostnameAndPort to set
-     */
-    public void setWsHostnameAndPort(String wsHostnameAndPort)
-    {
-        this.wsHostnameAndPort = wsHostnameAndPort;
-    }
-    
+ 
     /**
      * @return the tenantId
      */
@@ -384,13 +241,9 @@ public class MonkeyConfig
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MonkeyConfig [auditMode=").append(auditMode).append(", esClustername=").append(esClustername)
-                .append(", esHostname=").append(esHostname).append(", esPort=").append(esPort).append(", esHostnameAndPort=")
-                .append(esHostnameAndPort).append(", wsHostname=").append(wsHostname).append(", wsPort=").append(wsPort)
-                .append(", wsHostnameAndPort=").append(wsHostnameAndPort).append(", tenantId=").append(tenantId)
-                .append(", correlationId=").append(correlationId).append(", userId=").append(userId).append(", monkeyMode=")
-                .append(monkeyMode).append(", numOfEvents=").append(numOfEvents).append(", numOfThreads=").append(numOfThreads)
-                .append("]");
+        builder.append("MonkeyConfig [auditMode=").append(tenantId).append(", correlationId=").append(correlationId).append(", userId=")
+            .append(userId).append(", monkeyMode=").append(monkeyMode).append(", numOfEvents=").append(numOfEvents)
+            .append(", numOfThreads=").append(numOfThreads).append("]");
         return builder.toString();
     }
     

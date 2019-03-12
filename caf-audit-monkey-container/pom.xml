@@ -97,9 +97,6 @@
                                     <Git.Branch>${git.branch}</Git.Branch>
                                     <Git.Commit>${git.revision}</Git.Commit>
                                 </labels>
-                                <env>
-                                    <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>
-                                </env>
                                 <cmd>
                                     <exec>
                                         <args>/maven/start.sh</args>

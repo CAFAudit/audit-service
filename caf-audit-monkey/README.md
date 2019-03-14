@@ -65,7 +65,7 @@ The following parameters may be set as required:
   </tr>
   <tr>
     <td>CAF_AUDIT_MODE</td>
-    <td>elasticsearch, [elasticsearch, webservice]</td>
+    <td>NONE, [elasticsearch, webservice]</td>
     <td>Determines if the Audit Monkey sends Audit Events directly to Elasticsearch or via the WebService</td>
   </tr>
   <tr>
@@ -84,29 +84,19 @@ The following parameters may be set as required:
     <td>Configurable field, available to the user. User who triggered the Audit Event</td>
   </tr>
   <tr>
-    <td>ES_CLUSTERNAME</td>
-    <td>elasticsearch-cluster, [Any String]</td>
+    <td>CAF_ELASTIC_CLUSTER_NAME</td>
+    <td>NONE, Any String</td>
     <td>Name of the Elasticsearch Cluster the Audit Monkey is to run against</td>
   </tr>
   <tr>
-    <td>ES_HOSTNAME</td>
-    <td>192.168.56.10, [IP Address, Hostname]</td>
-    <td>IP Address or Hostname of Elasticsearch</td>
+    <td>CAF_ELASTIC_HOST_AND_PORT_VALUES</td>
+    <td>NONE, Any String</td>
+    <td>A comma separated list of hostnames and ports to use when contacting elasticsearch. eg. localhost:9200,otherHost:9200</td>
   </tr>
   <tr>
-    <td>ES_PORT</td>
-    <td>9300, [Port Number]</td>
-    <td>Network Port Number of Elasticsearch</td>
-  </tr>
-  <tr>
-    <td>WS_HOSTNAME</td>
-    <td>192.168.56.10, [IP Address, Hostname]</td>
-    <td>IP Address or Hostname of the Audit WebService</td>
-  </tr>
-  <tr>
-    <td>WS_PORT</td>
-    <td>25080, [Port Number]</td>
-    <td>Network Port Number of the Audit WebService</td>
+    <td>CAF_AUDIT_WEBSERVICE_ENDPOINT_URL</td>
+    <td>NONE, Any String</td>
+    <td>The CAF Audit Webservice url endpoint to use when sending audit events.</td>
   </tr>
   <tr>
     <td>CAF_AUDIT_MONKEY_MODE</td>
@@ -138,21 +128,21 @@ The following parameters may be set as required:
 
 e.g.  
 ```
-docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=standard -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=5000 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=10 <IMAGE_ID>
+docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=standard -e CAF_ELASTIC_HOST_AND_PORT_VALUES=localhost:9200 -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=5000 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=10 <IMAGE_ID>
 ```
 
 Run the Audit Monkey sending [5000] Audit Events [elasticsearch] to Elasticsearch in [Standard] mode using [10] threads
 
 e.g.  
 ```
-docker run -e CAF_AUDIT_TENANT_ID=wsTestId -e CAF_AUDIT_MODE=webservice -e WS_HOSTNAME=192.168.56.10 -e WS_PORT=25080 -e CAF_AUDIT_MONKEY_MODE=random -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=50 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=5 <IMAGE_ID>
+docker run -e CAF_AUDIT_TENANT_ID=wsTestId -e CAF_AUDIT_MODE=webservice -e CAF_AUDIT_WEBSERVICE_ENDPOINT_URL=192.168.56.10:25080 -e CAF_AUDIT_MONKEY_MODE=random -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=50 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=5 <IMAGE_ID>
 ```  
 
 Run the Audit Monkey sending [50] Audit Events for Tenant Id [wsTestId] through the [Audit WebService] operating on host [192.168.56.10] and port [25080] in [Random] mode using [5] threads
 
 e.g.  
 ```
-docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=demo -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=10000 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=25 <IMAGE_ID>
+docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=demo -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=10000  -e CAF_ELASTIC_HOST_AND_PORT_VALUES=localhost:9200 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=25 <IMAGE_ID>
 ```
 
 Run the Audit Monkey sending [10,000] Audit Events [elasticsearch] to Elasticsearch in [demo] mode using [25] threads

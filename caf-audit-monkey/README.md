@@ -85,12 +85,12 @@ The following parameters may be set as required:
   </tr>
   <tr>
     <td>CAF_ELASTIC_CLUSTER_NAME</td>
-    <td>NONE, [Any String]</td>
+    <td>NONE, Any String</td>
     <td>Name of the Elasticsearch Cluster the Audit Monkey is to run against</td>
   </tr>
   <tr>
     <td>CAF_ELASTIC_HOST_AND_PORT_VALUES</td>
-    <td>NONE</td>
+    <td>NONE, Any String</td>
     <td>A comma separated list of hostnames and ports to use when contacting elasticsearch. eg. localhost:9200,otherHost:9200</td>
   </tr>
   <tr>

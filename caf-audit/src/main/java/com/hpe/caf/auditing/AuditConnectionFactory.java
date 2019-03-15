@@ -49,7 +49,7 @@ public class AuditConnectionFactory
             throw new RuntimeException("No implemenation for auditing have been provided.");
         }
         final List<Class<?>> implementations = annotatedClasses.stream()
-            .filter(e -> e.getAnnotation(AuditImplementation.class).value().equals(auditLibMode) == true).collect(Collectors.toList());
+            .filter(e -> e.getAnnotation(AuditImplementation.class).value().equals(auditLibMode)).collect(Collectors.toList());
         if (implementations.size() > 1) {
             throw new RuntimeException("More than one implementation has been found for the audit mode selected.");
         }

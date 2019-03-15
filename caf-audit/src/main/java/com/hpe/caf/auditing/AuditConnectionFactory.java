@@ -36,7 +36,9 @@ public class AuditConnectionFactory
     public static AuditConnection createConnection() throws AuditConfigurationException
     {
         final String auditLibMode = System.getProperty("CAF_AUDIT_MODE", System.getenv("CAF_AUDIT_MODE"));
-        if(auditLibMode == null) throw new RuntimeException("No Auditing mode has been provided.");
+        if (auditLibMode == null) {
+            throw new RuntimeException("No Auditing mode has been provided.");
+        }
         // If the CAF_AUDIT_MODE environment variable has been set to NONE return the NO-OP implementation
         if (auditLibMode.equals("NONE")) {
             return new NoopAuditConnection();

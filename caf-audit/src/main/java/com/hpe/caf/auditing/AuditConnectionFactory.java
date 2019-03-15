@@ -45,7 +45,7 @@ public class AuditConnectionFactory
         }
         final Reflections reflections = new Reflections("com.hpe.caf.auditing");
         final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(AuditImplementation.class);
-        if(annotatedClasses == null || annotatedClasses.isEmpty()){
+        if(annotatedClasses == null){
             throw new RuntimeException("No implemenation for auditing have been provided.");
         }
         final List<Class<?>> implementations = annotatedClasses.stream()

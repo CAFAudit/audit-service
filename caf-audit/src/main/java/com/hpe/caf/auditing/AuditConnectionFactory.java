@@ -54,7 +54,7 @@ public class AuditConnectionFactory
             throw new RuntimeException("More than one implementation has been found for the audit mode selected.");
         }
         if (implementations.isEmpty()) {
-            throw new RuntimeException("No auditing implementations have been found for the mode selected.");
+            throw new AuditConfigurationException("No auditing implementations have been found for the mode selected.");
         }
         try {
             final AuditConnectionProvider connectionProvider = (AuditConnectionProvider) implementations.iterator().next().newInstance();

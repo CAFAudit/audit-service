@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.elastic.exception;
+package com.hpe.caf.auditing.exception;
 
-import com.hpe.caf.auditing.exception.AuditingImplementationException;
-
-public class ElasticsearchAuditingImplementationException extends AuditingImplementationException
+public class AuditConfigurationException extends Exception
 {
-    public ElasticsearchAuditingImplementationException(final String message, final Throwable throwable)
+    public AuditConfigurationException(final String message, final Throwable throwable)
     {
         super(message, throwable);
     }
-    public ElasticsearchAuditingImplementationException(final String message)
+    public AuditConfigurationException(final String message)
     {
-        super(message, new Exception());
+        super(message);
     }
 }

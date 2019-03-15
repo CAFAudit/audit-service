@@ -18,13 +18,13 @@ package com.hpe.caf.auditing.webserviceclient;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionProvider;
 import com.hpe.caf.auditing.AuditImplementation;
-import com.hpe.caf.auditing.exception.WebServiceAuditingImplementationException;
+import com.hpe.caf.auditing.exception.AuditConfigurationException;
 
-@AuditImplementation(value="webservice")
+@AuditImplementation("webservice")
 public class WebServiceClientAuditConnectionProvider implements AuditConnectionProvider
 {
     @Override
-    public AuditConnection getConnection() throws WebServiceAuditingImplementationException
+    public AuditConnection getConnection() throws AuditConfigurationException
     {
         return new WebServiceClientAuditConnection();
     }

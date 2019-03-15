@@ -20,7 +20,7 @@ import com.hpe.caf.auditing.AuditConnectionProvider;
 import com.hpe.caf.auditing.AuditImplementation;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
 
-@AuditImplementation(value="webservice")
+@AuditImplementation("webservice")
 public class WebServiceClientAuditConnectionProvider implements AuditConnectionProvider
 {
     @Override

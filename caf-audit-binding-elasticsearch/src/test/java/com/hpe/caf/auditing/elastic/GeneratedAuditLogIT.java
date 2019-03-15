@@ -17,7 +17,7 @@ package com.hpe.caf.auditing.elastic;
 
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionFactory;
-import com.hpe.caf.auditing.elastic.exception.ElasticsearchAuditingImplementationException;
+import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.services.audit.api.AuditLog;
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -62,7 +62,7 @@ public class GeneratedAuditLogIT {
     }
 
     @After
-    public void cleanUp() throws ElasticsearchAuditingImplementationException {
+    public void cleanUp() throws AuditConfigurationException {
         try (TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             deleteIndex(transportClient, testTenant + ElasticAuditConstants.Index.SUFFIX);
@@ -151,7 +151,7 @@ public class GeneratedAuditLogIT {
         return UUID.randomUUID().toString();
     }
 
-    private SearchHit getAuditEvent(String correlationId) throws ElasticsearchAuditingImplementationException {
+    private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch

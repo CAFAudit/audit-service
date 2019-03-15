@@ -21,7 +21,7 @@ import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.AuditConnectionFactory;
-import com.hpe.caf.auditing.elastic.exception.ElasticsearchAuditingImplementationException;
+import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -91,7 +91,7 @@ public class ElasticAuditIT
         ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
     }
 
-    @Test(expected = ElasticsearchAuditingImplementationException.class)
+    @Test(expected = AuditConfigurationException.class)
     public void testUnknownESHost() throws Exception
     {
         //  This tests the usage of an unknown host.

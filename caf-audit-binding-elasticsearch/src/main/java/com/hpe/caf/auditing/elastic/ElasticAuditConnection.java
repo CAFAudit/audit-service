@@ -17,7 +17,7 @@ package com.hpe.caf.auditing.elastic;
 
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
-import com.hpe.caf.auditing.elastic.exception.ElasticsearchAuditingImplementationException;
+import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import org.elasticsearch.client.transport.TransportClient;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class ElasticAuditConnection implements AuditConnection {
     private final TransportClient transportClient;
     private ElasticAuditIndexManager indexManager;
 
-    public ElasticAuditConnection() throws ElasticsearchAuditingImplementationException
+    public ElasticAuditConnection() throws AuditConfigurationException
     {
             final String hostAndPorts = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES,
@@ -58,14 +58,14 @@ public class ElasticAuditConnection implements AuditConnection {
     }
 
     private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,
-                                                             final int defaultTo) throws ElasticsearchAuditingImplementationException {
+                                                             final int defaultTo) throws AuditConfigurationException {
         try {
             final String envVarValue = System.getProperty(environmentVariable, System.getenv(environmentVariable));
             if (envVarValue != null) {
                 return Integer.parseInt(envVarValue);
             }
         } catch (final NumberFormatException nfe) {
-            throw new ElasticsearchAuditingImplementationException(environmentVariable + " environment variable should only contain " +
+            throw new AuditConfigurationException(environmentVariable + " environment variable should only contain " +
                     "numbers", nfe);
         }
         return defaultTo;

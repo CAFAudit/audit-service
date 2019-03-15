@@ -15,7 +15,7 @@
  */
 package com.hpe.caf.auditing;
 
-import com.hpe.caf.auditing.exception.AuditingImplementationException;
+import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.auditing.noop.NoopAuditConnection;
 import java.util.List;
 import java.util.Set;
@@ -31,18 +31,19 @@ public class AuditConnectionFactory
      * been set to 'elasticsearch' this returns an ElasticAuditConnection.
      *
      * @return the connection to the audit server, depending on the setting of the 'CAF_AUDIT_MODE' environment variable
-     * @throws AuditingImplementationException if the audit server details cannot be retrieved.
+     * @throws AuditConfigurationException if the audit server details cannot be retrieved.
      */
-    public static AuditConnection createConnection() throws AuditingImplementationException
+    public static AuditConnection createConnection() throws AuditConfigurationException
     {
         final String auditLibMode = System.getProperty("CAF_AUDIT_MODE", System.getenv("CAF_AUDIT_MODE"));
+        if(auditLibMode == null) throw new RuntimeException("No Auditing mode has been provided.");
         // If the CAF_AUDIT_MODE environment variable has been set to NONE return the NO-OP implementation
         if (auditLibMode.equals("NONE")) {
             return new NoopAuditConnection();
         }
         final Reflections reflections = new Reflections("com.hpe.caf.auditing");
         final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(AuditImplementation.class);
-        if(annotatedClasses == null | annotatedClasses.isEmpty()){
+        if(annotatedClasses == null || annotatedClasses.isEmpty()){
             throw new RuntimeException("No implemenation for auditing have been provided.");
         }
         final List<Class<?>> implementations = annotatedClasses.stream()
@@ -57,7 +58,7 @@ public class AuditConnectionFactory
             final AuditConnectionProvider connectionProvider = (AuditConnectionProvider) implementations.iterator().next().newInstance();
             return connectionProvider.getConnection();
         } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new AuditingImplementationException("Unable to instantiate provider for the requested auditing implemenation.", ex);
+            throw new RuntimeException("Unable to instantiate provider for the requested auditing implemenation.", ex);
         }        
     }
 }

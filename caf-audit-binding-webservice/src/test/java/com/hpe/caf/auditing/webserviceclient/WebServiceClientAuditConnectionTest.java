@@ -16,7 +16,7 @@
 package com.hpe.caf.auditing.webserviceclient;
 
 import com.hpe.caf.auditing.*;
-import com.hpe.caf.auditing.exception.WebServiceAuditingImplementationException;
+import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -54,7 +54,7 @@ public class WebServiceClientAuditConnectionTest {
         System.setProperty("CAF_AUDIT_MODE", "webservice");
     }
 
-    @Test(expected = WebServiceAuditingImplementationException.class)
+    @Test(expected = AuditConfigurationException.class)
     public void testWebServiceClientBadWebserviceEndpoint() throws Exception {
 
         String invalidWebServiceEndpoint = "thisIsNotAValidEndpointUrl";
@@ -79,7 +79,7 @@ public class WebServiceClientAuditConnectionTest {
         auditEventBuilder.send();
     }
 
-    @Test(expected = WebServiceAuditingImplementationException.class)
+    @Test(expected = AuditConfigurationException.class)
     public void testWebServiceClientMalformedHttpsProxy() throws Exception {
 
         TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
@@ -89,7 +89,7 @@ public class WebServiceClientAuditConnectionTest {
         AuditConnectionFactory.createConnection();
     }
 
-    @Test(expected = WebServiceAuditingImplementationException.class)
+    @Test(expected = AuditConfigurationException.class)
     public void testWebServiceClientMalformedHttpProxy() throws Exception {
         String testWebServiceHttpEndpoint = "http://testWsHost:8080/caf-audit-service/v1";
 

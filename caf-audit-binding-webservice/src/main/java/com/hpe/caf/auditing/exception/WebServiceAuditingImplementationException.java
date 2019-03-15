@@ -15,7 +15,7 @@
  */
 package com.hpe.caf.auditing.exception;
 
-public class WebServiceAuditingImplementationException extends AuditingImplementationException
+public class WebServiceAuditingImplementationException extends AuditConfigurationException
 {
     public WebServiceAuditingImplementationException(final String message, final Throwable throwable)
     {

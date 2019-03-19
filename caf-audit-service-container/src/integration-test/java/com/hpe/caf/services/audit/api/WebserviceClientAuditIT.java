@@ -23,7 +23,7 @@ import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.elastic.ElasticAuditTransportClientFactory;
-import com.hpe.caf.auditing.elastic.exception.ElasticsearchAuditingImplementationException;
+import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.auditing.webserviceclient.WebServiceClientException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -128,7 +128,7 @@ public class WebserviceClientAuditIT {
     }
 
     @AfterMethod
-    public void cleanUp() throws ElasticsearchAuditingImplementationException {
+    public void cleanUp() throws AuditConfigurationException {
         TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME);
         try {
@@ -282,7 +282,7 @@ public class WebserviceClientAuditIT {
         auditEventBuilder.send();
     }
 
-    private SearchHit getAuditEvent(String correlationId) throws ElasticsearchAuditingImplementationException {
+    private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (TransportClient transportClient
                      = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch

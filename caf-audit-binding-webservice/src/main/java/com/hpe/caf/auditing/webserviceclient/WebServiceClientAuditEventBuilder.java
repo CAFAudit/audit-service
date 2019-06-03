@@ -266,8 +266,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
         jsonWriter.beginObject();
         for (Map.Entry<String, Object> auditEventCommonField : auditEventCommonFields.entrySet()) {
-            jsonWriter.name(auditEventCommonField.getKey());
-            gson.toJson(auditEventCommonField.getValue(), Object.class, jsonWriter);
+            jsonWriter.name(auditEventCommonField.getKey()).value(auditEventCommonField.getValue().toString());
         }
 
         if (auditEventParams != null && !auditEventParams.isEmpty()) {
@@ -282,8 +281,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
                     jsonWriter.name("paramIndexingHint")
                             .value(auditEventParam.getParamIndexingHint().toString().toLowerCase());
                 }
-                jsonWriter.name("paramValue");
-                gson.toJson(auditEventParam.getParamValue(), Object.class, jsonWriter);
+                jsonWriter.name("paramValue").value(auditEventParam.getParamValue().toString());
                 jsonWriter.name("paramColumnName").value(auditEventParam.getParamColumnName());
                 jsonWriter.endObject();
             }

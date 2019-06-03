@@ -53,7 +53,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
     private final List<EventParam> auditEventParams = new ArrayList<>();
 
-    private static final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
+    private static final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
 
     /**
      * Webservice Client Audit Event Builder object is use to build up application audit events and send them to the

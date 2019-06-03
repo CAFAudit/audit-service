@@ -15,17 +15,18 @@
  */
 package com.hpe.caf.auditing.webserviceclient;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonWriter;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
@@ -50,6 +51,8 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
     private final Map<String, Object> auditEventCommonFields = new HashMap<>();
 
     private final List<EventParam> auditEventParams = new ArrayList<>();
+
+    private static final Gson gson = new Gson();
 
     /**
      * Webservice Client Audit Event Builder object is use to build up application audit events and send them to the
@@ -257,34 +260,39 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
     }
 
     private String getAuditEventAsJsonString() throws IOException {
-        XContentBuilder jsonBuilder = XContentFactory.jsonBuilder();
 
-        jsonBuilder.startObject();
+        final StringWriter stringWriter = new StringWriter();
+        final JsonWriter jsonWriter = new JsonWriter(stringWriter);
+
+        jsonWriter.beginObject();
         for (Map.Entry<String, Object> auditEventCommonField : auditEventCommonFields.entrySet()) {
-            jsonBuilder.field(auditEventCommonField.getKey(), auditEventCommonField.getValue());
+            jsonWriter.name(auditEventCommonField.getKey());
+            gson.toJson(auditEventCommonField.getValue(), Object.class, jsonWriter);
         }
 
         if (auditEventParams != null && !auditEventParams.isEmpty()) {
-            jsonBuilder.startArray("eventParams");
+            jsonWriter.name("eventParams");
+            jsonWriter.beginArray();
             for (EventParam auditEventParam : auditEventParams) {
-                XContentBuilder customEventParamBuilder = jsonBuilder.startObject()
-                        .field("paramName", auditEventParam.getParamName())
-                        .field("paramType", auditEventParam.getParamType());
+                jsonWriter.beginObject();
+                jsonWriter.name("paramName").value(auditEventParam.getParamName());
+                jsonWriter.name("paramType").value(auditEventParam.getParamType());
                 // If the audit event param has an indexing hint set, lower case and add it to paramIndexingHint field
                 if (auditEventParam.getParamIndexingHint() != null) {
-                    customEventParamBuilder.field("paramIndexingHint",
-                            auditEventParam.getParamIndexingHint().toString().toLowerCase());
+                    jsonWriter.name("paramIndexingHint")
+                            .value(auditEventParam.getParamIndexingHint().toString().toLowerCase());
                 }
-                customEventParamBuilder.field("paramValue", auditEventParam.getParamValue())
-                        .field("paramColumnName", auditEventParam.getParamColumnName())
-                        .endObject();
+                jsonWriter.name("paramValue");
+                gson.toJson(auditEventParam.getParamValue(), Object.class, jsonWriter);
+                jsonWriter.name("paramColumnName").value(auditEventParam.getParamColumnName());
+                jsonWriter.endObject();
             }
-            jsonBuilder.endArray();
+            jsonWriter.endArray();
         }
-        jsonBuilder.endObject();
-        jsonBuilder.close();
+        jsonWriter.endObject();
+        jsonWriter.close();
 
-        return jsonBuilder.string();
+        return stringWriter.toString();
     }
 
     private class EventParam {

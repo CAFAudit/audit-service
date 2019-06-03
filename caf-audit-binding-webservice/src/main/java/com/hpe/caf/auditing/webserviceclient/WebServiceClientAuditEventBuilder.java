@@ -16,6 +16,7 @@
 package com.hpe.caf.auditing.webserviceclient;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
@@ -52,7 +53,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
     private final List<EventParam> auditEventParams = new ArrayList<>();
 
-    private static final Gson gson = new Gson();
+    private static final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
 
     /**
      * Webservice Client Audit Event Builder object is use to build up application audit events and send them to the
@@ -266,7 +267,8 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
         jsonWriter.beginObject();
         for (Map.Entry<String, Object> auditEventCommonField : auditEventCommonFields.entrySet()) {
-            jsonWriter.name(auditEventCommonField.getKey()).value(auditEventCommonField.getValue().toString());
+            jsonWriter.name(auditEventCommonField.getKey());
+            gson.toJson(auditEventCommonField.getValue(), Object.class, jsonWriter);
         }
 
         if (auditEventParams != null && !auditEventParams.isEmpty()) {
@@ -281,7 +283,9 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
                     jsonWriter.name("paramIndexingHint")
                             .value(auditEventParam.getParamIndexingHint().toString().toLowerCase());
                 }
-                jsonWriter.name("paramValue").value(auditEventParam.getParamValue().toString());
+                jsonWriter.name("paramValue");
+                gson.toJson(auditEventParam.getParamValue(), Object.class, jsonWriter);
+
                 jsonWriter.name("paramColumnName").value(auditEventParam.getParamColumnName());
                 jsonWriter.endObject();
             }

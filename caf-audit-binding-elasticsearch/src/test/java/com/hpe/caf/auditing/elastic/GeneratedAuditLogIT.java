@@ -81,7 +81,7 @@ public class GeneratedAuditLogIT {
                     Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
 
             SearchHit searchHit = getAuditEvent(correlationId);
-            Map<String, Object> source = searchHit.getSource();
+            Map<String, Object> source = searchHit.getSourceAsMap();
 
             assertFixedField(ProcessIdentifier.getProcessId().toString(), ElasticAuditConstants.FixedFieldName.PROCESS_ID_FIELD, source);
 
@@ -127,7 +127,7 @@ public class GeneratedAuditLogIT {
                         Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
 
                 SearchHit searchHit = getAuditEvent(correlationId);
-                Map<String, Object> source = searchHit.getSource();
+                Map<String, Object> source = searchHit.getSourceAsMap();
                 event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
             }
 
@@ -139,7 +139,7 @@ public class GeneratedAuditLogIT {
                         Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
 
                 SearchHit searchHit = getAuditEvent(correlationId);
-                Map<String, Object> source = searchHit.getSource();
+                Map<String, Object> source = searchHit.getSourceAsMap();
                 event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
             }
 

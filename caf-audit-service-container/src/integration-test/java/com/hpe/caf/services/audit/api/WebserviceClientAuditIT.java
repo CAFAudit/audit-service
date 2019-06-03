@@ -241,7 +241,7 @@ public class WebserviceClientAuditIT {
                         date);
 
                 SearchHit searchHit = getAuditEvent(correlationId);
-                Map<String, Object> source = searchHit.getSource();
+                Map<String, Object> source = searchHit.getSourceAsMap();
                 event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
             }
 
@@ -254,7 +254,7 @@ public class WebserviceClientAuditIT {
                         date);
 
                 SearchHit searchHit = getAuditEvent(correlationId);
-                Map<String, Object> source = searchHit.getSource();
+                Map<String, Object> source = searchHit.getSourceAsMap();
                 event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
             }
 
@@ -433,7 +433,7 @@ public class WebserviceClientAuditIT {
     private static void verifyFixedFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
             throws ParseException
     {
-        Map<String, Object> result = results[0].getSource();
+        Map<String, Object> result = results[0].getSourceAsMap();
 
         Object actualFieldValue = null;
 
@@ -493,7 +493,7 @@ public class WebserviceClientAuditIT {
                 break;
         }
 
-        Map<String, Object> result = results[0].getSource();
+        Map<String, Object> result = results[0].getSourceAsMap();
 
         Object actualFieldValue = null;
 

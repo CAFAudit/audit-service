@@ -25,6 +25,7 @@ import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.DeprecationHandler;
 import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
@@ -79,7 +80,8 @@ public class ElasticAuditIndexManager {
         //  Parse JSON from the bytes and return as a mapping builder
         try {
             XContentParser parser = XContentFactory.xContent(XContentType.JSON)
-                    .createParser(NamedXContentRegistry.EMPTY, cafAuditEventTenantIndexMappingsBytes);
+                    .createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION,
+                            cafAuditEventTenantIndexMappingsBytes);
             parser.close();
             return XContentFactory.jsonBuilder().copyCurrentStructure(parser);
         } catch (IOException e) {

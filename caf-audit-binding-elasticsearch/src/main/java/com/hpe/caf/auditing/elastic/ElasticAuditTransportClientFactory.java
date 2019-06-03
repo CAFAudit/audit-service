@@ -18,7 +18,7 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,7 +84,7 @@ public class ElasticAuditTransportClientFactory {
                     }
 
                     try {
-                        transportClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));
+                        transportClient.addTransportAddress(new TransportAddress(InetAddress.getByName(host), port));
                         LOG.debug("Elasticsearch initialization - added host: " + host);
                     } catch (UnknownHostException e) {
                         LOG.error("Host unavailable or unknown: " + e.getMessage(), e);

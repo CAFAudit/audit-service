@@ -31,11 +31,14 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.TimeZone;
 
 public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
@@ -284,7 +287,15 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
                             .value(auditEventParam.getParamIndexingHint().toString().toLowerCase());
                 }
                 jsonWriter.name("paramValue");
-                gson.toJson(auditEventParam.getParamValue(), Object.class, jsonWriter);
+                if(auditEventParam.getParamValue() instanceof Date){
+                    final Date date = (Date)auditEventParam.getParamValue();
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    jsonWriter.value(df.format(date));
+                }
+                else {
+                    gson.toJson(auditEventParam.getParamValue(), Object.class, jsonWriter);
+                }
 
                 jsonWriter.name("paramColumnName").value(auditEventParam.getParamColumnName());
                 jsonWriter.endObject();

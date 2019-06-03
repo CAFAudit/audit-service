@@ -227,7 +227,7 @@
                     <images>
                         <image>
                             <alias>elasticsearch</alias>
-                            <name>docker.elastic.co/elasticsearch/elasticsearch:5.3.0</name>
+                            <name>docker.elastic.co/elasticsearch/elasticsearch:6.8.0</name>
                             <run>
                                 <ports>
                                     <port>${elasticsearch.http.port}:9200</port>

@@ -489,7 +489,7 @@ public class ElasticAuditIT
     private static void verifyFixedFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
             throws ParseException
     {
-        Map<String, Object> result = results[0].getSource();
+        Map<String, Object> result = results[0].getSourceAsMap();
 
         Object actualFieldValue = null;
 
@@ -549,7 +549,7 @@ public class ElasticAuditIT
                 break;
         }
 
-        Map<String, Object> result = results[0].getSource();
+        Map<String, Object> result = results[0].getSourceAsMap();
 
         Object actualFieldValue = null;
 

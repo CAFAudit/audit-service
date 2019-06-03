@@ -290,6 +290,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
             jsonWriter.endArray();
         }
         jsonWriter.endObject();
+        jsonWriter.flush();
         jsonWriter.close();
 
         return stringWriter.toString();

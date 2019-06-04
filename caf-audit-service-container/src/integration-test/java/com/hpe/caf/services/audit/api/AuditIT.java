@@ -193,7 +193,7 @@ public class AuditIT {
             final String docId = hits[0].getId();
 
             //  Verify search results match the expected audit event message data.
-            final Map<String, Object> hitSource = hits[0].getSource();
+            final Map<String, Object> hitSource = hits[0].getSourceAsMap();
             verifySearchResults(auditEventMessage, hitSource);
 
             //  Delete test document after verification is complete.

@@ -17,6 +17,13 @@ package com.hpe.caf.auditing.webserviceclient;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.stream.JsonWriter;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
@@ -28,14 +35,20 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
 public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
@@ -53,7 +66,8 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
     private final List<EventParam> auditEventParams = new ArrayList<>();
 
-    private static final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
+    private static final Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCDateAdapter())
+            .create();
 
     /**
      * Webservice Client Audit Event Builder object is use to build up application audit events and send them to the
@@ -362,6 +376,30 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
         public void setParamValue(Object paramValue) {
             this.paramValue = paramValue;
+        }
+    }
+
+    public static class GsonUTCDateAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {
+
+        private final DateFormat dateFormat;
+
+        public GsonUTCDateAdapter() {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        }
+
+        @Override public synchronized JsonElement serialize(Date date, Type type,
+                                                            JsonSerializationContext jsonSerializationContext) {
+            return new JsonPrimitive(dateFormat.format(date));
+        }
+
+        @Override public synchronized Date deserialize(JsonElement jsonElement, Type type,
+                                                       JsonDeserializationContext jsonDeserializationContext) {
+            try {
+                return dateFormat.parse(jsonElement.getAsString());
+            } catch (ParseException e) {
+                throw new JsonParseException(e);
+            }
         }
     }
 }

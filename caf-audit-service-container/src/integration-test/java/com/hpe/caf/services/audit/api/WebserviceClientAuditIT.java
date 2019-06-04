@@ -524,6 +524,6 @@ public class WebserviceClientAuditIT {
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         String expectedDateSting = df.format(expectedDate);
 
-        Assert.assertEqual(expectedDateSting, actualDateString);
+        Assert.assertEquals(expectedDateSting, actualDateString);
     }
 }

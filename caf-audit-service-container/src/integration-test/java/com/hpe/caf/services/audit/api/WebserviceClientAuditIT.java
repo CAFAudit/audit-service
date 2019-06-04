@@ -450,7 +450,7 @@ public class WebserviceClientAuditIT {
         if (!type.toLowerCase().equals("date")) {
             Assert.assertEquals(actualFieldValue.toString(), expectedValue.toString());
         } else {
-            Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue.toString()));
+            assertDatesAreEqual((Date) expectedValue, actualFieldValue.toString());
         }
     }
 
@@ -512,11 +512,11 @@ public class WebserviceClientAuditIT {
         if (!type.toLowerCase().equals("date")) {
             Assert.assertEquals(actualFieldValue.toString(), expectedValue.toString());
         } else {
-            Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue.toString()));
+            assertDatesAreEqual((Date) expectedValue, actualFieldValue.toString());
         }
     }
 
-    private static boolean datesAreEqual(Date expectedDate, String actualDateString) throws ParseException
+    private static void assertDatesAreEqual(Date expectedDate, String actualDateString) throws ParseException
     {
         //  Convert expected date to similar format used in Elasticsearch search results
         //  (i.e. default ISODateTimeFormat.dateOptionalTimeParser).
@@ -524,6 +524,6 @@ public class WebserviceClientAuditIT {
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         String expectedDateSting = df.format(expectedDate);
 
-        return expectedDateSting.equals(actualDateString);
+        Assert.assertEquals(expectedDateSting, actualDateString);
     }
 }

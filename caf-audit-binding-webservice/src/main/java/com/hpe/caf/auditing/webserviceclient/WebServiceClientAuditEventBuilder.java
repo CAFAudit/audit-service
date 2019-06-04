@@ -53,7 +53,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
     private final List<EventParam> auditEventParams = new ArrayList<>();
 
-    private static final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").create();
+    private static final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
 
     /**
      * Webservice Client Audit Event Builder object is use to build up application audit events and send them to the
@@ -268,7 +268,8 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
         jsonWriter.beginObject();
         for (Map.Entry<String, Object> auditEventCommonField : auditEventCommonFields.entrySet()) {
             jsonWriter.name(auditEventCommonField.getKey());
-            gson.toJson(auditEventCommonField.getValue(), Object.class, jsonWriter);
+            gson.toJson(auditEventCommonField.getValue(), auditEventCommonField.getValue().getClass(),
+                    jsonWriter);
         }
 
         if (auditEventParams != null && !auditEventParams.isEmpty()) {
@@ -284,7 +285,8 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
                             .value(auditEventParam.getParamIndexingHint().toString().toLowerCase());
                 }
                 jsonWriter.name("paramValue");
-                gson.toJson(auditEventParam.getParamValue(), Object.class, jsonWriter);
+                gson.toJson(auditEventParam.getParamValue(), auditEventParam.getParamValue().getClass(),
+                        jsonWriter);
 
                 jsonWriter.name("paramColumnName").value(auditEventParam.getParamColumnName());
                 jsonWriter.endObject();

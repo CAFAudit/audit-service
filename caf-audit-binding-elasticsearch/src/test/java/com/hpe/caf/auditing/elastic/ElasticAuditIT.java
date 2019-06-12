@@ -97,17 +97,6 @@ public class ElasticAuditIT
         ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
     }
 
-    @Test(expected = AuditConfigurationException.class)
-    public void testUnknownESHost() throws Exception
-    {
-        //  This tests the usage of an unknown host.
-        //  An exception is expected to be thrown.
-
-        final String esHostAndPort = "unknownAbc123:" + ES_PORT;
-        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, esHostAndPort);
-        final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
-    }
-
     @Test(expected = Exception.class)
     public void testIncorrectESPort() throws Exception
     {
@@ -273,37 +262,36 @@ public class ElasticAuditIT
     }
 
     private void verifyTypeMappings(RestHighLevelClient restHighLevelClient) {
-        String expectedTypeMappings = "{\"cafAuditEvent\":{\"dynamic_templates\":[{\"CAFAuditKeyword\":" +
-                "{\"match\":\"*_CAKyw\",\"mapping\":{\"type\":\"keyword\"}}},{\"CAFAuditText\":" +
-                "{\"match\":\"*_CATxt\",\"mapping\":{\"type\":\"text\"}}},{\"CAFAuditLong\":" +
-                "{\"match\":\"*_CALng\",\"mapping\":{\"type\":\"long\"}}},{\"CAFAuditInteger\":" +
-                "{\"match\":\"*_CAInt\",\"mapping\":{\"type\":\"integer\"}}},{\"CAFAuditShort\":" +
-                "{\"match\":\"*_CAShort\",\"mapping\":{\"type\":\"short\"}}},{\"CAFAuditDouble\":" +
-                "{\"match\":\"*_CADbl\",\"mapping\":{\"type\":\"double\"}}},{\"CAFAuditFloat\":" +
-                "{\"match\":\"*_CAFlt\",\"mapping\":{\"type\":\"float\"}}},{\"CAFAuditDate\":" +
-                "{\"match\":\"*_CADte\",\"mapping\":{\"type\":\"date\"}}},{\"CAFAuditBoolean\":" +
-                "{\"match\":\"*_CABln\",\"mapping\":{\"type\":\"boolean\"}}}],\"properties\":" +
-                "{\"applicationId\":{\"type\":\"keyword\"},\"correlationId\":{\"type\":\"keyword\"}," +
-                "\"docBooleanParam_CABln\":{\"type\":\"boolean\"},\"docDateParam_CADte\":{\"type\":\"date\"}," +
-                "\"docDoubleParam_CADbl\":{\"type\":\"double\"},\"docFloatParam_CAFlt\":{\"type\":\"float\"}," +
-                "\"docIntParam_CAInt\":{\"type\":\"integer\"},\"docLongParam_CALng\":{\"type\":\"long\"}," +
-                "\"docShortParam_CAShort\":{\"type\":\"short\"},\"docStringParam_CAKyw\":{\"type\":\"keyword\"}," +
-                "\"eventCategoryId\":{\"type\":\"keyword\"},\"eventOrder\":{\"type\":\"long\"},\"eventTime\":" +
-                "{\"type\":\"date\"},\"eventTimeSource\":{\"type\":\"keyword\"},\"eventTypeId\":" +
-                "{\"type\":\"keyword\"},\"processId\":{\"type\":\"keyword\"},\"threadId\":{\"type\":\"long\"}," +
-                "\"userId\":{\"type\":\"keyword\"}}}}";
+        String expectedTypeMappings = "{\"dynamic_templates\":" +
+                "[{\"CAFAuditKeyword\":{\"mapping\":{\"type\":\"keyword\"},\"match\":\"*_CAKyw\"}}," +
+                "{\"CAFAuditText\":{\"mapping\":{\"type\":\"text\"},\"match\":\"*_CATxt\"}}," +
+                "{\"CAFAuditLong\":{\"mapping\":{\"type\":\"long\"},\"match\":\"*_CALng\"}}," +
+                "{\"CAFAuditInteger\":{\"mapping\":{\"type\":\"integer\"},\"match\":\"*_CAInt\"}}," +
+                "{\"CAFAuditShort\":{\"mapping\":{\"type\":\"short\"},\"match\":\"*_CAShort\"}}," +
+                "{\"CAFAuditDouble\":{\"mapping\":{\"type\":\"double\"},\"match\":\"*_CADbl\"}}," +
+                "{\"CAFAuditFloat\":{\"mapping\":{\"type\":\"float\"},\"match\":\"*_CAFlt\"}}," +
+                "{\"CAFAuditDate\":{\"mapping\":{\"type\":\"date\"},\"match\":\"*_CADte\"}}," +
+                "{\"CAFAuditBoolean\":{\"mapping\":{\"type\":\"boolean\"},\"match\":\"*_CABln\"}}]," +
+                "\"properties\":{\"docDoubleParam_CADbl\":{\"type\":\"double\"},\"docBooleanParam_CABln\":" +
+                "{\"type\":\"boolean\"},\"docDateParam_CADte\":{\"type\":\"date\"},\"docShortParam_CAShort\":" +
+                "{\"type\":\"short\"},\"eventTimeSource\":{\"type\":\"keyword\"},\"docLongParam_CALng\":" +
+                "{\"type\":\"long\"},\"userId\":{\"type\":\"keyword\"},\"docIntParam_CAInt\":{\"type\":\"integer\"}," +
+                "\"threadId\":{\"type\":\"long\"},\"docFloatParam_CAFlt\":{\"type\":\"float\"}," +
+                "\"eventTypeId\":{\"type\":\"keyword\"},\"processId\":{\"type\":\"keyword\"},\"eventTime\":" +
+                "{\"type\":\"date\"},\"correlationId\":{\"type\":\"keyword\"},\"docStringParam_CAKyw\":" +
+                "{\"type\":\"keyword\"},\"applicationId\":{\"type\":\"keyword\"},\"eventOrder\":{\"type\":\"long\"}," +
+                "\"eventCategoryId\":{\"type\":\"keyword\"}}}";
 
-        final GetMappingsRequest getMappingsRequest = new GetMappingsRequest();
-        getMappingsRequest.indices((TENANT_ID + ElasticAuditConstants.Index.SUFFIX).toLowerCase());
+        final String index = (TENANT_ID + ElasticAuditConstants.Index.SUFFIX).toLowerCase();
         final GetMappingsResponse getMappingsResponse;
         try {
-            getMappingsResponse = restHighLevelClient.indices().getMapping(getMappingsRequest, RequestOptions.DEFAULT);
+            getMappingsResponse = restHighLevelClient.indices().getMapping(new GetMappingsRequest().indices(index), RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         // Get the CAF Audit Event type mapping for the tenant index
-        CompressedXContent indexMapping = getMappingsResponse.mappings().get(ElasticAuditConstants.Index.TYPE).source();
+        CompressedXContent indexMapping = getMappingsResponse.mappings().get(index).source();
 
         Assert.assertEquals("Expected type mappings and actual type mappings should match", expectedTypeMappings,
                 indexMapping.toString());

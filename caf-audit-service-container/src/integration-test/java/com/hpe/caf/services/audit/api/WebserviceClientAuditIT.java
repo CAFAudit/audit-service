@@ -441,14 +441,23 @@ public class WebserviceClientAuditIT {
                 "{\"CAFAuditFloat\":{\"mapping\":{\"type\":\"float\"},\"match\":\"*_CAFlt\"}}," +
                 "{\"CAFAuditDate\":{\"mapping\":{\"type\":\"date\"},\"match\":\"*_CADte\"}}," +
                 "{\"CAFAuditBoolean\":{\"mapping\":{\"type\":\"boolean\"},\"match\":\"*_CABln\"}}]," +
-                "\"properties\":{\"docDoubleParam_CADbl\":{\"type\":\"double\"},\"docBooleanParam_CABln\":" +
-                "{\"type\":\"boolean\"},\"docDateParam_CADte\":{\"type\":\"date\"},\"docShortParam_CAShort\":" +
-                "{\"type\":\"short\"},\"eventTimeSource\":{\"type\":\"keyword\"},\"docLongParam_CALng\":" +
-                "{\"type\":\"long\"},\"userId\":{\"type\":\"keyword\"},\"docIntParam_CAInt\":{\"type\":\"integer\"}," +
-                "\"threadId\":{\"type\":\"long\"},\"docFloatParam_CAFlt\":{\"type\":\"float\"}," +
-                "\"eventTypeId\":{\"type\":\"keyword\"},\"processId\":{\"type\":\"keyword\"},\"eventTime\":" +
-                "{\"type\":\"date\"},\"correlationId\":{\"type\":\"keyword\"},\"docStringParam_CAKyw\":" +
-                "{\"type\":\"keyword\"},\"applicationId\":{\"type\":\"keyword\"},\"eventOrder\":{\"type\":\"long\"}," +
+                "\"properties\":{\"docDoubleParam_CADbl\":{\"type\":\"double\"}," +
+                "\"docBooleanParam_CABln\":{\"type\":\"boolean\"}," +
+                "\"docDateParam_CADte\":{\"type\":\"date\"}," +
+                "\"docShortParam_CAShort\":{\"type\":\"short\"}," +
+                "\"eventTimeSource\":{\"type\":\"keyword\"}," +
+                "\"docLongParam_CALng\":{\"type\":\"long\"},\"userId\":{\"type\":\"keyword\"}," +
+                "\"docIntParam_CAInt\":{\"type\":\"integer\"}," +
+                "\"threadId\":{\"type\":\"long\"}," +
+                "\"docFloatParam_CAFlt\":{\"type\":\"float\"}," +
+                "\"eventTypeId\":{\"type\":\"keyword\"}," +
+                "\"processId\":{\"type\":\"keyword\"}," +
+                "\"eventTime\":{\"type\":\"date\"}," +
+                "\"correlationId\":{\"type\":\"keyword\"}," +
+                "\"docStringParam_CAKyw\":{\"type\":\"keyword\"}," +
+                "\"applicationId\":{\"type\":\"keyword\"}," +
+                "\"docStringParam_CATxt\":{\"type\":\"text\"}," +
+                "\"eventOrder\":{\"type\":\"long\"}," +
                 "\"eventCategoryId\":{\"type\":\"keyword\"}}}";
 
         final String index = (TENANT_ID + ElasticAuditConstants.Index.SUFFIX).toLowerCase();

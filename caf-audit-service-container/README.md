@@ -7,7 +7,7 @@ This is a docker container for the [CAF Audit Web Service](https://github.com/CA
 #### Environment Variables
 
 ##### CAF\_ELASTIC\_HOST\_AND\_PORT
-Comma separated list of Elasticsearch HOST:PORT value pairs. e.g. 192.168.56.10:9300,192.168.56.20:9300
+Comma separated list of Elasticsearch HOST:PORT value pairs. e.g. 192.168.56.10:9200,192.168.56.20:9200
 
 ##### CAF\_ELASTIC\_CLUSTER\_NAME
 Name of the Elasticsearch cluster. e.g. docker-cluster

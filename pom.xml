@@ -207,10 +207,22 @@
                 <version>1.1.1</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>4.4.11</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-1.2-api</artifactId>
                 <version>2.7</version>
-            </dependency>  
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.11.1</version>
+                <!-- test scope only-->
+                <!--https://www.elastic.co/guide/en/elasticsearch/client/java-api/6.8/_log4j_2_logger.html-->
+            </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-slf4j-impl</artifactId>
@@ -247,13 +259,18 @@
                 <version>${elastic-search-version}</version>
             </dependency>
             <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch-x-content</artifactId>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
                 <version>${elastic-search-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.elasticsearch.client</groupId>
-                <artifactId>transport</artifactId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${elastic-search-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch-x-content</artifactId>
                 <version>${elastic-search-version}</version>
             </dependency>
             <dependency>

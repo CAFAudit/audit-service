@@ -18,7 +18,7 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.internal.AuditNewEventFactory;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,23 +26,23 @@ import org.mockito.Mockito;
 
 public class ElasticAuditChannelTest {
 
-    private TransportClient mockTransportClient;
+    private RestHighLevelClient mockClient;
     private ElasticAuditIndexManager mockElasticAuditIndexManager;
 
     @Before
     public void setup() {
-        mockTransportClient = Mockito.mock(TransportClient.class);
+        mockClient = Mockito.mock(RestHighLevelClient.class);
     }
 
     @Test
     public void testClose() throws Exception {
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockTransportClient, mockElasticAuditIndexManager);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, mockElasticAuditIndexManager);
         channel.close();
     }
 
     @Test
     public void testCreateEventBuilder() throws Exception {
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockTransportClient, mockElasticAuditIndexManager);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, mockElasticAuditIndexManager);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         Assert.assertNotNull(auditEventBuilder);
     }
@@ -50,7 +50,7 @@ public class ElasticAuditChannelTest {
     @Test
     public void testCreateEventBuilderWithAuditCoreMetadataProvider() throws Exception {
         AuditCoreMetadataProvider acmp = AuditNewEventFactory.createNewEvent();
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockTransportClient, mockElasticAuditIndexManager);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, mockElasticAuditIndexManager);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder(acmp);
         Assert.assertNotNull(auditEventBuilder);
     }

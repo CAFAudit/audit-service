@@ -16,18 +16,23 @@
 package com.hpe.caf.services.audit.api;
 
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
+import com.hpe.caf.auditing.elastic.ElasticAuditRestHighLevelClientFactory;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
-import com.hpe.caf.auditing.elastic.ElasticAuditTransportClientFactory;
 import com.hpe.caf.services.audit.client.ApiException;
 import com.hpe.caf.services.audit.client.api.AuditEventsApi;
 import com.hpe.caf.services.audit.client.model.EventParam;
 import com.hpe.caf.services.audit.client.model.NewAuditEvent;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.transport.TransportClient;
+
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.testng.Assert;
@@ -39,6 +44,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
@@ -175,12 +181,12 @@ public class AuditIT {
 
         //  Search for the audit event message in Elasticsearch and verify
         //  hit has been returned.
-        try (TransportClient transportClient
-                     = ElasticAuditTransportClientFactory.getTransportClient(CAF_ELASTIC_HOST_AND_PORT, CAF_ELASTIC_CLUSTER_NAME)) {
+        try (RestHighLevelClient client
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_HOST_AND_PORT, CAF_ELASTIC_CLUSTER_NAME)) {
 
             final String esIndex = auditEventMessage.getTenantId().toLowerCase().concat("_audit");
             SearchHit[] hits = new SearchHit[0];
-            hits = searchAuditEventMessage(transportClient,
+            hits = searchAuditEventMessage(client,
                     esIndex,
                     "userId",
                     auditEventMessage.getUserId());
@@ -197,7 +203,7 @@ public class AuditIT {
             verifySearchResults(auditEventMessage, hitSource);
 
             //  Delete test document after verification is complete.
-            deleteAuditEventMessage(transportClient, esIndex, docId);
+            deleteAuditEventMessage(client, esIndex, docId);
         }
     }
 
@@ -300,18 +306,23 @@ public class AuditIT {
     /**
      * Search Elasticsearch by the specified field and value.
      */
-    private static SearchHit[] searchAuditEventMessage(final TransportClient client, final String indexId, final String field, final String value)
+    private static SearchHit[] searchAuditEventMessage(final RestHighLevelClient client, final String indexId, final String field, final String value)
     {
         final ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
-            hits = client.prepareSearch(indexId.toLowerCase())
-                    .setTypes(ElasticAuditConstants.Index.TYPE)
-                    .setSearchType(SearchType.QUERY_THEN_FETCH)
-                    .setQuery(QueryBuilders.matchQuery(field, value.toLowerCase()))
-                    .setFrom(0).setSize(10)
-                    .execute()
-                    .actionGet().getHits().getHits();
+
+            try {
+                hits = client.search(new SearchRequest()
+                        .indices(indexId.toLowerCase())
+                        .types(ElasticAuditConstants.Index.TYPE)
+                        .searchType(SearchType.QUERY_THEN_FETCH)
+                        .source(new SearchSourceBuilder().query(QueryBuilders.matchQuery(field, value.toLowerCase()))
+                                .from(0).size(10))
+                        ,RequestOptions.DEFAULT).getHits().getHits();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             if (hits.length > 0) {
                 break;
@@ -331,18 +342,22 @@ public class AuditIT {
     /**
      * Delete the specified document in Elasticsearch.
      */
-    private static void deleteAuditEventMessage(final TransportClient client, final String indexId, final String documentId)
+    private static void deleteAuditEventMessage(final RestHighLevelClient client, final String indexId, final String documentId)
     {
         final ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
+
             // Delete document by id.
-            DeleteResponse response = client
-                    .prepareDelete()
-                    .setIndex(indexId.toLowerCase())
-                    .setType(ElasticAuditConstants.Index.TYPE)
-                    .setId(documentId)
-                    .execute()
-                    .actionGet();
+            final DeleteResponse response;
+            try {
+                response = client.delete(new DeleteRequest()
+                        .index(indexId.toLowerCase())
+                        .type(ElasticAuditConstants.Index.TYPE)
+                        .id(documentId),
+                RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             if (response.status() == RestStatus.OK) {
                 break;

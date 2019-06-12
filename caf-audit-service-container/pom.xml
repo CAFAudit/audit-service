@@ -46,10 +46,9 @@
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-binding-elasticsearch</artifactId>
         </dependency>
-        <!-- Elasticsearch -->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
-            <artifactId>transport</artifactId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
         </dependency>
         <!-- Elasticsearch uses Log4j 2 for logging -->
         <dependency>
@@ -138,7 +137,6 @@
             <properties>
                 <webservice.adminport>25080</webservice.adminport>
                 <elasticsearch.http.port>9200</elasticsearch.http.port>
-                <elasticsearch.transport.port>9300</elasticsearch.transport.port>
             </properties>
         </profile>
     </profiles>
@@ -182,10 +180,10 @@
                     <systemPropertyVariables>
                         <docker.host.address>${docker.host.address}</docker.host.address>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
-                        <elasticsearch.transport.port>${elasticsearch.transport.port}</elasticsearch.transport.port>
+                        <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.transport.port}</CAF_ELASTIC_HOST_AND_PORT>
+                        <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.http.port}</CAF_ELASTIC_HOST_AND_PORT>
                         <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
                         <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/${webserviceWarName}/v1</webserviceurlhttps>
@@ -256,7 +254,7 @@
                                 </labels>
                                 <env>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>
-                                    <CAF_ELASTIC_HOST_AND_PORT_VALUES>elasticsearch:9300</CAF_ELASTIC_HOST_AND_PORT_VALUES>
+                                    <CAF_ELASTIC_HOST_AND_PORT_VALUES>elasticsearch:9200</CAF_ELASTIC_HOST_AND_PORT_VALUES>
                                     <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
@@ -305,7 +303,7 @@
                                     <port>${webservice.https.adminport}:8443</port>
                                 </ports>
                                 <env>
-                                    <CAF_ELASTIC_HOST_AND_PORT>elasticsearch:9300</CAF_ELASTIC_HOST_AND_PORT>
+                                    <CAF_ELASTIC_HOST_AND_PORT>elasticsearch:9200</CAF_ELASTIC_HOST_AND_PORT>
                                     <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
                                     <SSL_TOMCAT_CA_CERT_LOCATION>/test-keystore/tomcat.keystore</SSL_TOMCAT_CA_CERT_LOCATION>
@@ -342,7 +340,6 @@
                                 <namingStrategy>alias</namingStrategy>
                                 <ports>
                                     <port>${elasticsearch.http.port}:9200</port>
-                                    <port>${elasticsearch.transport.port}:9300</port>
                                 </ports>
                                 <env>
                                     <xpack.security.enabled>false</xpack.security.enabled>

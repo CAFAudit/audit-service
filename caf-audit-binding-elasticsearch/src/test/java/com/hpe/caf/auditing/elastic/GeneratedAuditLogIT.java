@@ -21,18 +21,22 @@ import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.services.audit.api.AuditLog;
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.Date;
@@ -63,9 +67,11 @@ public class GeneratedAuditLogIT {
 
     @After
     public void cleanUp() throws AuditConfigurationException {
-        try (TransportClient transportClient
-                     = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
-            deleteIndex(transportClient, testTenant + ElasticAuditConstants.Index.SUFFIX);
+        try (RestHighLevelClient restHighLevelClient
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
+            deleteIndex(restHighLevelClient, testTenant + ElasticAuditConstants.Index.SUFFIX);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -152,16 +158,22 @@ public class GeneratedAuditLogIT {
     }
 
     private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {
-        try (TransportClient transportClient
-                     = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
+        try (RestHighLevelClient restHighLevelClient
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
-            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch("*" + ElasticAuditConstants.Index.SUFFIX)
-                    .setTypes(ElasticAuditConstants.Index.TYPE)
-                    .setSearchType(SearchType.QUERY_THEN_FETCH)
-                    .setFetchSource(true)
-                    .setQuery(QueryBuilders.matchQuery(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId));
 
-            SearchHits searchHits = searchRequestBuilder.get().getHits();
+            final SearchRequest searchRequest = new SearchRequest()
+                    .indices("*" + ElasticAuditConstants.Index.SUFFIX)
+                    .types(ElasticAuditConstants.Index.TYPE)
+                    .searchType(SearchType.QUERY_THEN_FETCH)
+                    .source(new SearchSourceBuilder()
+                            .query(QueryBuilders.matchQuery(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId))
+                            .from(0)
+                            .size(10)
+                    );
+
+            SearchHits searchHits = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT).getHits();
+
             for (int attempts = 0; attempts < 5; attempts++) {
                 if (searchHits.getTotalHits() > 0) {
                     break;
@@ -171,12 +183,14 @@ public class GeneratedAuditLogIT {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                searchHits = searchRequestBuilder.get().getHits();
+                searchHits = searchHits = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT).getHits();
             }
 
             Assert.assertEquals("Expected search result not found", 1, searchHits.getTotalHits());
 
             return searchHits.getHits()[0];
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -284,15 +298,15 @@ public class GeneratedAuditLogIT {
         Assert.assertEquals(new DateTime(expected), dateTime);
     }
 
-    private static void deleteIndex(TransportClient client, String indexId)
+    private static void deleteIndex(RestHighLevelClient client, String indexId)
     {
         ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
             try {
-                boolean didElasticAckDelete = client.admin().indices().delete(
-                        new DeleteIndexRequest(indexId.toLowerCase())).get().isAcknowledged();
+                final AcknowledgedResponse acknowledgedResponse = client.indices()
+                        .delete(new DeleteIndexRequest().indices(indexId.toLowerCase()), RequestOptions.DEFAULT);
 
-                if (didElasticAckDelete) {
+                if (acknowledgedResponse.isAcknowledged()) {
                     // If Elastic acknowledged our delete wait a second to allow it time to delete the index
                     Thread.sleep(1000);
                     break;
@@ -305,9 +319,7 @@ public class GeneratedAuditLogIT {
                     throw new RuntimeException(e);
                 }
 
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (ExecutionException e) {
+            } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }

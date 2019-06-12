@@ -21,35 +21,40 @@ import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
+import com.hpe.caf.auditing.elastic.ElasticAuditRestHighLevelClientFactory;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
-import com.hpe.caf.auditing.elastic.ElasticAuditTransportClientFactory;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.auditing.webserviceclient.WebServiceClientException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.GetMappingsRequest;
+import org.elasticsearch.client.indices.GetMappingsResponse;
 import org.elasticsearch.common.compress.CompressedXContent;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 public class WebserviceClientAuditIT {
 
@@ -116,7 +121,7 @@ public class WebserviceClientAuditIT {
         WS_ENDPOINT = String.format("http://%s:%s/caf-audit-service/v1", WS_HOSTNAME, WS_PORT);
 
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
-        ES_PORT = Integer.parseInt(System.getProperty("elasticsearch.transport.port", System.getenv("elasticsearch.transport.port")));
+        ES_PORT = Integer.parseInt(System.getProperty("elasticsearch.http.port", System.getenv("elasticsearch.http.port")));
         ES_CLUSTERNAME = System.getProperty("CAF_ELASTIC_CLUSTER_NAME", System.getenv("CAF_ELASTIC_CLUSTER_NAME"));
         ES_HOSTNAME_AND_PORT = String.format("%s:%s", ES_HOSTNAME, ES_PORT);
     }
@@ -129,10 +134,10 @@ public class WebserviceClientAuditIT {
 
     @AfterMethod
     public void cleanUp() throws AuditConfigurationException {
-        TransportClient transportClient
-                     = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME);
+        RestHighLevelClient client
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME);
         try {
-            deleteIndex(transportClient, ES_INDEX);
+            deleteIndex(client, ES_INDEX);
         } catch (RuntimeException rte) {
             LOG.warn("Unable to delete tenant index. It may not exist.");
         }
@@ -181,13 +186,13 @@ public class WebserviceClientAuditIT {
 
         //  Verify the type mappings have been set for the index. Then search for the audit event message in
         //  Elasticsearch and verify field data matches input.
-        try (TransportClient transportClient
-                     = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
+        try (RestHighLevelClient client
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
 
-            verifyTypeMappings(transportClient);
+            verifyTypeMappings(client);
 
             SearchHit[] hits = new SearchHit[0];
-            hits = searchDocumentInIndex(transportClient,
+            hits = searchDocumentInIndex(client,
                     ES_INDEX,
                     ElasticAuditConstants.FixedFieldName.USER_ID_FIELD,
                     USER_ID);
@@ -220,7 +225,7 @@ public class WebserviceClientAuditIT {
             verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date", null);
 
             //  Delete test document after verification is complete.
-            deleteDocument(transportClient, ES_INDEX, docId);
+            deleteDocument(client, ES_INDEX, docId);
         }
     }
 
@@ -283,16 +288,26 @@ public class WebserviceClientAuditIT {
     }
 
     private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {
-        try (TransportClient transportClient
-                     = ElasticAuditTransportClientFactory.getTransportClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
+        try (RestHighLevelClient client
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
-            SearchRequestBuilder searchRequestBuilder = transportClient.prepareSearch("*" + ElasticAuditConstants.Index.SUFFIX)
-                    .setTypes(ElasticAuditConstants.Index.TYPE)
-                    .setSearchType(SearchType.QUERY_THEN_FETCH)
-                    .setFetchSource(true)
-                    .setQuery(QueryBuilders.matchQuery(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId));
 
-            SearchHits searchHits = searchRequestBuilder.get().getHits();
+            final SearchRequest searchRequest = new SearchRequest()
+                    .indices("*" + ElasticAuditConstants.Index.SUFFIX)
+                    .types(ElasticAuditConstants.Index.TYPE)
+                    .searchType(SearchType.QUERY_THEN_FETCH)
+                    .source(new SearchSourceBuilder()
+                            .fetchSource(true)
+                            .query(QueryBuilders.matchQuery(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD,
+                                    correlationId)));
+
+            SearchHits searchHits = null;
+            try {
+                searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             for (int attempts = 0; attempts < 5; attempts++) {
                 if (searchHits.getTotalHits() > 0) {
                     break;
@@ -302,27 +317,39 @@ public class WebserviceClientAuditIT {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                searchHits = searchRequestBuilder.get().getHits();
+                try {
+                    searchHits = client.search(searchRequest, RequestOptions.DEFAULT).getHits();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             org.junit.Assert.assertEquals("Expected search result not found", 1, searchHits.getTotalHits());
 
             return searchHits.getHits()[0];
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private static void deleteIndex(TransportClient client, String indexId)
+    private static void deleteIndex(RestHighLevelClient client, String indexId)
     {
         ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
             try {
-                boolean didElasticAckDelete = client.admin().indices().delete(
-                        new DeleteIndexRequest(indexId.toLowerCase())).get().isAcknowledged();
 
-                if (didElasticAckDelete) {
-                    // If Elastic acknowledged our delete wait a second to allow it time to delete the index
-                    Thread.sleep(1000);
-                    break;
+                try {
+                    final AcknowledgedResponse response = client.indices().delete(
+                            new DeleteIndexRequest().indices(indexId.toLowerCase()), RequestOptions.DEFAULT);
+
+                    if (response.isAcknowledged()) {
+                        // If Elastic acknowledged our delete wait a second to allow it time to delete the index
+                        Thread.sleep(1000);
+                        break;
+                    }
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
 
                 // Retry deletion if Elastic did not acknowledge the delete request.
@@ -334,24 +361,30 @@ public class WebserviceClientAuditIT {
 
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
             }
         }
     }
 
-    private static SearchHit[] searchDocumentInIndex(TransportClient client, String indexId, String field, String value)
+    private static SearchHit[] searchDocumentInIndex(RestHighLevelClient client, String indexId, String field, String value)
     {
         ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
         SearchHit[] hits = null;
         while (retrySearch.shouldRetry()) {
-            hits = client.prepareSearch(indexId.toLowerCase())
-                    .setTypes(ElasticAuditConstants.Index.TYPE)
-                    .setSearchType(SearchType.QUERY_THEN_FETCH)
-                    .setQuery(QueryBuilders.matchQuery(field, value))
-                    .setFrom(0).setSize(10)
-                    .execute()
-                    .actionGet().getHits().getHits();
+
+            try {
+                hits = client.search(new SearchRequest()
+                        .indices(indexId.toLowerCase())
+                        .types(ElasticAuditConstants.Index.TYPE)
+                        .searchType(SearchType.QUERY_THEN_FETCH)
+                        .source(new SearchSourceBuilder()
+                            .query(QueryBuilders.matchQuery(field, value))
+                            .from(0)
+                            .size(10))
+                        , RequestOptions.DEFAULT).getHits().getHits();
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             if (hits.length > 0) {
                 break;
@@ -368,18 +401,21 @@ public class WebserviceClientAuditIT {
         return hits;
     }
 
-    private static void deleteDocument(TransportClient client, String indexId, String documentId)
+    private static void deleteDocument(RestHighLevelClient client, String indexId, String documentId)
     {
         ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
             // Delete document by id.
-            DeleteResponse response = client
-                    .prepareDelete()
-                    .setIndex(indexId.toLowerCase())
-                    .setType(ElasticAuditConstants.Index.TYPE)
-                    .setId(documentId)
-                    .execute()
-                    .actionGet();
+            final DeleteResponse response;
+            try {
+                response = client.delete(new DeleteRequest()
+                        .index(indexId.toLowerCase())
+                        .type(ElasticAuditConstants.Index.TYPE)
+                        .id(documentId)
+                        , RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             if (response.status() == RestStatus.OK) {
                 break;
@@ -394,37 +430,48 @@ public class WebserviceClientAuditIT {
         }
     }
 
-    private void verifyTypeMappings(TransportClient transportClient) {
-        String expectedTypeMappings = "{\"cafAuditEvent\":{\"dynamic_templates\":[" +
-                "{\"CAFAuditKeyword\":{\"match\":\"*_CAKyw\",\"mapping\":{\"type\":\"keyword\"}}}," +
-                "{\"CAFAuditText\":{\"match\":\"*_CATxt\",\"mapping\":{\"type\":\"text\"}}}," +
-                "{\"CAFAuditLong\":{\"match\":\"*_CALng\",\"mapping\":{\"type\":\"long\"}}}," +
-                "{\"CAFAuditInteger\":{\"match\":\"*_CAInt\",\"mapping\":{\"type\":\"integer\"}}}," +
-                "{\"CAFAuditShort\":{\"match\":\"*_CAShort\",\"mapping\":{\"type\":\"short\"}}}," +
-                "{\"CAFAuditDouble\":{\"match\":\"*_CADbl\",\"mapping\":{\"type\":\"double\"}}}," +
-                "{\"CAFAuditFloat\":{\"match\":\"*_CAFlt\",\"mapping\":{\"type\":\"float\"}}}," +
-                "{\"CAFAuditDate\":{\"match\":\"*_CADte\",\"mapping\":{\"type\":\"date\"}}}," +
-                "{\"CAFAuditBoolean\":{\"match\":\"*_CABln\",\"mapping\":{\"type\":\"boolean\"}}}]," +
-                "\"properties\":{\"applicationId\":{\"type\":\"keyword\"},\"correlationId\":{\"type\":\"keyword\"}," +
-                "\"docBooleanParam_CABln\":{\"type\":\"boolean\"},\"docDateParam_CADte\":{\"type\":\"date\"}," +
-                "\"docDoubleParam_CADbl\":{\"type\":\"double\"},\"docFloatParam_CAFlt\":{\"type\":\"float\"}," +
-                "\"docIntParam_CAInt\":{\"type\":\"integer\"},\"docLongParam_CALng\":{\"type\":\"long\"}," +
-                "\"docShortParam_CAShort\":{\"type\":\"short\"},\"docStringParam_CAKyw\":{\"type\":\"keyword\"}," +
-                "\"docStringParam_CATxt\":{\"type\":\"text\"},\"eventCategoryId\":{\"type\":\"keyword\"}," +
-                "\"eventOrder\":{\"type\":\"long\"},\"eventTime\":{\"type\":\"date\"}," +
-                "\"eventTimeSource\":{\"type\":\"keyword\"},\"eventTypeId\":{\"type\":\"keyword\"}," +
-                "\"processId\":{\"type\":\"keyword\"},\"threadId\":{\"type\":\"long\"}," +
-                "\"userId\":{\"type\":\"keyword\"}}}}";
+    private void verifyTypeMappings(RestHighLevelClient client) {
+        String expectedTypeMappings = "{\"dynamic_templates\":" +
+                "[{\"CAFAuditKeyword\":{\"mapping\":{\"type\":\"keyword\"},\"match\":\"*_CAKyw\"}}," +
+                "{\"CAFAuditText\":{\"mapping\":{\"type\":\"text\"},\"match\":\"*_CATxt\"}}," +
+                "{\"CAFAuditLong\":{\"mapping\":{\"type\":\"long\"},\"match\":\"*_CALng\"}}," +
+                "{\"CAFAuditInteger\":{\"mapping\":{\"type\":\"integer\"},\"match\":\"*_CAInt\"}}," +
+                "{\"CAFAuditShort\":{\"mapping\":{\"type\":\"short\"},\"match\":\"*_CAShort\"}}," +
+                "{\"CAFAuditDouble\":{\"mapping\":{\"type\":\"double\"},\"match\":\"*_CADbl\"}}," +
+                "{\"CAFAuditFloat\":{\"mapping\":{\"type\":\"float\"},\"match\":\"*_CAFlt\"}}," +
+                "{\"CAFAuditDate\":{\"mapping\":{\"type\":\"date\"},\"match\":\"*_CADte\"}}," +
+                "{\"CAFAuditBoolean\":{\"mapping\":{\"type\":\"boolean\"},\"match\":\"*_CABln\"}}]," +
+                "\"properties\":{\"docDoubleParam_CADbl\":{\"type\":\"double\"}," +
+                "\"docBooleanParam_CABln\":{\"type\":\"boolean\"}," +
+                "\"docDateParam_CADte\":{\"type\":\"date\"}," +
+                "\"docShortParam_CAShort\":{\"type\":\"short\"}," +
+                "\"eventTimeSource\":{\"type\":\"keyword\"}," +
+                "\"docLongParam_CALng\":{\"type\":\"long\"},\"userId\":{\"type\":\"keyword\"}," +
+                "\"docIntParam_CAInt\":{\"type\":\"integer\"}," +
+                "\"threadId\":{\"type\":\"long\"}," +
+                "\"docFloatParam_CAFlt\":{\"type\":\"float\"}," +
+                "\"eventTypeId\":{\"type\":\"keyword\"}," +
+                "\"processId\":{\"type\":\"keyword\"}," +
+                "\"eventTime\":{\"type\":\"date\"}," +
+                "\"correlationId\":{\"type\":\"keyword\"}," +
+                "\"docStringParam_CAKyw\":{\"type\":\"keyword\"}," +
+                "\"applicationId\":{\"type\":\"keyword\"}," +
+                "\"docStringParam_CATxt\":{\"type\":\"text\"}," +
+                "\"eventOrder\":{\"type\":\"long\"}," +
+                "\"eventCategoryId\":{\"type\":\"keyword\"}}}";
 
-        ClusterStateResponse clusterStateResponse =
-                transportClient.admin().cluster().prepareState().execute().actionGet();
+        final String index = (TENANT_ID + ElasticAuditConstants.Index.SUFFIX).toLowerCase();
+        final GetMappingsResponse response;
+        try {
+            response = client.indices().getMapping(new GetMappingsRequest()
+                    .indices(index)
+                    , RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         // Get the CAF Audit Event type mapping for the tenant index
-        CompressedXContent indexMapping = clusterStateResponse.getState().getMetaData()
-                .index((TENANT_ID + ElasticAuditConstants.Index.SUFFIX).toLowerCase())
-                .getMappings()
-                .get(ElasticAuditConstants.Index.TYPE)
-                .source();
+        CompressedXContent indexMapping = response.mappings().get(index).source();
 
         Assert.assertEquals(indexMapping.toString(), expectedTypeMappings,
                 "Expected type mappings and actual type mappings should match");

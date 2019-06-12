@@ -18,13 +18,13 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 
 public class ElasticAuditConnection implements AuditConnection {
 
-    private final TransportClient transportClient;
+    private final RestHighLevelClient restHighLevelClient;
     private ElasticAuditIndexManager indexManager;
 
     public ElasticAuditConnection() throws AuditConfigurationException
@@ -51,10 +51,10 @@ public class ElasticAuditConnection implements AuditConnection {
                                                       ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS);
 
         //  Get Elasticsearch connection.
-        transportClient = ElasticAuditTransportClientFactory.getTransportClient(hostAndPorts, clusterName);
+        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostAndPorts, clusterName);
 
         //  Get Elasticsearch index manager.
-        indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, transportClient);
+        indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, restHighLevelClient);
     }
 
     private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,
@@ -73,13 +73,13 @@ public class ElasticAuditConnection implements AuditConnection {
 
     @Override
     public AuditChannel createChannel() throws IOException {
-        //  Share the Elasticsearch transport client across channels.
-        return new ElasticAuditChannel(transportClient, indexManager);
+        //  Share the Elasticsearch client across channels.
+        return new ElasticAuditChannel(restHighLevelClient, indexManager);
     }
 
     @Override
     public void close() throws Exception {
-        transportClient.close();
+        restHighLevelClient.close();
         indexManager = null;
     }
 }

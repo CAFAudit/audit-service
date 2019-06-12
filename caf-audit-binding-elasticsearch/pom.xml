@@ -48,11 +48,20 @@
         <!-- Elasticsearch -->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
-            <artifactId>transport</artifactId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
@@ -64,7 +73,11 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
         </dependency>
-        <!-- End of compile time dependencies -->
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+        </dependency>
 
         <!-- Testing Dependencies -->
         <dependency>
@@ -133,7 +146,7 @@
                             <!--<debugForkedProcess>true</debugForkedProcess>-->
                             <environmentVariables>
                                 <docker.host.address>${docker.host.address}</docker.host.address>
-                                <es.port>${elasticsearch.transport.port}</es.port>
+                                <es.port>${elasticsearch.http.port}</es.port>
                                 <es.cluster.name>docker-cluster</es.cluster.name>
                             </environmentVariables>
                         </configuration>
@@ -235,7 +248,6 @@
                             <run>
                                 <ports>
                                     <port>${elasticsearch.http.port}:9200</port>
-                                    <port>${elasticsearch.transport.port}:9300</port>
                                 </ports>
                                 <env>
                                     <xpack.security.enabled>false</xpack.security.enabled>

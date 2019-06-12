@@ -46,10 +46,9 @@
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-binding-elasticsearch</artifactId>
         </dependency>
-        <!-- Elasticsearch -->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
-            <artifactId>transport</artifactId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
         </dependency>
         <!-- Elasticsearch uses Log4j 2 for logging -->
         <dependency>
@@ -138,7 +137,6 @@
             <properties>
                 <webservice.adminport>25080</webservice.adminport>
                 <elasticsearch.http.port>9200</elasticsearch.http.port>
-                <elasticsearch.transport.port>9300</elasticsearch.transport.port>
             </properties>
         </profile>
     </profiles>
@@ -182,10 +180,9 @@
                     <systemPropertyVariables>
                         <docker.host.address>${docker.host.address}</docker.host.address>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
-                        <elasticsearch.transport.port>${elasticsearch.transport.port}</elasticsearch.transport.port>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.transport.port}</CAF_ELASTIC_HOST_AND_PORT>
+                        <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.http.port}</CAF_ELASTIC_HOST_AND_PORT>
                         <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
                         <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/${webserviceWarName}/v1</webserviceurlhttps>
@@ -342,7 +339,6 @@
                                 <namingStrategy>alias</namingStrategy>
                                 <ports>
                                     <port>${elasticsearch.http.port}:9200</port>
-                                    <port>${elasticsearch.transport.port}:9300</port>
                                 </ports>
                                 <env>
                                     <xpack.security.enabled>false</xpack.security.enabled>

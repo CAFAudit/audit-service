@@ -18,10 +18,12 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.transport.TransportClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.rest.RestStatus;
 
 import java.util.Date;
@@ -32,15 +34,15 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
     private static final Logger LOG = LogManager.getLogger(ElasticAuditEventBuilder.class.getName());
 
-    private final TransportClient transportClient;
+    private final RestHighLevelClient restHighLevelClient;
     private final ElasticAuditIndexManager indexManager;
     private String tenantId;
     private final Map<String, Object> auditEvent = new HashMap<>();
 
-    public ElasticAuditEventBuilder(TransportClient transportClient,
+    public ElasticAuditEventBuilder(RestHighLevelClient restHighLevelClient,
                                     AuditCoreMetadataProvider coreMetadataProvider,
                                     ElasticAuditIndexManager indexManager){
-        this.transportClient = transportClient;
+        this.restHighLevelClient = restHighLevelClient;
         this.indexManager = indexManager;
 
         //  Add fixed audit event fields to Map.
@@ -170,11 +172,12 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     @Override
     public void send() throws Exception {
         try {
+
+
             //  Index audit event message into Elasticsearch.
-            final IndexResponse indexResponse = transportClient
-                    .prepareIndex(tenantId.concat(ElasticAuditConstants.Index.SUFFIX), ElasticAuditConstants.Index.TYPE)
-                    .setSource(auditEvent)
-                    .get();
+            final IndexResponse indexResponse = restHighLevelClient
+                    .index(new IndexRequest(tenantId.concat(ElasticAuditConstants.Index.SUFFIX)
+                            , ElasticAuditConstants.Index.TYPE).source(auditEvent), RequestOptions.DEFAULT);
 
             final RestStatus status = indexResponse.status();
             if (status != RestStatus.CREATED) {

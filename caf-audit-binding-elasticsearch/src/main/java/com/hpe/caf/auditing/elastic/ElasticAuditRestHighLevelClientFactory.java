@@ -16,66 +16,56 @@
 package com.hpe.caf.auditing.elastic;
 
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A factory for Elastic Search TransportClients.
  */
-public class ElasticAuditTransportClientFactory {
+public class ElasticAuditRestHighLevelClientFactory {
 
-    private static final Logger LOG = LogManager.getLogger(ElasticAuditTransportClientFactory.class.getName());
+    private static final Logger LOG = LogManager.getLogger(ElasticAuditRestHighLevelClientFactory.class.getName());
 
     private static final String ES_HOST_AND_PORT_NOT_PROVIDED = "Elasticsearch host and port have not been provided";
     private static final String ES_HOST_NOT_PROVIDED = "Elasticsearch host has not been provided";
     private static final String ES_PORT_NOT_PROVIDED = "Elasticsearch port has not been provided";
 
-    private ElasticAuditTransportClientFactory() {
+    private ElasticAuditRestHighLevelClientFactory() {
     }
 
     /**
-     * Returns an elastic search TransportClient.
+     * Returns an elastic search high level client.
      *
      * @param hostAndPortValues comma separated list of Elasticsearch host:port values
      * @param clusterName Elasticsearch cluster name
-     * @return TransportClient
+     * @return RestHighLevelClient
      * @throws AuditConfigurationException exception thrown if host is unknown
      */
-    public static TransportClient getTransportClient(String hostAndPortValues, String clusterName)
+    public static RestHighLevelClient getHighLevelClient(String hostAndPortValues, String clusterName)
         throws AuditConfigurationException {
-        final TransportClient transportClient;
 
         if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
             //  Split comma separated list of ES hostname and port values.
             final String[] hostAndPortArray = hostAndPortValues.split(",");
 
-            // If there is more than one Elasticsearch host then set the client.transport.sniff to true as we are dealing with a cluster
-            Settings.Builder settingsBuilder = Settings.builder()
-                    .put("cluster.name", clusterName);
-            if (hostAndPortArray.length > 1) {
-                settingsBuilder.put("client.transport.sniff", true);
+            if (hostAndPortArray.length == 0) {
+                final String errorMessage = "No hosts configured.";
+                LOG.error(errorMessage);
+                throw new AuditConfigurationException(errorMessage);
             }
-            Settings settings = settingsBuilder.build();
-            transportClient = new PreBuiltTransportClient(settings);
 
-            //  For each ES hostname and port, add a transport address that will be used to connect to.
+            final List<HttpHost> httpHostList = new ArrayList<>();
             for (final String hostAndPort : hostAndPortArray) {
-                final String host;
-                final int port;
-                try {
-                    // Add scheme to make the resulting URI valid.
-                    URI uri = new URI("http://" + hostAndPort);
-                    host = uri.getHost();
-                    port = uri.getPort();
+                try{
+                    final URI uri = new URI("http://" + hostAndPort);
 
                     if (uri.getHost() == null) {
                         throw new URISyntaxException(uri.toString(), ES_HOST_NOT_PROVIDED);
@@ -83,12 +73,9 @@ public class ElasticAuditTransportClientFactory {
                         throw new URISyntaxException(uri.toString(), ES_PORT_NOT_PROVIDED);
                     }
 
-                    try {
-                        transportClient.addTransportAddress(new TransportAddress(InetAddress.getByName(host), port));
-                        LOG.debug("Elasticsearch initialization - added host: " + host);
-                    } catch (UnknownHostException e) {
-                        LOG.error("Host unavailable or unknown: " + e.getMessage(), e);
-                    }
+                    httpHostList.add(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()));
+
+                    LOG.debug("Elasticsearch initialization - added host: " + uri.toString());
 
                 } catch (URISyntaxException e) {
                     LOG.error(e.getMessage());
@@ -96,20 +83,14 @@ public class ElasticAuditTransportClientFactory {
                 }
             }
 
-            if (transportClient.listedNodes().isEmpty()) {
-                final String errorMessage = "Elasticsearch transport client is not configured to communicate with " +
-                        "any nodes";
-                LOG.error(errorMessage);
-                throw new AuditConfigurationException(errorMessage);
-            }
+            final RestClientBuilder restClientBuilder = RestClient.builder(httpHostList.toArray(new HttpHost[0]));
+            final RestHighLevelClient restHighLevelClient = new RestHighLevelClient(restClientBuilder);
 
-            LOG.debug("Elasticsearch client initialized: " + transportClient.listedNodes().toString());
+            return restHighLevelClient;
         } else {
             //  ES host and port not specified.
             LOG.error(ES_HOST_AND_PORT_NOT_PROVIDED);
             throw new AuditConfigurationException(ES_HOST_AND_PORT_NOT_PROVIDED);
         }
-
-        return transportClient;
     }
 }

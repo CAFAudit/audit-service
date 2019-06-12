@@ -21,9 +21,11 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.io.ByteStreams;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.DeprecationHandler;
 import org.elasticsearch.common.xcontent.NamedXContentRegistry;
@@ -38,7 +40,7 @@ public class ElasticAuditIndexManager {
 
     private static final Logger LOG = LogManager.getLogger(ElasticAuditIndexManager.class.getName());
 
-    private final TransportClient transportClient;
+    private final RestHighLevelClient restHighLevelClient;
     private final LoadingCache<String, String> indexCache;
 
     private final int numberOfShards;
@@ -46,8 +48,8 @@ public class ElasticAuditIndexManager {
 
     private XContentBuilder cafAuditEventTenantIndexMappingsBuilder;
 
-    public ElasticAuditIndexManager(final int numberOfShards, final int numberOfReplicas, TransportClient transportClient) {
-        this.transportClient = transportClient;
+    public ElasticAuditIndexManager(final int numberOfShards, final int numberOfReplicas, RestHighLevelClient restHighLevelClient) {
+        this.restHighLevelClient = restHighLevelClient;
         this.numberOfShards = numberOfShards;
         this.numberOfReplicas = numberOfReplicas;
 
@@ -117,26 +119,30 @@ public class ElasticAuditIndexManager {
         //  Create a new index as it does not currently exist.
         LOG.debug("Creating a new index in Elasticsearch.");
 
-        //  Configure the number of shards and replicas the new index should have.
-        Settings indexSettings = Settings.builder()
-                .put("number_of_shards", numberOfShards)
-                .put("number_of_replicas", numberOfReplicas)
-                .build();
-        CreateIndexRequest indexRequest = new CreateIndexRequest(indexName, indexSettings);
-
         //  Get the index type mappings builder if it has not been set before, in other words if this is the first
         //  tenant index created get the type mappings.
         if (cafAuditEventTenantIndexMappingsBuilder == null) {
             cafAuditEventTenantIndexMappingsBuilder = getTenantIndexTypeMappingsBuilder();
         }
 
-        //  Add the type mappings to the index request
-        indexRequest.mapping(ElasticAuditConstants.Index.TYPE, cafAuditEventTenantIndexMappingsBuilder);
+        //  Configure the number of shards and replicas the new index should have.
+        final Settings indexSettings = Settings.builder()
+                .put("number_of_shards", numberOfShards)
+                .put("number_of_replicas", numberOfReplicas)
+                .build();
 
         try {
             //  Use IndicesAdminClient to create the new index. This operation
             //  needs to be acknowledged.
-            if (transportClient.admin().indices().create(indexRequest).actionGet().isAcknowledged()) {
+
+            final CreateIndexResponse createIndexResponse = restHighLevelClient.indices()
+                    .create(new CreateIndexRequest()
+                                    .index(indexName)
+                                    .settings(indexSettings)
+                                    .mapping(ElasticAuditConstants.Index.TYPE, cafAuditEventTenantIndexMappingsBuilder),
+                    RequestOptions.DEFAULT);
+
+            if (createIndexResponse.isAcknowledged()) {
                 //  Index creation has been acknowledged.
                 LOG.debug("Index " + indexName + " has been created");
             } else {
@@ -148,13 +154,19 @@ public class ElasticAuditIndexManager {
                     throw new IllegalStateException(errorMessage);
                 }
             }
-        } catch (ResourceAlreadyExistsException raee) {
+        } catch (final IOException io) {
+            //TODO ANDY - NEED to verify the exception was caused by the index already existing.
             //  Index already exists. Just ignore.
-            LOG.debug(indexAlreadyExistsMessage, raee);
+            LOG.debug(indexAlreadyExistsMessage, io);
         }
     }
 
     private boolean indexExists(final String indexName) {
-        return transportClient.admin().indices().prepareExists(indexName).execute().actionGet().isExists();
+        try {
+            return restHighLevelClient.indices().exists(new GetIndexRequest(indexName), RequestOptions.DEFAULT);
+        } catch (final IOException e) {
+            LOG.error(e);
+            return false;
+        }
     }
 }

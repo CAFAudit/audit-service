@@ -314,6 +314,7 @@ public class AuditIT {
 
             try {
                 hits = client.search(new SearchRequest()
+                        .indices(indexId.toLowerCase())
                         .types(ElasticAuditConstants.Index.TYPE)
                         .searchType(SearchType.QUERY_THEN_FETCH)
                         .source(new SearchSourceBuilder().query(QueryBuilders.matchQuery(field, value.toLowerCase()))

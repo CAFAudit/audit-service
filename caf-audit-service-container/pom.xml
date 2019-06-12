@@ -180,6 +180,7 @@
                     <systemPropertyVariables>
                         <docker.host.address>${docker.host.address}</docker.host.address>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
+                        <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
                     </systemPropertyVariables>
                     <environmentVariables>
                         <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.http.port}</CAF_ELASTIC_HOST_AND_PORT>

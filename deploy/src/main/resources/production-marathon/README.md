@@ -16,7 +16,7 @@ The `environment.sh` file supports configurable property settings necessary for 
 
 - `CAF_AUDIT_SERVICE_PORT`: This property configures the port that the CAF Audit Web Service listens on. 
 
-- `CAF_ELASTIC_HOST_AND_PORT`: This setting configures a comma separated list of Elasticsearch HOST:TRANSPORT_PORT value pairs. e.g. 192.168.56.10:9300,192.168.56.20:9300.
+- `CAF_ELASTIC_HOST_AND_PORT`: This setting configures a comma separated list of Elasticsearch HOST:PORT value pairs. e.g. 192.168.56.10:9200,192.168.56.20:9200.
 
 - `CAF_ELASTIC_CLUSTER_NAME`: This configures the name of the Elasticsearch cluster. e.g. elasticsearch. 
 

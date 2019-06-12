@@ -253,7 +253,7 @@
                                 </labels>
                                 <env>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>
-                                    <CAF_ELASTIC_HOST_AND_PORT_VALUES>elasticsearch:9300</CAF_ELASTIC_HOST_AND_PORT_VALUES>
+                                    <CAF_ELASTIC_HOST_AND_PORT_VALUES>elasticsearch:9200</CAF_ELASTIC_HOST_AND_PORT_VALUES>
                                     <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
@@ -302,7 +302,7 @@
                                     <port>${webservice.https.adminport}:8443</port>
                                 </ports>
                                 <env>
-                                    <CAF_ELASTIC_HOST_AND_PORT>elasticsearch:9300</CAF_ELASTIC_HOST_AND_PORT>
+                                    <CAF_ELASTIC_HOST_AND_PORT>elasticsearch:9200</CAF_ELASTIC_HOST_AND_PORT>
                                     <CAF_ELASTIC_CLUSTER_NAME>docker-cluster</CAF_ELASTIC_CLUSTER_NAME>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
                                     <SSL_TOMCAT_CA_CERT_LOCATION>/test-keystore/tomcat.keystore</SSL_TOMCAT_CA_CERT_LOCATION>

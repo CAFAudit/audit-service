@@ -20,7 +20,7 @@ The `environment.sh` file supports configurable property settings necessary for 
 	# Elasticsearch
 	###
 	## A comma separated list of Elasticsearch HOST:PORT value pairs.
-	export CAF_ELASTIC_HOST_AND_PORT=192.168.56.10:9300
+	export CAF_ELASTIC_HOST_AND_PORT=192.168.56.10:9200
 	## The name of the Elasticsearch cluster.
 	export CAF_ELASTIC_CLUSTER_NAME=elasticsearch-cluster
 	## The number of primary shards that an Elasticsearch index should have.

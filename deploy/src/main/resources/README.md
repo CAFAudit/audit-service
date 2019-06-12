@@ -65,29 +65,14 @@ The following parameters may be set:
         <td>HTTP Port used for RESTful API on Node1</td>
       </tr>
       <tr>
-        <td>ELASTICSEARCH_NETWORK_PORT_NODE1</td>
-        <td>9300</td>
-        <td>Network Communication Port used for Java API, the Elasticsearch transport protocol and Cluster Communications on Node1</td>
-      </tr>
-      <tr>
         <td>ELASTICSEARCH_HTTP_PORT_NODE2</td>
         <td>9201</td>
         <td>HTTP Port used for RESTful API on Node2</td>
       </tr>
       <tr>
-        <td>ELASTICSEARCH_NETWORK_PORT_NODE2</td>
-        <td>9301</td>
-        <td>Network Communication Port used for Java API, the Elasticsearch transport protocol and Cluster Communications on Node2</td>
-      </tr>
-      <tr>
         <td>ELASTICSEARCH_HTTP_PORT_NODE3</td>
         <td>9202</td>
         <td>HTTP Port used for RESTful API on Node3</td>
-      </tr>
-      <tr>
-        <td>ELASTICSEARCH_NETWORK_PORT_NODE3</td>
-        <td>9302</td>
-        <td>Network Communication Port used for Java API, the Elasticsearch transport protocol and Cluster Communications on Node3</td>
       </tr>
       <tr>
         <td>CAF_AUDIT_SERVICE_PORT</td>

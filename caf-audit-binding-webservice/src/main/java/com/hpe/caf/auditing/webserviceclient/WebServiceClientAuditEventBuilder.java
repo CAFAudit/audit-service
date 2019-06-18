@@ -182,7 +182,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
      * Sends the constructed Audit Event to the Webservice HTTP Endpoint
      * @throws IOException if a HTTP connection cannot be opened to the webService or HTTP request output stream could
      * not be opened
-     * @throws AuditFailureException if JSON string could not be built from audit event parameters
+     * @throws AuditException if JSON string could not be built from audit event parameters
      */
     @Override
     public void send() throws IOException, AuditException {

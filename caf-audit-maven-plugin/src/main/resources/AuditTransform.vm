@@ -75,7 +75,7 @@ public final class AuditLog
      * This function should be called before any of the audit... functions are called.
      */
     public static void declareApplication(final AuditChannel channel)
-        throws IOException, AuditFailureException
+        throws IOException, AuditException
     {
         channel.declareApplication(APPLICATION_IDENTIFIER);
     }
@@ -221,7 +221,7 @@ $javadocParamsComment$space$name$space$desc$space")
 $javadocParamsList
      */
     public static void $methodDeclaration
-        throws IOException, AuditFailureException
+        throws IOException, AuditException
     {
         final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);

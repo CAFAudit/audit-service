@@ -28,7 +28,7 @@ import com.google.gson.stream.JsonWriter;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
-import com.hpe.caf.auditing.exception.AuditFailureException;
+import com.hpe.caf.auditing.exception.AuditException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -185,7 +185,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
      * @throws AuditFailureException if JSON string could not be built from audit event parameters
      */
     @Override
-    public void send() throws IOException, AuditFailureException {
+    public void send() throws IOException, AuditException {
 
         //  Get the constructed Audit Event as a JSON string
         String auditEventJson = getAuditEventAsJsonString();
@@ -194,7 +194,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
         if (auditEventJson == null || auditEventJson.isEmpty()) {
             String errorMessage = "No Audit Event JSON to send to the Audit WebService";
             LOG.error(errorMessage);
-            throw new AuditFailureException(errorMessage);
+            throw new RuntimeException(errorMessage);
         }
 
         byte[] auditEventJsonBytes = auditEventJson.getBytes("UTF-8");
@@ -224,7 +224,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
                 String errorMessage = "Webservice returned response code " + responseCode + " when the expected " +
                         "response code is " + expectedResponseCode;
                 LOG.error(errorMessage);
-                throw new AuditFailureException(errorMessage);
+                throw new AuditException(errorMessage);
             }
             LOG.info("Audit event request sent and received response code " + responseCode + " from the WebService");
         } finally {

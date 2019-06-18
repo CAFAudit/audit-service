@@ -17,8 +17,6 @@ package com.hpe.caf.auditing.noop;
 
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
-import com.hpe.caf.auditing.exception.AuditFailureException;
-import java.io.IOException;
 
 import java.util.Date;
 
@@ -99,7 +97,7 @@ final class NoopAuditEventBuilder implements AuditEventBuilder
     }
 
     @Override
-    public void send() throws IOException, AuditFailureException
+    public void send()
     {
     }
 }

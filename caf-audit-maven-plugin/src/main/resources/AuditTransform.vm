@@ -75,7 +75,7 @@ public final class AuditLog
      * This function should be called before any of the audit... functions are called.
      */
     public static void declareApplication(final AuditChannel channel)
-        throws IOException, AuditException
+        throws IOException
     {
         channel.declareApplication(APPLICATION_IDENTIFIER);
     }

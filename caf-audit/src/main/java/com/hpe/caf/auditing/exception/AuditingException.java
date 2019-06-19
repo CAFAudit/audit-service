@@ -15,13 +15,13 @@
  */
 package com.hpe.caf.auditing.exception;
 
-public class AuditException extends Exception
+public class AuditingException extends Exception
 {
-    public AuditException(final String message){
+    public AuditingException(final String message){
         super(message);
     }
 
-    public AuditException(final String message, final Throwable ex){
+    public AuditingException(final String message, final Throwable ex){
         super(message, ex);
     }
     

@@ -18,7 +18,7 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
-import com.hpe.caf.auditing.exception.AuditException;
+import com.hpe.caf.auditing.exception.AuditingException;
 import java.io.IOException;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -172,7 +172,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     }
 
     @Override
-    public void send() throws IOException, AuditException{
+    public void send() throws IOException, AuditingException{
         try {
 
 
@@ -186,7 +186,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
                 //  Unexpected response so report this.
                 String errorMessage = "Unexpected Elasticsearch response status. Expected 'CREATED' but received '" + status.toString() + "'";
                 LOG.error(errorMessage);
-                throw new AuditException(errorMessage);
+                throw new AuditingException(errorMessage);
             }
             LOG.debug("Audit event message successfully indexed in Elasticsearch. Index: " + indexResponse.getIndex() + ", Type: " + indexResponse.getType() + ", Id: " + indexResponse.getId());
 

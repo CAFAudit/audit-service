@@ -24,7 +24,7 @@ import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
 import com.hpe.caf.auditing.elastic.ElasticAuditRestHighLevelClientFactory;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
-import com.hpe.caf.auditing.exception.AuditException;
+import com.hpe.caf.auditing.exception.AuditingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -267,7 +267,7 @@ public class WebserviceClientAuditIT {
         }
     }
 
-    @Test(expectedExceptions = AuditException.class)
+    @Test(expectedExceptions = AuditingException.class)
     public void testWebserviceClientBadAuditEvent() throws Exception {
 
         System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", WS_ENDPOINT);

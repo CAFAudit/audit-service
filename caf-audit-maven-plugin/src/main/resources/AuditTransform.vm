@@ -54,7 +54,7 @@ package $package;
 
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
-import com.hpe.caf.auditing.exception.AuditException;
+import com.hpe.caf.auditing.exception.AuditingException;
 import com.hpe.caf.auditing.AuditIndexingHint;
 
 import java.io.IOException;
@@ -221,7 +221,7 @@ $javadocParamsComment$space$name$space$desc$space")
 $javadocParamsList
      */
     public static void $methodDeclaration
-        throws IOException, AuditException
+        throws IOException, AuditingException
     {
         final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);

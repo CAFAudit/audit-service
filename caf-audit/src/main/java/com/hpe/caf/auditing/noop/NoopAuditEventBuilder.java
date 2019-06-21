@@ -97,7 +97,7 @@ final class NoopAuditEventBuilder implements AuditEventBuilder
     }
 
     @Override
-    public void send() throws Exception
+    public void send()
     {
     }
 }

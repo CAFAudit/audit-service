@@ -28,6 +28,7 @@ import com.google.gson.stream.JsonWriter;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
+import com.hpe.caf.auditing.exception.AuditingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -181,10 +182,10 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
      * Sends the constructed Audit Event to the Webservice HTTP Endpoint
      * @throws IOException if a HTTP connection cannot be opened to the webService or HTTP request output stream could
      * not be opened
-     * @throws WebServiceClientException if JSON string could not be built from audit event parameters
+     * @throws AuditingException if JSON string could not be built from audit event parameters
      */
     @Override
-    public void send() throws IOException, WebServiceClientException {
+    public void send() throws IOException, AuditingException {
 
         //  Get the constructed Audit Event as a JSON string
         String auditEventJson = getAuditEventAsJsonString();
@@ -193,7 +194,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
         if (auditEventJson == null || auditEventJson.isEmpty()) {
             String errorMessage = "No Audit Event JSON to send to the Audit WebService";
             LOG.error(errorMessage);
-            throw new WebServiceClientException(errorMessage);
+            throw new RuntimeException(errorMessage);
         }
 
         byte[] auditEventJsonBytes = auditEventJson.getBytes("UTF-8");
@@ -223,7 +224,7 @@ public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
                 String errorMessage = "Webservice returned response code " + responseCode + " when the expected " +
                         "response code is " + expectedResponseCode;
                 LOG.error(errorMessage);
-                throw new WebServiceClientException(errorMessage);
+                throw new AuditingException(errorMessage);
             }
             LOG.info("Audit event request sent and received response code " + responseCode + " from the WebService");
         } finally {

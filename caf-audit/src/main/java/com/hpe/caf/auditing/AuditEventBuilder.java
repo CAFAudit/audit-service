@@ -15,6 +15,8 @@
  */
 package com.hpe.caf.auditing;
 
+import com.hpe.caf.auditing.exception.AuditingException;
+import java.io.IOException;
 import java.util.Date;
 
 public interface AuditEventBuilder
@@ -136,6 +138,6 @@ public interface AuditEventBuilder
         addEventParameter(name, columnName, value.toInstant().toString());
     }
 
-    void send() throws Exception;
+    void send() throws IOException, AuditingException;
 
 }

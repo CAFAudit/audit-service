@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.auditing.webserviceclient;
+package com.hpe.caf.auditing.exception;
 
-public class WebServiceClientException extends Exception {
-    public WebServiceClientException(String message) {
+public class AuditingException extends Exception
+{
+    public AuditingException(final String message){
         super(message);
     }
 
-    public WebServiceClientException(String errorMessage, Exception e) {
-        super(errorMessage, e);
+    public AuditingException(final String message, final Throwable ex){
+        super(message, ex);
     }
+    
 }

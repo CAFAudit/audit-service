@@ -19,8 +19,10 @@ package com.hpe.caf.auditing.plugins.unittest;
 
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.exception.AuditingException;
 import com.hpe.caf.auditing.AuditIndexingHint;
 
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -38,7 +40,7 @@ public final class AuditLog
      * This function should be called before any of the audit... functions are called.
      */
     public static void declareApplication(final AuditChannel channel)
-        throws Exception
+        throws IOException
     {
         channel.declareApplication(APPLICATION_IDENTIFIER);
     }
@@ -80,7 +82,7 @@ public final class AuditLog
         final boolean Boolean_Param,
         final Date Date_Param
     )
-        throws Exception
+        throws IOException, AuditingException
     {
         final AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         auditEventBuilder.setApplication(APPLICATION_IDENTIFIER);

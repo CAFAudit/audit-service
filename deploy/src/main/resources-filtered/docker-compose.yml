@@ -101,7 +101,7 @@ services:
     ports:
       - "${CAF_AUDIT_SERVICE_PORT:-25080}:8080"
     environment:
-      CAF_ELASTIC_HOST_AND_PORT: elasticsearch1:9300,elasticsearch2:9300,elasticsearch3:9300
+      CAF_ELASTIC_HOST_AND_PORT_VALUES: elasticsearch1:9300,elasticsearch2:9300,elasticsearch3:9300
       CAF_ELASTIC_NUMBER_OF_SHARDS: 5
       CAF_ELASTIC_NUMBER_OF_REPLICAS: 1
 

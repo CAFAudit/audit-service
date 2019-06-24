@@ -301,7 +301,7 @@
                                     <port>${webservice.https.adminport}:8443</port>
                                 </ports>
                                 <env>
-                                    <CAF_ELASTIC_HOST_AND_PORT>elasticsearch:9200</CAF_ELASTIC_HOST_AND_PORT>
+                                    <CAF_ELASTIC_HOST_AND_PORT_VALUES>elasticsearch:9200</CAF_ELASTIC_HOST_AND_PORT_VALUES>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
                                     <SSL_TOMCAT_CA_CERT_LOCATION>/test-keystore/tomcat.keystore</SSL_TOMCAT_CA_CERT_LOCATION>
                                 </env>

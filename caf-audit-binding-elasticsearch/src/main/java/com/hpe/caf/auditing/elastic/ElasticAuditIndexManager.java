@@ -59,6 +59,7 @@ public class ElasticAuditIndexManager {
                 .build(
                         //  CacheLoader used to create new index and load into cache if not already cached.
                         new CacheLoader<String, String>() {
+                            @Override
                             public String load(String indexName) {
                                 createIndex(indexName);
                                 return indexName;

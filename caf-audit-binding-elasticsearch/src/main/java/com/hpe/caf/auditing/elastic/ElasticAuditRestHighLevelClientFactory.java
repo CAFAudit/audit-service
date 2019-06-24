@@ -45,11 +45,10 @@ public class ElasticAuditRestHighLevelClientFactory {
      * Returns an elastic search high level client.
      *
      * @param hostAndPortValues comma separated list of Elasticsearch host:port values
-     * @param clusterName Elasticsearch cluster name
      * @return RestHighLevelClient
      * @throws AuditConfigurationException exception thrown if host is unknown
      */
-    public static RestHighLevelClient getHighLevelClient(String hostAndPortValues, String clusterName)
+    public static RestHighLevelClient getHighLevelClient(final String hostAndPortValues)
         throws AuditConfigurationException {
 
         if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {

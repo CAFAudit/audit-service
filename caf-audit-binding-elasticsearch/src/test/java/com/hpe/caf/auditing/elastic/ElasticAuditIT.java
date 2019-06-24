@@ -77,7 +77,6 @@ public class ElasticAuditIT
 
     private static String ES_HOSTNAME;
     private static int ES_PORT;
-    private static String ES_CLUSTERNAME;
 
     @BeforeClass
     public static void setup() throws Exception
@@ -87,7 +86,6 @@ public class ElasticAuditIT
 
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));
-        ES_CLUSTERNAME = System.getProperty("es.cluster.name", System.getenv("es.cluster.name"));
         USER_ID = UUID.randomUUID().toString();
     }
 
@@ -185,7 +183,6 @@ public class ElasticAuditIT
         // Set the system props required to configure the ElasticAuditConnection
         final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
         System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, esHostAndPort);
-        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_CLUSTER_NAME, ES_CLUSTERNAME);
 
         try (final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
              com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
@@ -222,7 +219,7 @@ public class ElasticAuditIT
         //  Verify the type mappings have been set for the index. Then search for the audit event message in
         //  Elasticsearch and verify field data matches input.
         try (final RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort, ES_CLUSTERNAME)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort)) {
 
             verifyTypeMappings(restHighLevelClient);
 
@@ -308,7 +305,6 @@ public class ElasticAuditIT
         final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
 
         System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, esHostAndPort);
-        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_CLUSTER_NAME, ES_CLUSTERNAME);
         try (final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
              com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
 
@@ -344,7 +340,7 @@ public class ElasticAuditIT
             // Search across all indices for the applicationId field in Elasticsearch and verify that the expected
             // number of hits are returned.
             try (RestHighLevelClient restHighLevelClient
-                = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort, ES_CLUSTERNAME)) {
+                = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort)) {
 
                 String[] tenantIndexIds = new String[2];
                 tenantIndexIds[0] = tenant1Id + ElasticAuditConstants.Index.SUFFIX;

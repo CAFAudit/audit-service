@@ -18,7 +18,7 @@ The `environment-testing.sh` file supports configurable property settings necess
 
 - `CAF_TESTING_ELASTICSEARCH_TRANSPORT_SERVICE_PORT`: This property configures the port that the Elasticsearch Transport Service is configured to listen on.
 
-- `CAF_ELASTIC_CLUSTER_NAME`: This configures the name of the Elasticsearch cluster. e.g. audit-smoketest-elasticsearch.
+- `CAF_TESTING_ELASTICSEARCH_CLUSTER_NAME`: This configures the name of the Elasticsearch cluster. e.g. audit-smoketest-elasticsearch.
 
 Please note that Elasticsearch cannot be deployed unless all of the above properties are configured in the marathon environment file.
 

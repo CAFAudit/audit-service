@@ -5,6 +5,3 @@ export CAF_AUDIT_SERVICE_PORT=
 
 # A comma separated list of Elasticsearch HOST:TRANSPORT_PORT value pairs.
 export CAF_ELASTIC_HOST_AND_PORT=
-
-# The name of the Elasticsearch cluster.
-export CAF_ELASTIC_CLUSTER_NAME=

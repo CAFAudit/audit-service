@@ -27,7 +27,6 @@ The order of instantiation and use of these objects for sending audit events is 
 #### Direct to Elasticsearch Configuration  
 Configuration required to be supplied via environment variable:  
 - `CAF_ELASTIC_HOST_AND_PORT_VALUES`: A comma separated list of hostnames and ports to use when contacting elasticsearch. eg. localhost:9200,otherHost:9200  
-- `CAF_ELASTIC_CLUSTER_NAME`: The name of the elasticsearch cluster to use.  
 - `CAF_ELASTIC_NUMBER_OF_SHARDS`: The number of shards elasticsearch is configured to use.  
 - `CAF_ELASTIC_NUMBER_OF_REPLICAS`: The number of replicas configured for elasticsearch.  
 

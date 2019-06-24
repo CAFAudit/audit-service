@@ -147,7 +147,6 @@
                             <environmentVariables>
                                 <docker.host.address>${docker.host.address}</docker.host.address>
                                 <es.port>${elasticsearch.http.port}</es.port>
-                                <es.cluster.name>docker-cluster</es.cluster.name>
                             </environmentVariables>
                         </configuration>
                     </plugin>

@@ -62,7 +62,6 @@ public class AuditIT {
     private static String AUDIT_WEBSERVICE_HTTP_BASE_PATH;
     private static String AUDIT_WEBSERVICE_HTTPS_BASE_PATH;
     private static String CAF_ELASTIC_HOST_AND_PORT;
-    private static String CAF_ELASTIC_CLUSTER_NAME;
 
     private static final String EVENT_PARAM_TYPE_STRING = "STRING";
     private static final String EVENT_PARAM_TYPE_SHORT = "SHORT";
@@ -83,7 +82,6 @@ public class AuditIT {
         AUDIT_WEBSERVICE_HTTPS_BASE_PATH = System.getenv("webserviceurlhttps");
 
         CAF_ELASTIC_HOST_AND_PORT = System.getenv("CAF_ELASTIC_HOST_AND_PORT");
-        CAF_ELASTIC_CLUSTER_NAME = System.getenv("CAF_ELASTIC_CLUSTER_NAME");
 
         auditEventsApi = new AuditEventsApi();
     }
@@ -182,7 +180,7 @@ public class AuditIT {
         //  Search for the audit event message in Elasticsearch and verify
         //  hit has been returned.
         try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_HOST_AND_PORT, CAF_ELASTIC_CLUSTER_NAME)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_HOST_AND_PORT)) {
 
             final String esIndex = auditEventMessage.getTenantId().toLowerCase().concat("_audit");
             SearchHit[] hits = new SearchHit[0];

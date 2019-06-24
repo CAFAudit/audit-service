@@ -33,13 +33,6 @@ public class ElasticAuditConnection implements AuditConnection {
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES));
 
-            // Get the Elasticsearch cluster name from env var else default to "elasticsearch-cluster"
-            String clusterName = System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_CLUSTER_NAME,
-                                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_CLUSTER_NAME));
-            if (clusterName == null) {
-                clusterName = ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_CLUSTER_NAME;
-            }
-
             // Get the Elasticsearch number of shards per index from env var else default to '5'
             final int numberOfShards =
                 getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_NUMBER_OF_SHARDS,
@@ -51,7 +44,7 @@ public class ElasticAuditConnection implements AuditConnection {
                                                       ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS);
 
         //  Get Elasticsearch connection.
-        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostAndPorts, clusterName);
+        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostAndPorts);
 
         //  Get Elasticsearch index manager.
         indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, restHighLevelClient);

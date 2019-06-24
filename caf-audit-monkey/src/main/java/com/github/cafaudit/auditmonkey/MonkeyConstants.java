@@ -28,7 +28,6 @@ public class MonkeyConstants
     public static final String CAF_AUDIT_USER_ID = "CAF_AUDIT_USER_ID"; 
 
     // Elasticsearch environment variables
-    public static final String ES_CLUSTERNAME = "ES_CLUSTERNAME";
     public static final String ES_HOSTNAME = "ES_HOSTNAME";
     public static final String ES_PORT = "ES_PORT";
 

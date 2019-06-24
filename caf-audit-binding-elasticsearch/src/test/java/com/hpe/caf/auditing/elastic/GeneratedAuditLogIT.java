@@ -51,7 +51,6 @@ public class GeneratedAuditLogIT {
     private static String ES_HOSTNAME;
     private static String ES_HOSTNAME_AND_PORT;
     private static int ES_PORT;
-    private static String ES_CLUSTERNAME;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -60,7 +59,6 @@ public class GeneratedAuditLogIT {
 
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));
-        ES_CLUSTERNAME = System.getProperty("es.cluster.name", System.getenv("es.cluster.name"));
 
         ES_HOSTNAME_AND_PORT = String.format("%s:%s", ES_HOSTNAME, ES_PORT);
     }
@@ -68,7 +66,7 @@ public class GeneratedAuditLogIT {
     @After
     public void cleanUp() throws AuditConfigurationException {
         try (RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT)) {
             deleteIndex(restHighLevelClient, testTenant + ElasticAuditConstants.Index.SUFFIX);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -159,7 +157,7 @@ public class GeneratedAuditLogIT {
 
     private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, ES_CLUSTERNAME)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
 
             final SearchRequest searchRequest = new SearchRequest()

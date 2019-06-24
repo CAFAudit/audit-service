@@ -35,7 +35,7 @@
             "xpack.monitoring.enabled": "false",
             "xpack.security.enabled": "false",
             "xpack.watcher.enabled": "false",
-            "cluster.name": "${CAF_ELASTIC_CLUSTER_NAME}"
+            "cluster.name": "${CAF_TESTING_ELASTICSEARCH_CLUSTER_NAME}"
         },
         "healthChecks": [
             {

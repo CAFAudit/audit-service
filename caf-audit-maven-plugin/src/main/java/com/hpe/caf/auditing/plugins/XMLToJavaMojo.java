@@ -33,8 +33,8 @@ public class XMLToJavaMojo extends AbstractMojo{
     private static final String TRANSFORM_XSD_FILEPATH = "schema/AuditedApplication.xsd";
     private static final String TRANSFORM_TEMPLATE_NAME = "AuditTransform.vm";
     private static final String TRANSFORM_OUTPUT_FILENAME = "AuditLog.java";
-    private static final String TRANSFORM_GENSOURCES_DIRECTORY = "/generated-sources/src/main/java/";
-    private static final String TRANSFORM_GENSOURCES_TEST_DIRECTORY = "/generated-test-sources/src/test/java/";
+    private static final String TRANSFORM_GENSOURCES_DIRECTORY = "/generated-sources/src/";
+    private static final String TRANSFORM_GENSOURCES_TEST_DIRECTORY = "/generated-test-sources/src/";
 
     @Parameter(defaultValue = "${project}", readonly = true )
     private MavenProject project;

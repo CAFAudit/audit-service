@@ -195,13 +195,13 @@ The library for audit must also take a dependency on either the webservice, elas
 	<dependencies>
 	    <dependency>
 	        <groupId>com.github.cafaudit</groupId>
-	        <artifactId>caf-audit-elasticclient</artifactId>
+	        <artifactId>caf-audit-binding-elasticsearch</artifactId>
 	        <version>3.3.0-SNAPSHOT</version>
                 <scope>runtime</scope>
 	    </dependency>
 	    <dependency>
 	        <groupId>com.github.cafaudit</groupId>
-	        <artifactId>caf-audit-webserviceclient</artifactId>
+	        <artifactId>caf-audit-binding-webservice</artifactId>
 	        <version>3.3.0-SNAPSHOT</version>
                 <scope>runtime</scope>
 	    </dependency>

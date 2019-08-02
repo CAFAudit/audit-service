@@ -63,6 +63,11 @@
             <artifactId>elasticsearch-x-content</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+        </dependency>
+
         <!-- Elasticsearch uses Log4j 2 for logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

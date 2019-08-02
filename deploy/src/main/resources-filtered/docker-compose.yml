@@ -3,7 +3,7 @@ version: '3'
 services:
 
   elasticsearch1:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     ports:
       - "${ELASTICSEARCH_HTTP_PORT_NODE1:-9200}:9200"
       - "${ELASTICSEARCH_NETWORK_PORT_NODE1:-9300}:9300"
@@ -33,7 +33,7 @@ services:
       - esdata1:/usr/share/elasticsearch/data
 
   elasticsearch2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     ports:
       - "${ELASTICSEARCH_HTTP_PORT_NODE2:-9201}:9200"
       - "${ELASTICSEARCH_NETWORK_PORT_NODE2:-9301}:9300"
@@ -63,7 +63,7 @@ services:
       - esdata2:/usr/share/elasticsearch/data
 
   elasticsearch3:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.3.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     ports:
       - "${ELASTICSEARCH_HTTP_PORT_NODE3:-9202}:9200"
       - "${ELASTICSEARCH_NETWORK_PORT_NODE3:-9302}:9300"
@@ -108,7 +108,7 @@ services:
   kibana:
     depends_on:
       - elasticsearch1
-    image: docker.elastic.co/kibana/kibana:5.3.1
+    image: docker.elastic.co/kibana/kibana:7.2.1
     ports:
       - "${CAF_KIBANA_PORT:-5601}:5601"
     environment:

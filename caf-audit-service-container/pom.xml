@@ -331,7 +331,7 @@
                         <!-- elasticsearch image for running integration tests-->
                         <image>
                             <alias>elasticsearch</alias>
-                            <name>docker.elastic.co/elasticsearch/elasticsearch:6.8.0</name>
+                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.2.0</name>
                             <run>
                                 <hostname>elasticsearch</hostname>
                                 <namingStrategy>alias</namingStrategy>

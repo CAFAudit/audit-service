@@ -80,13 +80,15 @@ public class XMLToJavaMojo extends AbstractMojo{
 
             //  Perform XML to Java transform.
             transform.doTransform(outputDirectory, TRANSFORM_XSD_FILEPATH, TRANSFORM_TEMPLATE_NAME, TRANSFORM_OUTPUT_FILENAME);
-
+            
+            //get the path till target/src path so it can be added as the additional source directory
+            Path buildPath = Paths.get(project.getBuild().getDirectory(),transformGenSourcesDir);
             //  Automatically add output directory an additional source directory for the build process.
-            if (outputDirectory.exists() && project != null) {
+            if (buildPath.toFile().exists() && project != null) {
                 if (generateAsTestResource) {
-                    project.addTestCompileSourceRoot(outputDirectory.getAbsolutePath());
+                    project.addTestCompileSourceRoot(buildPath.toString());
                 } else {
-                    project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+                    project.addCompileSourceRoot(buildPath.toString());
                 }
             }
         }

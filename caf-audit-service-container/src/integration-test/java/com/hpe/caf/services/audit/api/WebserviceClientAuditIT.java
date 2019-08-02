@@ -307,7 +307,7 @@ public class WebserviceClientAuditIT {
             }
 
             for (int attempts = 0; attempts < 5; attempts++) {
-                if (searchHits.getTotalHits() > 0) {
+                if (searchHits.getTotalHits().value > 0) {
                     break;
                 }
                 try {
@@ -322,7 +322,7 @@ public class WebserviceClientAuditIT {
                 }
             }
 
-            org.junit.Assert.assertEquals("Expected search result not found", 1, searchHits.getTotalHits());
+            org.junit.Assert.assertEquals("Expected search result not found", 1, searchHits.getTotalHits().value);
 
             return searchHits.getHits()[0];
         } catch (IOException e) {

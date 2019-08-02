@@ -255,6 +255,7 @@
                                 </ports>
                                 <env>
                                     <xpack.security.enabled>false</xpack.security.enabled>
+                                    <discovery.type>single-node</discovery.type>
                                 </env>
                                 <wait>
                                     <!--<log>Server startup complete</log>-->

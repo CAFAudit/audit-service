@@ -10,6 +10,8 @@ services:
     environment:
       cluster.name: "elasticsearch-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
+      node.name: elasticsearch1
+      cluster.initial_master_nodes: elasticsearch1
       discovery.zen.ping.unicast.hosts: "elasticsearch2:9300,elasticsearch3:9300"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
@@ -27,7 +29,7 @@ services:
         hard: 65536
     deploy:
       resources:
-        limit:
+        limits:
           memory: 1gb
     volumes:
       - esdata1:/usr/share/elasticsearch/data
@@ -57,7 +59,7 @@ services:
         hard: 65536
     deploy:
       resources:
-        limit:
+        limits:
           memory: 1gb
     volumes:
       - esdata2:/usr/share/elasticsearch/data
@@ -87,7 +89,7 @@ services:
         hard: 65536
     deploy:
       resources:
-        limit:
+        limits:
           memory: 1gb
     volumes:
       - esdata3:/usr/share/elasticsearch/data

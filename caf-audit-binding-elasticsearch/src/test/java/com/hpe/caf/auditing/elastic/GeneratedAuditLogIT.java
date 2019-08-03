@@ -162,7 +162,6 @@ public class GeneratedAuditLogIT {
 
             final SearchRequest searchRequest = new SearchRequest()
                     .indices("*" + ElasticAuditConstants.Index.SUFFIX)
-                    .types(ElasticAuditConstants.Index.TYPE)
                     .searchType(SearchType.QUERY_THEN_FETCH)
                     .source(new SearchSourceBuilder()
                             .query(QueryBuilders.matchQuery(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId))

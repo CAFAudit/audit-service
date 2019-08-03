@@ -21,8 +21,8 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.io.ByteStreams;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.GetIndexRequest;
@@ -137,10 +137,9 @@ public class ElasticAuditIndexManager {
             //  needs to be acknowledged.
 
             final CreateIndexResponse createIndexResponse = restHighLevelClient.indices()
-                    .create(new CreateIndexRequest()
-                                    .index(indexName)
+                    .create(new CreateIndexRequest(indexName)
                                     .settings(indexSettings)
-                                    .mapping(ElasticAuditConstants.Index.TYPE, cafAuditEventTenantIndexMappingsBuilder),
+                                    .mapping(cafAuditEventTenantIndexMappingsBuilder),
                     RequestOptions.DEFAULT);
 
             if (createIndexResponse.isAcknowledged()) {

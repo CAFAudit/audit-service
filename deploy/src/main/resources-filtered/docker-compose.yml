@@ -42,6 +42,7 @@ services:
     environment:
       cluster.name: "elasticsearch-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
+      node.name: elasticsearch2
       discovery.zen.ping.unicast.hosts: "elasticsearch1:9300,elasticsearch3:9300"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
@@ -72,6 +73,7 @@ services:
     environment:
       cluster.name: "elasticsearch-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
+      node.name: elasticsearch3
       discovery.zen.ping.unicast.hosts: "elasticsearch1:9300,elasticsearch2:9300"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
@@ -114,7 +116,7 @@ services:
     ports:
       - "${CAF_KIBANA_PORT:-5601}:5601"
     environment:
-      ELASTICSEARCH_URL: http://elasticsearch1:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch1:9200
       # disable X-Pack
       xpack.security.enabled: "false"
       xpack.monitoring.enabled: "false"

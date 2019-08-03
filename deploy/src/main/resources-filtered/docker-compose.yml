@@ -11,8 +11,8 @@ services:
       cluster.name: "elasticsearch-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
       node.name: elasticsearch1
-      cluster.initial_master_nodes: elasticsearch1
-      discovery.zen.ping.unicast.hosts: "elasticsearch2:9300,elasticsearch3:9300"
+      discovery.seed_hosts: "elasticsearch2,elasticsearch3"
+      cluster.initial_master_nodes: "elasticsearch1,elasticsearch2,elasticsearch3"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
       #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
@@ -43,7 +43,8 @@ services:
       cluster.name: "elasticsearch-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
       node.name: elasticsearch2
-      discovery.zen.ping.unicast.hosts: "elasticsearch1:9300,elasticsearch3:9300"
+      cluster.initial_master_nodes: "elasticsearch1,elasticsearch2,elasticsearch3"
+      discovery.seed_hosts: "elasticsearch1,elasticsearch3"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
       #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
@@ -74,7 +75,8 @@ services:
       cluster.name: "elasticsearch-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
       node.name: elasticsearch3
-      discovery.zen.ping.unicast.hosts: "elasticsearch1:9300,elasticsearch2:9300"
+      discovery.seed_hosts: "elasticsearch1,elasticsearch2"
+      cluster.initial_master_nodes: "elasticsearch1,elasticsearch2,elasticsearch3"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
       #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
@@ -105,14 +107,14 @@ services:
     ports:
       - "${CAF_AUDIT_SERVICE_PORT:-25080}:8080"
     environment:
-      CAF_ELASTIC_HOST_AND_PORT_VALUES: elasticsearch1:9300,elasticsearch2:9300,elasticsearch3:9300
+      CAF_ELASTIC_HOST_AND_PORT_VALUES: elasticsearch1:9200,elasticsearch2:9200,elasticsearch3:9200
       CAF_ELASTIC_NUMBER_OF_SHARDS: 5
       CAF_ELASTIC_NUMBER_OF_REPLICAS: 1
 
   kibana:
     depends_on:
       - elasticsearch1
-    image: docker.elastic.co/kibana/kibana:7.2.1
+    image: docker.elastic.co/kibana/kibana:7.2.0
     ports:
       - "${CAF_KIBANA_PORT:-5601}:5601"
     environment:

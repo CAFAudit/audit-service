@@ -205,7 +205,7 @@ First navigate to the folder where you have downloaded the files to and then run
 		}
 
 7. Navigate to the Kibana UI  
-    Kibana is a web application that you [access](https://www.elastic.co/guide/en/kibana/5.3/access.html) through port 5601. Using a browser, navigate to:  
+    Kibana is a web application that you [access](https://www.elastic.co/guide/en/kibana/6.8/access.html) through port 5601. Using a browser, navigate to:  
 
         http://<DOCKER_HOST>:5601
 
@@ -214,7 +214,7 @@ First navigate to the folder where you have downloaded the files to and then run
 	When you access Kibana, the `Discover` page loads by default with the default index pattern selected. The time filter is set to the last 15 minutes and the search query is set to match-all (\*).
 
 8. Connect Kibana with Elasticsearch and search for the audit event message  
-    Before you can start using Kibana, you need to tell it which Elasticsearch indices you want to explore. The first time you access Kibana, you are prompted to define an [index pattern](https://www.elastic.co/guide/en/kibana/5.3/connect-to-elasticsearch.html) that matches the name of one or more of your indices. When configuring the index pattern, set the name or pattern to `*_audit` and select `eventTime` for the Time-field name. Next browse to the `Discover` page, set the search query to match-all (i.e. `*`) and configure the time filter for `This Year`:
+    Before you can start using Kibana, you need to tell it which Elasticsearch indices you want to explore. The first time you access Kibana, you are prompted to define an [index pattern](https://www.elastic.co/guide/en/kibana/6.8/connect-to-elasticsearch.html) that matches the name of one or more of your indices. When configuring the index pattern, set the name or pattern to `*_audit` and select `eventTime` for the Time-field name. Next browse to the `Discover` page, set the search query to match-all (i.e. `*`) and configure the time filter for `This Year`:
 
 	![](./images/kibana-audit-search-results.png)
 

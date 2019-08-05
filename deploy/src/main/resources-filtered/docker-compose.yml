@@ -27,7 +27,7 @@ services:
         hard: 65536
     deploy:
       resources:
-        limit:
+        limits:
           memory: 1gb
     volumes:
       - esdata1:/usr/share/elasticsearch/data
@@ -57,7 +57,7 @@ services:
         hard: 65536
     deploy:
       resources:
-        limit:
+        limits:
           memory: 1gb
     volumes:
       - esdata2:/usr/share/elasticsearch/data
@@ -87,7 +87,7 @@ services:
         hard: 65536
     deploy:
       resources:
-        limit:
+        limits:
           memory: 1gb
     volumes:
       - esdata3:/usr/share/elasticsearch/data

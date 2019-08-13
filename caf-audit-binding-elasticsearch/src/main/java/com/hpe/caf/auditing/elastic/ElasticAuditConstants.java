@@ -56,6 +56,8 @@ public final class ElasticAuditConstants {
         public static final String CAF_ELASTIC_HOST_AND_PORT_VALUES = "CAF_ELASTIC_HOST_AND_PORT_VALUES";
         public static final String CAF_ELASTIC_NUMBER_OF_SHARDS = "CAF_ELASTIC_NUMBER_OF_SHARDS";
         public static final String CAF_ELASTIC_NUMBER_OF_REPLICAS = "CAF_ELASTIC_NUMBER_OF_REPLICAS";
+        public static final String CAF_ELASTIC_PORT_VALUE = "CAF_ELASTIC_PORT_VALUE";
+        public static final String CAF_ELASTIC_HOST_VALUES = "CAF_ELASTIC_HOST_VALUES";
     }
 
     public final static class ConfigDefault {

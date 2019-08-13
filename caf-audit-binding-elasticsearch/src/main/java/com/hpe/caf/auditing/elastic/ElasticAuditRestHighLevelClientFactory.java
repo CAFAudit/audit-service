@@ -48,23 +48,23 @@ public class ElasticAuditRestHighLevelClientFactory {
      * @return RestHighLevelClient
      * @throws AuditConfigurationException exception thrown if host is unknown
      */
-    public static RestHighLevelClient getHighLevelClient(final String hostAndPortValues)
+    public static RestHighLevelClient getHighLevelClient(final String hostValues, final String portValue)
         throws AuditConfigurationException {
 
-        if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
-            //  Split comma separated list of ES hostname and port values.
-            final String[] hostAndPortArray = hostAndPortValues.split(",");
+        if (hostValues != null && !hostValues.isEmpty()) {
+            //  Split comma separated list of ES hostname values.
+            final String[] hostArray = hostValues.split(",");
 
-            if (hostAndPortArray.length == 0) {
+            if (hostArray.length == 0) {
                 final String errorMessage = "No hosts configured.";
                 LOG.error(errorMessage);
                 throw new AuditConfigurationException(errorMessage);
             }
 
             final List<HttpHost> httpHostList = new ArrayList<>();
-            for (final String hostAndPort : hostAndPortArray) {
+            for (final String host : hostArray) {
                 try{
-                    final URI uri = new URI("http://" + hostAndPort);
+                    final URI uri = new URI("http://" + host + ":" + portValue );
 
                     if (uri.getHost() == null) {
                         throw new URISyntaxException(uri.toString(), ES_HOST_NOT_PROVIDED);

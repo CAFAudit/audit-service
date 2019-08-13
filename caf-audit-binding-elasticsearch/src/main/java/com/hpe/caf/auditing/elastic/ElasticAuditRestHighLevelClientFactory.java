@@ -44,7 +44,8 @@ public class ElasticAuditRestHighLevelClientFactory {
     /**
      * Returns an elastic search high level client.
      *
-     * @param hostAndPortValues comma separated list of Elasticsearch host:port values
+     * @param hostValues comma separated list of Elasticsearch host values
+     * @param portValue The REST port of the elastic search server listens on.
      * @return RestHighLevelClient
      * @throws AuditConfigurationException exception thrown if host is unknown
      */

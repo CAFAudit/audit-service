@@ -133,7 +133,7 @@ public class WebserviceClientAuditIT {
     @AfterMethod
     public void cleanUp() throws AuditConfigurationException {
         RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT);
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, String.valueOf(ES_PORT));
         try {
             deleteIndex(client, ES_INDEX);
         } catch (RuntimeException rte) {
@@ -185,7 +185,7 @@ public class WebserviceClientAuditIT {
         //  Verify the type mappings have been set for the index. Then search for the audit event message in
         //  Elasticsearch and verify field data matches input.
         try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, String.valueOf(ES_PORT))) {
 
             verifyTypeMappings(client);
 
@@ -287,7 +287,7 @@ public class WebserviceClientAuditIT {
 
     private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, String.valueOf(ES_PORT))) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
 
             final SearchRequest searchRequest = new SearchRequest()

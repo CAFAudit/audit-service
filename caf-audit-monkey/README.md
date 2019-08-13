@@ -133,7 +133,7 @@ The following parameters may be set as required:
 
 e.g.  
 ```
-docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=standard -e CAF_ELASTIC_HOST_AND_PORT_VALUES=localhost:9200 -e CAF_ELASTIC_HOST_VALUES=localhost -e CAF_ELASTIC_PORT_VALUE=9200 -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=5000 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=10 <IMAGE_ID>
+docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=standard -e CAF_ELASTIC_HOST_VALUES=localhost -e CAF_ELASTIC_PORT_VALUE=9200 -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=5000 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=10 <IMAGE_ID>
 ```
 
 Run the Audit Monkey sending [5000] Audit Events [elasticsearch] to Elasticsearch in [Standard] mode using [10] threads
@@ -147,7 +147,7 @@ Run the Audit Monkey sending [50] Audit Events for Tenant Id [wsTestId] through 
 
 e.g.  
 ```
-docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=demo -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=10000  -e CAF_ELASTIC_HOST_AND_PORT_VALUES=localhost:9200 -e CAF_ELASTIC_HOST_VALUES=localhost -e CAF_ELASTIC_PORT_VALUE=9200 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=25 <IMAGE_ID>
+docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=demo -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=10000 -e CAF_ELASTIC_HOST_VALUES=localhost -e CAF_ELASTIC_PORT_VALUE=9200 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=25 <IMAGE_ID>
 ```
 
 Run the Audit Monkey sending [10,000] Audit Events [elasticsearch] to Elasticsearch in [demo] mode using [25] threads

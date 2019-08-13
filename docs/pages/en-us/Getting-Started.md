@@ -258,7 +258,6 @@ This object represents a logical connection to the datastore (that is, Elasticse
 
 The `AuditConnection` object, for direct to Elasticseach, can be constructed by setting the `CAF_AUDIT_MODE` environment variable to `elasticsearch` and then using one of the static `createConnection()` methods in the `AuditConnectionFactory` class:  
 - `createConnection()` method has no parameters and requires the following environment variables to be set when creating a connection for direct to Elasticsearch:
-        - `CAF_ELASTIC_HOST_AND_PORT_VALUES` refers to one or more of the nodes of the Elasticsearch cluster as a comma-separated list.
         - `CAF_ELASTIC_NUMBER_OF_SHARDS` the number of primary shards that an index should have. Defaults to 5.
         - `CAF_ELASTIC_NUMBER_OF_REPLICAS` the number of replica shards (copies) that each primary shard should have. Defaults to 1.  
         - 'CAF_ELASTIC_HOST_VALUES': A comma separated list of hostnames to use when contacting elasticsearch. eg. localhost, otherHost

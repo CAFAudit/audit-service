@@ -29,7 +29,7 @@ public class ElasticAuditConnection implements AuditConnection {
 
     public ElasticAuditConnection() throws AuditConfigurationException
     {
-            final String host = 
+            final String hostValues = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES));
             final String port = 
@@ -47,7 +47,7 @@ public class ElasticAuditConnection implements AuditConnection {
                                                       ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS);
 
         //  Get Elasticsearch connection.
-        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(host, port);
+        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostValues, port);
 
         //  Get Elasticsearch index manager.
         indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, restHighLevelClient);

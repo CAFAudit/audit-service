@@ -24,7 +24,9 @@
             "CAF_ELASTIC_HOST_AND_PORT_VALUES": "${CAF_ELASTIC_HOST_AND_PORT_VALUES}",
             "CAF_ELASTIC_NUMBER_OF_REPLICAS": "1",
             "CAF_ELASTIC_NUMBER_OF_SHARDS": "5",
-            "CAF_LOG_LEVEL": "INFO"
+            "CAF_LOG_LEVEL": "INFO",
+            "CAF_ELASTIC_HOST_VALUES": "${CAF_ELASTIC_HOST_VALUES}",
+            "CAF_ELASTIC_PORT_VALUE": "${CAF_ELASTIC_PORT_VALUE}"
         },
         "healthChecks": [{
             "gracePeriodSeconds": 300,

@@ -30,7 +30,7 @@ public class ElasticAuditConnection implements AuditConnection {
     public ElasticAuditConnection() throws AuditConfigurationException
     {
             final String hostValues = 
-                System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES,
+                System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES));
             final String port = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE,

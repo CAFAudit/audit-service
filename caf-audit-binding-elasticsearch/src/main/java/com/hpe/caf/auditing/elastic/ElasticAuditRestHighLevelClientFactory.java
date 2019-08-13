@@ -64,8 +64,13 @@ public class ElasticAuditRestHighLevelClientFactory {
             final List<HttpHost> httpHostList = new ArrayList<>();
             for (final String host : hostArray) {
                 try{
-                    final URI uri = new URI("http://" + host + ":" + portValue );
-
+                    final URI uri;
+                    if(!host.contains(":")){
+                        uri = new URI("http://" + host + ":" + portValue);
+                    }else{
+                        uri = new URI("http://" + host);
+                    }
+                      
                     if (uri.getHost() == null) {
                         throw new URISyntaxException(uri.toString(), ES_HOST_NOT_PROVIDED);
                     } else if (uri.getPort() == -1) {

@@ -104,6 +104,8 @@ services:
       CAF_ELASTIC_HOST_AND_PORT_VALUES: elasticsearch1:9200,elasticsearch2:9200,elasticsearch3:9200
       CAF_ELASTIC_NUMBER_OF_SHARDS: 5
       CAF_ELASTIC_NUMBER_OF_REPLICAS: 1
+      CAF_ELASTIC_HOST_VALUES: elasticsearch1,elasticsearch2,elasticsearch3
+      CAF_ELASTIC_PORT_VALUE: 9200
 
   kibana:
     depends_on:

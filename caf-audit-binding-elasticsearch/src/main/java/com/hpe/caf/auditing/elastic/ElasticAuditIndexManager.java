@@ -71,12 +71,12 @@ public class ElasticAuditIndexManager {
 
     private XContentBuilder getTenantIndexTypeMappingsBuilder() {
         //  Get the contents of the index mapping file and assign to byte array before attempting to parse JSON
-        final byte[] cafAuditEventTenantIndexMappingsBytes;        
+        final byte[] cafAuditEventTenantIndexMappingsBytes;
         try (final InputStream inputStream = getClass().getClassLoader()
                     .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE)){
             if(inputStream== null)
             {
-                String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
+                final String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
                 LOG.error(errorMessage);
                 throw new RuntimeException(errorMessage);
             }

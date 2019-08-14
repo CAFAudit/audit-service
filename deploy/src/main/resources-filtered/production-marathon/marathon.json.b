@@ -21,11 +21,11 @@
         },
         "env": {
             "_JAVA_OPTIONS": "-Xms384m -Xmx384m",
+            "CAF_ELASTIC_HOST_VALUES": "${CAF_ELASTIC_HOST_VALUES}",
             "CAF_ELASTIC_NUMBER_OF_REPLICAS": "1",
             "CAF_ELASTIC_NUMBER_OF_SHARDS": "5",
-            "CAF_LOG_LEVEL": "INFO",
-            "CAF_ELASTIC_HOST_VALUES": "${CAF_ELASTIC_HOST_VALUES}",
-            "CAF_ELASTIC_PORT_VALUE": "${CAF_ELASTIC_PORT_VALUE}"
+            "CAF_ELASTIC_PORT_VALUE": "${CAF_ELASTIC_PORT_VALUE}",
+            "CAF_LOG_LEVEL": "INFO"            
         },
         "healthChecks": [{
             "gracePeriodSeconds": 300,

@@ -3,7 +3,7 @@
 # The port that the CAF Audit Web Service is configured to listen on.
 export CAF_AUDIT_SERVICE_PORT=
 
-# A comma separated list of Elasticsearch HOST value.
+# A comma separated list of Elasticsearch HOST values.
 export CAF_ELASTIC_HOST_VALUES=
 
 # The REST port of the ElasticSearch server listens on.

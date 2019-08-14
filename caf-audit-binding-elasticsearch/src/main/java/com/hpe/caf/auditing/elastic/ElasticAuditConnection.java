@@ -29,9 +29,15 @@ public class ElasticAuditConnection implements AuditConnection {
 
     public ElasticAuditConnection() throws AuditConfigurationException
     {
-            final String hostValues = 
+            final String hostAndPortValues = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES));
+            String hostValues = 
+                System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES,
+                                   System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES));
+            if(hostAndPortValues != null && hostAndPortValues.contains(":")){
+                hostValues = hostAndPortValues;
+            }
             final String port = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE));
@@ -45,7 +51,7 @@ public class ElasticAuditConnection implements AuditConnection {
             final int numberOfReplicas = 
                 getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_NUMBER_OF_REPLICAS,
                                                       ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS);
-
+            
         //  Get Elasticsearch connection.
         restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostValues, port);
 

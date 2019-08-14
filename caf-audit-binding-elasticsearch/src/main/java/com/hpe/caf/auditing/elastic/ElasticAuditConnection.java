@@ -32,12 +32,11 @@ public class ElasticAuditConnection implements AuditConnection {
             final String hostAndPortValues = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES));
-            String hostValues = 
+            final String hostValues = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES));
-            if(hostAndPortValues != null && hostAndPortValues.contains(":")){
-                hostValues = hostAndPortValues;
-            }
+            final String hostDetailsParam = (hostAndPortValues != null && hostAndPortValues.contains(":")) 
+                            ? hostAndPortValues : hostValues;
             final String port = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE));
@@ -53,7 +52,7 @@ public class ElasticAuditConnection implements AuditConnection {
                                                       ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS);
         
         //  Get Elasticsearch connection.
-        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostValues, port);
+        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostDetailsParam, port);
 
         //  Get Elasticsearch index manager.
         indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, restHighLevelClient);

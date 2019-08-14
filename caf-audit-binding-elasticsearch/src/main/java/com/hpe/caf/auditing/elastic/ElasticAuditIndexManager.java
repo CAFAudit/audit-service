@@ -35,6 +35,7 @@ import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class ElasticAuditIndexManager {
 
@@ -70,10 +71,16 @@ public class ElasticAuditIndexManager {
 
     private XContentBuilder getTenantIndexTypeMappingsBuilder() {
         //  Get the contents of the index mapping file and assign to byte array before attempting to parse JSON
-        byte[] cafAuditEventTenantIndexMappingsBytes;
-        try {
-            cafAuditEventTenantIndexMappingsBytes = ByteStreams.toByteArray(getClass().getClassLoader()
-                    .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE));
+        final byte[] cafAuditEventTenantIndexMappingsBytes;
+        try (final InputStream inputStream = getClass().getClassLoader()
+                    .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE)){
+            if(inputStream== null)
+            {
+                final String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
+                LOG.error(errorMessage);
+                throw new RuntimeException(errorMessage);
+            }
+            cafAuditEventTenantIndexMappingsBytes = ByteStreams.toByteArray(inputStream);
         } catch (IOException e) {
             String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
             LOG.error(errorMessage);

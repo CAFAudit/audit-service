@@ -51,7 +51,7 @@ public class ElasticAuditConnection implements AuditConnection {
             final int numberOfReplicas = 
                 getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_NUMBER_OF_REPLICAS,
                                                       ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS);
-            
+        
         //  Get Elasticsearch connection.
         restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostValues, port);
 

@@ -182,7 +182,7 @@ public class AuditIT {
         //  Search for the audit event message in Elasticsearch and verify
         //  hit has been returned.
         try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_HOST_VALUES) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_HOST_VALUES)) {
 
             final String esIndex = auditEventMessage.getTenantId().toLowerCase().concat("_audit");
             SearchHit[] hits = new SearchHit[0];

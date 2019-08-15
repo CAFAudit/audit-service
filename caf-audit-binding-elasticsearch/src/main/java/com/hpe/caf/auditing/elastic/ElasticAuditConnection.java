@@ -21,26 +21,46 @@ import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
+import java.util.Arrays;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ElasticAuditConnection implements AuditConnection {
+     private static final Logger LOG = LogManager.getLogger(ElasticAuditConnection.class.getName());
 
     private final RestHighLevelClient restHighLevelClient;
     private ElasticAuditIndexManager indexManager;
 
     public ElasticAuditConnection() throws AuditConfigurationException
     {
-            final String hostAndPortValues = 
+            String hostAndPortValues = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES,
-                                   System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES));
+                                   System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES));
             final String hostValues = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_VALUES));
-            final String hostDetailsParam = (hostAndPortValues != null && hostAndPortValues.contains(":")) 
-                            ? hostAndPortValues : hostValues;
             final String port = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE));
-
+            final String[] hostAndPortArray = new String[20];
+            final String[] hostArray;
+            
+            if(hostAndPortValues == null){
+                 hostArray = hostValues.split(",");
+                
+                if (hostArray.length == 0) {
+                    final String errorMessage = "No hosts configured.";
+                    LOG.error(errorMessage);
+                    throw new AuditConfigurationException(errorMessage);
+                }
+                for (int index = 0; index < hostArray.length; index++){
+                    hostAndPortArray[index] = hostArray[index] + ":" + port;
+                }
+            }
+            
+            if(hostAndPortArray.length > 0){
+                hostAndPortValues = Arrays.toString(hostAndPortArray);
+            }
             // Get the Elasticsearch number of shards per index from env var else default to '5'
             final int numberOfShards =
                 getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_NUMBER_OF_SHARDS,
@@ -52,7 +72,7 @@ public class ElasticAuditConnection implements AuditConnection {
                                                       ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS);
         
         //  Get Elasticsearch connection.
-        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostDetailsParam, port);
+        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostAndPortValues);
 
         //  Get Elasticsearch index manager.
         indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, restHighLevelClient);

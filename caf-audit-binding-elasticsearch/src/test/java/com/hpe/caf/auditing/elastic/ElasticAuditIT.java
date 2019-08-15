@@ -219,7 +219,7 @@ public class ElasticAuditIT
         //  Verify the type mappings have been set for the index. Then search for the audit event message in
         //  Elasticsearch and verify field data matches input.
         try (final RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort, String.valueOf(ES_PORT))) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort)) {
 
             verifyTypeMappings(restHighLevelClient);
 
@@ -340,7 +340,7 @@ public class ElasticAuditIT
             // Search across all indices for the applicationId field in Elasticsearch and verify that the expected
             // number of hits are returned.
             try (RestHighLevelClient restHighLevelClient
-                = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort, String.valueOf(ES_PORT))) {
+                = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort)) {
 
                 String[] tenantIndexIds = new String[2];
                 tenantIndexIds[0] = tenant1Id + ElasticAuditConstants.Index.SUFFIX;

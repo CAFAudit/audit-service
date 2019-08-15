@@ -66,7 +66,7 @@ public class GeneratedAuditLogIT {
     @After
     public void cleanUp() throws AuditConfigurationException {
         try (RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, String.valueOf(ES_PORT))) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT)) {
             deleteIndex(restHighLevelClient, testTenant + ElasticAuditConstants.Index.SUFFIX);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -157,7 +157,7 @@ public class GeneratedAuditLogIT {
 
     private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT, String.valueOf(ES_PORT))) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
 
             final SearchRequest searchRequest = new SearchRequest()

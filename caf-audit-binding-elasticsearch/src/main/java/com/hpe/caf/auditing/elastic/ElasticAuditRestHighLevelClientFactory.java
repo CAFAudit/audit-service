@@ -44,33 +44,27 @@ public class ElasticAuditRestHighLevelClientFactory {
     /**
      * Returns an elastic search high level client.
      *
-     * @param hostValues comma separated list of Elasticsearch host values
-     * @param portValue The REST port of the elastic search server listens on.
+     * @param hostAndPortValues comma separated list of Elasticsearch host:port values
      * @return RestHighLevelClient
      * @throws AuditConfigurationException exception thrown if host is unknown
      */
-    public static RestHighLevelClient getHighLevelClient(final String hostValues, final String portValue)
+    public static RestHighLevelClient getHighLevelClient(final String hostAndPortValues)
         throws AuditConfigurationException {
 
-        if (hostValues != null && !hostValues.isEmpty()) {
-            //  Split comma separated list of ES hostname values.
-            final String[] hostArray = hostValues.split(",");
+        if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
+            //  Split comma separated list of ES hostname and port values.
+            final String[] hostAndPortArray = hostAndPortValues.split(",");
 
-            if (hostArray.length == 0) {
+            if (hostAndPortArray.length == 0) {
                 final String errorMessage = "No hosts configured.";
                 LOG.error(errorMessage);
                 throw new AuditConfigurationException(errorMessage);
             }
 
             final List<HttpHost> httpHostList = new ArrayList<>();
-            for (final String host : hostArray) {
+            for (final String hostAndPort : hostAndPortArray) {
                 try{
-                    final URI uri;
-                    if(!host.contains(":")){
-                        uri = new URI("http://" + host + ":" + portValue);
-                    }else{
-                        uri = new URI("http://" + host);
-                    }
+                    final URI uri = new URI("http://" + hostAndPort);
                       
                     if (uri.getHost() == null) {
                         throw new URISyntaxException(uri.toString(), ES_HOST_NOT_PROVIDED);

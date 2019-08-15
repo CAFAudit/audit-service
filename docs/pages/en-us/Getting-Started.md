@@ -260,8 +260,8 @@ The `AuditConnection` object, for direct to Elasticseach, can be constructed by 
 - `createConnection()` method has no parameters and requires the following environment variables to be set when creating a connection for direct to Elasticsearch:
         - `CAF_ELASTIC_NUMBER_OF_SHARDS` the number of primary shards that an index should have. Defaults to 5.
         - `CAF_ELASTIC_NUMBER_OF_REPLICAS` the number of replica shards (copies) that each primary shard should have. Defaults to 1.
-        - `CAF_ELASTIC_HOST_VALUES`: A comma separated list of hostnames to use when contacting elasticsearch. eg. localhost, otherHost
-        - `CAF_ELASTIC_PORT_VALUE`: The REST port of the ElasticSearch server listens on. e.g. 9200
+        - `CAF_ELASTIC_HOST_VALUES` a comma separated list of hostnames to use when contacting elasticsearch. eg. localhost, otherHost.
+        - `CAF_ELASTIC_PORT_VALUE` the REST port of the ElasticSearch server listens on. e.g. 9200.
     Or the following environment variable when using with the webservice audit implementation:  
         - `CAF_AUDIT_WEBSERVICE_ENDPOINT_URL` refers to the URL of the CAF audit web service.  
 

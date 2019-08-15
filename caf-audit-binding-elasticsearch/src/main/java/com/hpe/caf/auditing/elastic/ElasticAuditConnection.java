@@ -53,7 +53,7 @@ public class ElasticAuditConnection implements AuditConnection {
                     throw new AuditConfigurationException(errorMessage);
                 }
                 for (int index = 0; index < hostArray.length; index++){
-                    hostAndPortBuilder.append(hostArray[index] + ":" + port+",");
+                    hostAndPortBuilder.append(hostArray[index] + ":" + port + ",");
                 }
             }
             

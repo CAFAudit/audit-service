@@ -42,24 +42,24 @@ public class ElasticAuditConnection implements AuditConnection {
             final String port = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE));
-            final String[] hostAndPortArray = new String[20];
+            final StringBuilder hostAndPortBuilder = new StringBuilder("");
             final String[] hostArray;
             
             if(hostAndPorts == null){
-                 hostArray = hostValues.split(",");
-                
+                hostArray = hostValues.split(",");
                 if (hostArray.length == 0) {
                     final String errorMessage = "No hosts configured.";
                     LOG.error(errorMessage);
                     throw new AuditConfigurationException(errorMessage);
                 }
                 for (int index = 0; index < hostArray.length; index++){
-                    hostAndPortArray[index] = hostArray[index] + ":" + port;
+                    hostAndPortBuilder.append(hostArray[index] + ":" + port+",");
                 }
             }
             
-            if(hostAndPortArray.length > 0){
-                hostAndPorts = Arrays.toString(hostAndPortArray);
+            if(!hostAndPortBuilder.toString().isEmpty()){
+                final String hostAndPortStr = hostAndPortBuilder.toString();
+                hostAndPorts = hostAndPortStr.substring(0, hostAndPortStr.length()-1);
             }
             // Get the Elasticsearch number of shards per index from env var else default to '5'
             final int numberOfShards =

@@ -91,12 +91,12 @@ The following parameters may be set as required:
   <tr>
     <td>CAF_ELASTIC_HOST_VALUES</td>
     <td>NONE, Any String</td>
-    <td>A comma separated list of hostnames to use when contacting elasticsearch. eg. localhost,otherHost</td>
+    <td>This is an an alternative variable, with comma separated list of hostnames to use when contacting elasticsearch. eg. localhost,otherHost.</td>
   </tr>
   <tr>
     <td>CAF_ELASTIC_PORT_VALUE</td>
     <td>NONE, 9200</td>
-    <td>The REST port of the Elasticsearch server listens on. eg. 9200</td>
+    <td>The REST port of the Elasticsearch server listens on. eg. 9200. This is an alternative variable used to construct elastic search host and port by combining with CAF_ELASTIC_HOST_VALUES.</td>
   </tr>
   <tr>
     <td>CAF_AUDIT_WEBSERVICE_ENDPOINT_URL</td>

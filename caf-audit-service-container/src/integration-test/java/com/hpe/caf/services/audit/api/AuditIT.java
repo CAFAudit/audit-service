@@ -181,7 +181,7 @@ public class AuditIT {
 
         //  Search for the audit event message in Elasticsearch and verify
         //  hit has been returned.
-        final String esHostAndPort = CAF_ELASTIC_HOST_VALUES + ":" + CAF_ELASTIC_PORT;
+        final String esHostAndPort = CAF_ELASTIC_HOST_VALUES + ':' + CAF_ELASTIC_PORT;
         try (RestHighLevelClient client
                      = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort)) {
 

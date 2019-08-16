@@ -28,8 +28,8 @@ Here is a sample Maven project file that generates a client-side auditing librar
 
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	    <modelVersion>4.0.0</modelVersion>
 	
 	    <groupId>com.hpe.sampleapp</groupId>
@@ -162,10 +162,10 @@ Configuration required to be supplied via environment variable:
 
 Before passing the [`ConfigurationSource`](#configurationsource) object to the [`AuditConnectionFactory`](#auditconnectionfactory), to create an instance of the required [`AuditConnection`](#auditconnection) implementation, the `CAF_AUDIT_MODE` environment variable needs to be set appropriately to indicate the required mode. These are the following `CAF_AUDIT_MODE` environment variable options:
 
-|           Mode           | CAF_AUDIT_MODE value |  AuditConnection Implmentation  |                          Required AuditConfiguration                          |    Implementation Binding    |  
-|:------------------------:|:--------------------:|:-------------------------------:|:-----------------------------------------------------------------------------:|:------------------------------------:|  
-|  Direct to Elasticsearch |        elasticsearch        |      ElasticAuditConnection     |      [ElasticAuditConfiguration](#direct-to-elasticsearch-configuration)      |    caf-audit-binding-elasticsearch    |  
-| Audit Web Service Client |      webservice      | WebServiceClientAuditConnection | [WebServiceClientAuditConfiguration](#audit-web-service-client-configuration) |    caf-audit-binding-webservice    |  
+|           Mode           | CAF_AUDIT_MODE value |  AuditConnection Implmentation  |                          Required AuditConfiguration                          |    Implementation Binding    |
+|:------------------------:|:--------------------:|:-------------------------------:|:-----------------------------------------------------------------------------:|:------------------------------------:|
+|  Direct to Elasticsearch |        elasticsearch        |      ElasticAuditConnection     |      [ElasticAuditConfiguration](#direct-to-elasticsearch-configuration)      |    caf-audit-binding-elasticsearch    |
+| Audit Web Service Client |      webservice      | WebServiceClientAuditConnection | [WebServiceClientAuditConfiguration](#audit-web-service-client-configuration) |    caf-audit-binding-webservice    |
 
 #### No-op
 
@@ -180,13 +180,13 @@ The `AuditConnection` object represents a logical connection to the Audit Web Se
 The `AuditConnection` object can be constructed using the static `createConnection()` method in the `AuditConnectionFactory` class. This method takes a [`ConfigurationSource`](#configurationsource) parameter, which is the standard method of configuration in CAF:
 
 	AuditConnection auditConnection = null;
-    try {
-        // Setup connection
-        auditConnection = new AuditConnectionFactory().createConnection(createCafConfigSource());
-    } catch (Exception e) {
-        System.out.println("Unable to create Audit Connection");
-        e.printStackTrace();
-    }
+	try {
+	    // Setup connection
+	    auditConnection = new AuditConnectionFactory().createConnection(createCafConfigSource());
+	} catch (Exception e) {
+	    System.out.println("Unable to create Audit Connection");
+	    e.printStackTrace();
+	}
 
 ### AuditChannel
 
@@ -233,8 +233,8 @@ The `AuditEventBuilder` object is created using the `createEventBuilder()` metho
 	auditEventBuilder.addEventParameter("docId", null, docId);
 		// Add an Event Parameter for holding the User who authorised the deletion of the document. Include an indexing hint and add length constraints for this parameter as it is of type String
 	auditEventBuilder.addEventParameter("authorisedBy", null, authorisedBy, AuditIndexingHint.KEYWORD, 1, 256);
-	
-	// Send the constructed event to storage
+        
+    // Send the constructed event to storage
 	auditEventBuilder.send();
 
 Typically, this object is only used indirectly. Normally, you generate a type-safe client-side auditing library using the code generation plugin. Internally, the auto-generated code makes use of the `AuditEventBuilder` object.

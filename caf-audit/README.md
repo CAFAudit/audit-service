@@ -233,8 +233,8 @@ The `AuditEventBuilder` object is created using the `createEventBuilder()` metho
 	auditEventBuilder.addEventParameter("docId", null, docId);
 		// Add an Event Parameter for holding the User who authorised the deletion of the document. Include an indexing hint and add length constraints for this parameter as it is of type String
 	auditEventBuilder.addEventParameter("authorisedBy", null, authorisedBy, AuditIndexingHint.KEYWORD, 1, 256);
-	
-	// Send the constructed event to storage
+        
+        // Send the constructed event to storage
 	auditEventBuilder.send();
 
 Typically, this object is only used indirectly. Normally, you generate a type-safe client-side auditing library using the code generation plugin. Internally, the auto-generated code makes use of the `AuditEventBuilder` object.

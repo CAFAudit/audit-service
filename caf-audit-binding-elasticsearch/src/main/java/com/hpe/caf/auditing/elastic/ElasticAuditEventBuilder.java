@@ -37,15 +37,14 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     private static final Logger LOG = LogManager.getLogger(ElasticAuditEventBuilder.class.getName());
 
     private final RestHighLevelClient restHighLevelClient;
-    private final ElasticAuditIndexManager indexManager;
     private String tenantId;
     private final Map<String, Object> auditEvent = new HashMap<>();
 
     public ElasticAuditEventBuilder(RestHighLevelClient restHighLevelClient,
-                                    AuditCoreMetadataProvider coreMetadataProvider,
-                                    ElasticAuditIndexManager indexManager){
+                                    AuditCoreMetadataProvider coreMetadataProvider){
         this.restHighLevelClient = restHighLevelClient;
-        this.indexManager = indexManager;
+        final ElasticAuditIndexManager manager = new ElasticAuditIndexManager(5, 0, restHighLevelClient);
+        manager.createIndexTemplate();
 
         //  Add fixed audit event fields to Map.
         addCommonFields(coreMetadataProvider);
@@ -71,21 +70,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     }
 
     @Override
-    public void setTenant(String tenantId){
-        //  The tenant identifier is used as part of the Elasticsearch index name.
-        //  There are restrictions around the naming of the index including it must be lowercase
-        //  and not contain commas.
-        if(tenantId.contains(",")) {
-            //  Report invalid comma usage.
-            String errorMessage = "Invalid characters (i.e commas) in the tenant identifier: " + tenantId;
-            LOG.error(errorMessage);
-            throw new IllegalArgumentException(errorMessage);
-        }
-        this.tenantId = tenantId.toLowerCase();
-
-        // Create Elasticsearch index for the specified tenant.
-        indexManager.getIndex(this.tenantId.concat(ElasticAuditConstants.Index.SUFFIX));
-    }
+    public void setTenant(String tenantId){}
 
     @Override
     public void setCorrelationId(String correlationId) {
@@ -178,8 +163,8 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
             //  Index audit event message into Elasticsearch.
             final IndexResponse indexResponse = restHighLevelClient
-                    .index(new IndexRequest(tenantId.concat(ElasticAuditConstants.Index.SUFFIX)
-                            , ElasticAuditConstants.Index.TYPE).source(auditEvent), RequestOptions.DEFAULT);
+                    .index(new IndexRequest(tenantId.concat(ElasticAuditConstants.Index.SUFFIX)).source(auditEvent),
+                       RequestOptions.DEFAULT);
 
             final RestStatus status = indexResponse.status();
             if (status != RestStatus.CREATED) {

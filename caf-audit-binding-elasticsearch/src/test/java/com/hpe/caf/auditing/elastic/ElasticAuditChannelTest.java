@@ -18,10 +18,17 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.internal.AuditNewEventFactory;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.elasticsearch.client.IndicesClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.GetIndexTemplatesResponse;
+import org.elasticsearch.client.indices.IndexTemplateMetaData;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import static org.mockito.Matchers.any;
 import org.mockito.Mockito;
 
 public class ElasticAuditChannelTest {
@@ -30,8 +37,17 @@ public class ElasticAuditChannelTest {
     private ElasticAuditIndexManager mockElasticAuditIndexManager;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        final GetIndexTemplatesResponse response = Mockito.mock(GetIndexTemplatesResponse.class);
+        final List<IndexTemplateMetaData> list = new ArrayList<>();
+        final List<String> patterns = new ArrayList<>();
+        patterns.add("*_audit");
+        final IndexTemplateMetaData metadata = new IndexTemplateMetaData("caf_audit_template", 0, null, patterns, null, null, null);
+        list.add(metadata);
         mockClient = Mockito.mock(RestHighLevelClient.class);
+        final IndicesClient indiciesClient = Mockito.mock(IndicesClient.class);
+        Mockito.when(mockClient.indices()).thenReturn(indiciesClient);
+        Mockito.when(indiciesClient.getIndexTemplate(any(), any())).thenReturn(response);
     }
 
     @Test

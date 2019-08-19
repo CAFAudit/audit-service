@@ -39,7 +39,7 @@ public class ElasticAuditChannel implements AuditChannel {
 
     @Override
     public AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider) {
-        return new ElasticAuditEventBuilder(restHighLevelClient, coreMetadataProvider, indexManager);
+        return new ElasticAuditEventBuilder(restHighLevelClient, coreMetadataProvider);
     }
 
     @Override

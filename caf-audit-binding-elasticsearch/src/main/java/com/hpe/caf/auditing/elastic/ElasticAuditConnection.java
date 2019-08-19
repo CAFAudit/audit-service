@@ -48,6 +48,7 @@ public class ElasticAuditConnection implements AuditConnection {
 
         //  Get Elasticsearch index manager.
         indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, restHighLevelClient);
+        indexManager.createIndexTemplate();
     }
 
     private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,

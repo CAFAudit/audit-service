@@ -163,8 +163,8 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
             //  Index audit event message into Elasticsearch.
             final IndexResponse indexResponse = restHighLevelClient
-                    .index(new IndexRequest(tenantId.concat(ElasticAuditConstants.Index.SUFFIX)).source(auditEvent),
-                       RequestOptions.DEFAULT);
+                    .index(new IndexRequest(tenantId.concat(ElasticAuditConstants.Index.SUFFIX)
+                            , ElasticAuditConstants.Index.TYPE).source(auditEvent), RequestOptions.DEFAULT);
 
             final RestStatus status = indexResponse.status();
             if (status != RestStatus.CREATED) {

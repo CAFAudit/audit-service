@@ -142,8 +142,16 @@ A generated client-side library should be referenced in the normal way in the ap
 #### Direct to Elasticsearch Configuration  
 Configuration required to be supplied via environment variable:  
 - `CAF_ELASTIC_HOST_AND_PORT_VALUES`: A comma separated list of hostnames and ports to use when contacting elasticsearch. eg. localhost:9200,otherHost:9200  
+
 - `CAF_ELASTIC_NUMBER_OF_SHARDS`: The number of shards elasticsearch is configured to use.  
-- `CAF_ELASTIC_NUMBER_OF_REPLICAS`: The number of replicas configured for elasticsearch.  
+
+- `CAF_ELASTIC_NUMBER_OF_REPLICAS`: The number of replicas configured for elasticsearch.
+
+  The below two variables used to support multiple hostnames format when contacting elasticsearch.
+
+- `CAF_ELASTIC_HOST_VALUES`: A comma separated list of hostnames to use when contacting elasticsearch. eg. localhost, otherHost
+
+- `CAF_ELASTIC_PORT_VALUE`: The REST port of the ElasticSearch server listens on. e.g. 9200
 
 
 #### Audit Web Service Client Configuration 
@@ -225,7 +233,6 @@ The `AuditEventBuilder` object is created using the `createEventBuilder()` metho
 	auditEventBuilder.addEventParameter("docId", null, docId);
 		// Add an Event Parameter for holding the User who authorised the deletion of the document. Include an indexing hint and add length constraints for this parameter as it is of type String
 	auditEventBuilder.addEventParameter("authorisedBy", null, authorisedBy, AuditIndexingHint.KEYWORD, 1, 256);
-
 	// Send the constructed event to storage
 	auditEventBuilder.send();
 

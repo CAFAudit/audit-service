@@ -25,7 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ElasticAuditConnection implements AuditConnection {
-     private static final Logger LOG = LogManager.getLogger(ElasticAuditConnection.class.getName());
+    private static final Logger LOG = LogManager.getLogger(ElasticAuditConnection.class.getName());
 
     private final RestHighLevelClient restHighLevelClient;
     private ElasticAuditIndexManager indexManager;
@@ -42,21 +42,20 @@ public class ElasticAuditConnection implements AuditConnection {
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE));
             final StringBuilder hostAndPortBuilder = new StringBuilder();
-            final String[] hostArray;
             
             if(hostAndPorts == null){
-                hostArray = hostValues.split(",");
+                final String[] hostArray = hostValues.split(",");
                 if (hostArray.length == 0) {
                     final String errorMessage = "No hosts configured.";
                     LOG.error(errorMessage);
                     throw new AuditConfigurationException(errorMessage);
                 }
                 for (int index = 0; index < hostArray.length; index++){
-                    hostAndPortBuilder.append(hostArray[index]).append(':') .append(port).append(',');
+                    hostAndPortBuilder.append(hostArray[index]).append(':').append(port).append(',');
                 }
             }
             
-            String hostAndPortsStr = "";
+            final String hostAndPortsStr;
             if (hostAndPortBuilder.length() > 0) {
                 hostAndPortsStr = hostAndPortBuilder.substring(0, hostAndPortBuilder.length() - 1);
             }else{
@@ -71,6 +70,7 @@ public class ElasticAuditConnection implements AuditConnection {
             final int numberOfReplicas = 
                 getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_NUMBER_OF_REPLICAS,
                                                       ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS);
+
         //  Get Elasticsearch connection.
         restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostAndPortsStr);
 

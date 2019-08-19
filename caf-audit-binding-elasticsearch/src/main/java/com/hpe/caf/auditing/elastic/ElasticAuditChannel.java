@@ -25,11 +25,9 @@ import java.io.IOException;
 public class ElasticAuditChannel implements AuditChannel {
 
     private final RestHighLevelClient restHighLevelClient;
-    private final ElasticAuditIndexManager indexManager;
 
-    public ElasticAuditChannel(RestHighLevelClient restHighLevelClient, ElasticAuditIndexManager indexManager){
+    public ElasticAuditChannel(RestHighLevelClient restHighLevelClient){
         this.restHighLevelClient = restHighLevelClient;
-        this.indexManager = indexManager;
     }
 
     @Override

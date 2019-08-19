@@ -34,7 +34,6 @@ import org.mockito.Mockito;
 public class ElasticAuditChannelTest {
 
     private RestHighLevelClient mockClient;
-    private ElasticAuditIndexManager mockElasticAuditIndexManager;
 
     @Before
     public void setup() throws IOException {
@@ -52,13 +51,13 @@ public class ElasticAuditChannelTest {
 
     @Test
     public void testClose() throws Exception {
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, mockElasticAuditIndexManager);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient);
         channel.close();
     }
 
     @Test
     public void testCreateEventBuilder() throws Exception {
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, mockElasticAuditIndexManager);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         Assert.assertNotNull(auditEventBuilder);
     }
@@ -66,7 +65,7 @@ public class ElasticAuditChannelTest {
     @Test
     public void testCreateEventBuilderWithAuditCoreMetadataProvider() throws Exception {
         AuditCoreMetadataProvider acmp = AuditNewEventFactory.createNewEvent();
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, mockElasticAuditIndexManager);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder(acmp);
         Assert.assertNotNull(auditEventBuilder);
     }

@@ -46,7 +46,7 @@ public class ElasticAuditConnection implements AuditConnection {
         //  Get Elasticsearch connection.
         restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostAndPorts);
 
-        //  Get Elasticsearch index manager.
+        //Create index template.
         indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, restHighLevelClient);
         indexManager.createIndexTemplate();
     }
@@ -68,12 +68,11 @@ public class ElasticAuditConnection implements AuditConnection {
     @Override
     public AuditChannel createChannel() throws IOException {
         //  Share the Elasticsearch client across channels.
-        return new ElasticAuditChannel(restHighLevelClient, indexManager);
+        return new ElasticAuditChannel(restHighLevelClient);
     }
 
     @Override
     public void close() throws Exception {
         restHighLevelClient.close();
-        indexManager = null;
     }
 }

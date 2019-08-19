@@ -173,7 +173,7 @@ public class GeneratedAuditLogIT {
             SearchHits searchHits = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT).getHits();
 
             for (int attempts = 0; attempts < 5; attempts++) {
-                if (searchHits.getTotalHits().value > 0) {
+                if (searchHits.getTotalHits() > 0) {
                     break;
                 }
                 try {

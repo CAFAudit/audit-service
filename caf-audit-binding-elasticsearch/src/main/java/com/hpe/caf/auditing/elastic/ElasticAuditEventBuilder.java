@@ -43,9 +43,6 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     public ElasticAuditEventBuilder(RestHighLevelClient restHighLevelClient,
                                     AuditCoreMetadataProvider coreMetadataProvider){
         this.restHighLevelClient = restHighLevelClient;
-        final ElasticAuditIndexManager manager = new ElasticAuditIndexManager(5, 0, restHighLevelClient);
-        manager.createIndexTemplate();
-
         //  Add fixed audit event fields to Map.
         addCommonFields(coreMetadataProvider);
     }

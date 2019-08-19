@@ -72,7 +72,7 @@ public class ElasticAuditIndexManager {
     
     private boolean isIndexTemplatePresent() throws IOException
     {
-        final String forceUpdate = System.getenv("CAF_FORCE_TEMPLATE_UPDATE");
+        final String forceUpdate = System.getenv("CAF_AUDIT_FORCE_INDEX_TEMPLATE_UPDATE");
         if (forceUpdate != null && Boolean.getBoolean(forceUpdate)) {
             return false;
         }

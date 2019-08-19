@@ -25,7 +25,6 @@ import java.io.IOException;
 public class ElasticAuditConnection implements AuditConnection {
 
     private final RestHighLevelClient restHighLevelClient;
-    private ElasticAuditIndexManager indexManager;
 
     public ElasticAuditConnection() throws AuditConfigurationException
     {
@@ -47,7 +46,7 @@ public class ElasticAuditConnection implements AuditConnection {
         restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostAndPorts);
 
         //Create index template.
-        indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, restHighLevelClient);
+        final ElasticAuditIndexManager indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, restHighLevelClient);
         indexManager.createIndexTemplate();
     }
 

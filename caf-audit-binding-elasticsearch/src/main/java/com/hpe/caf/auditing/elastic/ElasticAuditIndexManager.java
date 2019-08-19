@@ -66,7 +66,7 @@ public class ElasticAuditIndexManager {
             request.version();
             restHighLevelClient.indices().putTemplate(request, RequestOptions.DEFAULT);
         } catch (final IOException ex) {
-            
+            LOG.error("An error occured contacting elasticsearch: ", ex);
         }
     }
     

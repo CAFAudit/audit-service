@@ -63,7 +63,8 @@ public class ElasticAuditIndexManager {
                 .build();
             request.settings(indexSettings);
             request.mapping(getTenantIndexTypeMappingsBuilder());
-            request.version();
+            request.patterns(Arrays.asList("*_audit"));
+            request.create(true);
             restHighLevelClient.indices().putTemplate(request, RequestOptions.DEFAULT);
         } catch (final IOException ex) {
             LOG.error("An error occured contacting elasticsearch: ", ex);
@@ -73,7 +74,7 @@ public class ElasticAuditIndexManager {
     private boolean isIndexTemplatePresent() throws IOException
     {
         final String forceUpdate = System.getenv("CAF_AUDIT_FORCE_INDEX_TEMPLATE_UPDATE");
-        if (forceUpdate != null && Boolean.getBoolean(forceUpdate)) {
+        if (forceUpdate != null && Boolean.parseBoolean(forceUpdate)) {
             return false;
         }
         final GetIndexTemplatesRequest request = new GetIndexTemplatesRequest(INDEX_TEMPLATE_NAME);

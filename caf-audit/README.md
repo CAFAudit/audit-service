@@ -147,7 +147,7 @@ Configuration required to be supplied via environment variable:
 
 - `CAF_ELASTIC_NUMBER_OF_REPLICAS`: The number of replicas configured for elasticsearch.
 
-  The below two variables used to support multiple hostnames format when contacting elasticsearch.
+  The below two variables are used as an alternative configuration to support multiple hostnames format when contacting elasticsearch.
 
 - `CAF_ELASTIC_HOST_VALUES`: A comma separated list of hostnames to use when contacting elasticsearch. eg. localhost, otherHost
 

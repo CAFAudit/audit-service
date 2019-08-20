@@ -64,7 +64,7 @@ public class ElasticAuditIndexManager {
                 .build();
             request.settings(indexSettings);
             request.mapping(getTenantIndexTypeMappingsBuilder());
-            request.patterns(Arrays.asList("*_audit"));
+            request.patterns(Arrays.asList("*" + ElasticAuditConstants.Index.SUFFIX));
             restHighLevelClient.indices().putTemplate(request, RequestOptions.DEFAULT);
         } catch (final IOException ex) {
             LOG.error("An error occured contacting elasticsearch: ", ex);

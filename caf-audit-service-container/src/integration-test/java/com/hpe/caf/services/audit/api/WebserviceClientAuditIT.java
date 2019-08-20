@@ -292,7 +292,6 @@ public class WebserviceClientAuditIT {
 
             final SearchRequest searchRequest = new SearchRequest()
                     .indices("*" + ElasticAuditConstants.Index.SUFFIX)
-                    .types(ElasticAuditConstants.Index.TYPE)
                     .searchType(SearchType.QUERY_THEN_FETCH)
                     .source(new SearchSourceBuilder()
                             .fetchSource(true)
@@ -307,7 +306,7 @@ public class WebserviceClientAuditIT {
             }
 
             for (int attempts = 0; attempts < 5; attempts++) {
-                if (searchHits.getTotalHits() > 0) {
+                if (searchHits.getTotalHits().value > 0) {
                     break;
                 }
                 try {
@@ -322,7 +321,7 @@ public class WebserviceClientAuditIT {
                 }
             }
 
-            org.junit.Assert.assertEquals("Expected search result not found", 1, searchHits.getTotalHits());
+            org.junit.Assert.assertEquals("Expected search result not found", 1, searchHits.getTotalHits().value);
 
             return searchHits.getHits()[0];
         } catch (IOException e) {
@@ -372,7 +371,6 @@ public class WebserviceClientAuditIT {
             try {
                 hits = client.search(new SearchRequest()
                         .indices(indexId.toLowerCase())
-                        .types(ElasticAuditConstants.Index.TYPE)
                         .searchType(SearchType.QUERY_THEN_FETCH)
                         .source(new SearchSourceBuilder()
                             .query(QueryBuilders.matchQuery(field, value))
@@ -408,7 +406,6 @@ public class WebserviceClientAuditIT {
             try {
                 response = client.delete(new DeleteRequest()
                         .index(indexId.toLowerCase())
-                        .type(ElasticAuditConstants.Index.TYPE)
                         .id(documentId)
                         , RequestOptions.DEFAULT);
             } catch (IOException e) {

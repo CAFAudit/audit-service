@@ -162,7 +162,6 @@ public class GeneratedAuditLogIT {
 
             final SearchRequest searchRequest = new SearchRequest()
                     .indices("*" + ElasticAuditConstants.Index.SUFFIX)
-                    .types(ElasticAuditConstants.Index.TYPE)
                     .searchType(SearchType.QUERY_THEN_FETCH)
                     .source(new SearchSourceBuilder()
                             .query(QueryBuilders.matchQuery(ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, correlationId))
@@ -173,7 +172,7 @@ public class GeneratedAuditLogIT {
             SearchHits searchHits = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT).getHits();
 
             for (int attempts = 0; attempts < 5; attempts++) {
-                if (searchHits.getTotalHits() > 0) {
+                if (searchHits.getTotalHits().value > 0) {
                     break;
                 }
                 try {
@@ -184,7 +183,7 @@ public class GeneratedAuditLogIT {
                 searchHits = searchHits = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT).getHits();
             }
 
-            Assert.assertEquals("Expected search result not found", 1, searchHits.getTotalHits());
+            Assert.assertEquals("Expected search result not found", 1, searchHits.getTotalHits().value);
 
             return searchHits.getHits()[0];
         } catch (IOException e) {

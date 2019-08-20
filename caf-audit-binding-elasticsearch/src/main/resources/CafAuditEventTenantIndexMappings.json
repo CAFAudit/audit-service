@@ -1,5 +1,4 @@
 {
-  "cafAuditEvent":{
     "properties":{
       "processId":{
         "type":"keyword"
@@ -106,5 +105,4 @@
         }
       }
     ]
-  }
 }

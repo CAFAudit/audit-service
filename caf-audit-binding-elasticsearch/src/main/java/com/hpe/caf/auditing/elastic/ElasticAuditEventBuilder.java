@@ -30,6 +30,7 @@ import org.elasticsearch.rest.RestStatus;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class ElasticAuditEventBuilder implements AuditEventBuilder {
@@ -67,7 +68,18 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     }
 
     @Override
-    public void setTenant(String tenantId){}
+    public void setTenant(String tenantId){
+        //  The tenant identifier is used as part of the Elasticsearch index name.
+        //  There are restrictions around the naming of the index including it must be lowercase
+        //  and not contain commas.
+        if(tenantId.contains(",")) {
+            //  Report invalid comma usage.
+            String errorMessage = "Invalid characters (i.e commas) in the tenant identifier: " + tenantId;
+            LOG.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+        this.tenantId = tenantId.toLowerCase();
+    }
 
     @Override
     public void setCorrelationId(String correlationId) {

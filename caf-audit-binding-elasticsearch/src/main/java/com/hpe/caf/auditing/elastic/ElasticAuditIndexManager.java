@@ -65,7 +65,6 @@ public class ElasticAuditIndexManager {
             request.settings(indexSettings);
             request.mapping(getTenantIndexTypeMappingsBuilder());
             request.patterns(Arrays.asList("*_audit"));
-            request.create(true);
             restHighLevelClient.indices().putTemplate(request, RequestOptions.DEFAULT);
         } catch (final IOException ex) {
             LOG.error("An error occured contacting elasticsearch: ", ex);
@@ -78,9 +77,8 @@ public class ElasticAuditIndexManager {
         if (forceUpdate != null && Boolean.parseBoolean(forceUpdate)) {
             return false;
         }
-        final GetIndexTemplatesRequest request = new GetIndexTemplatesRequest(INDEX_TEMPLATE_NAME);
-        final GetIndexTemplatesResponse indexTemplate = restHighLevelClient.indices().getIndexTemplate(request, RequestOptions.DEFAULT);
-        return indexTemplate.getIndexTemplates().stream().anyMatch(template -> template.name().equals(INDEX_TEMPLATE_NAME));
+        final IndexTemplatesExistRequest request = new IndexTemplatesExistRequest(INDEX_TEMPLATE_NAME);
+        return restHighLevelClient.indices().existsTemplate(request, RequestOptions.DEFAULT);
     }
 
     private XContentBuilder getTenantIndexTypeMappingsBuilder() {

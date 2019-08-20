@@ -32,7 +32,7 @@ import org.elasticsearch.common.xcontent.XContentType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import org.elasticsearch.client.indices.GetIndexTemplatesRequest;
+import org.elasticsearch.client.indices.IndexTemplatesExistRequest;
 import org.elasticsearch.client.indices.GetIndexTemplatesResponse;
 
 public class ElasticAuditIndexManager {

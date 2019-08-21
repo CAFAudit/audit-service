@@ -174,7 +174,8 @@
                         <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <CAF_ELASTIC_HOST_AND_PORT>${docker.host.address}:${elasticsearch.http.port}</CAF_ELASTIC_HOST_AND_PORT>
+                        <CAF_ELASTIC_HOST_VALUES>${docker.host.address}</CAF_ELASTIC_HOST_VALUES>
+                        <CAF_ELASTIC_PORT_VALUE>${elasticsearch.http.port}</CAF_ELASTIC_PORT_VALUE>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
                         <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/${webserviceWarName}/v1</webserviceurlhttps>
                     </environmentVariables>
@@ -244,7 +245,8 @@
                                 </labels>
                                 <env>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>
-                                    <CAF_ELASTIC_HOST_AND_PORT_VALUES>elasticsearch:9200</CAF_ELASTIC_HOST_AND_PORT_VALUES>
+                                    <CAF_ELASTIC_HOST_VALUES>elasticsearch</CAF_ELASTIC_HOST_VALUES>
+                                    <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
                                     <CAF_LOG_LEVEL>DEBUG</CAF_LOG_LEVEL>
@@ -292,7 +294,8 @@
                                     <port>${webservice.https.adminport}:8443</port>
                                 </ports>
                                 <env>
-                                    <CAF_ELASTIC_HOST_AND_PORT_VALUES>elasticsearch:9200</CAF_ELASTIC_HOST_AND_PORT_VALUES>
+                                    <CAF_ELASTIC_HOST_VALUES>elasticsearch</CAF_ELASTIC_HOST_VALUES>
+                                    <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
                                     <SSL_TOMCAT_CA_CERT_LOCATION>/test-keystore/tomcat.keystore</SSL_TOMCAT_CA_CERT_LOCATION>
                                 </env>
@@ -322,7 +325,7 @@
                         <!-- elasticsearch image for running integration tests-->
                         <image>
                             <alias>elasticsearch</alias>
-                            <name>docker.elastic.co/elasticsearch/elasticsearch:6.8.0</name>
+                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.2.0</name>
                             <run>
                                 <hostname>elasticsearch</hostname>
                                 <namingStrategy>alias</namingStrategy>
@@ -331,6 +334,7 @@
                                 </ports>
                                 <env>
                                     <xpack.security.enabled>false</xpack.security.enabled>
+                                    <discovery.type>single-node</discovery.type>
                                 </env>
                                 <wait>
                                     <log>Elasticsearch startup complete</log>

@@ -85,6 +85,12 @@
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch-x-content</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.github.cafapi</groupId>
             <artifactId>caf-logging</artifactId>
@@ -274,13 +280,14 @@
                     <images>
                         <image>
                             <alias>elasticsearch</alias>
-                            <name>docker.elastic.co/elasticsearch/elasticsearch:6.8.0</name>
+                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.2.0</name>
                             <run>
                                 <ports>
                                     <port>${elasticsearch.http.port}:9200</port>
                                 </ports>
                                 <env>
                                     <xpack.security.enabled>false</xpack.security.enabled>
+                                    <discovery.type>single-node</discovery.type>
                                 </env>
                                 <wait>
                                     <!--<log>Server startup complete</log>-->

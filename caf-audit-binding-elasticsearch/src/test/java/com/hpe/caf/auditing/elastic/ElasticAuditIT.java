@@ -430,7 +430,6 @@ public class ElasticAuditIT
             try {
                 hits = client.search(new SearchRequest()
                         .indices(indices)
-                        .types(ElasticAuditConstants.Index.TYPE)
                         .searchType(SearchType.QUERY_THEN_FETCH)
                         .source(new SearchSourceBuilder()
                                 .query(QueryBuilders.matchQuery(field, value.toLowerCase()))
@@ -465,7 +464,6 @@ public class ElasticAuditIT
             try {
                 hits = client.search(new SearchRequest()
                         .indices(indexId)
-                        .types(ElasticAuditConstants.Index.TYPE)
                         .searchType(SearchType.QUERY_THEN_FETCH)
                         .source(new SearchSourceBuilder()
                                 .query(QueryBuilders.matchQuery(field, value.toLowerCase()))
@@ -594,7 +592,7 @@ public class ElasticAuditIT
         while (retryDelete.shouldRetry()) {
             // Delete document by id.
             final DeleteRequest deleteRequest = new DeleteRequest();
-            deleteRequest.index(indexId.toLowerCase()).type(ElasticAuditConstants.Index.TYPE).id(documentId);
+            deleteRequest.index(indexId.toLowerCase()).id(documentId);
 
             try {
                 final DeleteResponse deleteResponse = client.delete(deleteRequest, RequestOptions.DEFAULT);

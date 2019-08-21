@@ -1,35 +1,35 @@
 {
-    "properties": {
-        "processId": {
-            "type": "keyword"
-        },
-        "threadId": {
-            "type": "long"
-        },
-        "eventOrder": {
-            "type": "long"
-        },
-        "eventTime": {
-            "type": "date"
-        },
-        "eventTimeSource": {
-            "type": "keyword"
-        },
-        "userId": {
-            "type": "keyword"
-        },
-        "correlationId": {
-            "type": "keyword"
-        },
-        "eventCategoryId": {
-            "type": "keyword"
-        },
-        "eventTypeId": {
-            "type": "keyword"
-        },
-        "applicationId": {
-            "type": "keyword"
-        }
+    "properties":{
+      "processId":{
+        "type":"keyword"
+      },
+      "threadId":{
+        "type":"long"
+      },
+      "eventOrder":{
+        "type":"long"
+      },
+      "eventTime":{
+        "type":"date"
+      },
+      "eventTimeSource":{
+        "type":"keyword"
+      },
+      "userId":{
+        "type":"keyword"
+      },
+      "correlationId":{
+        "type":"keyword"
+      },
+      "eventCategoryId":{
+        "type":"keyword"
+      },
+      "eventTypeId":{
+        "type":"keyword"
+      },
+      "applicationId":{
+        "type":"keyword"
+      }
     },
     "dynamic_templates": [
         {

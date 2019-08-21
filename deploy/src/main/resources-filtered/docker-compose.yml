@@ -3,14 +3,16 @@ version: '3'
 services:
 
   elasticsearch1:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     ports:
       - "${ELASTICSEARCH_HTTP_PORT_NODE1:-9200}:9200"
       - "${ELASTICSEARCH_NETWORK_PORT_NODE1:-9300}:9300"
     environment:
       cluster.name: "elasticsearch-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
-      discovery.zen.ping.unicast.hosts: "elasticsearch2:9300,elasticsearch3:9300"
+      node.name: elasticsearch1
+      discovery.seed_hosts: "elasticsearch2,elasticsearch3"
+      cluster.initial_master_nodes: "elasticsearch1,elasticsearch2,elasticsearch3"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
       #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
@@ -33,14 +35,16 @@ services:
       - esdata1:/usr/share/elasticsearch/data
 
   elasticsearch2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     ports:
       - "${ELASTICSEARCH_HTTP_PORT_NODE2:-9201}:9200"
       - "${ELASTICSEARCH_NETWORK_PORT_NODE2:-9301}:9300"
     environment:
       cluster.name: "elasticsearch-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
-      discovery.zen.ping.unicast.hosts: "elasticsearch1:9300,elasticsearch3:9300"
+      node.name: elasticsearch2
+      cluster.initial_master_nodes: "elasticsearch1,elasticsearch2,elasticsearch3"
+      discovery.seed_hosts: "elasticsearch1,elasticsearch3"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
       #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
@@ -63,14 +67,16 @@ services:
       - esdata2:/usr/share/elasticsearch/data
 
   elasticsearch3:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
     ports:
       - "${ELASTICSEARCH_HTTP_PORT_NODE3:-9202}:9200"
       - "${ELASTICSEARCH_NETWORK_PORT_NODE3:-9302}:9300"
     environment:
       cluster.name: "elasticsearch-cluster"
       ES_JAVA_OPTS: "${ES_JAVA_OPTS:--Xmx512m -Xms512m}"
-      discovery.zen.ping.unicast.hosts: "elasticsearch1:9300,elasticsearch2:9300"
+      node.name: elasticsearch3
+      discovery.seed_hosts: "elasticsearch1,elasticsearch2"
+      cluster.initial_master_nodes: "elasticsearch1,elasticsearch2,elasticsearch3"
       # disable X-Pack
       # see https://www.elastic.co/guide/en/x-pack/current/xpack-settings.html
       #     https://www.elastic.co/guide/en/x-pack/current/installing-xpack.html#xpack-enabling
@@ -101,18 +107,19 @@ services:
     ports:
       - "${CAF_AUDIT_SERVICE_PORT:-25080}:8080"
     environment:
-      CAF_ELASTIC_HOST_AND_PORT_VALUES: elasticsearch1:9200,elasticsearch2:9200,elasticsearch3:9200
       CAF_ELASTIC_NUMBER_OF_SHARDS: 5
       CAF_ELASTIC_NUMBER_OF_REPLICAS: 1
+      CAF_ELASTIC_HOST_VALUES: elasticsearch1,elasticsearch2,elasticsearch3
+      CAF_ELASTIC_PORT_VALUE: 9200
 
   kibana:
     depends_on:
       - elasticsearch1
-    image: docker.elastic.co/kibana/kibana:6.8.0
+    image: docker.elastic.co/kibana/kibana:7.2.0
     ports:
       - "${CAF_KIBANA_PORT:-5601}:5601"
     environment:
-      ELASTICSEARCH_URL: http://elasticsearch1:9200
+      ELASTICSEARCH_HOSTS: http://elasticsearch1:9200
       # disable X-Pack
       xpack.security.enabled: "false"
       xpack.monitoring.enabled: "false"

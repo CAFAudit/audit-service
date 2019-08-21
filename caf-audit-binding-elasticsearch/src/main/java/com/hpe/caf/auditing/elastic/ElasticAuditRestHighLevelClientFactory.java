@@ -82,7 +82,7 @@ public class ElasticAuditRestHighLevelClientFactory {
                 }
             }
 
-            final RestClientBuilder restClientBuilder = RestClient.builder(httpHostList.toArray(new HttpHost[0])).setMaxRetryTimeoutMillis(1500000);
+            final RestClientBuilder restClientBuilder = RestClient.builder(httpHostList.toArray(new HttpHost[0]));
             final RestHighLevelClient restHighLevelClient = new RestHighLevelClient(restClientBuilder);
 
             return restHighLevelClient;

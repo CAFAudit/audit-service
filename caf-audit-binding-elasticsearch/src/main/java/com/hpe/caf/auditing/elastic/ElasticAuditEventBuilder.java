@@ -22,8 +22,6 @@ import com.hpe.caf.auditing.exception.AuditingException;
 import java.io.IOException;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.rest.RestStatus;
@@ -32,10 +30,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
-    private static final Logger LOG = LogManager.getLogger(ElasticAuditEventBuilder.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(ElasticAuditEventBuilder.class.getName());
 
     private final RestHighLevelClient restHighLevelClient;
     private String tenantId;

@@ -31,78 +31,78 @@
         "type":"keyword"
       }
     },
-    "dynamic_templates": [
-        {
-            "CAFAuditKeyword": {
-                "match": "*_CAKyw",
-                "mapping": {
-                    "type": "keyword"
-                }
-            }
-        },
-        {
-            "CAFAuditText": {
-                "match": "*_CATxt",
-                "mapping": {
-                    "type": "text"
-                }
-            }
-        },
-        {
-            "CAFAuditLong": {
-                "match": "*_CALng",
-                "mapping": {
-                    "type": "long"
-                }
-            }
-        },
-        {
-            "CAFAuditInteger": {
-                "match": "*_CAInt",
-                "mapping": {
-                    "type": "integer"
-                }
-            }
-        },
-        {
-            "CAFAuditShort": {
-                "match": "*_CAShort",
-                "mapping": {
-                    "type": "short"
-                }
-            }
-        },
-        {
-            "CAFAuditDouble": {
-                "match": "*_CADbl",
-                "mapping": {
-                    "type": "double"
-                }
-            }
-        },
-        {
-            "CAFAuditFloat": {
-                "match": "*_CAFlt",
-                "mapping": {
-                    "type": "float"
-                }
-            }
-        },
-        {
-            "CAFAuditDate": {
-                "match": "*_CADte",
-                "mapping": {
-                    "type": "date"
-                }
-            }
-        },
-        {
-            "CAFAuditBoolean": {
-                "match": "*_CABln",
-                "mapping": {
-                    "type": "boolean"
-                }
-            }
+    "dynamic_templates":[
+      {
+        "CAFAuditKeyword":{
+          "match":"*_CAKyw",
+          "mapping":{
+            "type":"keyword"
+          }
         }
+      },
+      {
+        "CAFAuditText":{
+          "match":"*_CATxt",
+          "mapping":{
+            "type":"text"
+          }
+        }
+      },
+      {
+        "CAFAuditLong":{
+          "match":"*_CALng",
+          "mapping":{
+            "type":"long"
+          }
+        }
+      },
+      {
+        "CAFAuditInteger":{
+          "match":"*_CAInt",
+          "mapping":{
+            "type":"integer"
+          }
+        }
+      },
+      {
+        "CAFAuditShort":{
+          "match":"*_CAShort",
+          "mapping":{
+            "type":"short"
+          }
+        }
+      },
+      {
+        "CAFAuditDouble":{
+          "match":"*_CADbl",
+          "mapping":{
+            "type":"double"
+          }
+        }
+      },
+      {
+        "CAFAuditFloat":{
+          "match":"*_CAFlt",
+          "mapping":{
+            "type":"float"
+          }
+        }
+      },
+      {
+        "CAFAuditDate":{
+          "match":"*_CADte",
+          "mapping":{
+            "type":"date"
+          }
+        }
+      },
+      {
+        "CAFAuditBoolean":{
+          "match":"*_CABln",
+          "mapping":{
+            "type":"boolean"
+          }
+        }
+      }
     ]
 }

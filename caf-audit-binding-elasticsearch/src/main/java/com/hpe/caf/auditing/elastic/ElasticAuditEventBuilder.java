@@ -37,16 +37,12 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
     private static final Logger LOG = LogManager.getLogger(ElasticAuditEventBuilder.class.getName());
 
     private final RestHighLevelClient restHighLevelClient;
-    private final ElasticAuditIndexManager indexManager;
     private String tenantId;
     private final Map<String, Object> auditEvent = new HashMap<>();
 
     public ElasticAuditEventBuilder(RestHighLevelClient restHighLevelClient,
-                                    AuditCoreMetadataProvider coreMetadataProvider,
-                                    ElasticAuditIndexManager indexManager){
+                                    AuditCoreMetadataProvider coreMetadataProvider){
         this.restHighLevelClient = restHighLevelClient;
-        this.indexManager = indexManager;
-
         //  Add fixed audit event fields to Map.
         addCommonFields(coreMetadataProvider);
     }
@@ -82,9 +78,6 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
             throw new IllegalArgumentException(errorMessage);
         }
         this.tenantId = tenantId.toLowerCase();
-
-        // Create Elasticsearch index for the specified tenant.
-        indexManager.getIndex(this.tenantId.concat(ElasticAuditConstants.Index.SUFFIX));
     }
 
     @Override

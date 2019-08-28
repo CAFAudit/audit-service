@@ -15,7 +15,6 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
@@ -51,6 +50,7 @@ import java.util.UUID;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.Map;
+import org.elasticsearch.ElasticsearchStatusException;
 
 public class ElasticAuditIT
 {
@@ -147,7 +147,7 @@ public class ElasticAuditIT
         }
     }
 
-    @Test(expected = UncheckedExecutionException.class)
+    @Test(expected = ElasticsearchStatusException.class)
     public void testStringLengthRestrictionTenantId() throws Exception
     {
         //  This tests the usage of too many characters supplied as the tenant identifier. The tenant identifier is

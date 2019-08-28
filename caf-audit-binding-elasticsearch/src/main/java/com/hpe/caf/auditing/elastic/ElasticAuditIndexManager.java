@@ -15,17 +15,12 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.io.ByteStreams;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.CreateIndexResponse;
+import org.elasticsearch.client.indices.PutIndexTemplateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.DeprecationHandler;
 import org.elasticsearch.common.xcontent.NamedXContentRegistry;
@@ -36,43 +31,44 @@ import org.elasticsearch.common.xcontent.XContentType;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import org.elasticsearch.client.indices.IndexTemplatesExistRequest;
 
-public class ElasticAuditIndexManager {
+public final class ElasticAuditIndexManager {
 
     private static final Logger LOG = LogManager.getLogger(ElasticAuditIndexManager.class.getName());
+    private static final String INDEX_TEMPLATE_NAME = "caf_audit_template";
 
-    private final RestHighLevelClient restHighLevelClient;
-    private final LoadingCache<String, String> indexCache;
+    private ElasticAuditIndexManager(){}
 
-    private final int numberOfShards;
-    private final int numberOfReplicas;
-
-    private XContentBuilder cafAuditEventTenantIndexMappingsBuilder;
-
-    public ElasticAuditIndexManager(final int numberOfShards, final int numberOfReplicas, RestHighLevelClient restHighLevelClient) {
-        this.restHighLevelClient = restHighLevelClient;
-        this.numberOfShards = numberOfShards;
-        this.numberOfReplicas = numberOfReplicas;
-
-        //  Configure in memory cache to hold list of Elasticsearch indexes already created.
-        indexCache = CacheBuilder
-                .newBuilder()
-                .build(
-                        //  CacheLoader used to create new index and load into cache if not already cached.
-                        new CacheLoader<String, String>() {
-                            @Override
-                            public String load(String indexName) {
-                                createIndex(indexName);
-                                return indexName;
-                            }
-                        }
-                );
+    public static void createIndexTemplate(final int numberOfShards, final int numberOfReplicas,
+                                           final RestHighLevelClient restHighLevelClient, final boolean isForceIndexTemplateUpdate)
+        throws IOException
+    {
+        if (isForceIndexTemplateUpdate || !isIndexTemplatePresent(restHighLevelClient)) {
+            final PutIndexTemplateRequest request = new PutIndexTemplateRequest(INDEX_TEMPLATE_NAME);
+            //  Configure the number of shards and replicas the new index should have.
+            final Settings indexSettings = Settings.builder()
+                .put("number_of_shards", numberOfShards)
+                .put("number_of_replicas", numberOfReplicas)
+                .build();
+            request.settings(indexSettings);
+            request.mapping(getTenantIndexTypeMappingsBuilder());
+            request.patterns(Arrays.asList("*" + ElasticAuditConstants.Index.SUFFIX));
+            restHighLevelClient.indices().putTemplate(request, RequestOptions.DEFAULT);
+        }
     }
 
-    private XContentBuilder getTenantIndexTypeMappingsBuilder() {
+    private static boolean isIndexTemplatePresent(final RestHighLevelClient restHighLevelClient) throws IOException
+    {
+        final IndexTemplatesExistRequest request = new IndexTemplatesExistRequest(INDEX_TEMPLATE_NAME);
+        return restHighLevelClient.indices().existsTemplate(request, RequestOptions.DEFAULT);
+    }
+
+    private static XContentBuilder getTenantIndexTypeMappingsBuilder() {
         //  Get the contents of the index mapping file and assign to byte array before attempting to parse JSON
         final byte[] cafAuditEventTenantIndexMappingsBytes;
-        try (final InputStream inputStream = getClass().getClassLoader()
+        try (final InputStream inputStream = ElasticAuditIndexManager.class.getClassLoader()
                     .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE)){
             if(inputStream== null)
             {
@@ -98,82 +94,6 @@ public class ElasticAuditIndexManager {
             String errorMessage = "Unable to parse JSON from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
             LOG.error(errorMessage);
             throw new RuntimeException(errorMessage, e);
-        }
-    }
-
-    /**
-     * Method used to query the index cache.
-     *
-     * @param  indexName  name of index to query the cache on
-     * @return the cached index name value
-     */
-    public String getIndex(String indexName){
-        return indexCache.getUnchecked(indexName);
-    }
-
-    /**
-     *  Returns immediately if index already exists in Elasticsearch, otherwise it creates a new index in Elasticsearch
-     *  with type mappings.
-     */
-    private void createIndex(String indexName){
-        final String indexAlreadyExistsMessage = "Index " + indexName + " already exists";
-
-        //  Return immediately if index already exists. Otherwise, create a new one.
-        if (indexExists(indexName)) {
-            LOG.debug(indexAlreadyExistsMessage);
-            return;
-        }
-
-        //  Create a new index as it does not currently exist.
-        LOG.debug("Creating a new index in Elasticsearch.");
-
-        //  Get the index type mappings builder if it has not been set before, in other words if this is the first
-        //  tenant index created get the type mappings.
-        if (cafAuditEventTenantIndexMappingsBuilder == null) {
-            cafAuditEventTenantIndexMappingsBuilder = getTenantIndexTypeMappingsBuilder();
-        }
-
-        //  Configure the number of shards and replicas the new index should have.
-        final Settings indexSettings = Settings.builder()
-                .put("number_of_shards", numberOfShards)
-                .put("number_of_replicas", numberOfReplicas)
-                .build();
-
-        try {
-            //  Use IndicesAdminClient to create the new index. This operation
-            //  needs to be acknowledged.
-
-            final CreateIndexResponse createIndexResponse = restHighLevelClient.indices()
-                    .create(new CreateIndexRequest(indexName)
-                                    .settings(indexSettings)
-                                    .mapping(cafAuditEventTenantIndexMappingsBuilder),
-                    RequestOptions.DEFAULT);
-
-            if (createIndexResponse.isAcknowledged()) {
-                //  Index creation has been acknowledged.
-                LOG.debug("Index " + indexName + " has been created");
-            } else {
-                //  Index creation has not been acknowledged. Adding further check here in case it has
-                //  been created by another thread.
-                if (!indexExists(indexName)){
-                    String errorMessage = "Failed to create index " + indexName;
-                    LOG.error(errorMessage);
-                    throw new IllegalStateException(errorMessage);
-                }
-            }
-        } catch (final IOException io) {
-            //TODO ANDY - NEED to verify the exception was caused by the index already existing.
-            //  Index already exists. Just ignore.
-            LOG.debug(indexAlreadyExistsMessage, io);
-        }
-    }
-
-    private boolean indexExists(final String indexName) {
-        try {
-            return restHighLevelClient.indices().exists(new GetIndexRequest(indexName), RequestOptions.DEFAULT);
-        } catch (final IOException e) {
-            LOG.error(e);
-            return false;
         }
     }
 }

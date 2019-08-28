@@ -25,11 +25,9 @@ import java.io.IOException;
 public class ElasticAuditChannel implements AuditChannel {
 
     private final RestHighLevelClient restHighLevelClient;
-    private final ElasticAuditIndexManager indexManager;
 
-    public ElasticAuditChannel(RestHighLevelClient restHighLevelClient, ElasticAuditIndexManager indexManager){
+    public ElasticAuditChannel(RestHighLevelClient restHighLevelClient){
         this.restHighLevelClient = restHighLevelClient;
-        this.indexManager = indexManager;
     }
 
     @Override
@@ -39,7 +37,7 @@ public class ElasticAuditChannel implements AuditChannel {
 
     @Override
     public AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider) {
-        return new ElasticAuditEventBuilder(restHighLevelClient, coreMetadataProvider, indexManager);
+        return new ElasticAuditEventBuilder(restHighLevelClient, coreMetadataProvider);
     }
 
     @Override

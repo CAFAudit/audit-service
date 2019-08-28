@@ -28,7 +28,10 @@ public class ElasticAuditConnection implements AuditConnection {
     private static final Logger LOG = LogManager.getLogger(ElasticAuditConnection.class.getName());
 
     private final RestHighLevelClient restHighLevelClient;
-    private ElasticAuditIndexManager indexManager;
+    private final int numberOfShards;
+    private final int numberOfReplicas;
+    private final boolean isForceIndexTemplateUpdate;
+    private boolean isIndexTemplateCreated = false;
 
     public ElasticAuditConnection() throws AuditConfigurationException
     {
@@ -61,21 +64,18 @@ public class ElasticAuditConnection implements AuditConnection {
             }else{
                 hostAndPortsStr = hostAndPorts;
             }
-            // Get the Elasticsearch number of shards per index from env var else default to '5'
-            final int numberOfShards =
-                getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_NUMBER_OF_SHARDS,
-                                                      ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_SHARDS);
+        // Get the Elasticsearch number of shards per index from env var else default to '5'
+        numberOfShards = getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_NUMBER_OF_SHARDS,
+                                                               ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_SHARDS);
 
-            // Get the Elasticsearch number of replicas per shard from env var else default to '1'
-            final int numberOfReplicas = 
-                getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_NUMBER_OF_REPLICAS,
-                                                      ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS);
+        // Get the Elasticsearch number of replicas per shard from env var else default to '1'
+        numberOfReplicas = getNumberFromSysPropertyOrEnvVariable(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_NUMBER_OF_REPLICAS,
+                                                                 ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_NUMBER_OF_REPLICAS);
+        final String forceUpdate = System.getenv("CAF_AUDIT_FORCE_INDEX_TEMPLATE_UPDATE");
+        isForceIndexTemplateUpdate = forceUpdate != null ? Boolean.parseBoolean(forceUpdate) : false;
 
         //  Get Elasticsearch connection.
         restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostAndPortsStr);
-
-        //  Get Elasticsearch index manager.
-        indexManager = new ElasticAuditIndexManager(numberOfShards, numberOfReplicas, restHighLevelClient);
     }
 
     private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,
@@ -94,13 +94,18 @@ public class ElasticAuditConnection implements AuditConnection {
 
     @Override
     public AuditChannel createChannel() throws IOException {
+        if (!isIndexTemplateCreated) {
+            //Create index template.
+            ElasticAuditIndexManager.createIndexTemplate(numberOfShards, numberOfReplicas, restHighLevelClient,
+                                                         isForceIndexTemplateUpdate);
+            isIndexTemplateCreated = true;
+        }
         //  Share the Elasticsearch client across channels.
-        return new ElasticAuditChannel(restHighLevelClient, indexManager);
+        return new ElasticAuditChannel(restHighLevelClient);
     }
 
     @Override
     public void close() throws Exception {
         restHighLevelClient.close();
-        indexManager = null;
     }
 }

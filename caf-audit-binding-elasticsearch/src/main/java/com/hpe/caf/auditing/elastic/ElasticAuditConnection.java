@@ -94,7 +94,7 @@ public class ElasticAuditConnection implements AuditConnection {
 
     @Override
     public AuditChannel createChannel() throws IOException {
-        if (!isIndexTemplateCreated || isForceIndexTemplateUpdate) {
+        if (!isIndexTemplateCreated) {
             //Create index template.
             ElasticAuditIndexManager.createIndexTemplate(numberOfShards, numberOfReplicas, restHighLevelClient,
                                                          isForceIndexTemplateUpdate);

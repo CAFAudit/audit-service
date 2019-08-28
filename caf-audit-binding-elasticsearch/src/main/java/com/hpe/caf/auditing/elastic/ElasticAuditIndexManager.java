@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import org.elasticsearch.client.indices.IndexTemplatesExistRequest;
 
-public class ElasticAuditIndexManager {
+public final class ElasticAuditIndexManager {
 
     private static final Logger LOG = LogManager.getLogger(ElasticAuditIndexManager.class.getName());
     private static final String INDEX_TEMPLATE_NAME = "caf_audit_template";

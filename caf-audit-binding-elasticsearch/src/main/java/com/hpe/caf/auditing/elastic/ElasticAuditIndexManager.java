@@ -33,29 +33,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import org.elasticsearch.client.indices.IndexTemplatesExistRequest;
-import org.elasticsearch.client.indices.GetIndexTemplatesResponse;
 
 public class ElasticAuditIndexManager {
 
     private static final Logger LOG = LogManager.getLogger(ElasticAuditIndexManager.class.getName());
     private static final String INDEX_TEMPLATE_NAME = "caf_audit_template";
 
-    private final RestHighLevelClient restHighLevelClient;
+    private ElasticAuditIndexManager(){}
 
-    private final int numberOfShards;
-    private final int numberOfReplicas;
-
-    public ElasticAuditIndexManager(final int numberOfShards, final int numberOfReplicas, RestHighLevelClient restHighLevelClient) {
-        this.restHighLevelClient = restHighLevelClient;
-        this.numberOfShards = numberOfShards;
-        this.numberOfReplicas = numberOfReplicas;
-    }
-    public void createIndexTemplate()
+    public static void createIndexTemplate(final int numberOfShards, final int numberOfReplicas,
+                                           final RestHighLevelClient restHighLevelClient, final boolean isForceIndexTemplateUpdate)
+        throws IOException
     {
-        try {
-            if (isIndexTemplatePresent()) {
-                return;
-            }
+        if (isForceIndexTemplateUpdate || !isIndexTemplatePresent(restHighLevelClient)) {
             final PutIndexTemplateRequest request = new PutIndexTemplateRequest(INDEX_TEMPLATE_NAME);
             //  Configure the number of shards and replicas the new index should have.
             final Settings indexSettings = Settings.builder()
@@ -66,25 +56,19 @@ public class ElasticAuditIndexManager {
             request.mapping(getTenantIndexTypeMappingsBuilder());
             request.patterns(Arrays.asList("*" + ElasticAuditConstants.Index.SUFFIX));
             restHighLevelClient.indices().putTemplate(request, RequestOptions.DEFAULT);
-        } catch (final IOException ex) {
-            LOG.error("An error occured contacting elasticsearch: ", ex);
         }
     }
-    
-    private boolean isIndexTemplatePresent() throws IOException
+
+    private static boolean isIndexTemplatePresent(final RestHighLevelClient restHighLevelClient) throws IOException
     {
-        final String forceUpdate = System.getenv("CAF_AUDIT_FORCE_INDEX_TEMPLATE_UPDATE");
-        if (forceUpdate != null && Boolean.parseBoolean(forceUpdate)) {
-            return false;
-        }
         final IndexTemplatesExistRequest request = new IndexTemplatesExistRequest(INDEX_TEMPLATE_NAME);
         return restHighLevelClient.indices().existsTemplate(request, RequestOptions.DEFAULT);
     }
 
-    private XContentBuilder getTenantIndexTypeMappingsBuilder() {
+    private static XContentBuilder getTenantIndexTypeMappingsBuilder() {
         //  Get the contents of the index mapping file and assign to byte array before attempting to parse JSON
         final byte[] cafAuditEventTenantIndexMappingsBytes;
-        try (final InputStream inputStream = getClass().getClassLoader()
+        try (final InputStream inputStream = ElasticAuditIndexManager.class.getClassLoader()
                     .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE)){
             if(inputStream== null)
             {

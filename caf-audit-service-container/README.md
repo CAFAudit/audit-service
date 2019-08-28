@@ -18,6 +18,9 @@ The number of primary shards that an Elasticsearch index should have. e.g. 5
 ##### CAF\_ELASTIC\_NUMBER\_OF\_REPLICAS
 The number of replica shards (copies) that each primary shard should have. e.g. 1
 
+##### CAF\_AUDIT\_FORCE\_INDEX\_TEMPLATE\_UPDATE 
+Should the index template be updated by force even if it already exists. eg. true
+
 ##### CAF\_AUDIT\_SERVICE\_API\_CONFIG\_PATH
 
 The path to the directory containing the config.properties which can be used as an alternative means of specifying the environment variables. e.g. .\config-props

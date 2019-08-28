@@ -30,7 +30,6 @@ import org.elasticsearch.rest.RestStatus;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class ElasticAuditEventBuilder implements AuditEventBuilder {

@@ -7,19 +7,25 @@ This is a docker container for the [CAF Audit Web Service](https://github.com/CA
 #### Environment Variables
 
 ##### CAF\_ELASTIC\_HOST\_AND\_PORT
-Comma separated list of Elasticsearch HOST:PORT value pairs. e.g. 192.168.56.10:9200,192.168.56.20:9200
+Comma separated list of Elasticsearch HOST:PORT value pairs. e.g. 192.168.56.10:9200,192.168.56.20:9200. Default value is elastic search host value constructed from alternate configurations CAF_ELASTIC_HOST_VALUES and CAF_ELASTIC_PORT_VALUE.
+
+##### CAF\_ELASTIC\_HOST\_VALUES
+This is the alternative configuration with comma seperated list of Elasticsearch host names.
+
+##### CAF\_ELASTIC\_PORT\_VALUE
+This is the alternative configuration for REST port of the Elasticsearch server listens on.e.g 9200. Default value: 9200.
 
 ##### CAF\_ELASTIC\_CLUSTER\_NAME
 Name of the Elasticsearch cluster. e.g. docker-cluster
 
 ##### CAF\_ELASTIC\_NUMBER\_OF\_SHARDS
-The number of primary shards that an Elasticsearch index should have. e.g. 5
+The number of primary shards that an Elasticsearch index should have. e.g. 5. Default value: 5.
 
 ##### CAF\_ELASTIC\_NUMBER\_OF\_REPLICAS
-The number of replica shards (copies) that each primary shard should have. e.g. 1
+The number of replica shards (copies) that each primary shard should have. e.g. 1. Default value: 1.
 
 ##### CAF\_AUDIT\_FORCE\_INDEX\_TEMPLATE\_UPDATE 
-Should the index template be updated by force even if it already exists. eg. true
+Should the index template be updated by force even if it already exists. eg. true. Default value: false.
 
 ##### CAF\_AUDIT\_SERVICE\_API\_CONFIG\_PATH
 

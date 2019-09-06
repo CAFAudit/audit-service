@@ -13,7 +13,7 @@ Comma separated list of Elasticsearch HOST:PORT value pairs. e.g. 192.168.56.10:
 This is the alternative configuration with comma seperated list of Elasticsearch host names.
 
 ##### CAF\_ELASTIC\_PORT\_VALUE
-This is the alternative configuration for REST port of the Elasticsearch server listens on.e.g 9200. Default value: 9200.
+This is the alternative configuration for REST port of the Elasticsearch server listens on. e.g 9200. Default value: 9200.
 
 ##### CAF\_ELASTIC\_CLUSTER\_NAME
 Name of the Elasticsearch cluster. e.g. docker-cluster

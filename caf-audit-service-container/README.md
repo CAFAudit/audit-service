@@ -16,7 +16,7 @@ This is the alternative configuration with comma seperated list of Elasticsearch
 This is the alternative configuration for REST port of the Elasticsearch server listens on. e.g 9200. Default value: 9200.
 
 ##### CAF\_ELASTIC\_CLUSTER\_NAME
-Name of the Elasticsearch cluster. e.g. docker-cluster. Default value: elasticsearch-cluster
+Name of the Elasticsearch cluster. e.g. docker-cluster. Default value: elasticsearch-cluster.
 
 ##### CAF\_ELASTIC\_NUMBER\_OF\_SHARDS
 The number of primary shards that an Elasticsearch index should have. e.g. 5. Default value: 5.

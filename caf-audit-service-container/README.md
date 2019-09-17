@@ -9,13 +9,13 @@ This is a docker container for the [CAF Audit Web Service](https://github.com/CA
 ##### CAF\_ELASTIC\_HOST\_AND\_PORT\_VALUES
 Comma separated list of Elasticsearch HOST:PORT value pairs. e.g. 192.168.56.10:9200,192.168.56.20:9200. Default value is elastic search host value constructed from alternate configurations CAF_ELASTIC_HOST_VALUES and CAF_ELASTIC_PORT_VALUE.
 
-If values are supplied to all variables CAF_ELASTIC_HOST_AND_PORT_VALUES, CAF_ELASTIC_HOST_VALUES and CAF_ELASTIC_PORT_VALUE, the variable CAF_ELASTIC_HOST_AND_PORT_VALUES will take precedence over others.
-
 ##### CAF\_ELASTIC\_HOST\_VALUES
 This is the alternative configuration with comma separated list of Elasticsearch host names. eg. localhost
 
 ##### CAF\_ELASTIC\_PORT\_VALUE
 This is the alternative configuration for REST port of the Elasticsearch server listens on. e.g 9200.
+
+Note: `CAF_ELASTIC_HOST_AND_PORT_VALUES` will take precedence over `CAF_ELASTIC_HOST_VALUES` and `CAF_ELASTIC_PORT_VALUE` if all three environment variables have values.
 
 ##### CAF\_ELASTIC\_CLUSTER\_NAME
 Name of the Elasticsearch cluster. e.g. docker-cluster. Default value: elasticsearch-cluster.

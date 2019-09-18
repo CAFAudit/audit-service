@@ -17,7 +17,7 @@ Further information on the CAF Audit Monkey can be found [here](https://github.c
 From your Docker host command-line, run the Audit Monkey sending [2] Audit Events, for Tenant Id [directtestid], [direct] to Elasticsearch in [Standard] mode using [1] thread. Replace the `ES_HOSTNAME`, `ES_PORT` and `ES_CLUSTERNAME` environment variables with the details of the Elasticsearch deployed for smoke testing purposes:
 
 ```
-docker run -e ES_HOSTNAME=<Elasticsearch_Node> -e ES_PORT=<Elasticsearch_Node_Transport_Port> -e ES_CLUSTERNAME=<Elasticsearch_Cluster_Name> -e CAF_AUDIT_TENANT_ID=directtestid -e CAF_AUDIT_MODE=direct -e CAF_AUDIT_MONKEY_MODE=standard -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=2 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=1 cafaudit/audit-monkey:${project.version}
+docker run -e ES_HOSTNAME=<Elasticsearch_Node> -e ES_PORT=<Elasticsearch_Node_Transport_Port> -e CAF_AUDIT_TENANT_ID=directtestid -e CAF_AUDIT_MODE=direct -e CAF_AUDIT_MONKEY_MODE=standard -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=2 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=1 cafaudit/audit-monkey:${project.version}
 ```
 
 #### Verification of Direct to Elasticsearch Audit Events

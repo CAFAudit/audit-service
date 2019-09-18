@@ -17,9 +17,6 @@ This is the alternative configuration for REST port of the Elasticsearch server 
 
 Note: `CAF_ELASTIC_HOST_AND_PORT_VALUES` will take precedence over `CAF_ELASTIC_HOST_VALUES` and `CAF_ELASTIC_PORT_VALUE` if all three environment variables have values.
 
-##### CAF\_ELASTIC\_CLUSTER\_NAME
-Name of the Elasticsearch cluster. e.g. docker-cluster. Default value: elasticsearch-cluster.
-
 ##### CAF\_ELASTIC\_NUMBER\_OF\_SHARDS
 The number of primary shards that an Elasticsearch index should have. e.g. 5. Default value: 5.
 

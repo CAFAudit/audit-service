@@ -104,6 +104,7 @@
         <servlet-api-version>2.5</servlet-api-version>
         <spring-version>5.0.4.RELEASE</spring-version>
         <swagger-core-version>1.5.12</swagger-core-version>
+        <swagger-ui-version>3.23.10</swagger-ui-version>
     </properties>
 
     <dependencyManagement>
@@ -318,6 +319,11 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${spring-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.webjars.npm</groupId>
+                <artifactId>swagger-ui-dist</artifactId>
+                <version>${swagger-ui-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

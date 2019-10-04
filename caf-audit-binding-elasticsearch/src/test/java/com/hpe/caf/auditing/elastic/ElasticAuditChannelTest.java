@@ -41,7 +41,7 @@ public class ElasticAuditChannelTest {
         final List<IndexTemplateMetaData> list = new ArrayList<>();
         final List<String> patterns = new ArrayList<>();
         patterns.add("*_audit");
-        final IndexTemplateMetaData metadata = new IndexTemplateMetaData("caf_audit_template", 0, null, patterns, null, null, null);
+        final IndexTemplateMetaData metadata = new IndexTemplateMetaData("caf-audit-template", 0, null, patterns, null, null, null);
         list.add(metadata);
         mockClient = Mockito.mock(RestHighLevelClient.class);
         final IndicesClient indiciesClient = Mockito.mock(IndicesClient.class);

@@ -25,8 +25,6 @@ import com.hpe.caf.auditing.elastic.ElasticAuditRestHighLevelClientFactory;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.auditing.exception.AuditingException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -43,6 +41,8 @@ import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -58,7 +58,7 @@ import java.util.*;
 
 public class WebserviceClientAuditIT {
 
-    private static final Logger LOG = LogManager.getLogger(WebserviceClientAuditIT.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(WebserviceClientAuditIT.class.getName());
 
     private static final String APPLICATION_ID = "aTestApplication";
     private static String TENANT_ID;

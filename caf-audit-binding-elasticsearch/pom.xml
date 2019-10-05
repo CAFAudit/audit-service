@@ -124,7 +124,6 @@
                     <plugin>
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
-                        <version>${fabric8.docker.maven.version}</version>
                         <executions>
                             <execution>
                                 <id>start-testing-containers</id>
@@ -220,7 +219,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.version}</version>
                 <executions>
                     <execution>
                         <phase>test-compile</phase>
@@ -239,7 +237,6 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>${fabric8.docker.maven.version}</version>
                 <executions>
                     <execution>
                         <id>build-docker-container</id>

@@ -50,16 +50,15 @@
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
         </dependency>
-        <!-- Elasticsearch uses Log4j 2 for logging -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
         <!-- End of Auditing Implementations -->
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-service-ui</artifactId>
             <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         
         <!-- Testing dependencies -->
@@ -76,6 +75,11 @@
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-service-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -163,28 +167,44 @@
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${maven.failsafe.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <id>webservice-Docker</id>
                         <goals>
                             <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <systemPropertyVariables>
+                                <docker.host.address>${docker.host.address}</docker.host.address>
+                                <webservice.adminport>${webservice.adminport}</webservice.adminport>
+                                <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
+                            </systemPropertyVariables>
+                            <environmentVariables>
+                                <CAF_ELASTIC_HOST_VALUES>${docker.host.address}</CAF_ELASTIC_HOST_VALUES>
+                                <CAF_ELASTIC_PORT_VALUE>${elasticsearch.http.port}</CAF_ELASTIC_PORT_VALUE>
+                                <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
+                                <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/${webserviceWarName}/v1</webserviceurlhttps>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
                             <goal>verify</goal>
                         </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <summaryFiles>
+                                <summaryFile>target/failsafe-reports/failsafe-summary-audit-service.xml</summaryFile>
+                            </summaryFiles>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <systemPropertyVariables>
-                        <docker.host.address>${docker.host.address}</docker.host.address>
-                        <webservice.adminport>${webservice.adminport}</webservice.adminport>
-                        <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
-                    </systemPropertyVariables>
-                    <environmentVariables>
-                        <CAF_ELASTIC_HOST_VALUES>${docker.host.address}</CAF_ELASTIC_HOST_VALUES>
-                        <CAF_ELASTIC_PORT_VALUE>${elasticsearch.http.port}</CAF_ELASTIC_PORT_VALUE>
-                        <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
-                        <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/${webserviceWarName}/v1</webserviceurlhttps>
-                    </environmentVariables>
-                </configuration>
+                
             </plugin>
 
             <plugin>
@@ -254,7 +274,7 @@
                                     <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
-                                    <CAF_LOG_LEVEL>DEBUG</CAF_LOG_LEVEL>
+                                    <CAF_LOG_LEVEL>TRACE</CAF_LOG_LEVEL>
                                 </env>
                                 <healthCheck>
                                     <mode>none</mode>

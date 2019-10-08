@@ -261,7 +261,7 @@
                                     <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
-                                    <CAF_LOG_LEVEL>TRACE</CAF_LOG_LEVEL>
+                                    <CAF_LOG_LEVEL>DEBUG</CAF_LOG_LEVEL>
                                 </env>
                                 <healthCheck>
                                     <mode>none</mode>

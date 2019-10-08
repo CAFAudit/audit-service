@@ -83,8 +83,6 @@ public class ElasticAuditIT
     {
         // Test the Auditing library in elasticsearch mode
         System.setProperty("CAF_AUDIT_MODE", "elasticsearch");
-        System.setProperty("docker.host.address", "larry-es01.swinfra.net");
-        System.setProperty("es.port", "9200");
 
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));

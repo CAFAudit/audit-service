@@ -16,8 +16,8 @@
 package com.hpe.caf.auditing.elastic;
 
 import com.google.common.io.ByteStreams;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.elasticsearch.client.indices.PutIndexTemplateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -36,7 +36,7 @@ import org.elasticsearch.client.indices.IndexTemplatesExistRequest;
 
 public final class ElasticAuditIndexManager {
 
-    private static final Logger LOG = LogManager.getLogger(ElasticAuditIndexManager.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(ElasticAuditIndexManager.class.getName());
     private static final String INDEX_TEMPLATE_NAME = "caf-audit-template";
 
     private ElasticAuditIndexManager(){}

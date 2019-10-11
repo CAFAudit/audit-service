@@ -18,8 +18,8 @@ package com.hpe.caf.auditing.webserviceclient;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,7 +28,7 @@ import java.net.Proxy;
 
 public class WebServiceClientAuditConnection implements AuditConnection {
 
-    private static final Logger LOG = LogManager.getLogger(WebServiceClientAuditConnection.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(WebServiceClientAuditConnection.class.getName());
 
     private static final String NO_PROXY = "NO_PROXY";
     private static final String HTTP_PROXY = "HTTP_PROXY";

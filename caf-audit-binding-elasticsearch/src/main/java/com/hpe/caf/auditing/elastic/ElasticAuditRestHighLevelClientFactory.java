@@ -20,8 +20,8 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class ElasticAuditRestHighLevelClientFactory {
 
-    private static final Logger LOG = LogManager.getLogger(ElasticAuditRestHighLevelClientFactory.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(ElasticAuditRestHighLevelClientFactory.class.getName());
 
     private static final String ES_HOST_AND_PORT_NOT_PROVIDED = "Elasticsearch host and port have not been provided";
     private static final String ES_HOST_NOT_PROVIDED = "Elasticsearch host has not been provided";

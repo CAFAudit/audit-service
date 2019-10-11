@@ -34,8 +34,8 @@ import java.util.UUID;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.hpe.caf.services.audit.server.api.AuditeventsApiService;
 import com.hpe.caf.services.audit.server.api.NotFoundException;
@@ -48,7 +48,7 @@ import javax.ws.rs.core.SecurityContext;
 @javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-05-24T10:10:27.102+01:00")
 public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
-    private static final Logger LOG = LogManager.getLogger(AuditeventsApiServiceImpl.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(AuditeventsApiServiceImpl.class.getName());
 
     private static final String ERR_MSG_APPLICATION_ID_NOT_SPECIFIED = "The application identifier has not been specified";
     private static final String ERR_MSG_PROCESS_ID_NOT_SPECIFIED = "The process identifier has not been specified";

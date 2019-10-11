@@ -62,7 +62,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <autoPull>always</autoPull>
+                    <imagePullPolicy>IfNotPresent</imagePullPolicy>
                     <images>
                         <!-- Used to provide the source code to the compiler -->
                         <image>

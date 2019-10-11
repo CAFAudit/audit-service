@@ -29,8 +29,8 @@ import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.exception.AuditingException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -53,7 +53,7 @@ import java.util.TimeZone;
 
 public class WebServiceClientAuditEventBuilder implements AuditEventBuilder {
 
-    private static final Logger LOG = LogManager.getLogger(WebServiceClientAuditEventBuilder.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(WebServiceClientAuditEventBuilder.class.getName());
 
     private static final String AUDIT_WS_CONN_TIMEOUT = "AUDIT_WS_CONN_TIMEOUT";
 

@@ -50,20 +50,15 @@
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
         </dependency>
-        <!-- Elasticsearch uses Log4j 2 for logging -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-        </dependency>
         <!-- End of Auditing Implementations -->
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-service-ui</artifactId>
             <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         
         <!-- Testing dependencies -->
@@ -80,6 +75,16 @@
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-service-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -147,7 +152,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.version}</version>
                 <executions>
                     <execution>
                         <phase>test-compile</phase>
@@ -166,7 +170,6 @@
             <!-- Run integration tests. -->
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven.failsafe.version}</version>
                 <executions>
                     <execution>
                         <id>webservice-Docker</id>

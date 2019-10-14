@@ -63,6 +63,11 @@
         
         <!-- Testing dependencies -->
         <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-to-slf4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-binding-webservice</artifactId>
             <scope>test</scope>

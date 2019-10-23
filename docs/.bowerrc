@@ -2,7 +2,7 @@
     "registry":
     {
         "search": [
-            "https://svsartifactory.swinfra.net/artifactory/saas-bower-virtual"
+            "https://svsartifactory.swinfra.net/artifactory/api/bower/saas-bower-virtual"
         ]
     },
     "resolvers": [

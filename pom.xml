@@ -23,7 +23,7 @@
 
     <groupId>com.github.cafaudit</groupId>
     <artifactId>audit-service-aggregator</artifactId>
-    <version>3.4.0-SNAPSHOT</version>
+    <version>3.4.0-380</version>
     <packaging>pom</packaging>
 
     <name>Auditing</name>
@@ -133,53 +133,53 @@
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit</artifactId>
-                <version>3.4.0-SNAPSHOT</version>
+                <version>3.4.0-380</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-binding-elasticsearch</artifactId>
-                <version>3.4.0-SNAPSHOT</version>
+                <version>3.4.0-380</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-binding-webservice</artifactId>
-                <version>3.4.0-SNAPSHOT</version>
+                <version>3.4.0-380</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-monkey</artifactId>
-                <version>3.4.0-SNAPSHOT</version>
+                <version>3.4.0-380</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-monkey-auditlog</artifactId>
-                <version>3.4.0-SNAPSHOT</version>
+                <version>3.4.0-380</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service</artifactId>
-                <version>3.4.0-SNAPSHOT</version>
+                <version>3.4.0-380</version>
                 <type>war</type>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service-client</artifactId>
-                <version>3.4.0-SNAPSHOT</version>
+                <version>3.4.0-380</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service-contract</artifactId>
-                <version>3.4.0-SNAPSHOT</version>
+                <version>3.4.0-380</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service-testing-auditlog</artifactId>
-                <version>3.4.0-SNAPSHOT</version>
+                <version>3.4.0-380</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service-ui</artifactId>
-                <version>3.4.0-SNAPSHOT</version>
+                <version>3.4.0-380</version>
                 <type>war</type>
             </dependency>
             <dependency>

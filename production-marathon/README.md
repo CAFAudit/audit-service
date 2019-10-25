@@ -16,9 +16,9 @@ The `environment.sh` file supports configurable property settings necessary for 
 
 - `CAF_AUDIT_SERVICE_PORT`: This property configures the port that the CAF Audit Web Service listens on. 
 
-- `CAF_ELASTIC_HOST_AND_PORT`: This setting configures a comma separated list of Elasticsearch HOST:TRANSPORT_PORT value pairs. e.g. 192.168.56.10:9300,192.168.56.20:9300.
+- `CAF_ELASTIC_HOST_VALUES`: A comma separated list of hostnames to use when contacting elasticsearch. e.g. 192.168.56.10,192.168.56.20.
 
-- `CAF_ELASTIC_CLUSTER_NAME`: This configures the name of the Elasticsearch cluster. e.g. elasticsearch. 
+- `CAF_ELASTIC_PORT_VALUE`: The REST port of the ElasticSearch server listens on. e.g. 9200
 
 Please note that the CAF Audit Web Service cannot be deployed unless all of the above properties are configured in the marathon environment file.
 

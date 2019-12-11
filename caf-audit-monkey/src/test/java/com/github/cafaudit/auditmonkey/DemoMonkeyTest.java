@@ -74,7 +74,7 @@ public class DemoMonkeyTest
         when(monkeyConfig.getNumOfEvents()).thenReturn(2);
         DemoMonkey dm = new DemoMonkey(channel, monkeyConfig);
         Date date = dm.randomDate();
-        LOG.debug("Random Date is [" + date + "]");
+        LOG.info("Random Date is [" + date + "]");
         LocalDate upper = LocalDate.now().plusDays(1);
         LocalDate lower = LocalDate.now().minusMonths(1);
         assertTrue(date.before(upper.toDate()));

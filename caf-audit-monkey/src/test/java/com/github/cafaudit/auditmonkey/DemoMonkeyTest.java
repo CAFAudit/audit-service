@@ -77,9 +77,6 @@ public class DemoMonkeyTest
         LOG.info("Random Date is [" + date + "]");
         LocalDate upper = LocalDate.now().plusDays(1);
         LocalDate lower = LocalDate.now().minusMonths(1);
-        LOG.info("LocalDate is [" + LocalDate.now() + "]");
-        LOG.info("upper is [" + upper.toDate() + "]");
-        LOG.info("lower is [" + lower.toDate()+ "]");
         assertTrue(date.before(upper.toDate()));
         assertTrue(date.after(lower.toDate()));
     }

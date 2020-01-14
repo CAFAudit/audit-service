@@ -231,6 +231,7 @@
                     <autoPull>on</autoPull>
                     <logDate>default</logDate>
                     <watchInterval>500</watchInterval>
+                    <containerNamePattern>%a-%t</containerNamePattern>
                     <images>
                         <!--Build image for test keystore-->
                         <image>

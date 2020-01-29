@@ -76,7 +76,7 @@ public class DemoMonkeyTest
         Date date = dm.randomDate();
         LOG.info("Random Date is [" + date + "]");
         LocalDate upper = LocalDate.now().plusDays(1);
-        LocalDate lower = LocalDate.now().minusMonths(1);
+        LocalDate lower = LocalDate.now().minusMonths(1).minusDays(1);
         assertTrue(date.before(upper.toDate()));
         assertTrue(date.after(lower.toDate()));
     }

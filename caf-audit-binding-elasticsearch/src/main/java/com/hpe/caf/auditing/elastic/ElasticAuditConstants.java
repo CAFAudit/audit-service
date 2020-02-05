@@ -52,6 +52,7 @@ public final class ElasticAuditConstants {
     }
 
     public final static class ConfigEnvVar {
+        public static final String CAF_ELASTIC_PROTOCOL = "CAF_ELASTIC_PROTOCOL";
         public static final String CAF_ELASTIC_HOST_AND_PORT_VALUES = "CAF_ELASTIC_HOST_AND_PORT_VALUES";
         public static final String CAF_ELASTIC_NUMBER_OF_SHARDS = "CAF_ELASTIC_NUMBER_OF_SHARDS";
         public static final String CAF_ELASTIC_NUMBER_OF_REPLICAS = "CAF_ELASTIC_NUMBER_OF_REPLICAS";
@@ -62,6 +63,7 @@ public final class ElasticAuditConstants {
     public final static class ConfigDefault {
         public static final int CAF_ELASTIC_NUMBER_OF_SHARDS = 5;
         public static final int CAF_ELASTIC_NUMBER_OF_REPLICAS = 1;
+        public static final String CAF_ELASTIC_PROTOCOL = "http";
     }
 
 }

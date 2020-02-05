@@ -50,6 +50,11 @@ public class ElasticAuditRestHighLevelClientFactory {
      */
     public static RestHighLevelClient getHighLevelClient(final String hostAndPortValues)
         throws AuditConfigurationException {
+        String elasticProtocol = System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL,
+                System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL));
+        if (elasticProtocol == null) {
+            elasticProtocol = ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_PROTOCOL;
+        }
 
         if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
             //  Split comma separated list of ES hostname and port values.
@@ -64,7 +69,7 @@ public class ElasticAuditRestHighLevelClientFactory {
             final List<HttpHost> httpHostList = new ArrayList<>();
             for (final String hostAndPort : hostAndPortArray) {
                 try{
-                    final URI uri = new URI("http://" + hostAndPort);
+                    final URI uri = new URI(elasticProtocol + "://" + hostAndPort);
 
                     if (uri.getHost() == null) {
                         throw new URISyntaxException(uri.toString(), ES_HOST_NOT_PROVIDED);

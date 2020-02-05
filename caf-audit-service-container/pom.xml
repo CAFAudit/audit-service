@@ -191,6 +191,7 @@
                         <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
                     </systemPropertyVariables>
                     <environmentVariables>
+                        <CAF_ELASTIC_PROTOCOL>https</CAF_ELASTIC_PROTOCOL>
                         <CAF_ELASTIC_HOST_VALUES>${docker.host.address}</CAF_ELASTIC_HOST_VALUES>
                         <CAF_ELASTIC_PORT_VALUE>${elasticsearch.http.port}</CAF_ELASTIC_PORT_VALUE>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
@@ -262,6 +263,7 @@
                                     <Git.Commit>${git.revision}</Git.Commit>
                                 </labels>
                                 <env>
+                                    <CAF_ELASTIC_PROTOCOL>https</CAF_ELASTIC_PROTOCOL>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>
                                     <CAF_ELASTIC_HOST_VALUES>elasticsearch</CAF_ELASTIC_HOST_VALUES>
                                     <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
@@ -311,6 +313,7 @@
                                     <port>${webservice.https.adminport}:8443</port>
                                 </ports>
                                 <env>
+                                    <CAF_ELASTIC_PROTOCOL>https</CAF_ELASTIC_PROTOCOL>
                                     <CAF_ELASTIC_HOST_VALUES>elasticsearch</CAF_ELASTIC_HOST_VALUES>
                                     <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
                                     <CAF_LOG_LEVEL>DEBUG</CAF_LOG_LEVEL>

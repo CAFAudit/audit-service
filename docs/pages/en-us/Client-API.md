@@ -25,7 +25,8 @@ The order of instantiation and use of these objects for sending audit events is 
 4. Use the [`AuditEventBuilder`](#AuditEventBuilder) object to construct and send audit event messages to the endpoint.
 
 #### Direct to Elasticsearch Configuration  
-Configuration required to be supplied via environment variable:  
+Configuration required to be supplied via environment variable:
+- `CAF_ELASTIC_PROTOCOL`: The protocol used to connect with elasticsearch server. e.g. https. Default value is http.
 - `CAF_ELASTIC_NUMBER_OF_SHARDS`: The number of shards elasticsearch is configured to use.  
 - `CAF_ELASTIC_NUMBER_OF_REPLICAS`: The number of replicas configured for elasticsearch.
 The below two variables used to support multiple hostnames format when contacting elasticsearch.

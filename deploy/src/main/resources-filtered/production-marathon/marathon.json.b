@@ -21,6 +21,7 @@
         },
         "env": {
             "_JAVA_OPTIONS": "-Xms384m -Xmx384m",
+            "CAF_ELASTIC_PROTOCOL": "${CAF_ELASTIC_PROTOCOL}",
             "CAF_ELASTIC_HOST_VALUES": "${CAF_ELASTIC_HOST_VALUES}",
             "CAF_ELASTIC_NUMBER_OF_REPLICAS": "1",
             "CAF_ELASTIC_NUMBER_OF_SHARDS": "5",

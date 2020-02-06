@@ -14,7 +14,7 @@ The `marathon.json.b` template file describes the marathon deployment informatio
 ### Marathon Environment
 The `environment.sh` file supports configurable property settings necessary for service deployment. These include:
 
-- `CAF_ELASTIC_PROTOCOL`: The protocol used to connect with elasticsearch server. e.g. https. Default value is http.
+- `CAF_ELASTIC_PROTOCOL`: The protocol used to connect with elasticsearch server. e.g. http. Default value is http.
 
 - `CAF_AUDIT_SERVICE_PORT`: This property configures the port that the CAF Audit Web Service listens on. 
 

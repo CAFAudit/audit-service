@@ -86,7 +86,7 @@ The following parameters may be set as required:
   <tr>
      <td>CAF_ELASTIC_PROTOCOL</td>
      <td>http, https</td>
-     <td>The protocol used to connect with elasticsearch server. e.g. https</td>
+     <td>The protocol used to connect with elasticsearch server. e.g. http</td>
    </tr>
   <tr>
     <td>CAF_ELASTIC_HOST_AND_PORT_VALUES</td>

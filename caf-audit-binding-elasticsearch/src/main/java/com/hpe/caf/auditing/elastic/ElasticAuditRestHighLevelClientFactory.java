@@ -50,7 +50,7 @@ public class ElasticAuditRestHighLevelClientFactory {
      */
     public static RestHighLevelClient getHighLevelClient(final String elasticProtocol, final String hostAndPortValues)
         throws AuditConfigurationException {
-        
+
         if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
             //  Split comma separated list of ES hostname and port values.
             final String[] hostAndPortArray = hostAndPortValues.split(",");

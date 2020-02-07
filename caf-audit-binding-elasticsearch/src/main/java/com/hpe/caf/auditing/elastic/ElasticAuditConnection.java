@@ -104,13 +104,15 @@ public class ElasticAuditConnection implements AuditConnection {
         return new ElasticAuditChannel(restHighLevelClient);
     }
 
-    private String getElasticProtocol() {
-        final String elasticProtocol = System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL,
-                System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL));
+    private static String getElasticProtocol()
+    {
+        final String elasticProtocol
+            = System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL,
+                                 System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL));
 
         return (elasticProtocol == null)
-                ? ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_PROTOCOL
-                : elasticProtocol;
+            ? ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_PROTOCOL
+            : elasticProtocol;
     }
 
     @Override

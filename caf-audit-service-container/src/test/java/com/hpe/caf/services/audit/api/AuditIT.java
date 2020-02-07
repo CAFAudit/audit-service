@@ -61,6 +61,7 @@ import java.util.UUID;
 public class AuditIT {
     private static String AUDIT_WEBSERVICE_HTTP_BASE_PATH;
     private static String AUDIT_WEBSERVICE_HTTPS_BASE_PATH;
+    private static String CAF_ELASTIC_PROTOCOL;
     private static String CAF_ELASTIC_HOST_VALUES;
     private static String CAF_ELASTIC_PORT;
 
@@ -82,6 +83,7 @@ public class AuditIT {
         AUDIT_WEBSERVICE_HTTP_BASE_PATH = System.getenv("webserviceurl");
         AUDIT_WEBSERVICE_HTTPS_BASE_PATH = System.getenv("webserviceurlhttps");
 
+        CAF_ELASTIC_PROTOCOL = System.getenv("CAF_ELASTIC_PROTOCOL");
         CAF_ELASTIC_HOST_VALUES = System.getenv("CAF_ELASTIC_HOST_VALUES");
         CAF_ELASTIC_PORT = System.getenv("CAF_ELASTIC_PORT_VALUE");
 
@@ -183,7 +185,7 @@ public class AuditIT {
         //  hit has been returned.
         final String esHostAndPort = CAF_ELASTIC_HOST_VALUES + ':' + CAF_ELASTIC_PORT;
         try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, esHostAndPort)) {
 
             final String esIndex = auditEventMessage.getTenantId().toLowerCase().concat("_audit");
             SearchHit[] hits = new SearchHit[0];

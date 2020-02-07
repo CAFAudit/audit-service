@@ -75,6 +75,7 @@ public class ElasticAuditIT
     private static final String CUSTOM_DOC_DOUBLE_PARAM_FIELD = "docDoubleParam";
     private static final String CUSTOM_DOC_DATE_PARAM_FIELD = "docDateParam";
 
+    private static String CAF_ELASTIC_PROTOCOL;
     private static String ES_HOSTNAME;
     private static int ES_PORT;
 
@@ -84,6 +85,7 @@ public class ElasticAuditIT
         // Test the Auditing library in elasticsearch mode
         System.setProperty("CAF_AUDIT_MODE", "elasticsearch");
 
+        CAF_ELASTIC_PROTOCOL = System.getProperty("CAF_ELASTIC_PROTOCOL", System.getenv("CAF_ELASTIC_PROTOCOL"));
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));
         USER_ID = UUID.randomUUID().toString();
@@ -219,7 +221,7 @@ public class ElasticAuditIT
         //  Verify the type mappings have been set for the index. Then search for the audit event message in
         //  Elasticsearch and verify field data matches input.
         try (final RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, esHostAndPort)) {
 
             verifyTypeMappings(restHighLevelClient);
 
@@ -340,7 +342,7 @@ public class ElasticAuditIT
             // Search across all indices for the applicationId field in Elasticsearch and verify that the expected
             // number of hits are returned.
             try (RestHighLevelClient restHighLevelClient
-                = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(esHostAndPort)) {
+                = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, esHostAndPort)) {
 
                 String[] tenantIndexIds = new String[2];
                 tenantIndexIds[0] = tenant1Id + ElasticAuditConstants.Index.SUFFIX;

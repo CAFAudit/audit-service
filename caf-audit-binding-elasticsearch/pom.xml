@@ -163,6 +163,7 @@
                         <configuration>
                             <!--<debugForkedProcess>true</debugForkedProcess>-->
                             <environmentVariables>
+                                <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
                                 <docker.host.address>${docker.host.address}</docker.host.address>
                                 <es.port>${elasticsearch.http.port}</es.port>
                             </environmentVariables>

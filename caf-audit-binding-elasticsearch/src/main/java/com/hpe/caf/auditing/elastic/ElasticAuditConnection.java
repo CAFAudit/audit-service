@@ -75,7 +75,7 @@ public class ElasticAuditConnection implements AuditConnection {
         isForceIndexTemplateUpdate = forceUpdate != null ? Boolean.parseBoolean(forceUpdate) : false;
 
         //  Get Elasticsearch connection.
-        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(hostAndPortsStr);
+        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(getElasticProtocol(), hostAndPortsStr);
     }
 
     private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,
@@ -102,6 +102,17 @@ public class ElasticAuditConnection implements AuditConnection {
         }
         //  Share the Elasticsearch client across channels.
         return new ElasticAuditChannel(restHighLevelClient);
+    }
+
+    private static String getElasticProtocol()
+    {
+        final String elasticProtocol
+            = System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL,
+                                 System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL));
+
+        return (elasticProtocol == null)
+            ? ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_PROTOCOL
+            : elasticProtocol;
     }
 
     @Override

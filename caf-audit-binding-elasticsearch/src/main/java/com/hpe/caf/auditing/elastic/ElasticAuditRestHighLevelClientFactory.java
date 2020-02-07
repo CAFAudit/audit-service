@@ -48,14 +48,8 @@ public class ElasticAuditRestHighLevelClientFactory {
      * @return RestHighLevelClient
      * @throws AuditConfigurationException exception thrown if host is unknown
      */
-    public static RestHighLevelClient getHighLevelClient(final String hostAndPortValues)
+    public static RestHighLevelClient getHighLevelClient(final String elasticProtocol,final String hostAndPortValues)
         throws AuditConfigurationException {
-        String elasticProtocol = System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL,
-                System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL));
-        if (elasticProtocol == null) {
-            elasticProtocol = ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_PROTOCOL;
-        }
-
         if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
             //  Split comma separated list of ES hostname and port values.
             final String[] hostAndPortArray = hostAndPortValues.split(",");

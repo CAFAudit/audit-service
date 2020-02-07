@@ -7,7 +7,7 @@ This is a docker container for the [CAF Audit Web Service](https://github.com/CA
 #### Environment Variables
 
 ##### CAF\_ELASTIC\_PROTOCOL
-The protocol used to connect with elasticsearch server. e.g. http. Default value is http.
+The protocol used to connect to the Elasticsearch server. e.g. http or https. Default value is http.
 
 ##### CAF\_ELASTIC\_HOST\_AND\_PORT\_VALUES
 Comma separated list of Elasticsearch HOST:PORT value pairs. e.g. 192.168.56.10:9200,192.168.56.20:9200. Default value is elastic search host value constructed from alternate configurations CAF_ELASTIC_HOST_VALUES and CAF_ELASTIC_PORT_VALUE.

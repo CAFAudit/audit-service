@@ -8,7 +8,7 @@ export CAF_AUDIT_SERVICE_PORT=25080
 ###
 # Elasticsearch
 ###
-## The protocol used to connect with elasticsearch server.
+## The protocol used to connect to the Elasticsearch server.
 export CAF_ELASTIC_PROTOCOL=http
 ## A comma separated list of Elasticsearch HOST values.
 export CAF_ELASTIC_HOST_VALUES=192.168.56.10

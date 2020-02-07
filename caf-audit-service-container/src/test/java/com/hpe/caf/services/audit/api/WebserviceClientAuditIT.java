@@ -81,7 +81,8 @@ public class WebserviceClientAuditIT {
     private static String WS_HOSTNAME;
     private static String WS_ENDPOINT;
     private static int WS_PORT;
-
+    
+    private static String CAF_ELASTIC_PROTOCOL;
     private static String ES_HOSTNAME;
     private static int ES_PORT;
     private static String ES_HOSTNAME_AND_PORT;
@@ -119,6 +120,7 @@ public class WebserviceClientAuditIT {
         WS_PORT = Integer.parseInt(System.getProperty("webservice.adminport", System.getenv("webservice.adminport")));
         WS_ENDPOINT = String.format("http://%s:%s/caf-audit-service/v1", WS_HOSTNAME, WS_PORT);
 
+        CAF_ELASTIC_PROTOCOL = System.getProperty("CAF_ELASTIC_PROTOCOL", System.getenv("CAF_ELASTIC_PROTOCOL"));
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("elasticsearch.http.port", System.getenv("elasticsearch.http.port")));
         ES_HOSTNAME_AND_PORT = String.format("%s:%s", ES_HOSTNAME, ES_PORT);
@@ -133,7 +135,7 @@ public class WebserviceClientAuditIT {
     @AfterMethod
     public void cleanUp() throws AuditConfigurationException {
         RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT);
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, ES_HOSTNAME_AND_PORT);
         try {
             deleteIndex(client, ES_INDEX);
         } catch (RuntimeException rte) {
@@ -185,7 +187,7 @@ public class WebserviceClientAuditIT {
         //  Verify the type mappings have been set for the index. Then search for the audit event message in
         //  Elasticsearch and verify field data matches input.
         try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, ES_HOSTNAME_AND_PORT)) {
 
             verifyTypeMappings(client);
 
@@ -287,7 +289,7 @@ public class WebserviceClientAuditIT {
 
     private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(ES_HOSTNAME_AND_PORT)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, ES_HOSTNAME_AND_PORT)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
 
             final SearchRequest searchRequest = new SearchRequest()

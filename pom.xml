@@ -98,7 +98,7 @@
         <jackson-version>2.8.7</jackson-version>
         <jersey2-version>2.22.2</jersey2-version>
         <servlet-api-version>2.5</servlet-api-version>
-        <spring-version>5.0.4.RELEASE</spring-version>
+        <spring-version>5.2.3.RELEASE</spring-version>
         <swagger-core-version>1.5.12</swagger-core-version>
         <swagger-ui-version>3.23.10</swagger-ui-version>
     </properties>

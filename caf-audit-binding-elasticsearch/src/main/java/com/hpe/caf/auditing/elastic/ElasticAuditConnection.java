@@ -35,11 +35,6 @@ public class ElasticAuditConnection implements AuditConnection {
 
     public ElasticAuditConnection() throws AuditConfigurationException
     {
-            String elasticProtocol = System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL,
-                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL));
-            if (elasticProtocol == null) {
-                elasticProtocol = ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_PROTOCOL;
-            }
             final String hostAndPorts = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES));
@@ -80,7 +75,7 @@ public class ElasticAuditConnection implements AuditConnection {
         isForceIndexTemplateUpdate = forceUpdate != null ? Boolean.parseBoolean(forceUpdate) : false;
 
         //  Get Elasticsearch connection.
-        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(elasticProtocol, hostAndPortsStr);
+        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(getElasticProtocol(), hostAndPortsStr);
     }
 
     private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,
@@ -109,6 +104,15 @@ public class ElasticAuditConnection implements AuditConnection {
         return new ElasticAuditChannel(restHighLevelClient);
     }
 
+    private String getElasticProtocol(){
+        String elasticProtocol = System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL,
+                System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PROTOCOL));
+        if (elasticProtocol == null) {
+            elasticProtocol = ElasticAuditConstants.ConfigDefault.CAF_ELASTIC_PROTOCOL;
+        }
+        return elasticProtocol;
+    }
+    
     @Override
     public void close() throws Exception {
         restHighLevelClient.close();

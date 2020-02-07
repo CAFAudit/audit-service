@@ -140,7 +140,7 @@ A generated client-side library should be referenced in the normal way in the ap
 	</dependency>
 
 #### Direct to Elasticsearch Configuration  
-Configuration required to be supplied via environment variable: 
+Configuration required to be supplied via environment variable:  
 - `CAF_ELASTIC_HOST_AND_PORT_VALUES`: A comma separated list of hostnames and ports to use when contacting elasticsearch. eg. localhost:9200,otherHost:9200  
 
 - `CAF_ELASTIC_PROTOCOL`: The protocol used to connect to the Elasticsearch server. e.g. http or https. Default value is http.

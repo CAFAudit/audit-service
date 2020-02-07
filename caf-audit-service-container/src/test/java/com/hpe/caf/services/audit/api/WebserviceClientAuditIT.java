@@ -80,7 +80,7 @@ public class WebserviceClientAuditIT {
 
     private static String WS_HOSTNAME;
     private static String WS_ENDPOINT;
-    private static int WS_PORT;    
+    private static int WS_PORT;
     
     private static String CAF_ELASTIC_PROTOCOL;
     private static String ES_HOSTNAME;

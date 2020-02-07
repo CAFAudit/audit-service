@@ -48,7 +48,7 @@ public class ElasticAuditRestHighLevelClientFactory {
      * @return RestHighLevelClient
      * @throws AuditConfigurationException exception thrown if host is unknown
      */
-    public static RestHighLevelClient getHighLevelClient(final String elasticProtocol,final String hostAndPortValues)
+    public static RestHighLevelClient getHighLevelClient(final String elasticProtocol, final String hostAndPortValues)
         throws AuditConfigurationException {
         if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
             //  Split comma separated list of ES hostname and port values.

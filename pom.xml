@@ -100,7 +100,6 @@
         <servlet-api-version>2.5</servlet-api-version>
         <spring-version>5.2.3.RELEASE</spring-version>
         <swagger-core-version>1.5.12</swagger-core-version>
-        <swagger-ui-version>3.23.10</swagger-ui-version>
     </properties>
 
     <dependencyManagement>

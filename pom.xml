@@ -322,11 +322,6 @@
                 <artifactId>spring-core</artifactId>
                 <version>${spring-version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.webjars.npm</groupId>
-                <artifactId>swagger-ui-dist</artifactId>
-                <version>${swagger-ui-version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 

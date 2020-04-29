@@ -48,8 +48,6 @@ team_members:
           icon: hpe-social-email
           url: mailto:christopher.jam.comac@microfocus.com
 
----
-
     - name: David Gerald Milligan
       email: davidgerald.milligan@microfocus.com
       avatar: /assets/img/david.png
@@ -72,11 +70,9 @@ team_members:
           icon: hpe-social-email
           url: mailto:dermot.hardy@microfocus.com
 
----
-
     - name: Dominic Gibson
       email: dominic.gibson@microfocus.com
-      avatar: /assets/img/domnic.png
+      avatar: /assets/img/dominic.png
       social:
         - title: GitHub
           icon: hpe-social-github
@@ -95,8 +91,6 @@ team_members:
         - title: Email
           icon: hpe-social-email
           url: mailto:gaana.vishwnath@microfocus.com
-
----
 
     - name: Himanshi Agrawal
       email: himanshi.agrawal@microfocus.com
@@ -120,15 +114,13 @@ team_members:
           icon: hpe-social-email
           url: mailto:vgkusuma@microfocus.com
 
----
-
     - name: Michael Bryson
       email: michael.bryson@microfocus.com
       avatar: /assets/img/michael.png
       social:
         - title: GitHub
           icon: hpe-social-github
-          url:https://github.com/michael-bryson
+          url: https://github.com/michael-bryson
         - title: Email
           icon: hpe-social-email
           url: mailto:michael.bryson@microfocus.com
@@ -139,12 +131,10 @@ team_members:
       social:
         - title: GitHub
           icon: hpe-social-github
-          url:https://github.com/rahul-kulkarni73
+          url: https://github.com/rahul-kulkarni73
         - title: Email
           icon: hpe-social-email
           url: mailto:rahul.kulkarni@microfocus.com
-
----
 
     - name: Rory Torney
       email: rory.torney@microfocus.com
@@ -152,7 +142,7 @@ team_members:
       social:
         - title: GitHub
           icon: hpe-social-github
-          url:https://github.com/rorytorneymf
+          url: https://github.com/rorytorneymf
         - title: Email
           icon: hpe-social-email
           url: mailto:rory.torney@microfocus.com
@@ -163,7 +153,7 @@ team_members:
       social:
         - title: GitHub
           icon: hpe-social-github
-          url:https://github.com/thilagasanthosh
+          url: https://github.com/thilagasanthosh
         - title: Email
           icon: hpe-social-email
           url: mailto:thilagavathi.santhoshkumar@microfocus.com

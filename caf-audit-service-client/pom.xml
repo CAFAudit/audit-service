@@ -85,7 +85,7 @@
             <plugin>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>2.4.13</version>
+                <version>${swagger-codegen-maven-plugin-version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.github.cafaudit</groupId>

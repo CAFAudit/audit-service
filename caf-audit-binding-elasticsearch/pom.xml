@@ -172,6 +172,12 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>use-default-fixed-ports</id>
+            <properties>
+                <elasticsearch.http.port>9200</elasticsearch.http.port>
+            </properties>
+        </profile>
     </profiles>
 
     <build>
@@ -252,7 +258,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <skip>true</skip>
                     <verbose>true</verbose>
                     <autoPull>on</autoPull>
                     <logDate>default</logDate>

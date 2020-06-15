@@ -84,11 +84,9 @@ public final class ElasticAuditIndexManager {
         }
 
         //  Parse JSON from the bytes and return as a mapping builder
-        try {
-            XContentParser parser = XContentFactory.xContent(XContentType.JSON)
-                    .createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION,
-                            cafAuditEventTenantIndexMappingsBytes);
-            parser.close();
+        try(final XContentParser parser = XContentFactory.xContent(XContentType.JSON)
+                .createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION,
+                        cafAuditEventTenantIndexMappingsBytes)){
             return XContentFactory.jsonBuilder().copyCurrentStructure(parser);
         } catch (IOException e) {
             String errorMessage = "Unable to parse JSON from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;

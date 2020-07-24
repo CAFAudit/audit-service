@@ -52,6 +52,8 @@ public class GeneratedAuditLogIT {
     private static String ES_HOSTNAME_AND_PORT;
     private static int ES_PORT;
     private static String CAF_ELASTIC_PROTOCOL;
+    private static String CAF_ELASTIC_USERNAME;
+    private static String CAF_ELASTIC_PASSWORD;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -59,16 +61,21 @@ public class GeneratedAuditLogIT {
         System.setProperty("CAF_AUDIT_MODE", "elasticsearch");
 
         CAF_ELASTIC_PROTOCOL = System.getProperty("CAF_ELASTIC_PROTOCOL", System.getenv("CAF_ELASTIC_PROTOCOL"));
+        CAF_ELASTIC_USERNAME = System.getProperty("CAF_ELASTIC_USERNAME", System.getenv("CAF_ELASTIC_USERNAME"));
+        CAF_ELASTIC_PASSWORD = System.getProperty("CAF_ELASTIC_PASSWORD", System.getenv("CAF_ELASTIC_PASSWORD"));
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));
-
         ES_HOSTNAME_AND_PORT = String.format("%s:%s", ES_HOSTNAME, ES_PORT);
     }
 
     @After
     public void cleanUp() throws AuditConfigurationException {
         try (RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, ES_HOSTNAME_AND_PORT)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+                         CAF_ELASTIC_PROTOCOL,
+                         ES_HOSTNAME_AND_PORT,
+                         CAF_ELASTIC_USERNAME,
+                         CAF_ELASTIC_PASSWORD)) {
             deleteIndex(restHighLevelClient, testTenant + ElasticAuditConstants.Index.SUFFIX);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -159,7 +166,11 @@ public class GeneratedAuditLogIT {
 
     private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, ES_HOSTNAME_AND_PORT)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+                         CAF_ELASTIC_PROTOCOL,
+                         ES_HOSTNAME_AND_PORT,
+                         CAF_ELASTIC_USERNAME,
+                         CAF_ELASTIC_PASSWORD)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
 
             final SearchRequest searchRequest = new SearchRequest()

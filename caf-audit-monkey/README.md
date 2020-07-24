@@ -104,6 +104,16 @@ The following parameters may be set as required:
     <td>The REST port of the Elasticsearch server listens on. eg. 9200. This is an alternative variable used to construct elastic search host and port by combining with CAF_ELASTIC_HOST_VALUES.</td>
   </tr>
   <tr>
+    <td>CAF_ELASTIC_USERNAME</td>
+    <td>null, [Any String]</td>
+    <td>ElasticSearch username. Defaults to null (anonymous access).</td>
+  </tr>
+  <tr>
+    <td>CAF_ELASTIC_PASSWORD</td>
+    <td>null, [Any String]</td>
+    <td>ElasticSearch password. Defaults to null (anonymous access).</td>
+  </tr>
+  <tr>
     <td>CAF_AUDIT_WEBSERVICE_ENDPOINT_URL</td>
     <td>NONE, Any String</td>
     <td>The CAF Audit Webservice url endpoint to use when sending audit events.</td>
@@ -138,7 +148,7 @@ The following parameters may be set as required:
 
 e.g.  
 ```
-docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=standard -e CAF_ELASTIC_PROTOCOL=http -e CAF_ELASTIC_HOST_VALUES=localhost -e CAF_ELASTIC_PORT_VALUE=9200 -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=5000 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=10 <IMAGE_ID>
+docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=standard -e CAF_ELASTIC_PROTOCOL=http -e CAF_ELASTIC_HOST_VALUES=localhost -e CAF_ELASTIC_PORT_VALUE=9200 -e CAF_ELASTIC_USERNAME=jim -e CAF_ELASTIC_PASSWORD=secret -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=5000 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=10 <IMAGE_ID>
 ```
 
 Run the Audit Monkey sending [5000] Audit Events [elasticsearch] to Elasticsearch in [Standard] mode using [10] threads
@@ -152,7 +162,7 @@ Run the Audit Monkey sending [50] Audit Events for Tenant Id [wsTestId] through 
 
 e.g.  
 ```
-docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=demo -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=10000 -e CAF_ELASTIC_PROTOCOL=http -e CAF_ELASTIC_HOST_VALUES=localhost -e CAF_ELASTIC_PORT_VALUE=9200 -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=25 <IMAGE_ID>
+docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=demo -e CAF_AUDIT_MONKEY_NUM_OF_EVENTS=10000 -e CAF_ELASTIC_PROTOCOL=http -e CAF_ELASTIC_HOST_VALUES=localhost -e CAF_ELASTIC_PORT_VALUE=9200 -e CAF_ELASTIC_USERNAME=jim -e CAF_ELASTIC_PASSWORD=secret -e CAF_AUDIT_MONKEY_NUM_OF_THREADS=25 <IMAGE_ID>
 ```
 
 Run the Audit Monkey sending [10,000] Audit Events [elasticsearch] to Elasticsearch in [demo] mode using [25] threads

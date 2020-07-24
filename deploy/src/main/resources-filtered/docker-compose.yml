@@ -112,7 +112,8 @@ services:
       CAF_ELASTIC_PROTOCOL: http
       CAF_ELASTIC_HOST_VALUES: elasticsearch1,elasticsearch2,elasticsearch3
       CAF_ELASTIC_PORT_VALUE: 9200
-
+      CAF_ELASTIC_USERNAME:
+      CAF_ELASTIC_PASSWORD:
   kibana:
     depends_on:
       - elasticsearch1

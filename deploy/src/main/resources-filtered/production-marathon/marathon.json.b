@@ -26,7 +26,9 @@
             "CAF_ELASTIC_NUMBER_OF_REPLICAS": "1",
             "CAF_ELASTIC_NUMBER_OF_SHARDS": "5",
             "CAF_ELASTIC_PORT_VALUE": "${CAF_ELASTIC_PORT_VALUE}",
-            "CAF_LOG_LEVEL": "INFO"            
+            "CAF_ELASTIC_USERNAME": "${CAF_ELASTIC_USERNAME}",
+            "CAF_ELASTIC_PASSWORD": "${CAF_ELASTIC_PASSWORD}",
+            "CAF_LOG_LEVEL": "INFO",
         },
         "healthChecks": [{
             "gracePeriodSeconds": 300,

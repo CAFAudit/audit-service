@@ -44,6 +44,12 @@ public class ElasticAuditConnection implements AuditConnection {
             final String port = 
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PORT_VALUE));
+            final String username =
+                System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_USERNAME,
+                                   System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_USERNAME));
+            final String password =
+                System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PASSWORD,
+                                   System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PASSWORD));
             final StringBuilder hostAndPortBuilder = new StringBuilder();
             
             if(hostAndPorts == null){
@@ -75,7 +81,11 @@ public class ElasticAuditConnection implements AuditConnection {
         isForceIndexTemplateUpdate = forceUpdate != null ? Boolean.parseBoolean(forceUpdate) : false;
 
         //  Get Elasticsearch connection.
-        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(getElasticProtocol(), hostAndPortsStr);
+        restHighLevelClient = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+            getElasticProtocol(),
+            hostAndPortsStr,
+            username,
+            password);
     }
 
     private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,

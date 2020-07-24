@@ -20,6 +20,10 @@ The `environment-testing.sh` file supports configurable property settings necess
 
 - `CAF_TESTING_ELASTICSEARCH_CLUSTER_NAME`: This configures the name of the Elasticsearch cluster. e.g. audit-smoketest-elasticsearch.
 
+- `CAF_ELASTIC_USERNAME`: ElasticSearch username. Defaults to null (anonymous access).
+
+- `CAF_ELASTIC_PASSWORD`: ElasticSearch password. Defaults to null (anonymous access).
+
 Please note that Elasticsearch cannot be deployed unless all of the above properties are configured in the marathon environment file.
 
 ## Elasticsearch Deployment

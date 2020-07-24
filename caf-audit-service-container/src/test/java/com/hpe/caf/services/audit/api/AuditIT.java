@@ -64,6 +64,8 @@ public class AuditIT {
     private static String CAF_ELASTIC_PROTOCOL;
     private static String CAF_ELASTIC_HOST_VALUES;
     private static String CAF_ELASTIC_PORT;
+    private static String CAF_ELASTIC_USERNAME;
+    private static String CAF_ELASTIC_PASSWORD;
 
     private static final String EVENT_PARAM_TYPE_STRING = "STRING";
     private static final String EVENT_PARAM_TYPE_SHORT = "SHORT";
@@ -86,6 +88,8 @@ public class AuditIT {
         CAF_ELASTIC_PROTOCOL = System.getenv("CAF_ELASTIC_PROTOCOL");
         CAF_ELASTIC_HOST_VALUES = System.getenv("CAF_ELASTIC_HOST_VALUES");
         CAF_ELASTIC_PORT = System.getenv("CAF_ELASTIC_PORT_VALUE");
+        CAF_ELASTIC_USERNAME = System.getenv("CAF_ELASTIC_USERNAME");
+        CAF_ELASTIC_PASSWORD = System.getenv("CAF_ELASTIC_PASSWORD");
 
         auditEventsApi = new AuditEventsApi();
     }
@@ -185,7 +189,11 @@ public class AuditIT {
         //  hit has been returned.
         final String esHostAndPort = CAF_ELASTIC_HOST_VALUES + ':' + CAF_ELASTIC_PORT;
         try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, esHostAndPort)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+                         CAF_ELASTIC_PROTOCOL,
+                         esHostAndPort,
+                         CAF_ELASTIC_USERNAME,
+                         CAF_ELASTIC_PASSWORD)) {
 
             final String esIndex = auditEventMessage.getTenantId().toLowerCase().concat("_audit");
             SearchHit[] hits = new SearchHit[0];

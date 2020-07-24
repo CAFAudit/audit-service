@@ -78,6 +78,8 @@ public class ElasticAuditIT
     private static String CAF_ELASTIC_PROTOCOL;
     private static String ES_HOSTNAME;
     private static int ES_PORT;
+    private static String CAF_ELASTIC_USERNAME;
+    private static String CAF_ELASTIC_PASSWORD;
 
     @BeforeClass
     public static void setup() throws Exception
@@ -86,6 +88,8 @@ public class ElasticAuditIT
         System.setProperty("CAF_AUDIT_MODE", "elasticsearch");
 
         CAF_ELASTIC_PROTOCOL = System.getProperty("CAF_ELASTIC_PROTOCOL", System.getenv("CAF_ELASTIC_PROTOCOL"));
+        CAF_ELASTIC_USERNAME = System.getProperty("CAF_ELASTIC_USERNAME", System.getenv("CAF_ELASTIC_USERNAME"));
+        CAF_ELASTIC_PASSWORD = System.getProperty("CAF_ELASTIC_PASSWORD", System.getenv("CAF_ELASTIC_PASSWORD"));
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("es.port", System.getenv("es.port")));
         USER_ID = UUID.randomUUID().toString();
@@ -221,7 +225,11 @@ public class ElasticAuditIT
         //  Verify the type mappings have been set for the index. Then search for the audit event message in
         //  Elasticsearch and verify field data matches input.
         try (final RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, esHostAndPort)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+                         CAF_ELASTIC_PROTOCOL,
+                         esHostAndPort,
+                         CAF_ELASTIC_USERNAME,
+                         CAF_ELASTIC_PASSWORD)) {
 
             verifyTypeMappings(restHighLevelClient);
 
@@ -342,7 +350,11 @@ public class ElasticAuditIT
             // Search across all indices for the applicationId field in Elasticsearch and verify that the expected
             // number of hits are returned.
             try (RestHighLevelClient restHighLevelClient
-                = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, esHostAndPort)) {
+                = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+                         CAF_ELASTIC_PROTOCOL,
+                         esHostAndPort,
+                         CAF_ELASTIC_USERNAME,
+                         CAF_ELASTIC_PASSWORD)) {
 
                 String[] tenantIndexIds = new String[2];
                 tenantIndexIds[0] = tenant1Id + ElasticAuditConstants.Index.SUFFIX;

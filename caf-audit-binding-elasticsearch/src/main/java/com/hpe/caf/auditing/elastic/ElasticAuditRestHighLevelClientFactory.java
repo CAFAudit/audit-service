@@ -26,6 +26,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 
 /**
  * A factory for Elastic Search TransportClients.
@@ -45,10 +49,13 @@ public class ElasticAuditRestHighLevelClientFactory {
      * Returns an elastic search high level client.
      *
      * @param hostAndPortValues comma separated list of Elasticsearch host:port values
+     * @param elasticUsername comma ElasticSearch username
+     * @param elasticPassword comma ElasticSearch password
      * @return RestHighLevelClient
      * @throws AuditConfigurationException exception thrown if host is unknown
      */
-    public static RestHighLevelClient getHighLevelClient(final String elasticProtocol, final String hostAndPortValues)
+    public static RestHighLevelClient getHighLevelClient(final String elasticProtocol, final String hostAndPortValues,
+                                                         final String elasticUsername, final String elasticPassword)
         throws AuditConfigurationException {
 
         if (hostAndPortValues != null && !hostAndPortValues.isEmpty()) {
@@ -83,13 +90,26 @@ public class ElasticAuditRestHighLevelClientFactory {
             }
 
             final RestClientBuilder restClientBuilder = RestClient.builder(httpHostList.toArray(new HttpHost[0]));
-            final RestHighLevelClient restHighLevelClient = new RestHighLevelClient(restClientBuilder);
 
-            return restHighLevelClient;
+            if (credentialsSupplied(elasticUsername, elasticPassword)) {
+                final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(AuthScope.ANY,
+                                                   new UsernamePasswordCredentials(elasticUsername, elasticPassword));
+
+                restClientBuilder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                    .setDefaultCredentialsProvider(credentialsProvider));
+            }
+
+            return new RestHighLevelClient(restClientBuilder);
         } else {
             //  ES host and port not specified.
             LOG.error(ES_HOST_AND_PORT_NOT_PROVIDED);
             throw new AuditConfigurationException(ES_HOST_AND_PORT_NOT_PROVIDED);
         }
+    }
+
+    private static boolean credentialsSupplied(final String elasticUsername, final String elasticPassword)
+    {
+        return elasticUsername != null && !elasticUsername.trim().isEmpty() && elasticPassword != null;
     }
 }

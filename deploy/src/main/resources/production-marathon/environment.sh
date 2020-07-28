@@ -12,8 +12,8 @@ export CAF_ELASTIC_HOST_VALUES=
 # The REST port of the ElasticSearch server listens on.
 export CAF_ELASTIC_PORT_VALUE=
 
-# ElasticSearch username.
+# Elasticsearch username.
 export CAF_ELASTIC_USERNAME=
 
-# ElasticSearch password.
+# Elasticsearch password.
 export CAF_ELASTIC_PASSWORD=

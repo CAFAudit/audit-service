@@ -22,9 +22,9 @@ The `environment.sh` file supports configurable property settings necessary for 
 
 - `CAF_ELASTIC_PORT_VALUE`: The REST port of the ElasticSearch server listens on. e.g. 9200
 
-- `CAF_ELASTIC_USERNAME`: ElasticSearch username. Defaults to null (anonymous access).
+- `CAF_ELASTIC_USERNAME`: Elasticsearch username. Defaults to null (anonymous access).
 
-- `CAF_ELASTIC_PASSWORD`: ElasticSearch password. Defaults to null (anonymous access).
+- `CAF_ELASTIC_PASSWORD`: Elasticsearch password. Defaults to null (anonymous access).
 
 Please note that the CAF Audit Web Service cannot be deployed unless all of the above properties are configured in the marathon environment file.
 

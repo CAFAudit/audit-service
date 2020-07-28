@@ -29,9 +29,9 @@ The `environment.sh` file supports configurable property settings necessary for 
 	export CAF_ELASTIC_NUMBER_OF_REPLICAS=1
 	## The REST port of the Elasticsearch server listens on.
 	export CAF_ELASTIC_PORT_VALUE=9200
-	## ElasticSearch username.
+	## Elasticsearch username.
 	export CAF_ELASTIC_USERNAME=
-	## ElasticSearch password.
+	## Elasticsearch password.
 	export CAF_ELASTIC_PASSWORD=
 
 The `environment.sh` file specifies default values for the environment variables, however these values may require updating depending on the deployment environment.

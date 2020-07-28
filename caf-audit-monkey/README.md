@@ -111,7 +111,7 @@ The following parameters may be set as required:
   <tr>
     <td>CAF_ELASTIC_PASSWORD</td>
     <td>null, [Any String]</td>
-    <td>ElasticSearch password. Defaults to null (anonymous access).</td>
+    <td>Elasticsearch password. Defaults to null (anonymous access).</td>
   </tr>
   <tr>
     <td>CAF_AUDIT_WEBSERVICE_ENDPOINT_URL</td>

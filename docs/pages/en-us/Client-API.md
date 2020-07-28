@@ -29,8 +29,8 @@ Configuration required to be supplied via environment variable:
 - `CAF_ELASTIC_PROTOCOL`: The protocol used to connect to the Elasticsearch server. e.g. http or https. Default value is http.
 - `CAF_ELASTIC_NUMBER_OF_SHARDS`: The number of shards elasticsearch is configured to use.  
 - `CAF_ELASTIC_NUMBER_OF_REPLICAS`: The number of replicas configured for elasticsearch.
-- `CAF_ELASTIC_USERNAME`: ElasticSearch username. Defaults to null (anonymous access).
-- `CAF_ELASTIC_PASSWORD`: ElasticSearch password. Defaults to null (anonymous access).
+- `CAF_ELASTIC_USERNAME`: Elasticsearch username. Defaults to null (anonymous access).
+- `CAF_ELASTIC_PASSWORD`: Elasticsearch password. Defaults to null (anonymous access).
 The below two variables used to support multiple hostnames format when contacting elasticsearch.
 - `CAF_ELASTIC_HOST_VALUES`: A comma separated list of hostnames to use when contacting elasticsearch. eg. localhost, otherHost
 - `CAF_ELASTIC_PORT_VALUE`: The REST port of the ElasticSearch server listens on. e.g. 9200

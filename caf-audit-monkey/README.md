@@ -106,7 +106,7 @@ The following parameters may be set as required:
   <tr>
     <td>CAF_ELASTIC_USERNAME</td>
     <td>null, [Any String]</td>
-    <td>ElasticSearch username. Defaults to null (anonymous access).</td>
+    <td>Elasticsearch username. Defaults to null (anonymous access).</td>
   </tr>
   <tr>
     <td>CAF_ELASTIC_PASSWORD</td>
@@ -166,4 +166,3 @@ docker run -e CAF_AUDIT_MODE=elasticsearch -e CAF_AUDIT_MONKEY_MODE=demo -e CAF_
 ```
 
 Run the Audit Monkey sending [10,000] Audit Events [elasticsearch] to Elasticsearch in [demo] mode using [25] threads
-

@@ -18,7 +18,7 @@ export CAF_ELASTIC_NUMBER_OF_SHARDS=5
 export CAF_ELASTIC_NUMBER_OF_REPLICAS=1
 ## The REST port of the Elasticsearch server listens on.
 export CAF_ELASTIC_PORT_VALUE=9200
-## ElasticSearch username.
+## Elasticsearch username.
 export CAF_ELASTIC_USERNAME=
-## ElasticSearch password.
+## Elasticsearch password.
 export CAF_ELASTIC_PASSWORD=

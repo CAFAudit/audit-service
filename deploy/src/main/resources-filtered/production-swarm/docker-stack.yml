@@ -9,6 +9,8 @@ services:
       CAF_ELASTIC_NUMBER_OF_REPLICAS: "${CAF_ELASTIC_NUMBER_OF_REPLICAS}"
       CAF_ELASTIC_NUMBER_OF_SHARDS: "${CAF_ELASTIC_NUMBER_OF_SHARDS}"
       CAF_ELASTIC_PORT_VALUE: "${CAF_ELASTIC_PORT_VALUE}"
+      CAF_ELASTIC_USERNAME: "${CAF_ELASTIC_USERNAME}"
+      CAF_ELASTIC_PASSWORD: "${CAF_ELASTIC_PASSWORD}"
     image: cafaudit/audit-service:${project.version}
     deploy:
       mode: replicated

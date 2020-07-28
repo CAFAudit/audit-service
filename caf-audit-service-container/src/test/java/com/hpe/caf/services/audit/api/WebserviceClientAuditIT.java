@@ -86,6 +86,8 @@ public class WebserviceClientAuditIT {
     private static String ES_HOSTNAME;
     private static int ES_PORT;
     private static String ES_HOSTNAME_AND_PORT;
+    private static String CAF_ELASTIC_USERNAME;
+    private static String CAF_ELASTIC_PASSWORD;
 
     /**
      * Class that enables overriding of environment variables without effecting the environment variables set on the
@@ -121,6 +123,8 @@ public class WebserviceClientAuditIT {
         WS_ENDPOINT = String.format("http://%s:%s/caf-audit-service/v1", WS_HOSTNAME, WS_PORT);
 
         CAF_ELASTIC_PROTOCOL = System.getProperty("CAF_ELASTIC_PROTOCOL", System.getenv("CAF_ELASTIC_PROTOCOL"));
+        CAF_ELASTIC_USERNAME = System.getProperty("CAF_ELASTIC_USERNAME", System.getenv("CAF_ELASTIC_USERNAME"));
+        CAF_ELASTIC_PASSWORD = System.getProperty("CAF_ELASTIC_PASSWORD", System.getenv("CAF_ELASTIC_PASSWORD"));
         ES_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         ES_PORT = Integer.parseInt(System.getProperty("elasticsearch.http.port", System.getenv("elasticsearch.http.port")));
         ES_HOSTNAME_AND_PORT = String.format("%s:%s", ES_HOSTNAME, ES_PORT);
@@ -135,7 +139,11 @@ public class WebserviceClientAuditIT {
     @AfterMethod
     public void cleanUp() throws AuditConfigurationException {
         RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, ES_HOSTNAME_AND_PORT);
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+                         CAF_ELASTIC_PROTOCOL,
+                         ES_HOSTNAME_AND_PORT,
+                         CAF_ELASTIC_USERNAME,
+                         CAF_ELASTIC_PASSWORD);
         try {
             deleteIndex(client, ES_INDEX);
         } catch (RuntimeException rte) {
@@ -187,7 +195,11 @@ public class WebserviceClientAuditIT {
         //  Verify the type mappings have been set for the index. Then search for the audit event message in
         //  Elasticsearch and verify field data matches input.
         try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, ES_HOSTNAME_AND_PORT)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+                         CAF_ELASTIC_PROTOCOL,
+                         ES_HOSTNAME_AND_PORT,
+                         CAF_ELASTIC_USERNAME,
+                         CAF_ELASTIC_PASSWORD)) {
 
             verifyTypeMappings(client);
 
@@ -289,7 +301,11 @@ public class WebserviceClientAuditIT {
 
     private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(CAF_ELASTIC_PROTOCOL, ES_HOSTNAME_AND_PORT)) {
+                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+                         CAF_ELASTIC_PROTOCOL,
+                         ES_HOSTNAME_AND_PORT,
+                         CAF_ELASTIC_USERNAME,
+                         CAF_ELASTIC_PASSWORD)) {
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
 
             final SearchRequest searchRequest = new SearchRequest()

@@ -28,7 +28,7 @@
             "CAF_ELASTIC_PORT_VALUE": "${CAF_ELASTIC_PORT_VALUE}",
             "CAF_ELASTIC_USERNAME": "${CAF_ELASTIC_USERNAME}",
             "CAF_ELASTIC_PASSWORD": "${CAF_ELASTIC_PASSWORD}",
-            "CAF_LOG_LEVEL": "INFO",
+            "CAF_LOG_LEVEL": "INFO"            
         },
         "healthChecks": [{
             "gracePeriodSeconds": 300,

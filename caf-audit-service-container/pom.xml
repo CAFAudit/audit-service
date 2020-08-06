@@ -216,8 +216,13 @@
                         <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
                     </systemPropertyVariables>
                     <environmentVariables>
-                        <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
-                        <CAF_ELASTIC_HOST_VALUES>${docker.host.address}</CAF_ELASTIC_HOST_VALUES>
+                        <CAF_ELASTIC_PROTOCOL>https</CAF_ELASTIC_PROTOCOL>
+<!--                        <CAF_ELASTIC_HOST_VALUES>${docker.host.address}</CAF_ELASTIC_HOST_VALUES>-->
+                        
+                        <CAF_ELASTIC_HOST_VALUES>node-0.example.com</CAF_ELASTIC_HOST_VALUES>
+                        
+                        
+                        
                         <CAF_ELASTIC_PORT_VALUE>${elasticsearch.http.port}</CAF_ELASTIC_PORT_VALUE>
                         <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
                         <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/${webserviceWarName}/v1</webserviceurlhttps>
@@ -288,9 +293,12 @@
                                     <Git.Commit>${git.revision}</Git.Commit>
                                 </labels>
                                 <env>
-                                    <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
+                                    <CAF_ELASTIC_PROTOCOL>https</CAF_ELASTIC_PROTOCOL>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>
-                                    <CAF_ELASTIC_HOST_VALUES>elasticsearch</CAF_ELASTIC_HOST_VALUES>
+<!--                                    <CAF_ELASTIC_HOST_VALUES>elasticsearch</CAF_ELASTIC_HOST_VALUES>-->
+                                    <CAF_ELASTIC_HOST_VALUES>node-0.example.com</CAF_ELASTIC_HOST_VALUES>
+                                    <CAF_ELASTIC_USERNAME>snaserver</CAF_ELASTIC_USERNAME>
+                                    <CAF_ELASTIC_PASSWORD>P@ssw0rd</CAF_ELASTIC_PASSWORD>
                                     <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
@@ -329,7 +337,18 @@
                                                 <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
                                         </dependencySets>
+                                        <fileSets>
+                                            <fileSet>
+                                                <directory>${project.basedir}/cert</directory>
+                                                <outputDirectory>/cert/</outputDirectory>
+                                                <includes>
+                                                    <include>*</include>
+                                                </includes>
+                                            </fileSet>
+                                        </fileSets>
                                     </inline>
+                                    
+                                         
                                 </assembly>
                             </build>
                             <run>
@@ -338,12 +357,20 @@
                                     <port>${webservice.https.adminport}:8443</port>
                                 </ports>
                                 <env>
-                                    <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
-                                    <CAF_ELASTIC_HOST_VALUES>elasticsearch</CAF_ELASTIC_HOST_VALUES>
+<!--                                    <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
+                                    <CAF_ELASTIC_HOST_VALUES>elasticsearch</CAF_ELASTIC_HOST_VALUES>-->
                                     <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
                                     <CAF_LOG_LEVEL>DEBUG</CAF_LOG_LEVEL>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
                                     <SSL_TOMCAT_CA_CERT_LOCATION>/test-keystore/tomcat.keystore</SSL_TOMCAT_CA_CERT_LOCATION>
+                                    
+                                    <CAF_ELASTIC_USERNAME>snaserver</CAF_ELASTIC_USERNAME>
+                                    <CAF_ELASTIC_PASSWORD>P@ssw0rd</CAF_ELASTIC_PASSWORD>
+                                    <CAF_ELASTIC_PROTOCOL>https</CAF_ELASTIC_PROTOCOL>
+                                    <CAF_ELASTIC_HOST_VALUES>node-0.example.com</CAF_ELASTIC_HOST_VALUES>
+                                    
+                                    <MESOS_SANDBOX>/maven/cert</MESOS_SANDBOX>
+                                    <SSL_CA_CRT>cicada_CA_renew20170721.pem</SSL_CA_CRT>
                                 </env>
                                 <volumes>
                                     <from>
@@ -351,7 +378,8 @@
                                     </from>
                                 </volumes>
                                 <links>
-                                    <link>elasticsearch</link>
+<!--                                    <link>elasticsearch</link>-->
+                                    <link>node-0.example.com</link>
                                 </links>
                                 <log>
                                     <enabled>true</enabled>
@@ -370,24 +398,55 @@
 
                         <!-- elasticsearch image for running integration tests-->
                         <image>
-                            <alias>elasticsearch</alias>
-                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.2.0</name>
+<!--                            <alias>elasticsearch</alias>
+                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.2.0</name>-->
+                            
+                            <name>caf/elasticsearch-audit-test:${project.version}</name>
+                            <alias>node-0.example.com</alias>
+                            <build>
+                                <from>cafinternal/prereleases:elasticsearch-custom-7.1.0-SCMOD-9605-SNAPSHOT</from>
+                                <assembly>
+                                    <inline>
+                                        <fileSets>
+                                            <fileSet>
+                                                <directory>${project.basedir}/security</directory>
+                                                <outputDirectory>/securityconfig/</outputDirectory>
+                                                <includes>
+                                                    <include>*.yml</include>
+                                                </includes>
+                                            </fileSet>
+                                             <fileSet>
+                                                <directory>${project.basedir}/cert</directory>
+                                                <outputDirectory>/cert/</outputDirectory>
+                                                <includes>
+                                                    <include>*</include>
+                                                </includes>
+                                            </fileSet>
+                                        </fileSets>
+                                    </inline>
+                                </assembly>
+                            </build>
+                            
                             <run>
-                                <hostname>elasticsearch</hostname>
-                                <namingStrategy>alias</namingStrategy>
+<!--                                <hostname>elasticsearch</hostname>-->
+<!--                                <hostname>node-0.example.com</hostname>
+                                <namingStrategy>alias</namingStrategy>-->
                                 <ports>
                                     <port>${elasticsearch.http.port}:9200</port>
                                 </ports>
                                 <env>
-                                    <xpack.security.enabled>false</xpack.security.enabled>
+<!--                                    <xpack.security.enabled>false</xpack.security.enabled>-->
                                     <discovery.type>single-node</discovery.type>
+                                    <MESOS_SANDBOX>/maven/cert</MESOS_SANDBOX>
+                                    <SSL_CA_CRT>cicada_CA_renew20170721.pem</SSL_CA_CRT>
                                 </env>
                                 <wait>
-                                    <log>Elasticsearch startup complete</log>
-                                    <http>
+<!--                                    <log>Elasticsearch startup complete</log>-->
+<!--                                    <http>
                                         <url>http://${docker.host.address}:${elasticsearch.http.port}</url>
-                                    </http>
-                                    <time>300000</time>
+                                    </http>-->
+<!--                                    <time>300000</time>-->
+                                    <time>10000</time>
                                     <shutdown>500</shutdown>
                                 </wait>
                                 <log>

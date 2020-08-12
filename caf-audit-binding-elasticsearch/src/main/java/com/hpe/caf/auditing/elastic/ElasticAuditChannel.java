@@ -18,7 +18,13 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
+import com.hpe.caf.auditing.healthcheck.HealthResult;
+import com.hpe.caf.auditing.healthcheck.HealthStatus;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.cluster.health.ClusterHealthStatus;
 
 import java.io.IOException;
 
@@ -38,6 +44,22 @@ public class ElasticAuditChannel implements AuditChannel {
     @Override
     public AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider) {
         return new ElasticAuditEventBuilder(restHighLevelClient, coreMetadataProvider);
+    }
+
+    @Override
+    public HealthResult healthCheck()
+    {
+        final ClusterHealthRequest request = new ClusterHealthRequest().waitForYellowStatus();
+        try {
+            final ClusterHealthResponse health = restHighLevelClient.cluster().health(request, RequestOptions.DEFAULT);
+            if(health.getStatus() == ClusterHealthStatus.RED) {
+                return new HealthResult(HealthStatus.UNHEALTHY, "Elasticsearch cluster is unhealthy");
+            }
+        } catch (IOException e) {
+            return new HealthResult(HealthStatus.UNHEALTHY, "Error checking Elasticsearch status: "
+                    +e.getMessage());
+        }
+        return HealthResult.HEALTHY;
     }
 
     @Override

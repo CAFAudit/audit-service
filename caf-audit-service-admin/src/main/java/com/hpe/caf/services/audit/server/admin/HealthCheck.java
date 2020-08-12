@@ -15,23 +15,24 @@
  */
 package com.hpe.caf.services.audit.server.admin;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionFactory;
-import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.auditing.healthcheck.HealthResult;
 import com.hpe.caf.auditing.healthcheck.HealthStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
+@WebServlet("/healthcheck")
 public class HealthCheck extends HttpServlet
 {
     private static final Logger LOG = LoggerFactory.getLogger(HealthCheck.class);
@@ -41,15 +42,16 @@ public class HealthCheck extends HttpServlet
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException
     {
         HealthResult healthResult;
-        try {
-            final AuditConnection connection = AuditConnectionFactory.createConnection();
-             healthResult = connection.createChannel().healthCheck();
-            if (healthResult.getStatus() != HealthStatus.HEALTHY) {
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            } else {
-                resp.setStatus(HttpServletResponse.SC_OK);
+        try (final AuditConnection connection = AuditConnectionFactory.createConnection()) {
+            try (final AuditChannel channel = connection.createChannel()) {
+                healthResult = channel.healthCheck();
+                if (healthResult.getStatus() != HealthStatus.HEALTHY) {
+                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                }
             }
-        } catch (final AuditConfigurationException | JsonProcessingException e) {
+        } catch (final Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             healthResult = new HealthResult(HealthStatus.UNHEALTHY, e.getMessage());
             LOG.error("Failed to get health check - {}", e.getMessage());

@@ -302,9 +302,6 @@
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
                                 </env>
-                                <healthCheck>
-                                    <mode>none</mode>
-                                </healthCheck>
                                 <assembly>
                                     <basedir>/usr/share/tomcat</basedir>
                                     <mode>tar</mode>

@@ -24,12 +24,12 @@
          version="3.1">
     <display-name>Audit Service Administration Web Application</display-name>
 
-    <servlet>
-        <servlet-name>healthcheck</servlet-name>
-        <servlet-class>com.hpe.caf.services.audit.server.admin.HealthCheck</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>healthcheck</servlet-name>
-        <url-pattern>/healthcheck</url-pattern>
-    </servlet-mapping>
+<!--    <servlet>-->
+<!--        <servlet-name>healthcheck</servlet-name>-->
+<!--        <servlet-class>com.hpe.caf.services.audit.server.admin.HealthCheck</servlet-class>-->
+<!--    </servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>healthcheck</servlet-name>-->
+<!--        <url-pattern>/healthcheck</url-pattern>-->
+<!--    </servlet-mapping>-->
 </web-app>

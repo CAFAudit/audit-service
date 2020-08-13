@@ -15,6 +15,8 @@
  */
 package com.hpe.caf.auditing;
 
+import com.hpe.caf.auditing.healthcheck.HealthResult;
+
 import static com.hpe.caf.auditing.internal.AuditNewEventFactory.createNewEvent;
 import java.io.IOException;
 
@@ -45,4 +47,12 @@ public interface AuditChannel extends AutoCloseable
      * @return an audit event builder
      */
     AuditEventBuilder createEventBuilder(AuditCoreMetadataProvider coreMetadataProvider);
+
+    /**
+     * Checks the current state of the auditing infrastructure.
+     * @return the status and any relevant error messages if unhealthy.
+     */
+    default HealthResult healthCheck() {
+        return HealthResult.HEALTHY;
+    }
 }

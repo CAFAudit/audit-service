@@ -41,6 +41,11 @@
             <artifactId>caf-audit-service</artifactId>
             <type>war</type>
         </dependency>
+        <dependency>
+            <groupId>com.github.cafaudit</groupId>
+            <artifactId>caf-audit-service-admin</artifactId>
+            <type>war</type>
+        </dependency>
         <!-- Auditing Implementations -->
         <dependency>
             <groupId>com.github.cafaudit</groupId>
@@ -171,6 +176,7 @@
             <id>use-default-fixed-ports</id>
             <properties>
                 <webservice.adminport>25080</webservice.adminport>
+                <webservice.healthcheckport>25081</webservice.healthcheckport>
                 <elasticsearch.http.port>9200</elasticsearch.http.port>
             </properties>
         </profile>
@@ -214,6 +220,7 @@
                         <docker.host.address>${docker.host.address}</docker.host.address>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
                         <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
+                        <webservice.healthcheckport>${webservice.healthcheckport}</webservice.healthcheckport>
                     </systemPropertyVariables>
                     <environmentVariables>
                         <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
@@ -295,9 +302,6 @@
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
                                 </env>
-                                <healthCheck>
-                                    <mode>none</mode>
-                                </healthCheck>
                                 <assembly>
                                     <basedir>/usr/share/tomcat</basedir>
                                     <mode>tar</mode>
@@ -311,6 +315,16 @@
                                                 <unpack>true</unpack>
                                                 <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
+                                            <!-- service dependencies -->
+                                            <dependencySet>
+                                                <outputDirectory>webapps/${webserviceWarName}/WEB-INF/lib</outputDirectory>
+                                                <excludes>
+                                                    <exclude>com.github.cafaudit:caf-audit-service</exclude>
+                                                    <exclude>com.github.cafaudit:caf-audit-service-ui</exclude>
+                                                    <exclude>com.github.cafaudit:caf-audit-service-admin</exclude>
+                                                </excludes>
+                                                <useProjectArtifact>false</useProjectArtifact>
+                                            </dependencySet>
                                             <!-- Including the swagger ui in the container image. -->
                                             <dependencySet>
                                                 <outputDirectory>webapps/caf-audit-service-ui</outputDirectory>
@@ -320,12 +334,24 @@
                                                 <unpack>true</unpack>
                                                 <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
+                                            <!-- Including the healthcheck web application. -->
                                             <dependencySet>
-                                                <outputDirectory>webapps/${webserviceWarName}/WEB-INF/lib</outputDirectory>
-                                                <excludes>
-                                                    <exclude>com.github.cafaudit:caf-audit-service</exclude>
-                                                    <exclude>com.github.cafaudit:caf-audit-service-ui</exclude>
-                                                </excludes>
+                                                <outputDirectory>adminapps/ROOT/</outputDirectory>
+                                                <includes>
+                                                    <include>com.github.cafaudit:caf-audit-service-admin</include>
+                                                </includes>
+                                                <unpack>true</unpack>
+                                                <useProjectArtifact>false</useProjectArtifact>
+                                            </dependencySet>
+                                            <!-- healthcheck dependencies -->
+                                            <dependencySet>
+                                                <outputDirectory>adminapps/ROOT/WEB-INF/lib</outputDirectory>
+                                                <includes>
+                                                    <include>com.github.cafaudit:caf-audit-binding-elasticsearch</include>
+                                                    <include>org.elasticsearch.client:elasticsearch-rest-high-level-client</include>
+                                                </includes>
+                                                <useTransitiveDependencies>true</useTransitiveDependencies>
+                                                <useTransitiveFiltering>true</useTransitiveFiltering>
                                                 <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
                                         </dependencySets>
@@ -336,6 +362,7 @@
                                 <ports>
                                     <port>${webservice.adminport}:8080</port>
                                     <port>${webservice.https.adminport}:8443</port>
+                                    <port>${webservice.healthcheckport}:8081</port>
                                 </ports>
                                 <env>
                                     <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
@@ -359,7 +386,7 @@
                                 <wait>
                                     <http>
                                         <url>
-                                            http://${docker.host.address}:${webservice.adminport}
+                                            http://${docker.host.address}:${webservice.healthcheckport}/healthcheck
                                         </url>
                                     </http>
                                     <time>120000</time>

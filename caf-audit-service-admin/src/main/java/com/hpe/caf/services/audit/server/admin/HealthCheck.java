@@ -19,11 +19,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditConnectionFactory;
+import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.auditing.healthcheck.HealthResult;
 import com.hpe.caf.auditing.healthcheck.HealthStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,24 +34,33 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
-@WebServlet("/healthcheck")
+@WebServlet(name = "healthcheck", urlPatterns = "/healthcheck", loadOnStartup = 1)
 public class HealthCheck extends HttpServlet
 {
     private static final Logger LOG = LoggerFactory.getLogger(HealthCheck.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private AuditConnection connection = null;
+
+    @Override
+    public void init() throws ServletException
+    {
+        try {
+            connection = AuditConnectionFactory.createConnection();
+        } catch (AuditConfigurationException e) {
+            throw new ServletException(e);
+        }
+    }
 
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException
     {
         HealthResult healthResult;
-        try (final AuditConnection connection = AuditConnectionFactory.createConnection()) {
-            try (final AuditChannel channel = connection.createChannel()) {
-                healthResult = channel.healthCheck();
-                if (healthResult.getStatus() != HealthStatus.HEALTHY) {
-                    resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_OK);
-                }
+        try (final AuditChannel channel = connection.createChannel()) {
+            healthResult = channel.healthCheck();
+            if (healthResult.getStatus() != HealthStatus.HEALTHY) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            } else {
+                resp.setStatus(HttpServletResponse.SC_OK);
             }
         } catch (final Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -63,6 +74,18 @@ public class HealthCheck extends HttpServlet
         try (final ServletOutputStream out = resp.getOutputStream()) {
             out.write(body);
             out.flush();
+        }
+    }
+
+    @Override
+    public void destroy()
+    {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

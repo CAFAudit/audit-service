@@ -55,7 +55,7 @@ public class ElasticAuditChannel implements AuditChannel {
             if(health.getStatus() == ClusterHealthStatus.RED) {
                 return new HealthResult(HealthStatus.UNHEALTHY, "Elasticsearch cluster is unhealthy");
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return new HealthResult(HealthStatus.UNHEALTHY, "Error checking Elasticsearch status: "
                     +e.getMessage());
         }

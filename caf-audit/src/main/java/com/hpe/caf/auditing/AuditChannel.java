@@ -16,7 +16,6 @@
 package com.hpe.caf.auditing;
 
 import com.hpe.caf.auditing.healthcheck.HealthResult;
-import com.hpe.caf.auditing.healthcheck.HealthStatus;
 
 import static com.hpe.caf.auditing.internal.AuditNewEventFactory.createNewEvent;
 import java.io.IOException;

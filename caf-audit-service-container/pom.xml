@@ -315,6 +315,16 @@
                                                 <unpack>true</unpack>
                                                 <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
+                                            <!-- service dependencies -->
+                                            <dependencySet>
+                                                <outputDirectory>webapps/${webserviceWarName}/WEB-INF/lib</outputDirectory>
+                                                <excludes>
+                                                    <exclude>com.github.cafaudit:caf-audit-service</exclude>
+                                                    <exclude>com.github.cafaudit:caf-audit-service-ui</exclude>
+                                                    <exclude>com.github.cafaudit:caf-audit-service-admin</exclude>
+                                                </excludes>
+                                                <useProjectArtifact>false</useProjectArtifact>
+                                            </dependencySet>
                                             <!-- Including the swagger ui in the container image. -->
                                             <dependencySet>
                                                 <outputDirectory>webapps/caf-audit-service-ui</outputDirectory>
@@ -326,19 +336,22 @@
                                             </dependencySet>
                                             <!-- Including the healthcheck web application. -->
                                             <dependencySet>
-                                                <outputDirectory>webapps/caf-audit-service-admin</outputDirectory>
+                                                <outputDirectory>adminapps/ROOT/</outputDirectory>
                                                 <includes>
                                                     <include>com.github.cafaudit:caf-audit-service-admin</include>
                                                 </includes>
                                                 <unpack>true</unpack>
                                                 <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
+                                            <!-- healthcheck dependencies -->
                                             <dependencySet>
-                                                <outputDirectory>webapps/${webserviceWarName}/WEB-INF/lib</outputDirectory>
-                                                <excludes>
-                                                    <exclude>com.github.cafaudit:caf-audit-service</exclude>
-                                                    <exclude>com.github.cafaudit:caf-audit-service-ui</exclude>
-                                                </excludes>
+                                                <outputDirectory>adminapps/ROOT/WEB-INF/lib</outputDirectory>
+                                                <includes>
+                                                    <include>com.github.cafaudit:caf-audit-binding-elasticsearch</include>
+                                                    <include>org.elasticsearch.client:elasticsearch-rest-high-level-client</include>
+                                                </includes>
+                                                <useTransitiveDependencies>true</useTransitiveDependencies>
+                                                <useTransitiveFiltering>true</useTransitiveFiltering>
                                                 <useProjectArtifact>false</useProjectArtifact>
                                             </dependencySet>
                                         </dependencySets>

@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -167,7 +168,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
         //  Identify parameter type.
         final String epParamType = ep.getParamType();
 
-        switch (epParamType.toUpperCase()) {
+        switch (epParamType.toUpperCase(Locale.ENGLISH)) {
             case EVENT_PARAM_TYPE_STRING:
                 //  Has an indexing hint been specified. If so, make sure it is one of the supported hints.
                 if (ep.getParamIndexingHint() != null) {
@@ -206,7 +207,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     private boolean isEventParameterIndexingHintSupported(final String eventParameterIndexingHint) {
         boolean isSupported = false;
 
-        switch (eventParameterIndexingHint.toUpperCase()) {
+        switch (eventParameterIndexingHint.toUpperCase(Locale.ENGLISH)) {
             case EVENT_PARAM_INDEXING_HINT_FULLTEXT:
             case EVENT_PARAM_INDEXING_HINT_KEYWORD:
                 isSupported = true;
@@ -365,12 +366,12 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
             try {
                 //  Add event parameter details to the audit event builder object by type.
-                switch (epParamType.toUpperCase()) {
+                switch (epParamType.toUpperCase(Locale.ENGLISH)) {
                     case EVENT_PARAM_TYPE_STRING:
                         //  Has an indexing hint been specified.
                         if (ep.getParamIndexingHint() != null) {
                             final String indexingHint = ep.getParamIndexingHint();
-                            switch (indexingHint.toUpperCase()) {
+                            switch (indexingHint.toUpperCase(Locale.ENGLISH)) {
                                 case EVENT_PARAM_INDEXING_HINT_FULLTEXT:
                                     auditEventBuilder.addEventParameter(epParamName, epParamColumn, epParamValue, AuditIndexingHint.FULLTEXT);
                                     break;

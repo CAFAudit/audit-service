@@ -368,7 +368,7 @@
                                     <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
                                     <CAF_ELASTIC_HOST_VALUES>elasticsearch</CAF_ELASTIC_HOST_VALUES>
                                     <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
-                                    <CAF_LOG_LEVEL>DEBUG</CAF_LOG_LEVEL>
+                                    <CAF_LOG_LEVEL>INFO</CAF_LOG_LEVEL>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
                                     <SSL_TOMCAT_CA_CERT_LOCATION>/test-keystore/tomcat.keystore</SSL_TOMCAT_CA_CERT_LOCATION>
                                 </env>

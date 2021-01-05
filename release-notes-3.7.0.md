@@ -9,8 +9,6 @@ ${version-number}
   
 - **SCMOD-11069**: Updated to use the latest release of base image (opensuse-jre11-3.1.0-SNAPSHOT). Release the whole hierarchy of base images and update the services that are currently using pre-release versions of the base images to use the new released versions of the base images.
   
-- **SCMOD-11683**: Decreased log level to Info in order to match the default settings and avoid un-required log creation while decreasing execution time
-  
 - **SCMOD-11768**: Explicitly specify base image. This will help in finding the relevant images when required.
 
 #### Known Issues

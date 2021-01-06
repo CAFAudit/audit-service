@@ -3,13 +3,17 @@
 ${version-number}
 
 #### New Features
-- **SCMOD-9181**: Updated jre11 to support generic SSL cert dir. The "MESOS_SANDBOX" variable has been replaced with "SSL_CA_CRT_DIR" in order to maintain backward compatibility (ex: for use on Kubernetes)
+ - SCMOD-9181: JRE 11 base image
+  The JRE 11 base image has been updated to support a generic SSL cert directory. The MESOS_SANDBOX variable has been replaced with SSL_CA_CRT_DIR in order to maintain backward compatibility (ex: for use on Kubernetes).
 
-- **SCMOD-5156**: Fully-qualified DockerHub images. DockerHub security: Abandon the generic hpeemployee account as we have the internal DockerHub proxy on dockerhub-private.svsartifactory.swinfra.net.
+ - SCMOD-5156: Use fully-qualified DockerHub images
+  DockerHub image names have been updated so that images are pulled from our DockerHub proxy.
   
-- **SCMOD-11069**: Updated to use the latest release of base image (opensuse-jre11-3.1.0-SNAPSHOT). Release the whole hierarchy of base images and update the services that are currently using pre-release versions of the base images to use the new released versions of the base images.
+ - SCMOD-9182: Tomcat base image
+   The image now includes a setup-tomcat-ssl-cert.sh script which configures SSL when the image starts up.
   
-- **SCMOD-11768**: Explicitly specify base image. This will help in finding the relevant images when required.
+ - SCMOD-11768: Explicitly specify base image
+  Explicitly specify the busybox base image so that it is pulled from our DockerHub proxy rather than docker.io.
 
 #### Known Issues
 

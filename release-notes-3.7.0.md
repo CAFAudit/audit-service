@@ -3,7 +3,7 @@
 ${version-number}
 
 #### New Features
-- **SCMOD-9181**: updated jre11 to support generic SSL cert dir. The "MESOS_SANDBOX" variable has been replaced with "SSL_CA_CRT_DIR" in order to maintain backward compatibility (ex: for use on Kubernetes)
+- **SCMOD-9181**: Updated jre11 to support generic SSL cert dir. The "MESOS_SANDBOX" variable has been replaced with "SSL_CA_CRT_DIR" in order to maintain backward compatibility (ex: for use on Kubernetes)
 
 - **SCMOD-5156**: Fully-qualified DockerHub images. DockerHub security: Abandon the generic hpeemployee account as we have the internal DockerHub proxy on dockerhub-private.svsartifactory.swinfra.net.
   

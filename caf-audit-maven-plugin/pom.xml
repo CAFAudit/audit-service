@@ -31,7 +31,7 @@
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
-        <version>3.7.0-590</version>
+        <version>3.8.0-SNAPSHOT</version>
     </parent>
 
     <properties>

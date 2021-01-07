@@ -9,7 +9,7 @@ ${version-number}
 * SCMOD-5156: Use fully-qualified DockerHub images  
     DockerHub image names have been updated so that images are pulled from our DockerHub proxy.
     
-* SCMOD-11768: Explicitly specify base image
+* SCMOD-11768: Explicitly specify base image  
     Explicitly specify the busybox base image so that it is pulled from our DockerHub proxy rather than `docker.io`.
 
 #### Known Issues

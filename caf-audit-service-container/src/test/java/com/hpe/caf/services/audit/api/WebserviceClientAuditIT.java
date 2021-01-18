@@ -50,11 +50,12 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.github.stefanbirkner.systemlambda.SystemLambda.*;
 
 public class WebserviceClientAuditIT {
 
@@ -89,34 +90,10 @@ public class WebserviceClientAuditIT {
     private static String CAF_ELASTIC_USERNAME;
     private static String CAF_ELASTIC_PASSWORD;
 
-    /**
-     * Class that enables overriding of environment variables without effecting the environment variables set on the
-     * host
-     */
-    static class TestEnvironmentVariablesOverrider {
-        @SuppressWarnings("unchecked")
-        public static void configureEnvironmentVariable(String name, String value) throws Exception {
-            Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
-            Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
-            theEnvironmentField.setAccessible(true);
-            Map<String, String> env = (Map<String, String>) theEnvironmentField.get(null);
-            env.put(name, value);
-            Field theCaseInsensitiveEnvironmentField = processEnvironmentClass
-                    .getDeclaredField("theCaseInsensitiveEnvironment");
-            theCaseInsensitiveEnvironmentField.setAccessible(true);
-            Map<String, String> cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
-            cienv.put(name, value);
-        }
-    }
-
     @BeforeClass
     public static void setup() throws Exception {
         // Test the Auditing library in webservice mode
         System.setProperty("CAF_AUDIT_MODE", "webservice");
-
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "");
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("https_proxy", "");
 
         WS_HOSTNAME = System.getProperty("docker.host.address", System.getenv("docker.host.address"));
         WS_PORT = Integer.parseInt(System.getProperty("webservice.adminport", System.getenv("webservice.adminport")));
@@ -153,150 +130,164 @@ public class WebserviceClientAuditIT {
 
     @Test
     public void testWebserviceClient() throws Exception {
-        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", WS_ENDPOINT);
-        AuditConnection auditConnection = AuditConnectionFactory.createConnection();
-        AuditChannel auditChannel = auditConnection.createChannel();
+        withEnvironmentVariable("no_proxy", "")
+            .and("http_proxy", "")
+            .and("https_proxy", "")
+            .execute(() -> {
+                System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", WS_ENDPOINT);
+                AuditConnection auditConnection = AuditConnectionFactory.createConnection();
+                AuditChannel auditChannel = auditConnection.createChannel();
 
-        // Create new Audit Event Builder
-        AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
+                // Create new Audit Event Builder
+                AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
 
-        //  Set up fixed field data for the sample audit event message.
-        auditEventBuilder.setApplication(APPLICATION_ID);
-        auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
-        auditEventBuilder.setCorrelationId(CORRELATION_ID);
-        auditEventBuilder.setTenant(TENANT_ID);
-        auditEventBuilder.setUser(USER_ID);
+                //  Set up fixed field data for the sample audit event message.
+                auditEventBuilder.setApplication(APPLICATION_ID);
+                auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
+                auditEventBuilder.setCorrelationId(CORRELATION_ID);
+                auditEventBuilder.setTenant(TENANT_ID);
+                auditEventBuilder.setUser(USER_ID);
 
-        //  Set up random test values for custom field data.
-        Random rand = new Random();
+                //  Set up random test values for custom field data.
+                Random rand = new Random();
 
-        String docStringParamValue = "testStringParam";
-        auditEventBuilder.addEventParameter(CUSTOM_DOC_STRING_PARAM_FIELD, null, docStringParamValue,
-                AuditIndexingHint.FULLTEXT);
-        auditEventBuilder.addEventParameter(CUSTOM_DOC_STRING_PARAM_FIELD, null, docStringParamValue);
-        int docIntParamValue = rand.nextInt();
-        auditEventBuilder.addEventParameter(CUSTOM_DOC_INT_PARAM_FIELD, null, docIntParamValue);
-        short docShortParamValue = (short) rand.nextInt(Short.MAX_VALUE + 1);
-        auditEventBuilder.addEventParameter(CUSTOM_DOC_SHORT_PARAM_FIELD, null, docShortParamValue);
-        long docLongParamValue = rand.nextLong();
-        auditEventBuilder.addEventParameter(CUSTOM_DOC_LONG_PARAM_FIELD, null, docLongParamValue);
-        float docFloatParamValue = rand.nextFloat();
-        auditEventBuilder.addEventParameter(CUSTOM_DOC_FLOAT_PARAM_FIELD, null, docFloatParamValue);
-        double docDoubleParamValue = rand.nextDouble();
-        auditEventBuilder.addEventParameter(CUSTOM_DOC_DOUBLE_PARAM_FIELD, null, docDoubleParamValue);
-        boolean docBooleanParamValue = rand.nextBoolean();
-        auditEventBuilder.addEventParameter(CUSTOM_DOC_BOOLEAN_PARAM_FIELD, null, docBooleanParamValue);
-        Date docDateParamValue = new Date();
-        auditEventBuilder.addEventParameter(CUSTOM_DOC_DATE_PARAM_FIELD, null, docDateParamValue);
+                String docStringParamValue = "testStringParam";
+                auditEventBuilder.addEventParameter(CUSTOM_DOC_STRING_PARAM_FIELD, null, docStringParamValue,
+                                                    AuditIndexingHint.FULLTEXT);
+                auditEventBuilder.addEventParameter(CUSTOM_DOC_STRING_PARAM_FIELD, null, docStringParamValue);
+                int docIntParamValue = rand.nextInt();
+                auditEventBuilder.addEventParameter(CUSTOM_DOC_INT_PARAM_FIELD, null, docIntParamValue);
+                short docShortParamValue = (short) rand.nextInt(Short.MAX_VALUE + 1);
+                auditEventBuilder.addEventParameter(CUSTOM_DOC_SHORT_PARAM_FIELD, null, docShortParamValue);
+                long docLongParamValue = rand.nextLong();
+                auditEventBuilder.addEventParameter(CUSTOM_DOC_LONG_PARAM_FIELD, null, docLongParamValue);
+                float docFloatParamValue = rand.nextFloat();
+                auditEventBuilder.addEventParameter(CUSTOM_DOC_FLOAT_PARAM_FIELD, null, docFloatParamValue);
+                double docDoubleParamValue = rand.nextDouble();
+                auditEventBuilder.addEventParameter(CUSTOM_DOC_DOUBLE_PARAM_FIELD, null, docDoubleParamValue);
+                boolean docBooleanParamValue = rand.nextBoolean();
+                auditEventBuilder.addEventParameter(CUSTOM_DOC_BOOLEAN_PARAM_FIELD, null, docBooleanParamValue);
+                Date docDateParamValue = new Date();
+                auditEventBuilder.addEventParameter(CUSTOM_DOC_DATE_PARAM_FIELD, null, docDateParamValue);
 
-        //  Send audit event message to Elasticsearch.
-        auditEventBuilder.send();
+                //  Send audit event message to Elasticsearch.
+                auditEventBuilder.send();
 
-        //  Verify the type mappings have been set for the index. Then search for the audit event message in
-        //  Elasticsearch and verify field data matches input.
-        try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
-                         CAF_ELASTIC_PROTOCOL,
-                         ES_HOSTNAME_AND_PORT,
-                         CAF_ELASTIC_USERNAME,
-                         CAF_ELASTIC_PASSWORD)) {
+                //  Verify the type mappings have been set for the index. Then search for the audit event message in
+                //  Elasticsearch and verify field data matches input.
+                try (RestHighLevelClient client
+                    = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+                        CAF_ELASTIC_PROTOCOL,
+                        ES_HOSTNAME_AND_PORT,
+                        CAF_ELASTIC_USERNAME,
+                        CAF_ELASTIC_PASSWORD)) {
 
-            verifyTypeMappings(client);
+                    verifyTypeMappings(client);
 
-            SearchHit[] hits = new SearchHit[0];
-            hits = searchDocumentInIndex(client,
-                    ES_INDEX,
-                    ElasticAuditConstants.FixedFieldName.USER_ID_FIELD,
-                    USER_ID);
+                    SearchHit[] hits = new SearchHit[0];
+                    hits = searchDocumentInIndex(client,
+                                                 ES_INDEX,
+                                                 ElasticAuditConstants.FixedFieldName.USER_ID_FIELD,
+                                                 USER_ID);
 
-            //  Expecting a single hit.
-            Assert.assertTrue(hits.length == 1);
+                    //  Expecting a single hit.
+                    Assert.assertTrue(hits.length == 1);
 
-            //  Make a note of the document identifier as we will use this to clean
-            //  up afterwards.
-            final String docId = hits[0].getId();
+                    //  Make a note of the document identifier as we will use this to clean
+                    //  up afterwards.
+                    final String docId = hits[0].getId();
 
-            //  Verify fixed field data results.
-            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, APPLICATION_ID, "string");
-            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
-            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
-            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, USER_ID, "string");
-            verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
+                    //  Verify fixed field data results.
+                    verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, APPLICATION_ID, "string");
+                    verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_CATEGORY_ID_FIELD, EVENT_CATEGORY_ID, "string");
+                    verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.EVENT_TYPE_ID_FIELD, EVENT_TYPE_ID, "string");
+                    verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.USER_ID_FIELD, USER_ID, "string");
+                    verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.CORRELATION_ID_FIELD, CORRELATION_ID, "string");
 
-            //  Verify fixed field data results.
-            verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string",
-                    AuditIndexingHint.FULLTEXT);
-            verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string",
-                    AuditIndexingHint.KEYWORD);
-            verifyCustomFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int", null);
-            verifyCustomFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short", null);
-            verifyCustomFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long", null);
-            verifyCustomFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float", null);
-            verifyCustomFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double", null);
-            verifyCustomFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean", null);
-            verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date", null);
+                    //  Verify fixed field data results.
+                    verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string",
+                                            AuditIndexingHint.FULLTEXT);
+                    verifyCustomFieldResult(hits, CUSTOM_DOC_STRING_PARAM_FIELD, docStringParamValue, "string",
+                                            AuditIndexingHint.KEYWORD);
+                    verifyCustomFieldResult(hits, CUSTOM_DOC_INT_PARAM_FIELD, docIntParamValue, "int", null);
+                    verifyCustomFieldResult(hits, CUSTOM_DOC_SHORT_PARAM_FIELD, docShortParamValue, "short", null);
+                    verifyCustomFieldResult(hits, CUSTOM_DOC_LONG_PARAM_FIELD, docLongParamValue, "long", null);
+                    verifyCustomFieldResult(hits, CUSTOM_DOC_FLOAT_PARAM_FIELD, docFloatParamValue, "float", null);
+                    verifyCustomFieldResult(hits, CUSTOM_DOC_DOUBLE_PARAM_FIELD, docDoubleParamValue, "double", null);
+                    verifyCustomFieldResult(hits, CUSTOM_DOC_BOOLEAN_PARAM_FIELD, docBooleanParamValue, "boolean", null);
+                    verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, docDateParamValue, "date", null);
 
-            //  Delete test document after verification is complete.
-            deleteDocument(client, ES_INDEX, docId);
-        }
+                    //  Delete test document after verification is complete.
+                    deleteDocument(client, ES_INDEX, docId);
+                }
+            });
     }
 
     @Test
     public void eventOrderTest() throws Exception{
-        int event1Order;
-        int event2Order;
-        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", WS_ENDPOINT);
-        try (
-                final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
-                final AuditChannel auditChannel = auditConnection.createChannel()) {
-            {
-                Date date = new Date();
-                String correlationId = UUID.randomUUID().toString();
-                AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId,
-                        "stringType1", "stringType2", "stringType3", "stringType4",
-                        Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true,
-                        date);
+        withEnvironmentVariable("no_proxy", "")
+            .and("http_proxy", "")
+            .and("https_proxy", "")
+            .execute(() -> {
+                int event1Order;
+                int event2Order;
+                System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", WS_ENDPOINT);
+                try (
+                    final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
+                    final AuditChannel auditChannel = auditConnection.createChannel()) {
+                    {
+                        Date date = new Date();
+                        String correlationId = UUID.randomUUID().toString();
+                        AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId,
+                                                 "stringType1", "stringType2", "stringType3", "stringType4",
+                                                 Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true,
+                                                 date);
 
-                SearchHit searchHit = getAuditEvent(correlationId);
-                Map<String, Object> source = searchHit.getSourceAsMap();
-                event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
-            }
+                        SearchHit searchHit = getAuditEvent(correlationId);
+                        Map<String, Object> source = searchHit.getSourceAsMap();
+                        event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
+                    }
 
-            {
-                Date date = new Date();
-                String correlationId = UUID.randomUUID().toString();
-                AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId,
-                        "stringType1", "stringType2", "stringType3", "stringType4",
-                        Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true,
-                        date);
+                    {
+                        Date date = new Date();
+                        String correlationId = UUID.randomUUID().toString();
+                        AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId,
+                                                 "stringType1", "stringType2", "stringType3", "stringType4",
+                                                 Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true,
+                                                 date);
 
-                SearchHit searchHit = getAuditEvent(correlationId);
-                Map<String, Object> source = searchHit.getSourceAsMap();
-                event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
-            }
+                        SearchHit searchHit = getAuditEvent(correlationId);
+                        Map<String, Object> source = searchHit.getSourceAsMap();
+                        event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
+                    }
 
-            Assert.assertTrue(event1Order < event2Order, "Event 1 order was not less than event 2 order");
-        }
+                    Assert.assertTrue(event1Order < event2Order, "Event 1 order was not less than event 2 order");
+                }
+            });
     }
 
     @Test(expectedExceptions = AuditingException.class)
     public void testWebserviceClientBadAuditEvent() throws Exception {
+        withEnvironmentVariable("no_proxy", "")
+            .and("http_proxy", "")
+            .and("https_proxy", "")
+            .execute(() -> {
+                System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", WS_ENDPOINT);
+                AuditConnection auditConnection = AuditConnectionFactory.createConnection();
+                AuditChannel auditChannel = auditConnection.createChannel();
 
-        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", WS_ENDPOINT);
-        AuditConnection auditConnection = AuditConnectionFactory.createConnection();
-        AuditChannel auditChannel = auditConnection.createChannel();
+                // Create new Audit Event Builder
+                AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
+                //  Set up fixed field data for the sample audit event message.
+                auditEventBuilder.setApplication(APPLICATION_ID);
+                auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
+                auditEventBuilder.setCorrelationId(CORRELATION_ID);
+                auditEventBuilder.setTenant(TENANT_ID);
+                auditEventBuilder.setUser(USER_ID);
 
-        // Create new Audit Event Builder
-        AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
-        //  Set up fixed field data for the sample audit event message.
-        auditEventBuilder.setApplication(APPLICATION_ID);
-        auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
-        auditEventBuilder.setCorrelationId(CORRELATION_ID);
-        auditEventBuilder.setTenant(TENANT_ID);
-        auditEventBuilder.setUser(USER_ID);
-
-        //  Send audit event message to Elasticsearch.
-        auditEventBuilder.send();
+                //  Send audit event message to Elasticsearch.
+                auditEventBuilder.send();
+            });
     }
 
     private SearchHit getAuditEvent(String correlationId) throws AuditConfigurationException {

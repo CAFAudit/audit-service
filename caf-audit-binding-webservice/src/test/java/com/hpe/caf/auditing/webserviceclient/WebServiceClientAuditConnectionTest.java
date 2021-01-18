@@ -19,34 +19,13 @@ import com.hpe.caf.auditing.*;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.lang.reflect.Field;
 import java.net.UnknownHostException;
-import java.util.Map;
+
+import static com.github.stefanbirkner.systemlambda.SystemLambda.*;
 
 public class WebServiceClientAuditConnectionTest {
 
     String testWebServiceHttpsEndpoint = "https://testWsHost:8080/caf-audit-service/v1";
-
-    /**
-     * Class that enables overriding of environment variables without effecting the environment variables set on the
-     * host
-     */
-    static class TestEnvironmentVariablesOverrider {
-        @SuppressWarnings("unchecked")
-        public static void configureEnvironmentVariable(String name, String value) throws Exception {
-            Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
-            Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
-            theEnvironmentField.setAccessible(true);
-            Map<String, String> env = (Map<String, String>) theEnvironmentField.get(null);
-            env.put(name, value);
-            Field theCaseInsensitiveEnvironmentField = processEnvironmentClass
-                    .getDeclaredField("theCaseInsensitiveEnvironment");
-            theCaseInsensitiveEnvironmentField.setAccessible(true);
-            Map<String, String> cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
-            cienv.put(name, value);
-        }
-    }
 
     @BeforeClass
     public static void setup() {
@@ -64,40 +43,43 @@ public class WebServiceClientAuditConnectionTest {
 
     @Test(expected = UnknownHostException.class)
     public void testWebServiceClientUnknownHttpsProxy() throws Exception {
+        withEnvironmentVariable("no_proxy", "")
+            .and("http_proxy", "")
+            .and("https_proxy", "https://a-https-proxy:8081")
+            .execute(() -> {
+                System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpsEndpoint);
+                AuditConnection auditConnection = AuditConnectionFactory.createConnection();
+                AuditChannel auditChannel = auditConnection.createChannel();
 
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "");
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("https_proxy", "https://a-https-proxy:8081");
-        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpsEndpoint);
-        AuditConnection auditConnection = AuditConnectionFactory.createConnection();
-        AuditChannel auditChannel = auditConnection.createChannel();
+                // Create new Audit Event Builder
+                AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
 
-        // Create new Audit Event Builder
-        AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
-
-        //  Send audit event message to Elasticsearch.
-        auditEventBuilder.send();
+                //  Send audit event message to Elasticsearch.
+                auditEventBuilder.send();
+            });
     }
 
     @Test(expected = AuditConfigurationException.class)
     public void testWebServiceClientMalformedHttpsProxy() throws Exception {
-
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "");
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("https_proxy", "notAValidUrl");
-        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpsEndpoint);
-        AuditConnectionFactory.createConnection();
+        withEnvironmentVariable("no_proxy", "")
+            .and("http_proxy", "")
+            .and("https_proxy", "notAValidUrl")
+            .execute(() -> {
+                System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpsEndpoint);
+                AuditConnectionFactory.createConnection();
+            });
     }
 
     @Test(expected = AuditConfigurationException.class)
     public void testWebServiceClientMalformedHttpProxy() throws Exception {
         String testWebServiceHttpEndpoint = "http://testWsHost:8080/caf-audit-service/v1";
+        withEnvironmentVariable("no_proxy", "")
+            .and("http_proxy", "notAValidUrl")
+            .and("https_proxy", "")
+            .execute(() -> {
+                System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpEndpoint);
+                AuditConnectionFactory.createConnection();
+            });
 
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("no_proxy", "");
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("http_proxy", "notAValidUrl");
-        TestEnvironmentVariablesOverrider.configureEnvironmentVariable("https_proxy", "");
-        System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpEndpoint);
-        AuditConnectionFactory.createConnection();
     }
-
 }

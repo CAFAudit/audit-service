@@ -252,9 +252,9 @@ public class WebserviceClientAuditIT {
                         Date date = new Date();
                         String correlationId = UUID.randomUUID().toString();
                         AuditLog.auditTestEvent1(auditChannel, TENANT_ID, "user1", correlationId,
-                                                 "stringType1", "stringType2", "stringType3", "stringType4",
-                                                 Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true,
-                                                 date);
+                                "stringType1", "stringType2", "stringType3", "stringType4",
+                                Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true,
+                                date);
 
                         SearchHit searchHit = getAuditEvent(correlationId);
                         Map<String, Object> source = searchHit.getSourceAsMap();

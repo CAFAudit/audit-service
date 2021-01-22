@@ -80,7 +80,7 @@
     <scm>
         <connection>scm:git:https://github.com/CAFAudit/audit-service.git</connection>
         <developerConnection>scm:git:https://github.com/CAFAudit/audit-service.git</developerConnection>
-        <url>${gitRepo}</url>
+        <url>https://github.com/CAFAudit/audit-service</url>
     </scm>
 
     <properties>
@@ -88,7 +88,6 @@
         <dockerHubOrganization>cafaudit</dockerHubOrganization>
         <dockerCafAuditOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerCafAuditOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
-        <gitRepo>https://github.com/CAFAudit/audit-service</gitRepo>
         <enforceBannedDependencies>true</enforceBannedDependencies>
         <enforceCorrectDependencies>true</enforceCorrectDependencies>
         <fabric8.docker.maven.version>0.28.0</fabric8.docker.maven.version>

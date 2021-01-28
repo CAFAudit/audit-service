@@ -24,8 +24,10 @@ import java.net.UnknownHostException;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.*;
 
 public class WebServiceClientAuditConnectionTest {
-
-    String testWebServiceHttpsEndpoint = "https://testWsHost:8080/caf-audit-service/v1";
+    private static final String TEST_WEB_SERVICE_HTTPS_ENDPOINT = "https://testWsHost:8080/caf-audit-service/v1";
+    private static final String NO_PROXY = "NO_PROXY";
+    private static final String HTTP_PROXY = "HTTP_PROXY";
+    private static final String HTTPS_PROXY = "HTTPS_PROXY";
 
     @BeforeClass
     public static void setup() {
@@ -43,11 +45,11 @@ public class WebServiceClientAuditConnectionTest {
 
     @Test(expected = UnknownHostException.class)
     public void testWebServiceClientUnknownHttpsProxy() throws Exception {
-        withEnvironmentVariable("no_proxy", "")
-            .and("http_proxy", "")
-            .and("https_proxy", "https://a-https-proxy:8081")
+        withEnvironmentVariable(NO_PROXY, "")
+            .and(HTTP_PROXY, "")
+            .and(HTTPS_PROXY, "https://a-https-proxy:8081")
             .execute(() -> {
-                System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpsEndpoint);
+                System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", TEST_WEB_SERVICE_HTTPS_ENDPOINT);
                 AuditConnection auditConnection = AuditConnectionFactory.createConnection();
                 AuditChannel auditChannel = auditConnection.createChannel();
 
@@ -61,11 +63,11 @@ public class WebServiceClientAuditConnectionTest {
 
     @Test(expected = AuditConfigurationException.class)
     public void testWebServiceClientMalformedHttpsProxy() throws Exception {
-        withEnvironmentVariable("no_proxy", "")
-            .and("http_proxy", "")
-            .and("https_proxy", "notAValidUrl")
+        withEnvironmentVariable(NO_PROXY, "")
+            .and(HTTP_PROXY, "")
+            .and(HTTPS_PROXY, "notAValidUrl")
             .execute(() -> {
-                System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpsEndpoint);
+                System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", TEST_WEB_SERVICE_HTTPS_ENDPOINT);
                 AuditConnectionFactory.createConnection();
             });
     }
@@ -73,9 +75,9 @@ public class WebServiceClientAuditConnectionTest {
     @Test(expected = AuditConfigurationException.class)
     public void testWebServiceClientMalformedHttpProxy() throws Exception {
         String testWebServiceHttpEndpoint = "http://testWsHost:8080/caf-audit-service/v1";
-        withEnvironmentVariable("no_proxy", "")
-            .and("http_proxy", "notAValidUrl")
-            .and("https_proxy", "")
+        withEnvironmentVariable(NO_PROXY, "")
+            .and(HTTP_PROXY, "notAValidUrl")
+            .and(HTTPS_PROXY, "")
             .execute(() -> {
                 System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpEndpoint);
                 AuditConnectionFactory.createConnection();

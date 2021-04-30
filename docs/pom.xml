@@ -183,4 +183,13 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>use-default-fixed-ports</id>
+            <properties>
+                <webServerPort>28080</webServerPort>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>

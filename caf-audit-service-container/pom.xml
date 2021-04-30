@@ -181,6 +181,7 @@
             <id>use-default-fixed-ports</id>
             <properties>
                 <webservice.adminport>25080</webservice.adminport>
+                <webservice.https.adminport>25443</webservice.https.adminport>
                 <webservice.healthcheckport>25081</webservice.healthcheckport>
                 <elasticsearch.http.port>9200</elasticsearch.http.port>
             </properties>

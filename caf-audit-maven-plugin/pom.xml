@@ -82,8 +82,8 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-remote-resources-plugin</artifactId>
-                <version>1.5</version>
                 <executions>
                     <execution>
                         <id>process-remote-resources</id>
@@ -122,7 +122,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.10</version>
                 <executions>
                     <execution>
                         <id>attach-md-artifacts</id>

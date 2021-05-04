@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 public class XMLToJavaTransformTest {
 
@@ -75,7 +76,9 @@ public class XMLToJavaTransformTest {
 
         //  Verify generated output matches expected output.
         File expected = new File(classLoader.getResource("transform/AuditLog.java").getFile());
-        Assert.assertEquals(FileUtils.readLines(expected), FileUtils.readLines(generatedJavaFile));
+        Assert.assertEquals(
+            FileUtils.readLines(expected, StandardCharsets.UTF_8),
+            FileUtils.readLines(generatedJavaFile, StandardCharsets.UTF_8));
     }
 
     @Test

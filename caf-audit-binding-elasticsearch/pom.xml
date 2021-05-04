@@ -158,8 +158,8 @@
                         </executions>
                     </plugin>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.19</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -194,7 +194,6 @@
             <plugin>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-maven-plugin</artifactId>
-                <version>3.8.0-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>generate-code</id>
@@ -215,7 +214,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -274,7 +272,7 @@
                     <images>
                         <image>
                             <alias>elasticsearch</alias>
-                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.2.0</name>
+                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.10.2</name>
                             <run>
                                 <ports>
                                     <port>${elasticsearch.http.port}:9200</port>

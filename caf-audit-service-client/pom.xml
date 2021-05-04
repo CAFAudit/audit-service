@@ -21,17 +21,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.cafaudit</groupId>
     <artifactId>caf-audit-service-client</artifactId>
-    <version>3.8.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <name>caf-audit-service-client</name>
 
     <parent>
-        <groupId>com.github.cafapi</groupId>
-        <artifactId>swagger-restapi-client-base</artifactId>
-        <version>1.14.0-1</version>
-        <relativePath/>
+        <groupId>com.github.cafaudit</groupId>
+        <artifactId>audit-service-aggregator</artifactId>
+        <version>3.8.0-SNAPSHOT</version>
     </parent>
     
     <inceptionYear>2015</inceptionYear>
@@ -43,10 +38,44 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-service-contract</artifactId>
-            <version>3.8.0-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.brsanthu</groupId>
+            <artifactId>migbase64</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
         </dependency>
     </dependencies>
 
@@ -55,7 +84,6 @@
             <plugin>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>${swagger-codegen-maven-plugin-version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.github.cafaudit</groupId>
@@ -72,6 +100,7 @@
                         <configuration>
                             <inputSpec>/com/hpe/caf/services/audit/contract/swagger.yaml</inputSpec>
                             <language>java</language>
+                            <library>jersey2</library>
                             <modelPackage>com.hpe.caf.services.audit.client.model</modelPackage>
                             <apiPackage>com.hpe.caf.services.audit.client.api</apiPackage>
                             <invokerPackage>com.hpe.caf.services.audit.client</invokerPackage>
@@ -79,6 +108,7 @@
                                 <groupId>${project.groupId}</groupId>
                                 <artifactId>${project.artifactId}</artifactId>
                                 <artifactVersion>${project.version}</artifactVersion>
+                                <dateLibrary>joda</dateLibrary>
                             </configOptions>
                         </configuration>
                     </execution>

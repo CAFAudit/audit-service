@@ -330,7 +330,7 @@ public class WebserviceClientAuditIT {
                 }
             }
 
-            org.junit.Assert.assertEquals("Expected search result not found", 1, searchHits.getTotalHits().value);
+            Assert.assertEquals(searchHits.getTotalHits().value, 1);
 
             return searchHits.getHits()[0];
         } catch (IOException e) {

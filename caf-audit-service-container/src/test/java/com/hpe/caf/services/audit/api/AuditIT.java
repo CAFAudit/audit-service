@@ -46,7 +46,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -163,7 +162,7 @@ public class AuditIT {
         SSLContext sc;
         try {
             // Install the all-trusting trust manager.
-            sc = SSLContext.getInstance("SSL");
+            sc = auditEventsApi.getApiClient().getHttpClient().getSslContext();
             sc.init(null, trustAllCertsManager, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
@@ -172,7 +171,7 @@ public class AuditIT {
 
             // Install the all-trusting host verifier.
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+        } catch (KeyManagementException e) {
             e.printStackTrace();
         }
     }

@@ -147,7 +147,6 @@
                     <plugin>
                         <groupId>io.fabric8</groupId>
                         <artifactId>docker-maven-plugin</artifactId>
-                        <version>${fabric8.docker.maven.version}</version>
                         <executions>
                             <execution>
                                 <id>start-testing-containers</id>
@@ -241,7 +240,6 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>${fabric8.docker.maven.version}</version>
                 <executions>
                     <execution>
                         <id>build-docker-container</id>
@@ -397,7 +395,7 @@
                         <!-- elasticsearch image for running integration tests-->
                         <image>
                             <alias>elasticsearch</alias>
-                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.2.0</name>
+                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.10.2</name>
                             <run>
                                 <hostname>elasticsearch</hostname>
                                 <namingStrategy>alias</namingStrategy>

@@ -272,13 +272,12 @@
                     <images>
                         <image>
                             <alias>elasticsearch</alias>
-                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.10.2</name>
+                            <name>docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2</name>
                             <run>
                                 <ports>
                                     <port>${elasticsearch.http.port}:9200</port>
                                 </ports>
                                 <env>
-                                    <xpack.security.enabled>false</xpack.security.enabled>
                                     <discovery.type>single-node</discovery.type>
                                 </env>
                                 <wait>

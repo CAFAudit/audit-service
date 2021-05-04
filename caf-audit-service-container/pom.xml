@@ -395,7 +395,7 @@
                         <!-- elasticsearch image for running integration tests-->
                         <image>
                             <alias>elasticsearch</alias>
-                            <name>docker.elastic.co/elasticsearch/elasticsearch:7.10.2</name>
+                            <name>docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2</name>
                             <run>
                                 <hostname>elasticsearch</hostname>
                                 <namingStrategy>alias</namingStrategy>
@@ -403,7 +403,6 @@
                                     <port>${elasticsearch.http.port}:9200</port>
                                 </ports>
                                 <env>
-                                    <xpack.security.enabled>false</xpack.security.enabled>
                                     <discovery.type>single-node</discovery.type>
                                 </env>
                                 <wait>

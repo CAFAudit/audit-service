@@ -2,7 +2,10 @@
 ${version-number}
 
 #### New Features
-- SCMOD-12531  Updated parent artifact to the latest version.
+- None
+
+#### Bug Fixes
+- Dependency updates only in this release.
 
 #### Known Issues
 - None

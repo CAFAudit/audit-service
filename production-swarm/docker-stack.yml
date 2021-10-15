@@ -11,7 +11,7 @@ services:
       CAF_ELASTIC_PORT_VALUE: "${CAF_ELASTIC_PORT_VALUE}"
       CAF_ELASTIC_USERNAME: "${CAF_ELASTIC_USERNAME}"
       CAF_ELASTIC_PASSWORD: "${CAF_ELASTIC_PASSWORD}"
-    image: cafaudit/prereleases:audit-service-3.7.1-625
+    image: cafaudit/prereleases:audit-service-3.8.0-718
     deploy:
       mode: replicated
       replicas: 2

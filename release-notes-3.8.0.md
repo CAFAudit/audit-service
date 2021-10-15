@@ -2,10 +2,7 @@
 ${version-number}
 
 #### New Features
-- None
-
-#### Patch Fixes Included
-- This release includes OS package updates only.
+- SCMOD-12113: Update Swagger UI to 3.52.0
 
 #### Known Issues
 - None

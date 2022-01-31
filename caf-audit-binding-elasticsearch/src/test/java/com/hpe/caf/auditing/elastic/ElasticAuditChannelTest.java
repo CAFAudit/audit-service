@@ -15,17 +15,18 @@
  */
 package com.hpe.caf.auditing.elastic;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.internal.AuditNewEventFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.elasticsearch.client.IndicesClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.GetIndexTemplatesRequest;
-import org.elasticsearch.client.indices.GetIndexTemplatesResponse;
-import org.elasticsearch.client.indices.IndexTemplateMetadata;
+import org.opensearch.client.IndicesClient;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.client.indices.GetIndexTemplatesRequest;
+import org.opensearch.client.indices.GetIndexTemplatesResponse;
+import org.opensearch.client.indices.IndexTemplateMetadata;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,9 +36,11 @@ import org.mockito.Mockito;
 public class ElasticAuditChannelTest {
 
     private RestHighLevelClient mockClient;
+    private ObjectMapper objectMapper;
 
     @Before
     public void setup() throws IOException {
+        objectMapper = Mockito.mock(ObjectMapper.class);
         final GetIndexTemplatesResponse response = Mockito.mock(GetIndexTemplatesResponse.class);
         final List<IndexTemplateMetadata> list = new ArrayList<>();
         final List<String> patterns = new ArrayList<>();
@@ -52,13 +55,13 @@ public class ElasticAuditChannelTest {
 
     @Test
     public void testClose() throws Exception {
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, objectMapper);
         channel.close();
     }
 
     @Test
     public void testCreateEventBuilder() throws Exception {
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, objectMapper);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         Assert.assertNotNull(auditEventBuilder);
     }
@@ -66,7 +69,7 @@ public class ElasticAuditChannelTest {
     @Test
     public void testCreateEventBuilderWithAuditCoreMetadataProvider() throws Exception {
         AuditCoreMetadataProvider acmp = AuditNewEventFactory.createNewEvent();
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, objectMapper);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder(acmp);
         Assert.assertNotNull(auditEventBuilder);
     }

@@ -15,10 +15,11 @@
  */
 package com.hpe.caf.auditing.elastic;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.opensearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class ElasticAuditConnection implements AuditConnection {
     private final int numberOfReplicas;
     private final boolean isForceIndexTemplateUpdate;
     private boolean isIndexTemplateCreated = false;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ElasticAuditConnection() throws AuditConfigurationException
     {
@@ -111,7 +113,7 @@ public class ElasticAuditConnection implements AuditConnection {
             isIndexTemplateCreated = true;
         }
         //  Share the Elasticsearch client across channels.
-        return new ElasticAuditChannel(restHighLevelClient);
+        return new ElasticAuditChannel(restHighLevelClient, objectMapper);
     }
 
     private static String getElasticProtocol()

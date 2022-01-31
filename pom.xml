@@ -499,72 +499,72 @@
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-analyzers-common</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-backward-codecs</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-core</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-grouping</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-highlighter</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-join</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-memory</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-misc</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-queries</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-queryparser</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-sandbox</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-spatial-extras</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-spatial3d</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.lucene</groupId>
                 <artifactId>lucene-suggest</artifactId>
-                <version>8.7.0</version>
+                <version>8.10.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
@@ -687,44 +687,24 @@
                 <version>0.3.4</version>
             </dependency>
             <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch</artifactId>
-                <version>7.10.2</version>
+                <groupId>org.opensearch</groupId>
+                <artifactId>opensearch</artifactId>
+                <version>1.2.3</version>
             </dependency>
             <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch-cli</artifactId>
-                <version>7.10.2</version>
+                <groupId>org.opensearch</groupId>
+                <artifactId>opensearch-core</artifactId>
+                <version>1.2.3</version>
             </dependency>
             <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch-core</artifactId>
-                <version>7.10.2</version>
+                <groupId>org.opensearch</groupId>
+                <artifactId>opensearch-x-content</artifactId>
+                <version>1.2.3</version>
             </dependency>
             <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch-geo</artifactId>
-                <version>7.10.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch-secure-sm</artifactId>
-                <version>7.10.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch-x-content</artifactId>
-                <version>7.10.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>jna</artifactId>
-                <version>5.5.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch.client</groupId>
-                <artifactId>elasticsearch-rest-client</artifactId>
-                <version>7.10.2</version>
+                <groupId>org.opensearch.client</groupId>
+                <artifactId>opensearch-rest-client</artifactId>
+                <version>1.2.3</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -733,34 +713,14 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.elasticsearch.client</groupId>
-                <artifactId>elasticsearch-rest-high-level-client</artifactId>
-                <version>7.10.2</version>
+                <groupId>org.opensearch.client</groupId>
+                <artifactId>opensearch-rest-high-level-client</artifactId>
+                <version>1.2.3</version>
             </dependency>
             <dependency>
-                <groupId>org.elasticsearch.plugin</groupId>
-                <artifactId>aggs-matrix-stats-client</artifactId>
-                <version>7.10.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch.plugin</groupId>
-                <artifactId>lang-mustache-client</artifactId>
-                <version>7.10.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch.plugin</groupId>
-                <artifactId>mapper-extras-client</artifactId>
-                <version>7.10.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch.plugin</groupId>
-                <artifactId>parent-join-client</artifactId>
-                <version>7.10.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch.plugin</groupId>
-                <artifactId>rank-eval-client</artifactId>
-                <version>7.10.2</version>
+                <groupId>com.microfocus.apollo.commonlib</groupId>
+                <artifactId>elastic-lib</artifactId>
+                <version>4.1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>

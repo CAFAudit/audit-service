@@ -61,7 +61,7 @@ private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel
         //Calling to OpenSearch to get health status
         final Response response;
         try {
-            logger.error("Executing ES cluster health check...");
+            logger.debug("Executing ES cluster health check...");
             final String endPoint = "_cluster/health";
             final Request healthRequest = new Request("GET", endPoint);
             healthRequest.addParameter("wait_for_status", "yellow");
@@ -93,7 +93,7 @@ private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel
             return new HealthResult(HealthStatus.UNHEALTHY, "HealthCheck response could not be processed");
         }
 
-        logger.error("Got ES status : {}", status);
+        logger.debug("Got ES status : {}", status);
         if (status.equals("red")) {
             logger.error("Elasticsearch is unhealthy.");
            return new HealthResult(HealthStatus.UNHEALTHY, "Opensearch Status is invalid: " + status);

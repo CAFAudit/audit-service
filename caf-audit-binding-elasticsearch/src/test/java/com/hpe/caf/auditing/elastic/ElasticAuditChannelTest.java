@@ -36,11 +36,9 @@ import org.mockito.Mockito;
 public class ElasticAuditChannelTest {
 
     private RestHighLevelClient mockClient;
-    private ObjectMapper objectMapper;
 
     @Before
     public void setup() throws IOException {
-        objectMapper = Mockito.mock(ObjectMapper.class);
         final GetIndexTemplatesResponse response = Mockito.mock(GetIndexTemplatesResponse.class);
         final List<IndexTemplateMetadata> list = new ArrayList<>();
         final List<String> patterns = new ArrayList<>();
@@ -55,13 +53,13 @@ public class ElasticAuditChannelTest {
 
     @Test
     public void testClose() throws Exception {
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, objectMapper);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient);
         channel.close();
     }
 
     @Test
     public void testCreateEventBuilder() throws Exception {
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, objectMapper);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         Assert.assertNotNull(auditEventBuilder);
     }
@@ -69,7 +67,7 @@ public class ElasticAuditChannelTest {
     @Test
     public void testCreateEventBuilderWithAuditCoreMetadataProvider() throws Exception {
         AuditCoreMetadataProvider acmp = AuditNewEventFactory.createNewEvent();
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient, objectMapper);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockClient);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder(acmp);
         Assert.assertNotNull(auditEventBuilder);
     }

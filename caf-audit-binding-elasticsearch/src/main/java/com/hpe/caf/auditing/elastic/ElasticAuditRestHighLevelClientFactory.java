@@ -100,7 +100,6 @@ public class ElasticAuditRestHighLevelClientFactory {
                     .setDefaultCredentialsProvider(credentialsProvider));
             }
 
-            //Failing here
             return new RestHighLevelClient(restClientBuilder);
         } else {
             //  ES host and port not specified.

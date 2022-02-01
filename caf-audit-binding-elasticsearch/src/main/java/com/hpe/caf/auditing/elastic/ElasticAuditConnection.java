@@ -33,7 +33,6 @@ public class ElasticAuditConnection implements AuditConnection {
     private final int numberOfReplicas;
     private final boolean isForceIndexTemplateUpdate;
     private boolean isIndexTemplateCreated = false;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ElasticAuditConnection() throws AuditConfigurationException
     {
@@ -113,7 +112,7 @@ public class ElasticAuditConnection implements AuditConnection {
             isIndexTemplateCreated = true;
         }
         //  Share the Elasticsearch client across channels.
-        return new ElasticAuditChannel(restHighLevelClient, objectMapper);
+        return new ElasticAuditChannel(restHighLevelClient);
     }
 
     private static String getElasticProtocol()

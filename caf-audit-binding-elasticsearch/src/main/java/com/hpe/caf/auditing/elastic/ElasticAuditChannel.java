@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 package com.hpe.caf.auditing.elastic;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
@@ -37,12 +36,10 @@ public class ElasticAuditChannel implements AuditChannel {
 private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel.class);
     private final RestHighLevelClient restHighLevelClient;
     private final RestClient restClient;
-    private final ObjectMapper objectMapper;
 
-    public ElasticAuditChannel(RestHighLevelClient restHighLevelClient, ObjectMapper objectMapper){
+    public ElasticAuditChannel(RestHighLevelClient restHighLevelClient){
         this.restHighLevelClient = restHighLevelClient;
         this.restClient = restHighLevelClient.getLowLevelClient();
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -87,7 +84,7 @@ private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel
 
         final String status;
         try {
-            status = readTree(objectMapper, healthResponse).get("status").asText();
+            status = readTree(new ObjectMapper(), healthResponse).get("status").asText();
         } catch (Exception ex) {
             logger.error("HealthCheck response could not be processed", ex);
             return new HealthResult(HealthStatus.UNHEALTHY, "HealthCheck response could not be processed");
@@ -107,16 +104,11 @@ private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel
             return objectMapper.readTree(content);
         } catch (final JsonProcessingException ex) {
             throw ex;
-        } catch (final IOException ex) {
-            throw new IOException(ex);
         }
     }
 
     private boolean validString(final String s){
-        if((s.isEmpty()) || (s.equals("")) || (s==null)){
-            return false;
-        }
-        return true;
+        return s.isEmpty() ? false : true;
     }
 
     @Override

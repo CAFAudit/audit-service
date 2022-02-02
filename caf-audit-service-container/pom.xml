@@ -52,8 +52,8 @@
             <artifactId>caf-audit-binding-elasticsearch</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <groupId>org.opensearch.client</groupId>
+            <artifactId>opensearch-rest-high-level-client</artifactId>
         </dependency>
         <!-- End of Auditing Implementations -->
         <dependency>
@@ -345,7 +345,7 @@
                                                 <outputDirectory>adminapps/ROOT/WEB-INF/lib</outputDirectory>
                                                 <includes>
                                                     <include>com.github.cafaudit:caf-audit-binding-elasticsearch</include>
-                                                    <include>org.elasticsearch.client:elasticsearch-rest-high-level-client</include>
+                                                    <include>org.opensearch.client:opensearch-rest-high-level-client</include>
                                                 </includes>
                                                 <useTransitiveDependencies>true</useTransitiveDependencies>
                                                 <useTransitiveFiltering>true</useTransitiveFiltering>

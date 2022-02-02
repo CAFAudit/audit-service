@@ -21,21 +21,22 @@ import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.indices.GetMappingsRequest;
-import org.elasticsearch.client.indices.GetMappingsResponse;
-import org.elasticsearch.common.compress.CompressedXContent;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.rest.RestStatus;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.opensearch.action.delete.DeleteRequest;
+import org.opensearch.action.delete.DeleteResponse;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchType;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.action.support.master.AcknowledgedResponse;
+import org.opensearch.client.indices.GetMappingsRequest;
+import org.opensearch.client.indices.GetMappingsResponse;
+import org.opensearch.common.compress.CompressedXContent;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.rest.RestStatus;
+import org.opensearch.search.SearchHit;
+import org.opensearch.search.builder.SearchSourceBuilder;
+import org.opensearch.OpenSearchStatusException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -50,7 +51,6 @@ import java.util.UUID;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.Map;
-import org.elasticsearch.ElasticsearchStatusException;
 
 public class ElasticAuditIT
 {
@@ -153,7 +153,7 @@ public class ElasticAuditIT
         }
     }
 
-    @Test(expected = ElasticsearchStatusException.class)
+    @Test(expected = OpenSearchStatusException.class)
     public void testStringLengthRestrictionTenantId() throws Exception
     {
         //  This tests the usage of too many characters supplied as the tenant identifier. The tenant identifier is

@@ -15,10 +15,11 @@
  */
 package com.hpe.caf.auditing.elastic;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.opensearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 import org.slf4j.Logger;

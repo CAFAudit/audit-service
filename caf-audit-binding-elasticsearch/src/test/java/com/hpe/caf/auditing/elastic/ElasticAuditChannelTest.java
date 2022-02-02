@@ -15,17 +15,18 @@
  */
 package com.hpe.caf.auditing.elastic;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.internal.AuditNewEventFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.elasticsearch.client.IndicesClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.GetIndexTemplatesRequest;
-import org.elasticsearch.client.indices.GetIndexTemplatesResponse;
-import org.elasticsearch.client.indices.IndexTemplateMetadata;
+import org.opensearch.client.IndicesClient;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.client.indices.GetIndexTemplatesRequest;
+import org.opensearch.client.indices.GetIndexTemplatesResponse;
+import org.opensearch.client.indices.IndexTemplateMetadata;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

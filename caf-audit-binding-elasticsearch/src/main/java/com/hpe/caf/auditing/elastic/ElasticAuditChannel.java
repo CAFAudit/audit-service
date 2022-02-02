@@ -75,7 +75,7 @@ public class ElasticAuditChannel implements AuditChannel {
         try {
             healthResponse = EntityUtils.toString(httpEntity);
         } catch (final IOException e){
-            logger.error("HealthCheck response is null", e);
+            logger.error("Cannot parse response from OpenSearch", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "Cannot parse response from OpenSearch");
         }
         final String status;

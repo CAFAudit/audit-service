@@ -75,24 +75,19 @@ public class ElasticAuditChannel implements AuditChannel {
         try {
             healthResponse = EntityUtils.toString(httpEntity);
         } catch (final IOException e){
-            if(healthResponse.isEmpty() || healthResponse == null){
-                logger.error("HealthCheck response is null", e);
-                return new HealthResult(HealthStatus.UNHEALTHY, "HealthCheck response could not be processed");
-            }
             return new HealthResult(HealthStatus.UNHEALTHY, "Cannot parse response from OpenSearch");
         }
         final String status;
         try {
             status = readTree(healthResponse).get("status").asText();
         } catch (final JsonProcessingException ex) {
-            logger.error("HealthCheck response could not be processed", ex);
             return new HealthResult(HealthStatus.UNHEALTHY, "HealthCheck response could not be processed");
         }
 
         logger.debug("Got OS status : {}", status);
         if (status.equals("red")) {
             logger.error("OpenSearch is unhealthy.");
-           return new HealthResult(HealthStatus.UNHEALTHY, "OpenSearch Status is invalid: " + status);
+            return new HealthResult(HealthStatus.UNHEALTHY, "OpenSearch Status is invalid: " + status);
         }
         return HealthResult.HEALTHY;
     }

@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ElasticAuditChannel implements AuditChannel {
-private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel.class);
+    private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel.class);
     private final RestHighLevelClient restHighLevelClient;
     private final RestClient restClient;
 
@@ -65,50 +65,41 @@ private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel
             response = restClient.performRequest(healthRequest);
         } catch (final IOException ex) {
             logger.error("Error executing cluster health check request.", ex);
-            return new HealthResult(HealthStatus.UNHEALTHY, "Elasticsearch cluster is unhealthy");
+            return new HealthResult(HealthStatus.UNHEALTHY, "OpenSearch cluster is unhealthy");
         }
         return healthResponse(response.getEntity());
     }
 
     private HealthResult healthResponse(final HttpEntity httpEntity){
-        String healthResponse = "";
-        try{
+        String healthResponse = null;
+        try {
             healthResponse = EntityUtils.toString(httpEntity);
-        }catch (Exception e){
-            if(!validString(healthResponse)){
-                logger.error("HealthCheck response could not be processed", e);
+        } catch (final IOException e){
+            if(healthResponse.isEmpty() || healthResponse == null){
+                logger.error("HealthCheck response is null", e);
                 return new HealthResult(HealthStatus.UNHEALTHY, "HealthCheck response could not be processed");
             }
-            return new HealthResult(HealthStatus.UNHEALTHY, "Elasticsearch cluster is unhealthy");
+            return new HealthResult(HealthStatus.UNHEALTHY, "Cannot parse response from OpenSearch");
         }
-
         final String status;
         try {
-            status = readTree(new ObjectMapper(), healthResponse).get("status").asText();
-        } catch (Exception ex) {
+            status = readTree(healthResponse).get("status").asText();
+        } catch (final JsonProcessingException ex) {
             logger.error("HealthCheck response could not be processed", ex);
             return new HealthResult(HealthStatus.UNHEALTHY, "HealthCheck response could not be processed");
         }
 
-        logger.debug("Got ES status : {}", status);
+        logger.debug("Got OS status : {}", status);
         if (status.equals("red")) {
-            logger.error("Elasticsearch is unhealthy.");
-           return new HealthResult(HealthStatus.UNHEALTHY, "Opensearch Status is invalid: " + status);
+            logger.error("OpenSearch is unhealthy.");
+           return new HealthResult(HealthStatus.UNHEALTHY, "OpenSearch Status is invalid: " + status);
         }
         return HealthResult.HEALTHY;
     }
 
-    private JsonNode readTree(final ObjectMapper objectMapper, final String content) throws JsonProcessingException, IOException
+    private JsonNode readTree(final String content) throws JsonProcessingException
     {
-        try {
-            return objectMapper.readTree(content);
-        } catch (final JsonProcessingException ex) {
-            throw ex;
-        }
-    }
-
-    private boolean validString(final String s){
-        return s.isEmpty() ? false : true;
+        return JacksonObjectMapperPlaceHolder.getObjectMapper().readTree(content);
     }
 
     @Override

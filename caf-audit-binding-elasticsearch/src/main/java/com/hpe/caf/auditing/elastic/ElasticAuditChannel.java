@@ -29,8 +29,6 @@ import org.opensearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ElasticAuditChannel implements AuditChannel {
     private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel.class);
@@ -75,12 +73,14 @@ public class ElasticAuditChannel implements AuditChannel {
         try {
             healthResponse = EntityUtils.toString(httpEntity);
         } catch (final IOException e){
+            logger.error("HealthCheck response is null", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "Cannot parse response from OpenSearch");
         }
         final String status;
         try {
-            status = readTree(healthResponse).get("status").asText();
-        } catch (final JsonProcessingException ex) {
+            status = JacksonObjectMapperPlaceHolder.getObjectMapper().readTree(healthResponse).get("status").asText();
+        } catch (final JsonProcessingException e) {
+            logger.error("Cannot parse status from OpenSearch", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "HealthCheck response could not be processed");
         }
 
@@ -90,11 +90,6 @@ public class ElasticAuditChannel implements AuditChannel {
             return new HealthResult(HealthStatus.UNHEALTHY, "OpenSearch Status is invalid: " + status);
         }
         return HealthResult.HEALTHY;
-    }
-
-    private JsonNode readTree(final String content) throws JsonProcessingException
-    {
-        return JacksonObjectMapperPlaceHolder.getObjectMapper().readTree(content);
     }
 
     @Override

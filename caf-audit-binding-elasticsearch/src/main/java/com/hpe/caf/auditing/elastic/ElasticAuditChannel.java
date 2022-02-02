@@ -29,9 +29,11 @@ import org.opensearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ElasticAuditChannel implements AuditChannel {
     private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     private final RestHighLevelClient restHighLevelClient;
     private final RestClient restClient;
 
@@ -78,7 +80,7 @@ public class ElasticAuditChannel implements AuditChannel {
         }
         final String status;
         try {
-            status = JacksonObjectMapperPlaceHolder.getObjectMapper().readTree(healthResponse).get("status").asText();
+            status = objectMapper.readTree(healthResponse).get("status").asText();
         } catch (final JsonProcessingException e) {
             logger.error("Cannot parse status from OpenSearch", e);
             return new HealthResult(HealthStatus.UNHEALTHY, "HealthCheck response could not be processed");

@@ -690,6 +690,12 @@
                 <groupId>org.opensearch</groupId>
                 <artifactId>opensearch</artifactId>
                 <version>1.2.3</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.elasticsearch</groupId>
+                        <artifactId>jna</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.opensearch</groupId>

@@ -33,7 +33,7 @@
 
     <properties>
         <copyrightNotice>Copyright ${project.inceptionYear}-${copyrightYear} Micro Focus or one of its affiliates.</copyrightNotice>
-        <copyrightYear>2021</copyrightYear>
+        <copyrightYear>2022</copyrightYear>
     </properties>
 
     <dependencies>

@@ -5,3 +5,4 @@ ${version-number}
 - 397426: Format of logging has been changed to include the UTC Date alongside UTC Time.
 
 #### Known Issues
+- None

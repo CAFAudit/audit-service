@@ -22,7 +22,7 @@
     <parent>
         <artifactId>audit-service-aggregator</artifactId>
         <groupId>com.github.cafaudit</groupId>
-        <version>3.9.0-SNAPSHOT</version>
+        <version>3.10.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

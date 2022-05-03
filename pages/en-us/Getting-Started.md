@@ -15,7 +15,7 @@ banner:
 
 You need to perform the following steps to set up the Audit service.
 
-1. Use the [Audit Service Deploy Project](https://github.com/CAFAudit/audit-service-deploy), to launch an Elasticsearch cluster.
+1. Use the [Audit Service Deploy Project](https://github.com/CAFAudit/audit-service/tree/deploy), to launch an Elasticsearch cluster.
 2. Define an application's audit events in an Audit Event Definition File.
 3. Generate the client-side auditing library using the audit event definition file and the code generation plugin. 
 4. In your application, use the client-side auditing library to send audit events to Elasticsearch.

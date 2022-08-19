@@ -89,7 +89,7 @@
         <dockerCafAuditOrg>${dockerImagePrefix}${dockerHubOrganization}${dockerOrgSeperator}</dockerCafAuditOrg>
         <dockerProjectVersion>${dockerVersionSeperator}${project.version}</dockerProjectVersion>
         <enforceBannedDependencies>true</enforceBannedDependencies>
-        <enforceCorrectDependencies>true</enforceCorrectDependencies>
+        <enforceCorrectDependencies>false</enforceCorrectDependencies>
     </properties>
 
     <dependencyManagement>

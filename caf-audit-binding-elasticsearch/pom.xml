@@ -55,20 +55,12 @@
 
         <!-- OpenSearch -->
         <dependency>
-            <groupId>org.opensearch</groupId>
-            <artifactId>opensearch</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.opensearch.client</groupId>
             <artifactId>opensearch-rest-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opensearch.client</groupId>
-            <artifactId>opensearch-rest-high-level-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opensearch</groupId>
-            <artifactId>opensearch-x-content</artifactId>
+            <artifactId>opensearch-java</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>

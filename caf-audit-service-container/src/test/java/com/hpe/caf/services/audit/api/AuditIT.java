@@ -22,17 +22,8 @@ import com.hpe.caf.services.audit.client.ApiException;
 import com.hpe.caf.services.audit.client.api.AuditEventsApi;
 import com.hpe.caf.services.audit.client.model.EventParam;
 import com.hpe.caf.services.audit.client.model.NewAuditEvent;
-import org.opensearch.action.delete.DeleteRequest;
-import org.opensearch.action.delete.DeleteResponse;
-import org.opensearch.action.search.SearchRequest;
-import org.opensearch.action.search.SearchType;
 
 import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.index.query.QueryBuilders;
-import org.opensearch.rest.RestStatus;
-import org.opensearch.search.SearchHit;
-import org.opensearch.search.builder.SearchSourceBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.testng.Assert;
@@ -56,6 +47,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
+import org.opensearch.client.json.JsonData;
+import org.opensearch.client.json.jackson.JacksonJsonpMapper;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch._types.Result;
+import org.opensearch.client.opensearch._types.SearchType;
+import org.opensearch.client.opensearch.core.DeleteResponse;
+import org.opensearch.client.opensearch.core.SearchRequest;
+import org.opensearch.client.opensearch.core.search.Hit;
+import org.opensearch.client.transport.OpenSearchTransport;
 
 public class AuditIT {
     private static String AUDIT_WEBSERVICE_HTTP_BASE_PATH;
@@ -187,29 +188,30 @@ public class AuditIT {
         //  Search for the audit event message in Elasticsearch and verify
         //  hit has been returned.
         final String esHostAndPort = CAF_ELASTIC_HOST_VALUES + ':' + CAF_ELASTIC_PORT;
-        try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+        try (OpenSearchTransport transport
+                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
                          CAF_ELASTIC_PROTOCOL,
                          esHostAndPort,
                          CAF_ELASTIC_USERNAME,
                          CAF_ELASTIC_PASSWORD)) {
-
+            final OpenSearchClient client = new OpenSearchClient(transport);
+            
             final String esIndex = auditEventMessage.getTenantId().toLowerCase().concat("_audit");
-            SearchHit[] hits = new SearchHit[0];
-            hits = searchAuditEventMessage(client,
+            List<Hit<JsonData>> hits = searchAuditEventMessage(client,
                     esIndex,
                     "userId",
                     auditEventMessage.getUserId());
 
             //  Expecting a single hit.
-            Assert.assertTrue(hits.length == 1);
+            Assert.assertTrue(hits.size() == 1);
 
             //  Make a note of the document identifier as we will use this to clean
             //  up afterwards.
-            final String docId = hits[0].getId();
+            final String docId = hits.get(0).id();
 
             //  Verify search results match the expected audit event message data.
-            final Map<String, Object> hitSource = hits[0].getSourceAsMap();
+            @SuppressWarnings("unchecked")
+            final Map<String, Object> hitSource = hits.get(0).source().to(Map.class, new JacksonJsonpMapper());
             verifySearchResults(auditEventMessage, hitSource);
 
             //  Delete test document after verification is complete.
@@ -316,24 +318,26 @@ public class AuditIT {
     /**
      * Search Elasticsearch by the specified field and value.
      */
-    private static SearchHit[] searchAuditEventMessage(final RestHighLevelClient client, final String indexId, final String field, final String value)
+    private static List<Hit<JsonData>> searchAuditEventMessage(final OpenSearchClient client, final String indexId, final String field, final String value)
     {
         final ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
-        SearchHit[] hits = null;
+        List<Hit<JsonData>> hits = null;
         while (retrySearch.shouldRetry()) {
 
             try {
-                hits = client.search(new SearchRequest()
-                        .indices(indexId.toLowerCase())
-                        .searchType(SearchType.QUERY_THEN_FETCH)
-                        .source(new SearchSourceBuilder().query(QueryBuilders.matchQuery(field, value.toLowerCase()))
-                                .from(0).size(10))
-                        ,RequestOptions.DEFAULT).getHits().getHits();
+                hits = client.search(new SearchRequest.Builder()
+                    .index(indexId)
+                    .searchType(SearchType.QueryThenFetch)
+                    .query(x -> x.match(m -> m.field(field).query(FieldValue.of(value.toLowerCase()))))
+                    .from(0)
+                    .size(10)
+                    .build(), JsonData.class)
+                    .hits().hits();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            if (hits.length > 0) {
+            if (!hits.isEmpty()) {
                 break;
             }
 
@@ -351,24 +355,19 @@ public class AuditIT {
     /**
      * Delete the specified document in Elasticsearch.
      */
-    private static void deleteAuditEventMessage(final RestHighLevelClient client, final String indexId, final String documentId)
+    private static void deleteAuditEventMessage(final OpenSearchClient client, final String indexId, final String documentId)
     {
         final ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
 
             // Delete document by id.
-            final DeleteResponse response;
             try {
-                response = client.delete(new DeleteRequest()
-                        .index(indexId.toLowerCase())
-                        .id(documentId),
-                RequestOptions.DEFAULT);
+                final DeleteResponse deleteResponse = client.delete(d -> d.index(indexId.toLowerCase()).id(documentId));
+                if (deleteResponse.result().equals(Result.Deleted)) {
+                    break;
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
-
-            if (response.status() == RestStatus.OK) {
-                break;
             }
 
             // Retry deletion status is not OK.

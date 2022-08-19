@@ -19,7 +19,6 @@ import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import org.apache.http.HttpHost;
 import org.opensearch.client.RestClient;
 import org.opensearch.client.RestClientBuilder;
-import org.opensearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.net.URI;
@@ -30,6 +29,10 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.opensearch.client.json.jackson.JacksonJsonpMapper;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.transport.OpenSearchTransport;
+import org.opensearch.client.transport.rest_client.RestClientTransport;
 
 /**
  * A factory for Elastic Search TransportClients.
@@ -46,15 +49,15 @@ public class ElasticAuditRestHighLevelClientFactory {
     }
 
     /**
-     * Returns an elastic search high level client.
+     * Returns an open search transport for creating a client.
      *
      * @param hostAndPortValues comma separated list of Elasticsearch host:port values
      * @param elasticUsername Elasticsearch username
      * @param elasticPassword Elasticsearch password
-     * @return RestHighLevelClient
+     * @return OpenSearchTransport
      * @throws AuditConfigurationException exception thrown if host is unknown
      */
-    public static RestHighLevelClient getHighLevelClient(final String elasticProtocol, final String hostAndPortValues,
+    public static OpenSearchTransport getOpenSearchTransport(final String elasticProtocol, final String hostAndPortValues,
                                                          final String elasticUsername, final String elasticPassword)
         throws AuditConfigurationException {
 
@@ -99,8 +102,9 @@ public class ElasticAuditRestHighLevelClientFactory {
                 restClientBuilder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                     .setDefaultCredentialsProvider(credentialsProvider));
             }
-
-            return new RestHighLevelClient(restClientBuilder);
+            
+            final RestClient restClient = restClientBuilder.build();
+            return new RestClientTransport(restClient, new JacksonJsonpMapper());
         } else {
             //  ES host and port not specified.
             LOG.error(ES_HOST_AND_PORT_NOT_PROVIDED);

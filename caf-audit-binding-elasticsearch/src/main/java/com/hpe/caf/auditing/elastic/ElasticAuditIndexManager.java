@@ -16,23 +16,22 @@
 package com.hpe.caf.auditing.elastic;
 
 import com.google.common.io.ByteStreams;
+import jakarta.json.Json;
+import jakarta.json.stream.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opensearch.client.indices.PutIndexTemplateRequest;
 import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.common.settings.Settings;
-import org.opensearch.common.xcontent.DeprecationHandler;
-import org.opensearch.common.xcontent.NamedXContentRegistry;
-import org.opensearch.common.xcontent.XContentBuilder;
-import org.opensearch.common.xcontent.XContentFactory;
-import org.opensearch.common.xcontent.XContentParser;
-import org.opensearch.common.xcontent.XContentType;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import org.opensearch.client.indices.IndexTemplatesExistRequest;
+import org.opensearch.client.json.JsonpDeserializer;
+import org.opensearch.client.json.jackson.JacksonJsonpMapper;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.mapping.TypeMapping;
+import org.opensearch.client.opensearch.indices.ExistsIndexTemplateRequest;
+import org.opensearch.client.opensearch.indices.IndexSettings;
+import org.opensearch.client.opensearch.indices.PutIndexTemplateRequest;
+import org.opensearch.client.opensearch.indices.put_index_template.IndexTemplateMapping;
 
 public final class ElasticAuditIndexManager {
 
@@ -42,54 +41,52 @@ public final class ElasticAuditIndexManager {
     private ElasticAuditIndexManager(){}
 
     public static void createIndexTemplate(final int numberOfShards, final int numberOfReplicas,
-                                           final RestHighLevelClient restHighLevelClient, final boolean isForceIndexTemplateUpdate)
+                                           final OpenSearchClient openSearchClient, final boolean isForceIndexTemplateUpdate)
         throws IOException
     {
-        if (isForceIndexTemplateUpdate || !isIndexTemplatePresent(restHighLevelClient)) {
-            final PutIndexTemplateRequest request = new PutIndexTemplateRequest(INDEX_TEMPLATE_NAME);
-            //  Configure the number of shards and replicas the new index should have.
-            final Settings indexSettings = Settings.builder()
-                .put("number_of_shards", numberOfShards)
-                .put("number_of_replicas", numberOfReplicas)
+        if (isForceIndexTemplateUpdate || !isIndexTemplatePresent(openSearchClient)) {
+            
+            final IndexSettings indexSettings = new IndexSettings.Builder()
+                .numberOfShards(String.valueOf(numberOfShards))
+                .numberOfReplicas(String.valueOf(numberOfReplicas))
                 .build();
-            request.settings(indexSettings);
-            request.mapping(getTenantIndexTypeMappingsBuilder());
-            request.patterns(Arrays.asList("*" + ElasticAuditConstants.Index.SUFFIX));
-            restHighLevelClient.indices().putTemplate(request, RequestOptions.DEFAULT);
+            
+            final IndexTemplateMapping indexMapping = new IndexTemplateMapping.Builder()
+                .settings(indexSettings)
+                .mappings(getTenantIndexTypeMapping())
+                .build();
+
+            final PutIndexTemplateRequest request = new PutIndexTemplateRequest.Builder()
+                .name(INDEX_TEMPLATE_NAME)
+                .indexPatterns("*" + ElasticAuditConstants.Index.SUFFIX)
+                .template(indexMapping)
+                .build();
+                
+            openSearchClient.indices().putIndexTemplate(request);
         }
     }
 
-    private static boolean isIndexTemplatePresent(final RestHighLevelClient restHighLevelClient) throws IOException
+    private static boolean isIndexTemplatePresent(final OpenSearchClient openSearchClient) throws IOException
     {
-        final IndexTemplatesExistRequest request = new IndexTemplatesExistRequest(INDEX_TEMPLATE_NAME);
-        return restHighLevelClient.indices().existsTemplate(request, RequestOptions.DEFAULT);
+        final ExistsIndexTemplateRequest request = new ExistsIndexTemplateRequest.Builder().name(INDEX_TEMPLATE_NAME).build();
+        return openSearchClient.indices().existsIndexTemplate(request).value();
     }
 
-    private static XContentBuilder getTenantIndexTypeMappingsBuilder() {
-        //  Get the contents of the index mapping file and assign to byte array before attempting to parse JSON
-        final byte[] cafAuditEventTenantIndexMappingsBytes;
+    private static TypeMapping getTenantIndexTypeMapping() {
+        //  Get the contents of the index mapping file and assign to TypeMapping
         try (final InputStream inputStream = ElasticAuditIndexManager.class.getClassLoader()
-                    .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE)){
+            .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE);
+             final JsonParser jsonValueParser = Json.createParser(inputStream)) {
             if(inputStream== null)
             {
                 final String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
                 LOG.error(errorMessage);
                 throw new RuntimeException(errorMessage);
             }
-            cafAuditEventTenantIndexMappingsBytes = ByteStreams.toByteArray(inputStream);
+            return TypeMapping._DESERIALIZER.deserialize(jsonValueParser, new JacksonJsonpMapper());
+            
         } catch (IOException e) {
             String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
-            LOG.error(errorMessage);
-            throw new RuntimeException(errorMessage, e);
-        }
-
-        //  Parse JSON from the bytes and return as a mapping builder
-        try(final XContentParser parser = XContentFactory.xContent(XContentType.JSON)
-                .createParser(NamedXContentRegistry.EMPTY, DeprecationHandler.THROW_UNSUPPORTED_OPERATION,
-                        cafAuditEventTenantIndexMappingsBytes)){
-            return XContentFactory.jsonBuilder().copyCurrentStructure(parser);
-        } catch (IOException e) {
-            String errorMessage = "Unable to parse JSON from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
             LOG.error(errorMessage);
             throw new RuntimeException(errorMessage, e);
         }

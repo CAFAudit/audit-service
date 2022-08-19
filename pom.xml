@@ -685,26 +685,11 @@
                 <groupId>org.eclipse.sisu</groupId>
                 <artifactId>org.eclipse.sisu.plexus</artifactId>
                 <version>0.3.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opensearch</groupId>
-                <artifactId>opensearch</artifactId>
-                <version>1.2.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opensearch</groupId>
-                <artifactId>opensearch-core</artifactId>
-                <version>1.2.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.opensearch</groupId>
-                <artifactId>opensearch-x-content</artifactId>
-                <version>1.2.3</version>
-            </dependency>
+            </dependency> 
             <dependency>
                 <groupId>org.opensearch.client</groupId>
                 <artifactId>opensearch-rest-client</artifactId>
-                <version>1.2.3</version>
+                <version>2.1.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -714,8 +699,8 @@
             </dependency>
             <dependency>
                 <groupId>org.opensearch.client</groupId>
-                <artifactId>opensearch-rest-high-level-client</artifactId>
-                <version>1.2.3</version>
+                <artifactId>opensearch-java</artifactId>
+                <version>2.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>

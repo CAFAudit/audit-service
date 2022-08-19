@@ -26,7 +26,6 @@ import com.hpe.caf.auditing.elastic.ElasticAuditRestHighLevelClientFactory;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.auditing.exception.AuditingException;
-import org.opensearch.client.RequestOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -36,14 +35,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.*;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import java.io.StringWriter;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.json.jackson.JacksonJsonpGenerator;
@@ -442,7 +438,7 @@ public class WebserviceClientAuditIT {
                 "{\"CAFAuditBoolean\":{\"mapping\":{\"type\":\"boolean\"},\"match\":\"*_CABln\"}}]," +
                 "\"properties\":{\"docDoubleParam_CADbl\":{\"type\":\"double\"}," +
                 "\"docBooleanParam_CABln\":{\"type\":\"boolean\"}," +
-                "\"docDateParam_CADte\":{\"type\":\"date\",\"format\":\"yyyy-MM-dd HH:mm:ss\"}," +
+                "\"docDateParam_CADte\":{\"type\":\"date\"}," +
                 "\"docShortParam_CAShort\":{\"type\":\"short\"}," +
                 "\"eventTimeSource\":{\"type\":\"keyword\"}," +
                 "\"docLongParam_CALng\":{\"type\":\"long\"},\"userId\":{\"type\":\"keyword\"}," +
@@ -549,12 +545,8 @@ public class WebserviceClientAuditIT {
 
     private static void assertDatesAreEqual(Date expectedDate, String actualDateString) throws ParseException
     {
-        //  Convert expected date to similar format used in Elasticsearch search results
-        //  (i.e. default ISODateTimeFormat.dateOptionalTimeParser).
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String expectedDateSting = df.format(expectedDate);
-
-        Assert.assertEquals(expectedDateSting, actualDateString);
+        //  Convert to date, by default in opensearch dates are stored as a long number representing milliseconds-since-the-epoch
+        Date actualDate = new Date(Long.parseLong(actualDateString));
+        Assert.assertEquals(expectedDate, actualDate);
     }
 }

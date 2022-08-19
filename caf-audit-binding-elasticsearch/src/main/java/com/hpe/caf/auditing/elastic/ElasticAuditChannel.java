@@ -55,6 +55,7 @@ public class ElasticAuditChannel implements AuditChannel {
     @Override
     public HealthResult healthCheck()
     {
+        System.out.println("test");
         //Calling to OpenSearch to get health status
         final Response response;
         try {

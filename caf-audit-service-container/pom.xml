@@ -132,6 +132,10 @@
             <artifactId>testng</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -193,6 +197,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <executions>
                     <execution>
                         <phase>test-compile</phase>
@@ -201,8 +206,7 @@
                         </goals>
                         <configuration>
                             <testCompilerArgument>-parameters</testCompilerArgument>
-                            <source>1.8</source>
-                            <target>1.8</target>
+                            <release>11</release>
                         </configuration>
                     </execution>
                 </executions>

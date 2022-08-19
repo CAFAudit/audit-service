@@ -376,9 +376,9 @@ public class WebserviceClientAuditIT {
 
             try {
                 hits = client.search(new SearchRequest.Builder()
-                    .index(indexId)
+                    .index(indexId.toLowerCase())
                     .searchType(SearchType.QueryThenFetch)
-                    .query(x -> x.match(m -> m.field(field).query(FieldValue.of(value.toLowerCase()))))
+                    .query(x -> x.match(m -> m.field(field).query(FieldValue.of(value))))
                     .from(0)
                     .size(10)
                     .build(), JsonData.class)

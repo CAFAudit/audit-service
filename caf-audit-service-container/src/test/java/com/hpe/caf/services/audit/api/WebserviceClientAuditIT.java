@@ -42,6 +42,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.*;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import java.io.StringWriter;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.json.jackson.JacksonJsonpGenerator;
@@ -247,9 +249,8 @@ public class WebserviceClientAuditIT {
                                                  date);
 
                         Hit<JsonData> searchHit = getAuditEvent(correlationId);
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> source = searchHit.source().to(Map.class, new JacksonJsonpMapper());
-                        event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
+                        JsonObject source = searchHit.source().toJson().asJsonObject();
+                        event1Order = source.getInt(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
                     }
 
                     {
@@ -261,9 +262,8 @@ public class WebserviceClientAuditIT {
                                                  date);
 
                         Hit<JsonData> searchHit = getAuditEvent(correlationId);
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> source = searchHit.source().to(Map.class, new JacksonJsonpMapper());
-                        event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
+                        JsonObject source = searchHit.source().toJson().asJsonObject();
+                        event2Order = source.getInt(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
                     }
 
                     Assert.assertTrue(event1Order < event2Order, "Event 1 order was not less than event 2 order");
@@ -442,7 +442,7 @@ public class WebserviceClientAuditIT {
                 "{\"CAFAuditBoolean\":{\"mapping\":{\"type\":\"boolean\"},\"match\":\"*_CABln\"}}]," +
                 "\"properties\":{\"docDoubleParam_CADbl\":{\"type\":\"double\"}," +
                 "\"docBooleanParam_CABln\":{\"type\":\"boolean\"}," +
-                "\"docDateParam_CADte\":{\"type\":\"date\"}," +
+                "\"docDateParam_CADte\":{\"type\":\"date\",\"format\":\"yyyy-MM-dd HH:mm:ss\"}," +
                 "\"docShortParam_CAShort\":{\"type\":\"short\"}," +
                 "\"eventTimeSource\":{\"type\":\"keyword\"}," +
                 "\"docLongParam_CALng\":{\"type\":\"long\"},\"userId\":{\"type\":\"keyword\"}," +
@@ -476,25 +476,19 @@ public class WebserviceClientAuditIT {
     private static void verifyFixedFieldResult(List<Hit<JsonData>>results, String field, Object expectedValue, String type)
             throws ParseException
     {
-        @SuppressWarnings("unchecked")
-        Map<String, Object> result = results.get(0).source().to(Map.class, new JacksonJsonpMapper());
+        JsonObject result = results.get(0).source().toJson().asJsonObject();
 
-        Object actualFieldValue = null;
+        String actualFieldValue = null;
 
         //  Identify matching field in search results.
-        for (Map.Entry<String, Object> entry : result.entrySet()) {
-            if (entry.getKey().equals(field)) {
-                actualFieldValue = entry.getValue();
-                break;
-            }
-        }
+        actualFieldValue = result.get(field).toString().replace("\"", "");
+        Assert.assertNotNull(actualFieldValue);
 
         //  Assert result is not null and matches expected value.
-        Assert.assertNotNull(actualFieldValue);
         if (!type.toLowerCase().equals("date")) {
-            Assert.assertEquals((String)actualFieldValue, expectedValue.toString());
+            Assert.assertEquals(actualFieldValue, expectedValue.toString());
         } else {
-            assertDatesAreEqual((Date) expectedValue, (String)actualFieldValue);
+            assertDatesAreEqual((Date) expectedValue, actualFieldValue);
         }
     }
 
@@ -537,27 +531,19 @@ public class WebserviceClientAuditIT {
                 break;
         }
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> result = results.get(0).source().to(Map.class, new JacksonJsonpMapper());
+        JsonObject result = results.get(0).source().toJson().asJsonObject();
 
-        Object actualFieldValue = null;
+        String actualFieldValue = null;
 
         //  Identify matching field in search results.
-        for (Map.Entry<String, Object> entry : result.entrySet()) {
-
-            //  Allow for type suffixes appended to field name in ES.
-            if (entry.getKey().equals(field)) {
-                actualFieldValue = entry.getValue();
-                break;
-            }
-        }
+        actualFieldValue = result.get(field).toString().replace("\"", "");
+        Assert.assertNotNull(actualFieldValue);
 
         //  Assert result is not null and matches expected value.
-        Assert.assertNotNull(actualFieldValue);
         if (!type.toLowerCase().equals("date")) {
-            Assert.assertEquals((String)actualFieldValue, expectedValue.toString());
+            Assert.assertEquals(actualFieldValue, expectedValue.toString());
         } else {
-            assertDatesAreEqual((Date) expectedValue, (String)actualFieldValue);
+            assertDatesAreEqual((Date) expectedValue, actualFieldValue);
         }
     }
 

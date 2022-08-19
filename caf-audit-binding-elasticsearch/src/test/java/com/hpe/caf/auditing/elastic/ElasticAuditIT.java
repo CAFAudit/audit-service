@@ -21,8 +21,7 @@ import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.AuditConnectionFactory;
-import com.hpe.caf.auditing.exception.AuditConfigurationException;
-import org.opensearch.client.RequestOptions;
+import jakarta.json.JsonObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -30,21 +29,18 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
-import java.util.Map;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.json.jackson.JacksonJsonpGenerator;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch._types.Result;
 import org.opensearch.client.opensearch._types.SearchType;
 import org.opensearch.client.opensearch.core.DeleteResponse;
@@ -157,34 +153,35 @@ public class ElasticAuditIT
         }
     }
 
-//    @Test(expected = OpenSearchStatusException.class)
-//    public void testStringLengthRestrictionTenantId() throws Exception
-//    {
-//        //  This tests the usage of too many characters supplied as the tenant identifier. The tenant identifier is
-//        //  part of the ES index name and therefore must not exceed 255. An UncheckedExecutionException is expected to
-//        //  be thrown.
-//
-//        final String tenantIdContainingOver255Chars = "ATenantIndexNameWithOverOneHundredCharacters" +
-//                "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters" +
-//                "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters" +
-//                "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters";
-//
-//        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, ES_HOSTNAME_AND_PORT);
-//        try (final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
-//                com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
-//            //  Index a sample audit event message into Elasticsearch.
-//            AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
-//
-//            //  Set up fixed field data for the sample audit event message.
-//            auditEventBuilder.setApplication(APPLICATION_ID);
-//            auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
-//            auditEventBuilder.setCorrelationId(CORRELATION_ID);
-//            auditEventBuilder.setTenant(tenantIdContainingOver255Chars);
-//            auditEventBuilder.setUser(USER_ID);
-//
-//            auditEventBuilder.send();
-//        }
-//    }
+    @Test(expected = OpenSearchException.class)
+    public void testStringLengthRestrictionTenantId() throws Exception
+    {
+        //  This tests the usage of too many characters supplied as the tenant identifier. The tenant identifier is
+        //  part of the ES index name and therefore must not exceed 255. An UncheckedExecutionException is expected to
+        //  be thrown.
+
+        final String esHostAndPort = ES_HOSTNAME + ":" + ES_PORT;
+        final String tenantIdContainingOver255Chars = "ATenantIndexNameWithOverOneHundredCharacters" +
+                "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters" +
+                "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters" +
+                "ATenantIndexNameWithOverOneHundredCharactersATenantIndexNameWithOverOneHundredCharacters";
+
+        System.setProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_HOST_AND_PORT_VALUES, esHostAndPort);
+        try (final AuditConnection auditConnection = AuditConnectionFactory.createConnection();
+                com.hpe.caf.auditing.AuditChannel auditChannel = auditConnection.createChannel()) {
+            //  Index a sample audit event message into Elasticsearch.
+            AuditEventBuilder auditEventBuilder = auditChannel.createEventBuilder();
+
+            //  Set up fixed field data for the sample audit event message.
+            auditEventBuilder.setApplication(APPLICATION_ID);
+            auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
+            auditEventBuilder.setCorrelationId(CORRELATION_ID);
+            auditEventBuilder.setTenant(tenantIdContainingOver255Chars);
+            auditEventBuilder.setUser(USER_ID);
+
+            auditEventBuilder.send();
+        }
+    }
 
     @Test
     public void testESIndexingWithConfigurationPassedAsSystemProps() throws Exception
@@ -507,18 +504,12 @@ public class ElasticAuditIT
     private static void verifyFixedFieldResult(List<Hit<JsonData>> results, String field, Object expectedValue, String type)
             throws ParseException
     {
-        @SuppressWarnings("unchecked")
-        Map<String, String> result = results.get(0).source().to(Map.class, new JacksonJsonpMapper());
+        JsonObject result = results.get(0).source().toJson().asJsonObject();
 
         String actualFieldValue = null;
 
         //  Identify matching field in search results.
-        for (Map.Entry<String, String> entry : result.entrySet()) {
-            if (entry.getKey().equals(field)) {
-                actualFieldValue = entry.getValue();
-                break;
-            }
-        }
+        actualFieldValue = result.getString(field);
 
         //  Assert result is not null and matches expected value.
         Assert.assertNotNull(actualFieldValue);
@@ -568,23 +559,15 @@ public class ElasticAuditIT
                 break;
         }
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> result = results.get(0).source().to(Map.class, new JacksonJsonpMapper());
+        JsonObject result = results.get(0).source().toJson().asJsonObject();
 
         String actualFieldValue = null;
 
         //  Identify matching field in search results.
-        for (Map.Entry<String, String> entry : result.entrySet()) {
-
-            //  Allow for type suffixes appended to field name in ES.
-            if (entry.getKey().equals(field)) {
-                actualFieldValue = entry.getValue();
-                break;
-            }
-        }
+        actualFieldValue = result.get(field).toString().replace("\"", "");
+        Assert.assertNotNull(actualFieldValue);
 
         //  Assert result is not null and matches expected value.
-        Assert.assertNotNull(actualFieldValue);
         if (!type.toLowerCase().equals("date")) {
             Assert.assertEquals(expectedValue.toString(), actualFieldValue);
         } else {
@@ -594,13 +577,9 @@ public class ElasticAuditIT
 
     private static boolean datesAreEqual(Date expectedDate, String actualDateString) throws ParseException
     {
-        //  Convert expected date to similar format used in Elasticsearch search results
-        //  (i.e. default ISODateTimeFormat.dateOptionalTimeParser).
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String expectedDateSting = df.format(expectedDate);
-
-        return expectedDateSting.equals(actualDateString);
+        //  Convert to date, by default in opensearch dates are stored as a long number representing milliseconds-since-the-epoch
+        Date actualDate = new Date(Long.parseLong(actualDateString));
+        return expectedDate.equals(actualDate);
     }
 
     private static void deleteDocument(OpenSearchClient client, String indexId, String documentId)

@@ -15,16 +15,13 @@
  */
 package com.hpe.caf.auditing.elastic;
 
-import com.google.common.io.ByteStreams;
 import jakarta.json.Json;
 import jakarta.json.stream.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opensearch.client.RequestOptions;
 
 import java.io.IOException;
 import java.io.InputStream;
-import org.opensearch.client.json.JsonpDeserializer;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.mapping.TypeMapping;

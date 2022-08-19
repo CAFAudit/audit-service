@@ -20,6 +20,7 @@ import com.hpe.caf.services.audit.api.AuditLog;
 import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonValue.ValueType;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -32,10 +33,8 @@ import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.opensearch.client.json.JsonData;
-import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch._types.SearchType;
@@ -83,7 +82,7 @@ public class GeneratedAuditLogIT {
         }
     }
 
-    //@Test
+    @Test
     public void auditSimpleEventTest() throws Exception {
         Date date = new Date();
         String correlationId = getCorrelationId();
@@ -95,17 +94,16 @@ public class GeneratedAuditLogIT {
                     Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
 
             Hit<JsonData> searchHit = getAuditEvent(correlationId);
-            @SuppressWarnings("unchecked")
-            Map<String, Object> source = searchHit.source().to(Map.class, new JacksonJsonpMapper());
+            JsonObject source = searchHit.source().toJson().asJsonObject();
 
             assertFixedField(ProcessIdentifier.getProcessId().toString(), ElasticAuditConstants.FixedFieldName.PROCESS_ID_FIELD, source);
 
             Assert.assertEquals(Thread.currentThread().getId(),
-                                ((Long)source.get(ElasticAuditConstants.FixedFieldName.THREAD_ID_FIELD)).longValue());
+                                source.getJsonNumber(ElasticAuditConstants.FixedFieldName.THREAD_ID_FIELD).longValue());
 
             //Event order is tested in eventOrderTest()
 
-            Object eventTimeField = source.get(ElasticAuditConstants.FixedFieldName.EVENT_TIME_FIELD);
+            String eventTimeField = source.getString(ElasticAuditConstants.FixedFieldName.EVENT_TIME_FIELD);
             DateTime eventDateTime = new DateTime(eventTimeField);
             Assert.assertTrue(eventDateTime.isAfter(new DateTime(date)));
 
@@ -143,9 +141,8 @@ public class GeneratedAuditLogIT {
                         Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
 
                 Hit<JsonData> searchHit = getAuditEvent(correlationId);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> source = searchHit.source().to(Map.class, new JacksonJsonpMapper());
-                event1Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
+                JsonObject source = searchHit.source().toJson().asJsonObject();
+                event1Order = source.getInt(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
             }
 
             {
@@ -156,9 +153,8 @@ public class GeneratedAuditLogIT {
                         Short.MAX_VALUE, Integer.MAX_VALUE, Long.MAX_VALUE, Float.MAX_VALUE, Double.MAX_VALUE, true, date);
 
                 Hit<JsonData> searchHit = getAuditEvent(correlationId);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> source = searchHit.source().to(Map.class, new JacksonJsonpMapper());
-                event2Order = (Integer) source.get(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
+                JsonObject source = searchHit.source().toJson().asJsonObject();
+                event2Order = source.getInt(ElasticAuditConstants.FixedFieldName.EVENT_ORDER_FIELD);
             }
 
             Assert.assertTrue("Event 1 order was not less than event 2 order", event1Order < event2Order);
@@ -212,106 +208,96 @@ public class GeneratedAuditLogIT {
         }
     }
 
-    private void assertFixedField(String expected, String fieldName, Map<String, Object> source){
+    private void assertFixedField(String expected, String fieldName, JsonObject source){
 
         Assert.assertTrue(String.format("Field %s not returned", fieldName), source.containsKey(fieldName));
-        Object sourceField = source.get(fieldName);
+        Assert.assertTrue(source.get(fieldName).getValueType().equals(ValueType.STRING));
+        String sourceField = source.getString(fieldName);
 
-        Assert.assertEquals(String.class, sourceField.getClass());
-        String value = (String) sourceField;
-        Assert.assertEquals(expected, value);
+        Assert.assertEquals(expected, sourceField);
     }
 
-    private void assertField(String expected, String fieldName, Map<String, Object> source){
+    private void assertField(String expected, String fieldName, JsonObject source){
 
         String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.KEYWORD_SUFFIX);
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
-        Object sourceField = source.get(fullFieldName);
+        Assert.assertTrue(source.get(fullFieldName).getValueType().equals(ValueType.STRING));
+        String sourceField = source.getString(fullFieldName);
 
-        Assert.assertEquals(String.class, sourceField.getClass());
-        String value = (String) sourceField;
-        Assert.assertEquals(expected, value);
+        Assert.assertEquals(expected, sourceField);
     }
 
-    private void assertField(Short expected, String fieldName, Map<String, Object> source){
+    private void assertField(Short expected, String fieldName, JsonObject source){
         String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
-        Object sourceField = source.get(fullFieldName);
+        Assert.assertTrue(source.get(fullFieldName).getValueType().equals(ValueType.NUMBER));
+        Short sourceField = source.getJsonNumber(fullFieldName).numberValue().shortValue();
 
         // Parse for short type because the Java search api returns shorts as integers
-        Assert.assertEquals(Integer.class, sourceField.getClass());
-        Short value = ((Integer)(sourceField)).shortValue();
-        Assert.assertEquals(expected, value);
+        Assert.assertEquals(expected, sourceField);
     }
 
-    private void assertField(Integer expected, String fieldName, Map<String, Object> source){
+    private void assertField(Integer expected, String fieldName, JsonObject source){
         String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.INT_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
-        Object sourceField = source.get(fullFieldName);
+        Assert.assertTrue(source.get(fullFieldName).getValueType().equals(ValueType.NUMBER));
+        Integer sourceField = source.getInt(fullFieldName);
 
-        Assert.assertEquals(Integer.class, sourceField.getClass());
-        Integer value = (Integer)sourceField;
-        Assert.assertEquals(expected, value);
+        Assert.assertEquals(expected, sourceField);
     }
 
-    private void assertField(Long expected, String fieldName, Map<String, Object> source){
+    private void assertField(Long expected, String fieldName, JsonObject source){
         String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.LONG_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
-        Object sourceField = source.get(fullFieldName);
+        Assert.assertTrue(source.get(fullFieldName).getValueType().equals(ValueType.NUMBER));
+        Long sourceField = source.getJsonNumber(fullFieldName).longValue();
 
-        Assert.assertEquals(Long.class, sourceField.getClass());
-        Long value = (Long)sourceField;
-        Assert.assertEquals(expected, value);
+        Assert.assertEquals(expected, sourceField);
     }
 
-    private void assertField(Float expected, String fieldName, Map<String, Object> source){
+    private void assertField(Float expected, String fieldName, JsonObject source){
         String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.FLOAT_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
-        Object sourceField = source.get(fullFieldName);
+        Assert.assertTrue(source.get(fullFieldName).getValueType().equals(ValueType.NUMBER));
+        Float sourceField = source.getJsonNumber(fullFieldName).numberValue().floatValue();
 
         // Parse for float type because the Java search api returns floats as doubles
-        Assert.assertEquals(Double.class, sourceField.getClass());
-        Float value = ((Double)sourceField).floatValue();
-        Assert.assertEquals(expected, value);
+        Assert.assertEquals(expected, sourceField);
     }
 
-    private void assertField(Double expected, String fieldName, Map<String, Object> source){
+    private void assertField(Double expected, String fieldName, JsonObject source){
         String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.DOUBLE_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
-        Object sourceField = source.get(fullFieldName);
+        Assert.assertTrue(source.get(fullFieldName).getValueType().equals(ValueType.NUMBER));
+        Double sourceField = source.getJsonNumber(fullFieldName).doubleValue();
 
-        Assert.assertEquals(Double.class, sourceField.getClass());
-        Double value = (Double)sourceField;
-        Assert.assertEquals(expected, value);
+        Assert.assertEquals(expected, sourceField);
     }
 
-    private void assertField(Boolean expected, String fieldName, Map<String, Object> source){
+    private void assertField(Boolean expected, String fieldName, JsonObject source){
         String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
-        Object sourceField = source.get(fullFieldName);
+        Assert.assertTrue(List.of(ValueType.TRUE, ValueType.FALSE).contains(source.get(fullFieldName).getValueType()));
+        Boolean sourceField = source.getBoolean(fullFieldName);
 
-        Assert.assertEquals(Boolean.class, sourceField.getClass());
-        Boolean value = (Boolean)sourceField;
-        Assert.assertEquals(expected, value);
+        Assert.assertEquals(expected, sourceField);
     }
 
-    private void assertField(Date expected, String fieldName, Map<String, Object> source) throws ParseException {
+    private void assertField(Date expected, String fieldName, JsonObject source) throws ParseException {
         String fullFieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.DATE_SUFFIX);
 
         Assert.assertTrue(String.format("Field %s not returned", fullFieldName), source.containsKey(fullFieldName));
-        Object sourceField = source.get(fullFieldName);
+        Assert.assertTrue(source.get(fullFieldName).getValueType().equals(ValueType.NUMBER));
+        Long sourceField = source.getJsonNumber(fullFieldName).longValue();
 
         //  Transform the returned value into a DateTime object as the Java search api returns dates as a strings
-        Assert.assertEquals(String.class, sourceField.getClass());
-
-        String sourceTime = (String)sourceField;
-        DateTime dateTime = new DateTime(sourceTime);
+        DateTime dateTime = new DateTime(sourceField);
 
         Assert.assertEquals(new DateTime(expected), dateTime);
     }

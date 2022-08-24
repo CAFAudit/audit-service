@@ -275,7 +275,7 @@
                             <alias>keystore</alias>
                             <name>${project.artifactId}-keystore:${project.version}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/opensuse-jre11:3</from>
+                                <from>${dockerHubPublic}/cafapi/prereleases:opensuse-jre11-3.6.0-SNAPSHOT</from>
                                 <runCmds>
                                     <runCmd>mkdir /test-keystore</runCmd>
                                     <runCmd>keytool -genkey -noprompt -alias tomcat -dname "CN=myname, OU=myorganisational.unit, O=myorganisation, L=mycity, S=myprovince, C=GB" -keystore /test-keystore/tomcat.keystore -storepass changeit -keypass changeit -keyalg RSA</runCmd>
@@ -290,7 +290,7 @@
                             <alias>audit-service</alias>
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/opensuse-tomcat-jre11:2</from>
+                                <from>${dockerHubPublic}/cafapi/prereleases:opensuse-tomcat-jre11-2.6.0-SNAPSHOT</from>
                                 <env>
                                     <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>

@@ -75,7 +75,7 @@
                         <image>
                             <name>${dockerCafAuditOrg}audit-monkey${dockerProjectVersion}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/prereleases:opensuse-jre11-3.6.0-SNAPSHOT</from>
+                                <from>${dockerHubPublic}/cafapi/opensuse-jre11:3</from>
                                 <cmd>
                                     <exec>
                                         <args>/maven/start.sh</args>

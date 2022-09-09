@@ -178,7 +178,7 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
             final IndexResponse indexResponse = openSearchClient.index(indexRequest);
 
             final Result status = indexResponse.result();
-            if (!status.equals(Result.Created)) {
+            if (status != Result.Created) {
                 //  Unexpected response so report this.
                 String errorMessage = "Unexpected Elasticsearch response status. Expected 'CREATED' but received '" + status.toString() + "'";
                 LOG.error(errorMessage);

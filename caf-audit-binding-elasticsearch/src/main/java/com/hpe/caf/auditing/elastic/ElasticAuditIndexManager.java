@@ -42,12 +42,12 @@ public final class ElasticAuditIndexManager {
         throws IOException
     {
         if (isForceIndexTemplateUpdate || !isIndexTemplatePresent(openSearchClient)) {
-            
+
             final IndexSettings indexSettings = new IndexSettings.Builder()
                 .numberOfShards(String.valueOf(numberOfShards))
                 .numberOfReplicas(String.valueOf(numberOfReplicas))
                 .build();
-            
+
             final IndexTemplateMapping indexMapping = new IndexTemplateMapping.Builder()
                 .settings(indexSettings)
                 .mappings(getTenantIndexTypeMapping())
@@ -58,7 +58,7 @@ public final class ElasticAuditIndexManager {
                 .indexPatterns("*" + ElasticAuditConstants.Index.SUFFIX)
                 .template(indexMapping)
                 .build();
-                
+
             openSearchClient.indices().putIndexTemplate(request);
         }
     }
@@ -74,15 +74,15 @@ public final class ElasticAuditIndexManager {
         try (final InputStream inputStream = ElasticAuditIndexManager.class.getClassLoader()
             .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE);
              final JsonParser jsonValueParser = Json.createParser(inputStream)) {
-            if(inputStream== null)
+            if (inputStream == null)
             {
                 final String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
                 LOG.error(errorMessage);
                 throw new RuntimeException(errorMessage);
             }
             return TypeMapping._DESERIALIZER.deserialize(jsonValueParser, new JacksonJsonpMapper());
-            
-        } catch (IOException e) {
+
+        } catch (final IOException e) {
             String errorMessage = "Unable to read bytes from " + ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE;
             LOG.error(errorMessage);
             throw new RuntimeException(errorMessage, e);

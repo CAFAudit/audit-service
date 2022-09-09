@@ -22,14 +22,12 @@ import com.hpe.caf.auditing.healthcheck.HealthStatus;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch.cluster.HealthRequest;
 import org.opensearch.client.opensearch.cluster.HealthResponse;
 
 public class ElasticAuditChannel implements AuditChannel {
     private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
     private final OpenSearchClient openSearchClient;
 
     public ElasticAuditChannel(OpenSearchClient openSearchClient){
@@ -49,7 +47,7 @@ public class ElasticAuditChannel implements AuditChannel {
     @Override
     public HealthResult healthCheck()
     {
-        //Calling to OpenSearch to get health status
+        // Calling to OpenSearch to get health status
         final HealthResponse response;
         try {
             logger.debug("Executing ES cluster health check...");
@@ -57,10 +55,10 @@ public class ElasticAuditChannel implements AuditChannel {
                 .waitForStatus(org.opensearch.client.opensearch._types.HealthStatus.Yellow)
                 .build();
             response = openSearchClient.cluster().health(clusterHealthRequest);
-            if(response.status().equals(org.opensearch.client.opensearch._types.HealthStatus.Red)){
+            if (response.status().equals(org.opensearch.client.opensearch._types.HealthStatus.Red)) {
                 logger.error("OpenSearch is unhealthy.");
                 return new HealthResult(HealthStatus.UNHEALTHY, "OpenSearch Status is invalid: " + response.status().toString());
-            }else{
+            } else {
                 return HealthResult.HEALTHY;
             }
         } catch (final IOException ex) {

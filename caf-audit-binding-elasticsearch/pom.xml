@@ -33,10 +33,6 @@
             <artifactId>caf-audit</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
@@ -49,30 +45,18 @@
             <artifactId>jackson-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
         </dependency>
 
         <!-- OpenSearch -->
-        <dependency>
-            <groupId>org.opensearch</groupId>
-            <artifactId>opensearch</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.opensearch.client</groupId>
             <artifactId>opensearch-rest-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opensearch.client</groupId>
-            <artifactId>opensearch-rest-high-level-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opensearch</groupId>
-            <artifactId>opensearch-x-content</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-core</artifactId>
+            <artifactId>opensearch-java</artifactId>
         </dependency>
 
         <dependency>
@@ -247,8 +231,6 @@
                         </goals>
                         <configuration>
                             <testCompilerArgument>-parameters</testCompilerArgument>
-                            <source>1.8</source>
-                            <target>1.8</target>
                         </configuration>
                     </execution>
                 </executions>

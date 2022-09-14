@@ -15,42 +15,42 @@
  */
 package com.hpe.caf.auditing.elastic;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.AuditConnectionFactory;
-import com.hpe.caf.auditing.exception.AuditConfigurationException;
-import org.opensearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.opensearch.action.delete.DeleteRequest;
-import org.opensearch.action.delete.DeleteResponse;
-import org.opensearch.action.search.SearchRequest;
-import org.opensearch.action.search.SearchType;
-import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.action.support.master.AcknowledgedResponse;
-import org.opensearch.client.indices.GetMappingsRequest;
-import org.opensearch.client.indices.GetMappingsResponse;
-import org.opensearch.common.compress.CompressedXContent;
-import org.opensearch.index.query.QueryBuilders;
-import org.opensearch.rest.RestStatus;
-import org.opensearch.search.SearchHit;
-import org.opensearch.search.builder.SearchSourceBuilder;
-import org.opensearch.OpenSearchStatusException;
+import jakarta.json.JsonObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.text.DateFormat;
+import java.io.StringWriter;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 import java.util.Date;
-import java.util.TimeZone;
-import java.util.Map;
+import java.util.List;
+import org.opensearch.client.json.JsonData;
+import org.opensearch.client.json.jackson.JacksonJsonpGenerator;
+import org.opensearch.client.json.jackson.JacksonJsonpMapper;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch._types.OpenSearchException;
+import org.opensearch.client.opensearch._types.Result;
+import org.opensearch.client.opensearch._types.SearchType;
+import org.opensearch.client.opensearch.core.DeleteResponse;
+import org.opensearch.client.opensearch.core.SearchRequest;
+import org.opensearch.client.opensearch.core.search.Hit;
+import org.opensearch.client.opensearch.indices.DeleteIndexRequest;
+import org.opensearch.client.opensearch.indices.DeleteIndexResponse;
+import org.opensearch.client.opensearch.indices.GetMappingRequest;
+import org.opensearch.client.opensearch.indices.GetMappingResponse;
+import org.opensearch.client.transport.OpenSearchTransport;
 
 public class ElasticAuditIT
 {
@@ -153,7 +153,7 @@ public class ElasticAuditIT
         }
     }
 
-    @Test(expected = OpenSearchStatusException.class)
+    @Test(expected = OpenSearchException.class)
     public void testStringLengthRestrictionTenantId() throws Exception
     {
         //  This tests the usage of too many characters supplied as the tenant identifier. The tenant identifier is
@@ -221,30 +221,30 @@ public class ElasticAuditIT
         }
     }
 
-    private void verifyAuditEvent(String esHostAndPort, TestAuditEvent testAuditEvent) throws Exception {
+    private void verifyAuditEvent(String esHostAndPort, TestAuditEvent testAuditEvent) throws Exception
+    {
         //  Verify the type mappings have been set for the index. Then search for the audit event message in
         //  Elasticsearch and verify field data matches input.
-        try (final RestHighLevelClient restHighLevelClient
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
-                         CAF_ELASTIC_PROTOCOL,
-                         esHostAndPort,
-                         CAF_ELASTIC_USERNAME,
-                         CAF_ELASTIC_PASSWORD)) {
+        try (final OpenSearchTransport openSearchTransport
+            = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
+                CAF_ELASTIC_PROTOCOL,
+                esHostAndPort,
+                CAF_ELASTIC_USERNAME,
+                CAF_ELASTIC_PASSWORD)) {
+            final OpenSearchClient openSearchClient = new OpenSearchClient(openSearchTransport);
+            verifyTypeMappings(openSearchClient);
 
-            verifyTypeMappings(restHighLevelClient);
-
-            SearchHit[] hits = new SearchHit[0];
-            hits = searchDocumentInIndex(restHighLevelClient,
-                    ES_INDEX,
-                    ElasticAuditConstants.FixedFieldName.USER_ID_FIELD,
-                    USER_ID);
+            final List<Hit<JsonData>> hits = searchDocumentInIndex(openSearchClient,
+                                         ES_INDEX,
+                                         ElasticAuditConstants.FixedFieldName.USER_ID_FIELD,
+                                         USER_ID);
 
             //  Expecting a single hit.
-            Assert.assertTrue(hits.length == 1);
+            Assert.assertTrue(hits.size() == 1);
 
             //  Make a note of the document identifier as we will use this to clean
             //  up afterwards.
-            final String docId = hits[0].getId();
+            final String docId = hits.get(0).id();
 
             //  Verify fixed field data results.
             verifyFixedFieldResult(hits, ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, APPLICATION_ID, "string");
@@ -264,11 +264,11 @@ public class ElasticAuditIT
             verifyCustomFieldResult(hits, CUSTOM_DOC_DATE_PARAM_FIELD, testAuditEvent.getDateParamValue(), "date", null);
 
             //  Delete test document after verification is complete.
-            deleteDocument(restHighLevelClient, ES_INDEX, docId);
+            deleteDocument(openSearchClient, ES_INDEX, docId);
         }
     }
 
-    private void verifyTypeMappings(RestHighLevelClient restHighLevelClient) {
+    private void verifyTypeMappings(final OpenSearchClient openSearchClient) {
         String expectedTypeMappings = "{\"dynamic_templates\":" +
                 "[{\"CAFAuditKeyword\":{\"mapping\":{\"type\":\"keyword\"},\"match\":\"*_CAKyw\"}}," +
                 "{\"CAFAuditText\":{\"mapping\":{\"type\":\"text\"},\"match\":\"*_CATxt\"}}," +
@@ -290,18 +290,19 @@ public class ElasticAuditIT
                 "\"eventCategoryId\":{\"type\":\"keyword\"}}}";
 
         final String index = (TENANT_ID + ElasticAuditConstants.Index.SUFFIX).toLowerCase();
-        final GetMappingsResponse getMappingsResponse;
-        try {
-            getMappingsResponse = restHighLevelClient.indices().getMapping(new GetMappingsRequest().indices(index), RequestOptions.DEFAULT);
+        
+        final StringWriter writer = new StringWriter();
+        try (final JacksonJsonpGenerator generator = new JacksonJsonpGenerator(new JsonFactory().createGenerator(writer))) {
+            final GetMappingResponse getMappingsResponse = openSearchClient.indices()
+                .getMapping(new GetMappingRequest.Builder().index(index).build());
+            // Get the CAF Audit Event type mapping for the tenant index
+            getMappingsResponse.result().get(index).mappings().serialize(generator, new JacksonJsonpMapper());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        // Get the CAF Audit Event type mapping for the tenant index
-        CompressedXContent indexMapping = getMappingsResponse.mappings().get(index).source();
-
         Assert.assertEquals("Expected type mappings and actual type mappings should match", expectedTypeMappings,
-                indexMapping.toString());
+                writer.toString());
     }
 
     @Test
@@ -349,26 +350,27 @@ public class ElasticAuditIT
 
             // Search across all indices for the applicationId field in Elasticsearch and verify that the expected
             // number of hits are returned.
-            try (RestHighLevelClient restHighLevelClient
-                = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+            try (OpenSearchTransport openSearchTransport
+                = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
                          CAF_ELASTIC_PROTOCOL,
                          esHostAndPort,
                          CAF_ELASTIC_USERNAME,
                          CAF_ELASTIC_PASSWORD)) {
 
-                String[] tenantIndexIds = new String[2];
-                tenantIndexIds[0] = tenant1Id + ElasticAuditConstants.Index.SUFFIX;
-                tenantIndexIds[1] = tenant2Id + ElasticAuditConstants.Index.SUFFIX;
+                final OpenSearchClient openSearchClient = new OpenSearchClient(openSearchTransport);
+                final List<String> tenantIndexIds = new ArrayList<>();
+                tenantIndexIds.add(tenant1Id + ElasticAuditConstants.Index.SUFFIX);
+                tenantIndexIds.add(tenant2Id + ElasticAuditConstants.Index.SUFFIX);
 
                 ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
-                SearchHit[] tenantIndicesHits;
+                List<Hit<JsonData>> tenantIndicesHits;
                 while (retrySearch.shouldRetry()) {
-                    tenantIndicesHits = searchDocumentInIndices(restHighLevelClient,
+                    tenantIndicesHits = searchDocumentInIndices(openSearchClient,
                                                                 tenantIndexIds,
                                                                 ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD,
                                                                 testApplicationId);
 
-                    int numberOfTenantIndexHits = tenantIndicesHits.length;
+                    int numberOfTenantIndexHits = tenantIndicesHits.size();
 
                     //  If there are less than two hits returned, retry.
                     //  Else if there are more than two hits returned, fail the test
@@ -380,7 +382,7 @@ public class ElasticAuditIT
                             throw new RuntimeException(e);
                         }
                     } else if (numberOfTenantIndexHits > 2) {
-                        deleteIndices(restHighLevelClient, tenantIndexIds);
+                        deleteIndices(openSearchClient, tenantIndexIds);
                         Assert.fail("Expecting only two hits to be returned from Audit, however "
                             + numberOfTenantIndexHits + " hits were returned from Elastic");
                     }
@@ -392,25 +394,23 @@ public class ElasticAuditIT
                 }
 
                 //  Delete test indexes after verification is complete.
-                deleteIndices(restHighLevelClient, tenantIndexIds);
+                deleteIndices(openSearchClient, tenantIndexIds);
             }
         }
     }
 
-    private void deleteIndices(RestHighLevelClient client, String[] indices) {
+    private void deleteIndices(OpenSearchClient client, List<String> indices) {
         // Lowercase each string in the array of indices
-        for (int i = 0; i < indices.length; i++) {
-            indices[i] = indices[i].toLowerCase();
-        }
+        indices.forEach(x -> x.toLowerCase());
 
         ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
             try {
 
-                final AcknowledgedResponse deleteResponse =
-                        client.indices().delete(new DeleteIndexRequest().indices(indices), RequestOptions.DEFAULT);
+                final DeleteIndexResponse deleteResponse =
+                        client.indices().delete(new DeleteIndexRequest.Builder().index(indices).build());
 
-                if (deleteResponse.isAcknowledged()) {
+                if (deleteResponse.acknowledged()) {
                     // If Elastic acknowledged our delete wait a second to allow it time to delete the indices
                     Thread.sleep(1000);
                     break;
@@ -429,32 +429,30 @@ public class ElasticAuditIT
         }
     }
 
-    private static SearchHit[] searchDocumentInIndices(RestHighLevelClient client, String[] indices, String field,
+    private static List<Hit<JsonData>> searchDocumentInIndices(OpenSearchClient client, List<String> indices, String field,
                                                        String value)
     {
         // Lowercase each string in the array of indices
-        for (int i = 0; i < indices.length; i++) {
-            indices[i] = indices[i].toLowerCase();
-        }
+        indices.forEach(x -> x.toLowerCase());
 
         ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
-        SearchHit[] hits = null;
+        List<Hit<JsonData>> hits = null;
         while (retrySearch.shouldRetry()) {
 
             try {
-                hits = client.search(new SearchRequest()
-                        .indices(indices)
-                        .searchType(SearchType.QUERY_THEN_FETCH)
-                        .source(new SearchSourceBuilder()
-                                .query(QueryBuilders.matchQuery(field, value.toLowerCase()))
-                                .from(0)
-                                .size(10)
-                        ), RequestOptions.DEFAULT).getHits().getHits();
+               hits = client.search(new SearchRequest.Builder()
+                    .index(indices)
+                    .searchType(SearchType.QueryThenFetch)
+                    .query(x -> x.match(m -> m.field(field).query(FieldValue.of(value.toLowerCase()))))
+                    .from(0)
+                    .size(10)
+                    .build(), JsonData.class)
+                    .hits().hits();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            if (hits.length > 0) {
+            if (!hits.isEmpty()) {
                 break;
             }
 
@@ -469,26 +467,26 @@ public class ElasticAuditIT
         return hits;
     }
 
-    private static SearchHit[] searchDocumentInIndex(RestHighLevelClient client, String indexId, String field, String value)
+    private static List<Hit<JsonData>> searchDocumentInIndex(OpenSearchClient client, String indexId, String field, String value)
     {
         ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
-        SearchHit[] hits = null;
+        List<Hit<JsonData>> hits = null;
         while (retrySearch.shouldRetry()) {
 
             try {
-                hits = client.search(new SearchRequest()
-                        .indices(indexId)
-                        .searchType(SearchType.QUERY_THEN_FETCH)
-                        .source(new SearchSourceBuilder()
-                                .query(QueryBuilders.matchQuery(field, value.toLowerCase()))
-                                .from(0)
-                                .size(10)
-                        ), RequestOptions.DEFAULT).getHits().getHits();
+                hits = client.search(new SearchRequest.Builder()
+                    .index(indexId)
+                    .searchType(SearchType.QueryThenFetch)
+                    .query(x -> x.match(m -> m.field(field).query(FieldValue.of(value.toLowerCase()))))
+                    .from(0)
+                    .size(10)
+                    .build(), JsonData.class)
+                    .hits().hits();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            if (hits.length > 0) {
+            if (!hits.isEmpty()) {
                 break;
             }
 
@@ -503,31 +501,26 @@ public class ElasticAuditIT
         return hits;
     }
 
-    private static void verifyFixedFieldResult(SearchHit[] results, String field, Object expectedValue, String type)
+    private static void verifyFixedFieldResult(List<Hit<JsonData>> results, String field, Object expectedValue, String type)
             throws ParseException
     {
-        Map<String, Object> result = results[0].getSourceAsMap();
+        JsonObject result = results.get(0).source().toJson().asJsonObject();
 
-        Object actualFieldValue = null;
+        String actualFieldValue = null;
 
         //  Identify matching field in search results.
-        for (Map.Entry<String, Object> entry : result.entrySet()) {
-            if (entry.getKey().equals(field)) {
-                actualFieldValue = entry.getValue();
-                break;
-            }
-        }
+        actualFieldValue = result.getString(field);
 
         //  Assert result is not null and matches expected value.
         Assert.assertNotNull(actualFieldValue);
         if (!type.toLowerCase().equals("date")) {
-            Assert.assertEquals(expectedValue.toString(), actualFieldValue.toString());
+            Assert.assertEquals(expectedValue.toString(), actualFieldValue);
         } else {
-            Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue.toString()));
+            Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue));
         }
     }
 
-    private static void verifyCustomFieldResult(SearchHit[] results, String field, Object expectedValue, String type, AuditIndexingHint indexingHint)
+    private static void verifyCustomFieldResult(List<Hit<JsonData>> results, String field, Object expectedValue, String type, AuditIndexingHint indexingHint)
         throws ParseException
     {
         //  Determine entry key to look for based on type supplied.
@@ -566,51 +559,36 @@ public class ElasticAuditIT
                 break;
         }
 
-        Map<String, Object> result = results[0].getSourceAsMap();
+        JsonObject result = results.get(0).source().toJson().asJsonObject();
 
-        Object actualFieldValue = null;
+        String actualFieldValue = null;
 
         //  Identify matching field in search results.
-        for (Map.Entry<String, Object> entry : result.entrySet()) {
-
-            //  Allow for type suffixes appended to field name in ES.
-            if (entry.getKey().equals(field)) {
-                actualFieldValue = entry.getValue();
-                break;
-            }
-        }
+        actualFieldValue = result.get(field).toString().replace("\"", "");
+        Assert.assertNotNull(actualFieldValue);
 
         //  Assert result is not null and matches expected value.
-        Assert.assertNotNull(actualFieldValue);
         if (!type.toLowerCase().equals("date")) {
-            Assert.assertEquals(expectedValue.toString(), actualFieldValue.toString());
+            Assert.assertEquals(expectedValue.toString(), actualFieldValue);
         } else {
-            Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue.toString()));
+            Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue));
         }
     }
 
     private static boolean datesAreEqual(Date expectedDate, String actualDateString) throws ParseException
     {
-        //  Convert expected date to similar format used in Elasticsearch search results
-        //  (i.e. default ISODateTimeFormat.dateOptionalTimeParser).
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String expectedDateSting = df.format(expectedDate);
-
-        return expectedDateSting.equals(actualDateString);
+        //  Convert to date, by default in opensearch dates are stored as a long number representing milliseconds-since-the-epoch
+        Date actualDate = new Date(Long.parseLong(actualDateString));
+        return expectedDate.equals(actualDate);
     }
 
-    private static void deleteDocument(RestHighLevelClient client, String indexId, String documentId)
+    private static void deleteDocument(OpenSearchClient client, String indexId, String documentId)
     {
         ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
-            // Delete document by id.
-            final DeleteRequest deleteRequest = new DeleteRequest();
-            deleteRequest.index(indexId.toLowerCase()).id(documentId);
-
             try {
-                final DeleteResponse deleteResponse = client.delete(deleteRequest, RequestOptions.DEFAULT);
-                if (deleteResponse.status() == RestStatus.OK) {
+                final DeleteResponse deleteResponse = client.delete(d -> d.index(indexId.toLowerCase()).id(documentId));
+                if (deleteResponse.result().equals(Result.Deleted)) {
                     break;
                 }
             } catch (IOException ex) {

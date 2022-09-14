@@ -52,8 +52,12 @@
             <artifactId>caf-audit-binding-elasticsearch</artifactId>
         </dependency>
         <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opensearch.client</groupId>
-            <artifactId>opensearch-rest-high-level-client</artifactId>
+            <artifactId>opensearch-java</artifactId>
         </dependency>
         <!-- End of Auditing Implementations -->
         <dependency>
@@ -201,8 +205,6 @@
                         </goals>
                         <configuration>
                             <testCompilerArgument>-parameters</testCompilerArgument>
-                            <source>1.8</source>
-                            <target>1.8</target>
                         </configuration>
                     </execution>
                 </executions>
@@ -345,7 +347,7 @@
                                                 <outputDirectory>adminapps/ROOT/WEB-INF/lib</outputDirectory>
                                                 <includes>
                                                     <include>com.github.cafaudit:caf-audit-binding-elasticsearch</include>
-                                                    <include>org.opensearch.client:opensearch-rest-high-level-client</include>
+                                                    <include>org.opensearch.client:opensearch-java</include>
                                                 </includes>
                                                 <useTransitiveDependencies>true</useTransitiveDependencies>
                                                 <useTransitiveFiltering>true</useTransitiveFiltering>

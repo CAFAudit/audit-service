@@ -22,17 +22,9 @@ import com.hpe.caf.services.audit.client.ApiException;
 import com.hpe.caf.services.audit.client.api.AuditEventsApi;
 import com.hpe.caf.services.audit.client.model.EventParam;
 import com.hpe.caf.services.audit.client.model.NewAuditEvent;
-import org.opensearch.action.delete.DeleteRequest;
-import org.opensearch.action.delete.DeleteResponse;
-import org.opensearch.action.search.SearchRequest;
-import org.opensearch.action.search.SearchType;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue.ValueType;
 
-import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.index.query.QueryBuilders;
-import org.opensearch.rest.RestStatus;
-import org.opensearch.search.SearchHit;
-import org.opensearch.search.builder.SearchSourceBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.testng.Assert;
@@ -52,10 +44,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.UUID;
+import org.opensearch.client.json.JsonData;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.FieldValue;
+import org.opensearch.client.opensearch._types.Result;
+import org.opensearch.client.opensearch._types.SearchType;
+import org.opensearch.client.opensearch.core.DeleteResponse;
+import org.opensearch.client.opensearch.core.SearchRequest;
+import org.opensearch.client.opensearch.core.search.Hit;
+import org.opensearch.client.transport.OpenSearchTransport;
 
 public class AuditIT {
     private static String AUDIT_WEBSERVICE_HTTP_BASE_PATH;
@@ -187,29 +187,29 @@ public class AuditIT {
         //  Search for the audit event message in Elasticsearch and verify
         //  hit has been returned.
         final String esHostAndPort = CAF_ELASTIC_HOST_VALUES + ':' + CAF_ELASTIC_PORT;
-        try (RestHighLevelClient client
-                     = ElasticAuditRestHighLevelClientFactory.getHighLevelClient(
+        try (OpenSearchTransport transport
+                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
                          CAF_ELASTIC_PROTOCOL,
                          esHostAndPort,
                          CAF_ELASTIC_USERNAME,
                          CAF_ELASTIC_PASSWORD)) {
-
+            final OpenSearchClient client = new OpenSearchClient(transport);
+            
             final String esIndex = auditEventMessage.getTenantId().toLowerCase().concat("_audit");
-            SearchHit[] hits = new SearchHit[0];
-            hits = searchAuditEventMessage(client,
+            List<Hit<JsonData>> hits = searchAuditEventMessage(client,
                     esIndex,
                     "userId",
                     auditEventMessage.getUserId());
 
             //  Expecting a single hit.
-            Assert.assertTrue(hits.length == 1);
+            Assert.assertTrue(hits.size() == 1);
 
             //  Make a note of the document identifier as we will use this to clean
             //  up afterwards.
-            final String docId = hits[0].getId();
+            final String docId = hits.get(0).id();
 
             //  Verify search results match the expected audit event message data.
-            final Map<String, Object> hitSource = hits[0].getSourceAsMap();
+            JsonObject hitSource = hits.get(0).source().toJson().asJsonObject();
             verifySearchResults(auditEventMessage, hitSource);
 
             //  Delete test document after verification is complete.
@@ -316,24 +316,26 @@ public class AuditIT {
     /**
      * Search Elasticsearch by the specified field and value.
      */
-    private static SearchHit[] searchAuditEventMessage(final RestHighLevelClient client, final String indexId, final String field, final String value)
+    private static List<Hit<JsonData>> searchAuditEventMessage(final OpenSearchClient client, final String indexId, final String field, final String value)
     {
         final ElasticAuditRetryOperation retrySearch = new ElasticAuditRetryOperation();
-        SearchHit[] hits = null;
+        List<Hit<JsonData>> hits = null;
         while (retrySearch.shouldRetry()) {
 
             try {
-                hits = client.search(new SearchRequest()
-                        .indices(indexId.toLowerCase())
-                        .searchType(SearchType.QUERY_THEN_FETCH)
-                        .source(new SearchSourceBuilder().query(QueryBuilders.matchQuery(field, value.toLowerCase()))
-                                .from(0).size(10))
-                        ,RequestOptions.DEFAULT).getHits().getHits();
+                hits = client.search(new SearchRequest.Builder()
+                    .index(indexId)
+                    .searchType(SearchType.QueryThenFetch)
+                    .query(x -> x.match(m -> m.field(field).query(FieldValue.of(value.toLowerCase()))))
+                    .from(0)
+                    .size(10)
+                    .build(), JsonData.class)
+                    .hits().hits();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            if (hits.length > 0) {
+            if (!hits.isEmpty()) {
                 break;
             }
 
@@ -351,24 +353,19 @@ public class AuditIT {
     /**
      * Delete the specified document in Elasticsearch.
      */
-    private static void deleteAuditEventMessage(final RestHighLevelClient client, final String indexId, final String documentId)
+    private static void deleteAuditEventMessage(final OpenSearchClient client, final String indexId, final String documentId)
     {
         final ElasticAuditRetryOperation retryDelete = new ElasticAuditRetryOperation();
         while (retryDelete.shouldRetry()) {
 
             // Delete document by id.
-            final DeleteResponse response;
             try {
-                response = client.delete(new DeleteRequest()
-                        .index(indexId.toLowerCase())
-                        .id(documentId),
-                RequestOptions.DEFAULT);
+                final DeleteResponse deleteResponse = client.delete(d -> d.index(indexId.toLowerCase()).id(documentId));
+                if (deleteResponse.result().equals(Result.Deleted)) {
+                    break;
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
-
-            if (response.status() == RestStatus.OK) {
-                break;
             }
 
             // Retry deletion status is not OK.
@@ -383,7 +380,7 @@ public class AuditIT {
     /**
      * Verifies the search results match the expected audit event message data that was indexed into Elasticsearch.
      */
-    private void verifySearchResults(final NewAuditEvent expected, final Map<String, Object> actual) throws Exception {
+    private void verifySearchResults(final NewAuditEvent expected, final JsonObject actual) throws Exception {
 
         //  Verify fixed field results.
         assertField(ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, false, expected.getApplicationId(), actual);
@@ -438,11 +435,11 @@ public class AuditIT {
     }
 
 
-    private void assertField(String fieldName, final boolean isCustom, final String expectedValue, final Map<String, Object> searchResult) {
+    private void assertField(String fieldName, final boolean isCustom, final String expectedValue, final JsonObject searchResult) {
         assertField(fieldName, isCustom, EVENT_PARAM_INDEXING_HINT_KEYWORD, expectedValue, searchResult);
     }
 
-    private void assertField(final String fieldName, final boolean isCustom, final String indexingHint, final String expectedValue, final Map<String, Object> searchResult){
+    private void assertField(final String fieldName, final boolean isCustom, final String indexingHint, final String expectedValue, final JsonObject searchResult){
 
         String fieldNameWithSuffix = fieldName;
 
@@ -454,102 +451,94 @@ public class AuditIT {
             }
         }
         Assert.assertTrue(searchResult.containsKey(fieldNameWithSuffix), String.format("Field %s not found", fieldNameWithSuffix));
-        Object sourceField = searchResult.get(fieldNameWithSuffix);
+        Assert.assertTrue(searchResult.get(fieldNameWithSuffix).getValueType().equals(ValueType.STRING));
+        String sourceField = searchResult.getString(fieldNameWithSuffix);
 
-        Assert.assertEquals(String.class, sourceField.getClass());
-        String value = (String) sourceField;
-        Assert.assertEquals(expectedValue, value);
+        Assert.assertEquals(expectedValue, sourceField);
     }
 
-    private void assertField(String fieldName, final boolean isCustom, final Short expectedValue, final Map<String, Object> searchResult){
+    private void assertField(String fieldName, final boolean isCustom, final Short expectedValue, final JsonObject searchResult){
         if (isCustom) {
             fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.SHORT_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
-        Object sourceField = searchResult.get(fieldName);
+        Assert.assertTrue(searchResult.get(fieldName).getValueType().equals(ValueType.NUMBER));
+        Short sourceField = searchResult.getJsonNumber(fieldName).numberValue().shortValue();
 
-        Assert.assertEquals(Integer.class, sourceField.getClass());
-        Short value = ((Integer)(sourceField)).shortValue();
-        Assert.assertEquals(expectedValue, value);
+        Assert.assertEquals(expectedValue, sourceField);
     }
 
-    private void assertField(String fieldName, final boolean isCustom, final Integer expectedValue, final Map<String, Object> searchResult){
+    private void assertField(String fieldName, final boolean isCustom, final Integer expectedValue, final JsonObject searchResult){
         if (isCustom) {
             fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.INT_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
-        Object sourceField = searchResult.get(fieldName);
+        Assert.assertTrue(searchResult.get(fieldName).getValueType().equals(ValueType.NUMBER));
+        Integer sourceField = searchResult.getInt(fieldName);
 
-        Assert.assertEquals(Integer.class, sourceField.getClass());
-        Integer value = (Integer)sourceField;
-        Assert.assertEquals(expectedValue, value);
+        Assert.assertEquals(expectedValue, sourceField);
     }
 
-    private void assertField(String fieldName, final boolean isCustom, final Long expectedValue, final Map<String, Object> searchResult){
+    private void assertField(String fieldName, final boolean isCustom, final Long expectedValue, final JsonObject searchResult){
         if (isCustom) {
             fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.LONG_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
-        Object sourceField = searchResult.get(fieldName);
+        Assert.assertTrue(searchResult.get(fieldName).getValueType().equals(ValueType.NUMBER));
+        Long sourceField = searchResult.getJsonNumber(fieldName).longValue();
 
-        Long value = Long.parseLong(sourceField.toString());
-        Assert.assertEquals(expectedValue, value);
+        Assert.assertEquals(expectedValue, sourceField);
     }
 
-    private void assertField(String fieldName, final boolean isCustom, final Float expectedValue, final Map<String, Object> searchResult){
+    private void assertField(String fieldName, final boolean isCustom, final Float expectedValue, final JsonObject searchResult){
         if (isCustom) {
             fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.FLOAT_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
-        Object sourceField = searchResult.get(fieldName);
+        Assert.assertTrue(searchResult.get(fieldName).getValueType().equals(ValueType.NUMBER));
+        Float sourceField = searchResult.getJsonNumber(fieldName).numberValue().floatValue();
 
-        Assert.assertEquals(Double.class, sourceField.getClass());
-        Float value = ((Double)sourceField).floatValue();
-        Assert.assertEquals(expectedValue, value);
+        Assert.assertEquals(expectedValue, sourceField);
     }
 
-    private void assertField(String fieldName, final boolean isCustom, final Double expectedValue, final Map<String, Object> searchResult){
+    private void assertField(String fieldName, final boolean isCustom, final Double expectedValue, final JsonObject searchResult){
         if (isCustom) {
             fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.DOUBLE_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
-        Object sourceField = searchResult.get(fieldName);
+        Assert.assertTrue(searchResult.get(fieldName).getValueType().equals(ValueType.NUMBER));
+        Double sourceField = searchResult.getJsonNumber(fieldName).doubleValue();
 
-        Assert.assertEquals(Double.class, sourceField.getClass());
-        Double value = (Double)sourceField;
-        Assert.assertEquals(expectedValue, value);
+        Assert.assertEquals(expectedValue, sourceField);
     }
 
-    private void assertField(String fieldName, final boolean isCustom, final Boolean expectedValue, final Map<String, Object> searchResult){
+    private void assertField(String fieldName, final boolean isCustom, final Boolean expectedValue, final JsonObject searchResult){
         if (isCustom) {
             fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.BOOLEAN_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
-        Object sourceField = searchResult.get(fieldName);
+        Assert.assertTrue(List.of(ValueType.TRUE, ValueType.FALSE).contains(searchResult.get(fieldName).getValueType()));
+        Boolean sourceField = searchResult.getBoolean(fieldName);
 
-        Assert.assertEquals(Boolean.class, sourceField.getClass());
-        Boolean value = (Boolean)sourceField;
-        Assert.assertEquals(expectedValue, value);
+        Assert.assertEquals(expectedValue, sourceField);
     }
 
-    private void assertField(String fieldName, final boolean isCustom, final Date expectedValue, final Map<String, Object> searchResult) throws ParseException {
+    private void assertField(String fieldName, final boolean isCustom, final Date expectedValue, final JsonObject searchResult) throws ParseException {
         if (isCustom) {
             fieldName = fieldName.concat(ElasticAuditConstants.CustomFieldSuffix.DATE_SUFFIX);
         }
 
         Assert.assertTrue(searchResult.containsKey(fieldName), String.format("Field %s not found", fieldName));
-        Object sourceField = searchResult.get(fieldName);
+        Assert.assertTrue(searchResult.get(fieldName).getValueType().equals(ValueType.NUMBER));
+        Long sourceField = searchResult.getJsonNumber(fieldName).longValue();
 
-        Assert.assertEquals(String.class, sourceField.getClass());
-
-        String sourceTime = (String)sourceField;
-        DateTime dateTime = new DateTime(sourceTime);
+        DateTime dateTime = new DateTime(sourceField);
 
         Assert.assertEquals(new DateTime(expectedValue), dateTime);
     }

@@ -20,11 +20,6 @@ import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.exception.AuditingException;
 import java.io.IOException;
-import org.opensearch.action.index.IndexRequest;
-import org.opensearch.action.index.IndexResponse;
-import org.opensearch.client.RequestOptions;
-import org.opensearch.client.RestHighLevelClient;
-import org.opensearch.rest.RestStatus;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,18 +27,22 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.Result;
+import org.opensearch.client.opensearch.core.IndexRequest;
+import org.opensearch.client.opensearch.core.IndexResponse;
 
 public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticAuditEventBuilder.class.getName());
 
-    private final RestHighLevelClient restHighLevelClient;
+    private final OpenSearchClient openSearchClient;
     private String tenantId;
     private final Map<String, Object> auditEvent = new HashMap<>();
 
-    public ElasticAuditEventBuilder(RestHighLevelClient restHighLevelClient,
+    public ElasticAuditEventBuilder(OpenSearchClient openSearchClient,
                                     AuditCoreMetadataProvider coreMetadataProvider){
-        this.restHighLevelClient = restHighLevelClient;
+        this.openSearchClient = openSearchClient;
         //  Add fixed audit event fields to Map.
         addCommonFields(coreMetadataProvider);
     }
@@ -171,18 +170,21 @@ public class ElasticAuditEventBuilder implements AuditEventBuilder {
 
 
             //  Index audit event message into Elasticsearch.
-            final IndexRequest indexRequest = new IndexRequest(tenantId.concat(ElasticAuditConstants.Index.SUFFIX));
-            indexRequest.source(auditEvent);
-            final IndexResponse indexResponse = restHighLevelClient.index(indexRequest, RequestOptions.DEFAULT);
+            final IndexRequest<Map<String, Object>> indexRequest = new IndexRequest.Builder<Map<String, Object>>()
+                .index(tenantId.concat(ElasticAuditConstants.Index.SUFFIX))
+                .document(auditEvent)
+                .build();
 
-            final RestStatus status = indexResponse.status();
-            if (status != RestStatus.CREATED) {
+            final IndexResponse indexResponse = openSearchClient.index(indexRequest);
+
+            final Result status = indexResponse.result();
+            if (status != Result.Created) {
                 //  Unexpected response so report this.
                 String errorMessage = "Unexpected Elasticsearch response status. Expected 'CREATED' but received '" + status.toString() + "'";
                 LOG.error(errorMessage);
                 throw new AuditingException(errorMessage);
             }
-            LOG.debug("Audit event message successfully indexed in Elasticsearch. Index: " + indexResponse.getIndex() + ", Type: " + indexResponse.getType() + ", Id: " + indexResponse.getId());
+            LOG.debug("Audit event message successfully indexed in Elasticsearch. Index: " + indexResponse.index() + ", Id: " + indexResponse.id());
 
         } catch (final IOException e) {
             LOG.error("Error when indexing audit event message " + auditEvent.toString(), e);

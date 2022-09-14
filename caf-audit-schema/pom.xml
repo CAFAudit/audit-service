@@ -43,7 +43,7 @@
             <groupId>com.sun.activation</groupId>
             <artifactId>jakarta.activation</artifactId>
             <scope>runtime</scope>
-        </dependency>        
+        </dependency>
     </dependencies>
     <build>
         <plugins>

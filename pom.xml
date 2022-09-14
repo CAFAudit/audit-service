@@ -706,7 +706,7 @@
                 <groupId>org.eclipse.sisu</groupId>
                 <artifactId>org.eclipse.sisu.plexus</artifactId>
                 <version>0.3.4</version>
-            </dependency> 
+            </dependency>
             <dependency>
                 <groupId>org.opensearch.client</groupId>
                 <artifactId>opensearch-rest-client</artifactId>

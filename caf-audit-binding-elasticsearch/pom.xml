@@ -231,7 +231,6 @@
                         </goals>
                         <configuration>
                             <testCompilerArgument>-parameters</testCompilerArgument>
-                            <release>11</release>
                         </configuration>
                     </execution>
                 </executions>

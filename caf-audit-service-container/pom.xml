@@ -52,6 +52,10 @@
             <artifactId>caf-audit-binding-elasticsearch</artifactId>
         </dependency>
         <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opensearch.client</groupId>
             <artifactId>opensearch-java</artifactId>
         </dependency>
@@ -132,10 +136,6 @@
             <artifactId>testng</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-        </dependency>
     </dependencies>
 
     <profiles>
@@ -205,7 +205,6 @@
                         </goals>
                         <configuration>
                             <testCompilerArgument>-parameters</testCompilerArgument>
-                            <release>11</release>
                         </configuration>
                     </execution>
                 </executions>

@@ -21,6 +21,7 @@ import com.hpe.caf.auditing.exception.AuditConfigurationException;
 
 import java.io.IOException;
 import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.transport.rest_client.RestClientTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,7 @@ public class ElasticAuditConnection implements AuditConnection {
     private static final Logger LOG = LoggerFactory.getLogger(ElasticAuditConnection.class.getName());
 
     private final OpenSearchClient openSearchClient;
+    private final RestClientTransport restClientTransport;
     private final int numberOfShards;
     private final int numberOfReplicas;
     private final boolean isForceIndexTemplateUpdate;
@@ -81,11 +83,13 @@ public class ElasticAuditConnection implements AuditConnection {
         isForceIndexTemplateUpdate = forceUpdate != null ? Boolean.parseBoolean(forceUpdate) : false;
 
         //  Get Elasticsearch connection.
-        openSearchClient = new OpenSearchClient(ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
+        restClientTransport = OpenSearchTransportFactory.getRestClientTransport(
             getElasticProtocol(),
             hostAndPortsStr,
             username,
-            password));
+            password);
+
+        openSearchClient = new OpenSearchClient(restClientTransport);
     }
 
     private static int getNumberFromSysPropertyOrEnvVariable(final String environmentVariable,
@@ -106,12 +110,11 @@ public class ElasticAuditConnection implements AuditConnection {
     public AuditChannel createChannel() throws IOException {
         if (!isIndexTemplateCreated) {
             //Create index template.
-            ElasticAuditIndexManager.createIndexTemplate(numberOfShards, numberOfReplicas, openSearchClient,
-                                                         isForceIndexTemplateUpdate);
+            ElasticAuditIndexManager.createIndexTemplate(numberOfShards, numberOfReplicas, openSearchClient, isForceIndexTemplateUpdate);
             isIndexTemplateCreated = true;
         }
         //  Share the Elasticsearch client across channels.
-        return new ElasticAuditChannel(openSearchClient);
+        return new ElasticAuditChannel(openSearchClient, restClientTransport);
     }
 
     private static String getElasticProtocol()
@@ -127,6 +130,6 @@ public class ElasticAuditConnection implements AuditConnection {
 
     @Override
     public void close() throws Exception {
-        openSearchClient._transport().close();
+        restClientTransport.close();
     }
 }

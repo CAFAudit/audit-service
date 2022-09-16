@@ -81,7 +81,7 @@ public class ElasticAuditConnection implements AuditConnection {
         isForceIndexTemplateUpdate = forceUpdate != null ? Boolean.parseBoolean(forceUpdate) : false;
 
         //  Get Elasticsearch connection.
-        openSearchClient = new OpenSearchClient(ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
+        openSearchClient = new OpenSearchClient(OpenSearchTransportFactory.getOpenSearchTransport(
             getElasticProtocol(),
             hostAndPortsStr,
             username,
@@ -106,7 +106,7 @@ public class ElasticAuditConnection implements AuditConnection {
     public AuditChannel createChannel() throws IOException {
         if (!isIndexTemplateCreated) {
             //Create index template.
-            ElasticAuditIndexManager.createIndexTemplate(numberOfShards, numberOfReplicas, openSearchClient,
+            ElasticAuditIndexManager.createTemplate(numberOfShards, numberOfReplicas, openSearchClient,
                                                          isForceIndexTemplateUpdate);
             isIndexTemplateCreated = true;
         }

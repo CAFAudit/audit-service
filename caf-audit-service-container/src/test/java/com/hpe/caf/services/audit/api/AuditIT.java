@@ -16,7 +16,7 @@
 package com.hpe.caf.services.audit.api;
 
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
-import com.hpe.caf.auditing.elastic.ElasticAuditRestHighLevelClientFactory;
+import com.hpe.caf.auditing.elastic.OpenSearchTransportFactory;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.services.audit.client.ApiException;
 import com.hpe.caf.services.audit.client.api.AuditEventsApi;
@@ -188,7 +188,7 @@ public class AuditIT {
         //  hit has been returned.
         final String esHostAndPort = CAF_ELASTIC_HOST_VALUES + ':' + CAF_ELASTIC_PORT;
         try (OpenSearchTransport transport
-                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
+                     = OpenSearchTransportFactory.getOpenSearchTransport(
                          CAF_ELASTIC_PROTOCOL,
                          esHostAndPort,
                          CAF_ELASTIC_USERNAME,

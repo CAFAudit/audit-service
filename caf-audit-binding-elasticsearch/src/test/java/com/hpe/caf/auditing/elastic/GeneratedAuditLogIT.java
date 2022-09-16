@@ -71,7 +71,7 @@ public class GeneratedAuditLogIT {
     @After
     public void cleanUp() throws AuditConfigurationException {
         try (OpenSearchTransport openSearchTransport
-                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
+                     = OpenSearchTransportFactory.getOpenSearchTransport(
                          CAF_ELASTIC_PROTOCOL,
                          ES_HOSTNAME_AND_PORT,
                          CAF_ELASTIC_USERNAME,
@@ -167,7 +167,7 @@ public class GeneratedAuditLogIT {
 
     private Hit<JsonData> getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (OpenSearchTransport openSearchTransport
-                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
+                     = OpenSearchTransportFactory.getOpenSearchTransport(
                          CAF_ELASTIC_PROTOCOL,
                          ES_HOSTNAME_AND_PORT,
                          CAF_ELASTIC_USERNAME,

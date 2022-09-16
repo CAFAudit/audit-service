@@ -7,7 +7,7 @@ ${version-number}
 - None
 
 #### Bug Fixes
-- US397427: Fix failing health check report due to incorrect request during creation of index template.
+- US397427: Fix failing health check report due to incorrect request during creation of index templates.
 
 #### Known Issues
 - None

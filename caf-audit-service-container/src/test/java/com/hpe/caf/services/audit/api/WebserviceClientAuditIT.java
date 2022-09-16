@@ -22,7 +22,7 @@ import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
-import com.hpe.caf.auditing.elastic.ElasticAuditRestHighLevelClientFactory;
+import com.hpe.caf.auditing.elastic.OpenSearchTransportFactory;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.auditing.exception.AuditingException;
@@ -117,11 +117,11 @@ public class WebserviceClientAuditIT {
     @AfterMethod
     public void cleanUp() throws AuditConfigurationException {
         OpenSearchTransport transport
-                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
-                         CAF_ELASTIC_PROTOCOL,
-                         ES_HOSTNAME_AND_PORT,
-                         CAF_ELASTIC_USERNAME,
-                         CAF_ELASTIC_PASSWORD);
+            = OpenSearchTransportFactory.getOpenSearchTransport(
+                CAF_ELASTIC_PROTOCOL,
+                ES_HOSTNAME_AND_PORT,
+                CAF_ELASTIC_USERNAME,
+                CAF_ELASTIC_PASSWORD);
         try {
             deleteIndex(new OpenSearchClient(transport), ES_INDEX);
         } catch (RuntimeException rte) {
@@ -177,7 +177,7 @@ public class WebserviceClientAuditIT {
                 //  Verify the type mappings have been set for the index. Then search for the audit event message in
                 //  Elasticsearch and verify field data matches input.
                 try (OpenSearchTransport transport
-                    = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
+                    = OpenSearchTransportFactory.getOpenSearchTransport(
                         CAF_ELASTIC_PROTOCOL,
                         ES_HOSTNAME_AND_PORT,
                         CAF_ELASTIC_USERNAME,
@@ -293,11 +293,11 @@ public class WebserviceClientAuditIT {
 
     private Hit<JsonData> getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (OpenSearchTransport transport
-                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
-                         CAF_ELASTIC_PROTOCOL,
-                         ES_HOSTNAME_AND_PORT,
-                         CAF_ELASTIC_USERNAME,
-                         CAF_ELASTIC_PASSWORD)) {
+            = OpenSearchTransportFactory.getOpenSearchTransport(
+                CAF_ELASTIC_PROTOCOL,
+                ES_HOSTNAME_AND_PORT,
+                CAF_ELASTIC_USERNAME,
+                CAF_ELASTIC_PASSWORD)) {
             final OpenSearchClient openSearchClient = new OpenSearchClient(transport);
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
             final SearchRequest searchRequest = new SearchRequest.Builder()

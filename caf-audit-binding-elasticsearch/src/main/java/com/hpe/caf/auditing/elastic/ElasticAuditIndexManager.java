@@ -22,13 +22,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+
+import org.opensearch.client.json.JsonData;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.mapping.TypeMapping;
-import org.opensearch.client.opensearch.indices.ExistsIndexTemplateRequest;
-import org.opensearch.client.opensearch.indices.IndexSettings;
-import org.opensearch.client.opensearch.indices.PutIndexTemplateRequest;
-import org.opensearch.client.opensearch.indices.put_index_template.IndexTemplateMapping;
+import org.opensearch.client.opensearch.indices.ExistsTemplateRequest;
+import org.opensearch.client.opensearch.indices.PutTemplateRequest;
 
 public final class ElasticAuditIndexManager {
 
@@ -37,39 +38,32 @@ public final class ElasticAuditIndexManager {
 
     private ElasticAuditIndexManager(){}
 
-    public static void createIndexTemplate(final int numberOfShards, final int numberOfReplicas,
+    public static void createTemplate(final int numberOfShards, final int numberOfReplicas,
                                            final OpenSearchClient openSearchClient, final boolean isForceIndexTemplateUpdate)
         throws IOException
     {
-        if (isForceIndexTemplateUpdate || !isIndexTemplatePresent(openSearchClient)) {
-
-            final IndexSettings indexSettings = new IndexSettings.Builder()
-                .numberOfShards(String.valueOf(numberOfShards))
-                .numberOfReplicas(String.valueOf(numberOfReplicas))
-                .build();
-
-            final IndexTemplateMapping indexMapping = new IndexTemplateMapping.Builder()
-                .settings(indexSettings)
-                .mappings(getTenantIndexTypeMapping())
-                .build();
-
-            final PutIndexTemplateRequest request = new PutIndexTemplateRequest.Builder()
+        if (isForceIndexTemplateUpdate || !isTemplatePresent(openSearchClient)) {
+      
+            final Map<String, JsonData> indexSettings = Map.of("number_of_shards", JsonData.of(numberOfShards),
+                                                               "number_of_replicas", JsonData.of(numberOfReplicas));
+            final PutTemplateRequest request = new PutTemplateRequest.Builder()
                 .name(INDEX_TEMPLATE_NAME)
                 .indexPatterns("*" + ElasticAuditConstants.Index.SUFFIX)
-                .template(indexMapping)
+                .settings(indexSettings)
+                .mappings(getTenantTypeMapping())
                 .build();
 
-            openSearchClient.indices().putIndexTemplate(request);
+            openSearchClient.indices().putTemplate(request);
         }
     }
 
-    private static boolean isIndexTemplatePresent(final OpenSearchClient openSearchClient) throws IOException
+    private static boolean isTemplatePresent(final OpenSearchClient openSearchClient) throws IOException
     {
-        final ExistsIndexTemplateRequest request = new ExistsIndexTemplateRequest.Builder().name(INDEX_TEMPLATE_NAME).build();
-        return openSearchClient.indices().existsIndexTemplate(request).value();
+        final ExistsTemplateRequest request = new ExistsTemplateRequest.Builder().name(INDEX_TEMPLATE_NAME).build();
+        return openSearchClient.indices().existsTemplate(request).value();
     }
 
-    private static TypeMapping getTenantIndexTypeMapping() {
+    private static TypeMapping getTenantTypeMapping() {
         //  Get the contents of the index mapping file and assign to TypeMapping
         try (final InputStream inputStream = ElasticAuditIndexManager.class.getClassLoader()
             .getResourceAsStream(ElasticAuditConstants.Index.TYPE_MAPPING_RESOURCE);

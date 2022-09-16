@@ -226,7 +226,7 @@ public class ElasticAuditIT
         //  Verify the type mappings have been set for the index. Then search for the audit event message in
         //  Elasticsearch and verify field data matches input.
         try (final OpenSearchTransport openSearchTransport
-            = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
+            = OpenSearchTransportFactory.getOpenSearchTransport(
                 CAF_ELASTIC_PROTOCOL,
                 esHostAndPort,
                 CAF_ELASTIC_USERNAME,
@@ -351,11 +351,11 @@ public class ElasticAuditIT
             // Search across all indices for the applicationId field in Elasticsearch and verify that the expected
             // number of hits are returned.
             try (OpenSearchTransport openSearchTransport
-                = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
-                         CAF_ELASTIC_PROTOCOL,
-                         esHostAndPort,
-                         CAF_ELASTIC_USERNAME,
-                         CAF_ELASTIC_PASSWORD)) {
+                = OpenSearchTransportFactory.getOpenSearchTransport(
+                    CAF_ELASTIC_PROTOCOL,
+                    esHostAndPort,
+                    CAF_ELASTIC_USERNAME,
+                    CAF_ELASTIC_PASSWORD)) {
 
                 final OpenSearchClient openSearchClient = new OpenSearchClient(openSearchTransport);
                 final List<String> tenantIndexIds = new ArrayList<>();

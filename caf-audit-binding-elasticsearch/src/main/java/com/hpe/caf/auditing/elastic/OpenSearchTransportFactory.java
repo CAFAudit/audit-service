@@ -30,22 +30,21 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
-import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.rest_client.RestClientTransport;
 
 /**
- * A factory for Elastic Search TransportClients.
+ * A factory for Open Search TransportClients.
  */
-public class ElasticAuditRestHighLevelClientFactory {
+public class OpenSearchTransportFactory {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ElasticAuditRestHighLevelClientFactory.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(OpenSearchTransportFactory.class.getName());
 
     private static final String ES_HOST_AND_PORT_NOT_PROVIDED = "Elasticsearch host and port have not been provided";
     private static final String ES_HOST_NOT_PROVIDED = "Elasticsearch host has not been provided";
     private static final String ES_PORT_NOT_PROVIDED = "Elasticsearch port has not been provided";
 
-    private ElasticAuditRestHighLevelClientFactory() {
+    private OpenSearchTransportFactory() {
     }
 
     /**

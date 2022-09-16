@@ -71,11 +71,11 @@ public class GeneratedAuditLogIT {
     @After
     public void cleanUp() throws AuditConfigurationException {
         try (OpenSearchTransport openSearchTransport
-                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
-                         CAF_ELASTIC_PROTOCOL,
-                         ES_HOSTNAME_AND_PORT,
-                         CAF_ELASTIC_USERNAME,
-                         CAF_ELASTIC_PASSWORD)) {
+            = OpenSearchTransportFactory.getOpenSearchTransport(
+                CAF_ELASTIC_PROTOCOL,
+                ES_HOSTNAME_AND_PORT,
+                CAF_ELASTIC_USERNAME,
+                CAF_ELASTIC_PASSWORD)) {
             deleteIndex(new OpenSearchClient(openSearchTransport), testTenant + ElasticAuditConstants.Index.SUFFIX);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -167,11 +167,11 @@ public class GeneratedAuditLogIT {
 
     private Hit<JsonData> getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (OpenSearchTransport openSearchTransport
-                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
-                         CAF_ELASTIC_PROTOCOL,
-                         ES_HOSTNAME_AND_PORT,
-                         CAF_ELASTIC_USERNAME,
-                         CAF_ELASTIC_PASSWORD)) {
+            = OpenSearchTransportFactory.getOpenSearchTransport(
+                CAF_ELASTIC_PROTOCOL,
+                ES_HOSTNAME_AND_PORT,
+                CAF_ELASTIC_USERNAME,
+                CAF_ELASTIC_PASSWORD)) {
             final OpenSearchClient openSearchClient = new OpenSearchClient(openSearchTransport);
             //The default queryType is https://www.elastic.co/blog/understanding-query-then-fetch-vs-dfs-query-then-fetch
             final SearchRequest searchRequest = new SearchRequest.Builder()

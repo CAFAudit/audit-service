@@ -22,7 +22,7 @@ import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.elastic.ElasticAuditConstants;
-import com.hpe.caf.auditing.elastic.OpenSearchTransportFactory;
+import com.hpe.caf.auditing.elastic.ElasticAuditRestHighLevelClientFactory;
 import com.hpe.caf.auditing.elastic.ElasticAuditRetryOperation;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.auditing.exception.AuditingException;
@@ -117,7 +117,7 @@ public class WebserviceClientAuditIT {
     @AfterMethod
     public void cleanUp() throws AuditConfigurationException {
         OpenSearchTransport transport
-                     = OpenSearchTransportFactory.getRestClientTransport(
+                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
                          CAF_ELASTIC_PROTOCOL,
                          ES_HOSTNAME_AND_PORT,
                          CAF_ELASTIC_USERNAME,
@@ -177,7 +177,7 @@ public class WebserviceClientAuditIT {
                 //  Verify the type mappings have been set for the index. Then search for the audit event message in
                 //  Elasticsearch and verify field data matches input.
                 try (OpenSearchTransport transport
-                    = OpenSearchTransportFactory.getRestClientTransport(
+                    = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
                         CAF_ELASTIC_PROTOCOL,
                         ES_HOSTNAME_AND_PORT,
                         CAF_ELASTIC_USERNAME,
@@ -293,7 +293,7 @@ public class WebserviceClientAuditIT {
 
     private Hit<JsonData> getAuditEvent(String correlationId) throws AuditConfigurationException {
         try (OpenSearchTransport transport
-                     = OpenSearchTransportFactory.getRestClientTransport(
+                     = ElasticAuditRestHighLevelClientFactory.getOpenSearchTransport(
                          CAF_ELASTIC_PROTOCOL,
                          ES_HOSTNAME_AND_PORT,
                          CAF_ELASTIC_USERNAME,

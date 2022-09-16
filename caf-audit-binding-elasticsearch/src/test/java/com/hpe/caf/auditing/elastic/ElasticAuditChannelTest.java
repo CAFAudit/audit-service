@@ -31,12 +31,10 @@ import org.opensearch.client.opensearch.indices.GetIndexTemplateRequest;
 import org.opensearch.client.opensearch.indices.GetIndexTemplateResponse;
 import org.opensearch.client.opensearch.indices.OpenSearchIndicesClient;
 import org.opensearch.client.opensearch.indices.get_index_template.IndexTemplateItem;
-import org.opensearch.client.transport.rest_client.RestClientTransport;
 
 public class ElasticAuditChannelTest {
 
     private OpenSearchClient mockOpenSearchClient;
-    private RestClientTransport mockRestClientTransport;
 
     @Before
     public void setup() throws IOException {
@@ -50,7 +48,6 @@ public class ElasticAuditChannelTest {
             .build();
         list.add(metadata);
         mockOpenSearchClient = Mockito.mock(OpenSearchClient.class);
-        mockRestClientTransport = Mockito.mock(RestClientTransport.class);
         final OpenSearchIndicesClient indiciesClient = Mockito.mock(OpenSearchIndicesClient.class);
         Mockito.when(mockOpenSearchClient.indices()).thenReturn(indiciesClient);
         Mockito.when(indiciesClient.getIndexTemplate(any(GetIndexTemplateRequest.class))).thenReturn(response);
@@ -58,13 +55,13 @@ public class ElasticAuditChannelTest {
 
     @Test
     public void testClose() throws Exception {
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockOpenSearchClient, mockRestClientTransport);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockOpenSearchClient);
         channel.close();
     }
 
     @Test
     public void testCreateEventBuilder() throws Exception {
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockOpenSearchClient, mockRestClientTransport);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockOpenSearchClient);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
         Assert.assertNotNull(auditEventBuilder);
     }
@@ -72,7 +69,7 @@ public class ElasticAuditChannelTest {
     @Test
     public void testCreateEventBuilderWithAuditCoreMetadataProvider() throws Exception {
         AuditCoreMetadataProvider acmp = AuditNewEventFactory.createNewEvent();
-        ElasticAuditChannel channel = new ElasticAuditChannel(mockOpenSearchClient, mockRestClientTransport);
+        ElasticAuditChannel channel = new ElasticAuditChannel(mockOpenSearchClient);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder(acmp);
         Assert.assertNotNull(auditEventBuilder);
     }

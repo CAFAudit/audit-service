@@ -30,32 +30,34 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
+import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.rest_client.RestClientTransport;
 
 /**
  * A factory for Elastic Search TransportClients.
  */
-public class OpenSearchTransportFactory {
+public class ElasticAuditRestHighLevelClientFactory {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenSearchTransportFactory.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(ElasticAuditRestHighLevelClientFactory.class.getName());
 
     private static final String ES_HOST_AND_PORT_NOT_PROVIDED = "Elasticsearch host and port have not been provided";
     private static final String ES_HOST_NOT_PROVIDED = "Elasticsearch host has not been provided";
     private static final String ES_PORT_NOT_PROVIDED = "Elasticsearch port has not been provided";
 
-    private OpenSearchTransportFactory() {
+    private ElasticAuditRestHighLevelClientFactory() {
     }
 
     /**
-     * Returns a rest client transport for creating an opensearch client.
+     * Returns an open search transport for creating a client.
      *
      * @param hostAndPortValues comma separated list of Elasticsearch host:port values
      * @param elasticUsername Elasticsearch username
      * @param elasticPassword Elasticsearch password
-     * @return RestClientTransport
+     * @return OpenSearchTransport
      * @throws AuditConfigurationException exception thrown if host is unknown
      */
-    public static RestClientTransport getRestClientTransport(final String elasticProtocol, final String hostAndPortValues,
+    public static OpenSearchTransport getOpenSearchTransport(final String elasticProtocol, final String hostAndPortValues,
                                                          final String elasticUsername, final String elasticPassword)
         throws AuditConfigurationException {
 

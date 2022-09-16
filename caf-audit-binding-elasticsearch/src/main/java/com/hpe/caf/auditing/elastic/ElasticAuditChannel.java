@@ -14,32 +14,23 @@
  * limitations under the License.
  */
 package com.hpe.caf.auditing.elastic;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.healthcheck.HealthResult;
 import com.hpe.caf.auditing.healthcheck.HealthStatus;
 import java.io.IOException;
-import org.apache.http.HttpEntity;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opensearch.client.Request;
-import org.opensearch.client.Response;
-import org.opensearch.client.RestClient;
 import org.opensearch.client.opensearch.OpenSearchClient;
-import org.opensearch.client.transport.rest_client.RestClientTransport;
+import org.opensearch.client.opensearch.cluster.HealthRequest;
+import org.opensearch.client.opensearch.cluster.HealthResponse;
 
 public class ElasticAuditChannel implements AuditChannel {
     private static final Logger logger = LoggerFactory.getLogger(ElasticAuditChannel.class);
-    private static final ObjectMapper objectMapper = new ObjectMapper();
     private final OpenSearchClient openSearchClient;
-    private final RestClient restClient;
 
-    public ElasticAuditChannel(final OpenSearchClient openSearchClient, final RestClientTransport restClientTransport){
-        this.restClient = restClientTransport.restClient();
+    public ElasticAuditChannel(OpenSearchClient openSearchClient){
         this.openSearchClient = openSearchClient;
     }
 
@@ -57,42 +48,23 @@ public class ElasticAuditChannel implements AuditChannel {
     public HealthResult healthCheck()
     {
         // Calling to OpenSearch to get health status
-        final Response response;
+        final HealthResponse response;
         try {
             logger.debug("Executing ES cluster health check...");
-            final String endPoint = "_cluster/health";
-            final Request healthRequest = new Request("GET", endPoint);
-            healthRequest.addParameter("wait_for_status", "yellow");
-            response = restClient.performRequest(healthRequest);
+            final HealthRequest clusterHealthRequest = new HealthRequest.Builder()
+                .waitForStatus(org.opensearch.client.opensearch._types.HealthStatus.Yellow)
+                .build();
+            response = openSearchClient.cluster().health(clusterHealthRequest);
+            if (response.status().equals(org.opensearch.client.opensearch._types.HealthStatus.Red)) {
+                logger.error("OpenSearch is unhealthy.");
+                return new HealthResult(HealthStatus.UNHEALTHY, "OpenSearch Status is invalid: " + response.status().toString());
+            } else {
+                return HealthResult.HEALTHY;
+            }
         } catch (final IOException ex) {
             logger.error("Error executing cluster health check request.", ex);
             return new HealthResult(HealthStatus.UNHEALTHY, "OpenSearch cluster is unhealthy");
         }
-        return healthResponse(response.getEntity());
-    }
-
-    private HealthResult healthResponse(final HttpEntity httpEntity){
-        String healthResponse = null;
-        try {
-            healthResponse = EntityUtils.toString(httpEntity);
-        } catch (final IOException e){
-            logger.error("Cannot parse response from OpenSearch", e);
-            return new HealthResult(HealthStatus.UNHEALTHY, "Cannot parse response from OpenSearch");
-        }
-        final String status;
-        try {
-            status = objectMapper.readTree(healthResponse).get("status").asText();
-        } catch (final JsonProcessingException e) {
-            logger.error("Cannot parse status from OpenSearch", e);
-            return new HealthResult(HealthStatus.UNHEALTHY, "HealthCheck response could not be processed");
-        }
-
-        logger.debug("Got OS status : {}", status);
-        if (status.equals("red")) {
-            logger.error("OpenSearch is unhealthy.");
-            return new HealthResult(HealthStatus.UNHEALTHY, "OpenSearch Status is invalid: " + status);
-        }
-        return HealthResult.HEALTHY;
     }
 
     @Override

@@ -75,7 +75,7 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <webResources>
                         <resource>
-                            <directory>${project.build.directory}/swagger-ui/META-INF/resources/webjars/microfocus-swagger-ui-dist/1.2.0-US635012-SNAPSHOT</directory>
+                            <directory>${project.build.directory}/swagger-ui/META-INF/resources/webjars/microfocus-swagger-ui-dist/1.2.0</directory>
                             <targetPath>.</targetPath>
                         </resource>
                         <resource>

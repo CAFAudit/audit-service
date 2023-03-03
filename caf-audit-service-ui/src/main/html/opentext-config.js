@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 window.onload = function () {
-    document.title = "Micro Focus Audit Service";
+    document.title = "OpenText Audit Service";
     window.ui = SwaggerUIBundle({
         url: "api-docs/swagger.yaml",
         dom_id: '#swagger-ui',

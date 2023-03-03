@@ -31,11 +31,6 @@
     
     <inceptionYear>2015</inceptionYear>
 
-    <properties>
-        <copyrightNotice>Copyright ${project.inceptionYear}-${copyrightYear} Open Text.</copyrightNotice>
-        <copyrightYear>2023</copyrightYear>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.swagger</groupId>

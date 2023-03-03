@@ -32,8 +32,8 @@
     <inceptionYear>2015</inceptionYear>
 
     <properties>
-        <copyrightNotice>Copyright ${project.inceptionYear}-${copyrightYear} Micro Focus or one of its affiliates.</copyrightNotice>
-        <copyrightYear>2022</copyrightYear>
+        <copyrightNotice>Copyright ${project.inceptionYear}-${copyrightYear} Open Text.</copyrightNotice>
+        <copyrightYear>2023</copyrightYear>
     </properties>
 
     <dependencies>

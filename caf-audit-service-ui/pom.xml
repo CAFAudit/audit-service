@@ -55,7 +55,7 @@
                                     <groupId>com.microfocus.webjars</groupId>
                                     <artifactId>swagger-ui-dist</artifactId>
                                     <outputDirectory>${project.build.directory}/swagger-ui</outputDirectory>
-                                    <excludes>META-INF/resources/webjars/microfocus-swagger-ui-dist/2.0.0/opentext-config.js</excludes>
+                                    <excludes>META-INF/resources/webjars/opentext-swagger-ui-dist/2.0.0-US635012/opentext-config.js</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>com.github.cafaudit</groupId>
@@ -75,7 +75,7 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <webResources>
                         <resource>
-                            <directory>${project.build.directory}/swagger-ui/META-INF/resources/webjars/opentext-swagger-ui-dist/2.0.0</directory>
+                            <directory>${project.build.directory}/swagger-ui/META-INF/resources/webjars/opentext-swagger-ui-dist/2.0.0-US635012</directory>
                             <targetPath>.</targetPath>
                         </resource>
                         <resource>

@@ -22,7 +22,7 @@
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
-        <version>3.11.0-991</version>
+        <version>3.12.0-SNAPSHOT</version>
     </parent>
     <artifactId>caf-audit-binding-elasticsearch</artifactId>
 

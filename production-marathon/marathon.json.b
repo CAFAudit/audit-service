@@ -7,7 +7,7 @@
         "instances": 1,
         "container": {
             "docker": {
-                "image": "cafaudit/prereleases:audit-service-3.11.0-991",
+                "image": "cafaudit/prereleases:audit-service-3.11.1-1033",
                 "network": "BRIDGE",
                 "portMappings": [{
                     "containerPort": 8080,

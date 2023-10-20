@@ -38,7 +38,7 @@ Here is a sample Maven project file that generates a client-side auditing librar
 	
 	    <properties>
 	        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	        <maven.compiler.release>11</maven.compiler.release>
+	        <maven.compiler.release>17</maven.compiler.release>
 	    </properties>
 	
 	    <dependencies>

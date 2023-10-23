@@ -26,11 +26,11 @@ import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
+import jakarta.xml.XMLConstants;
+import jakarta.xml.transform.stream.StreamSource;
+import jakarta.xml.validation.Schema;
+import jakarta.xml.validation.SchemaFactory;
+import jakarta.xml.validation.Validator;
 import java.io.*;
 
 public class XMLToJavaTransform {

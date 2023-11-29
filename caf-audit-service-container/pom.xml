@@ -292,7 +292,7 @@
                             <alias>audit-service</alias>
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/opensuse-tomcat-jre17:1</from>
+                                <from>${dockerHubPublic}/cafapi/prereleases:opensuse-tomcat-jre17-1.6.1-SNAPSHOT</from>
                                 <env>
                                     <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>

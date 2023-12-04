@@ -18,7 +18,7 @@ package com.hpe.caf.services.audit.server.api.factories;
 import com.hpe.caf.services.audit.server.api.AuditeventsApiService;
 import com.hpe.caf.services.audit.server.api.impl.AuditeventsApiServiceImpl;
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-05-24T10:10:27.102+01:00")
+@jakarta.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-05-24T10:10:27.102+01:00")
 public class AuditeventsApiServiceFactory {
    private final static AuditeventsApiService service = new AuditeventsApiServiceImpl();
 

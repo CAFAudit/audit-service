@@ -46,7 +46,7 @@ import com.hpe.caf.services.audit.server.model.NewAuditEvent;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 
-@javax.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-05-24T10:10:27.102+01:00")
+@jakarta.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-05-24T10:10:27.102+01:00")
 public class AuditeventsApiServiceImpl extends AuditeventsApiService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuditeventsApiServiceImpl.class.getName());

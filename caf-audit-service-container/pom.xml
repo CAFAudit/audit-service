@@ -28,7 +28,7 @@
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
-        <version>3.11.2-SNAPSHOT</version>
+        <version>3.12.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -293,7 +293,7 @@
                             <alias>audit-service</alias>
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/opensuse-tomcat-jre17:1</from>
+                                <from>${dockerHubPublic}/cafapi/prereleases:opensuse-tomcat-jre17-1.7.0-SNAPSHOT</from>
                                 <env>
                                     <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>

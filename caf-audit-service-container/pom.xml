@@ -400,7 +400,7 @@
                             <name>docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2</name>
                             <run>
                                 <hostname>elasticsearch</hostname>
-                                <namingStrategy>alias</namingStrategy>
+                                <containerNamePattern>%a-%t</containerNamePattern>
                                 <ports>
                                     <port>${elasticsearch.http.port}:9200</port>
                                 </ports>

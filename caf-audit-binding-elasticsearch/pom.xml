@@ -22,7 +22,7 @@
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
-        <version>3.12.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>caf-audit-binding-elasticsearch</artifactId>
 
@@ -33,16 +33,14 @@
             <artifactId>caf-audit</artifactId>
         </dependency>
         <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.github.cafapi.util</groupId>
             <artifactId>util-process-identifier</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.json</groupId>
@@ -132,7 +130,6 @@
                                 </goals>
                                 <configuration>
                                     <skip>false</skip>
-                                    <image>elasticsearch</image>
                                 </configuration>
                             </execution>
                             <execution>
@@ -143,7 +140,6 @@
                                 </goals>
                                 <configuration>
                                     <skip>false</skip>
-                                    <image>elasticsearch</image>
                                 </configuration>
                             </execution>
                         </executions>
@@ -248,7 +244,6 @@
                         </goals>
                         <configuration>
                             <skip>false</skip>
-                            <image>elasticsearch</image>
                         </configuration>
                     </execution>
                 </executions>

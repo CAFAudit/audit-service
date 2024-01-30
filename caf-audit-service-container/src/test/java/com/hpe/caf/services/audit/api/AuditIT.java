@@ -25,8 +25,6 @@ import com.hpe.caf.services.audit.client.model.NewAuditEvent;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue.ValueType;
 
-import org.joda.time.DateTime;
-import org.joda.time.Instant;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -41,6 +39,7 @@ import java.security.KeyManagementException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,7 +79,7 @@ public class AuditIT {
     private static AuditEventsApi auditEventsApi;
 
     @BeforeClass
-    public static void setup() throws Exception {
+    public void setup() throws Exception {
         AUDIT_WEBSERVICE_HTTP_BASE_PATH = System.getenv("webserviceurl");
         AUDIT_WEBSERVICE_HTTPS_BASE_PATH = System.getenv("webserviceurlhttps");
 
@@ -91,11 +90,11 @@ public class AuditIT {
         CAF_ELASTIC_PASSWORD = System.getenv("CAF_ELASTIC_PASSWORD");
 
         auditEventsApi = new AuditEventsApi();
+        auditEventsApi.getApiClient().setBasePath(AUDIT_WEBSERVICE_HTTP_BASE_PATH);
     }
 
     @Test
     public void testAuditEventsPost() throws Exception {
-        auditEventsApi.getApiClient().setBasePath(AUDIT_WEBSERVICE_HTTP_BASE_PATH);
         postNewAuditEvent();
     }
 
@@ -281,7 +280,7 @@ public class AuditIT {
         //  Add custom metadata field values.
         //  Do not include custom event parameters if custom fields are to be excluded.
         if (!excludeCustom) {
-            List<EventParam> eventParamsList = new ArrayList<EventParam>();
+            List<EventParam> eventParamsList = new ArrayList<>();
 
             //  Set up random test values for custom field data.
             final Random rand = new Random();
@@ -404,22 +403,22 @@ public class AuditIT {
                     assertField(ep.getParamName(), true, ep.getParamIndexingHint(), ep.getParamValue(), actual);
                     break;
                 case EVENT_PARAM_TYPE_SHORT:
-                    assertField(ep.getParamName(), true, Short.parseShort(ep.getParamValue()), actual);
+                    assertField(ep.getParamName(), true, Short.valueOf(ep.getParamValue()), actual);
                     break;
                 case EVENT_PARAM_TYPE_INT:
-                    assertField(ep.getParamName(), true, Integer.parseInt(ep.getParamValue()), actual);
+                    assertField(ep.getParamName(), true, Integer.valueOf(ep.getParamValue()), actual);
                     break;
                 case EVENT_PARAM_TYPE_LONG:
-                    assertField(ep.getParamName(), true, Long.parseLong(ep.getParamValue()), actual);
+                    assertField(ep.getParamName(), true, Long.valueOf(ep.getParamValue()), actual);
                     break;
                 case EVENT_PARAM_TYPE_FLOAT:
-                    assertField(ep.getParamName(), true, Float.parseFloat(ep.getParamValue()), actual);
+                    assertField(ep.getParamName(), true, Float.valueOf(ep.getParamValue()), actual);
                     break;
                 case EVENT_PARAM_TYPE_DOUBLE:
-                    assertField(ep.getParamName(), true, Double.parseDouble(ep.getParamValue()), actual);
+                    assertField(ep.getParamName(), true, Double.valueOf(ep.getParamValue()), actual);
                     break;
                 case EVENT_PARAM_TYPE_BOOLEAN:
-                    assertField(ep.getParamName(), true, Boolean.parseBoolean(ep.getParamValue()), actual);
+                    assertField(ep.getParamName(), true, Boolean.valueOf(ep.getParamValue()), actual);
                     break;
                 case EVENT_PARAM_TYPE_DATE:
                     DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -538,9 +537,9 @@ public class AuditIT {
         Assert.assertTrue(searchResult.get(fieldName).getValueType().equals(ValueType.NUMBER));
         Long sourceField = searchResult.getJsonNumber(fieldName).longValue();
 
-        DateTime dateTime = new DateTime(sourceField);
+        final Instant dateTime = Instant.ofEpochMilli(sourceField);
 
-        Assert.assertEquals(new DateTime(expectedValue), dateTime);
+        Assert.assertEquals(expectedValue.toInstant(), dateTime);
     }
 
     //  Returns a new event parameter object.

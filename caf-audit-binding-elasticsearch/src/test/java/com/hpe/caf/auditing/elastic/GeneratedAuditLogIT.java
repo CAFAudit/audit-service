@@ -22,7 +22,6 @@ import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.util.processidentifier.ProcessIdentifier;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue.ValueType;
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -31,6 +30,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -104,8 +104,8 @@ public class GeneratedAuditLogIT {
             //Event order is tested in eventOrderTest()
 
             String eventTimeField = source.getString(ElasticAuditConstants.FixedFieldName.EVENT_TIME_FIELD);
-            DateTime eventDateTime = new DateTime(eventTimeField);
-            Assert.assertTrue(eventDateTime.isAfter(new DateTime(date)));
+            final Instant eventDateTime = Instant.parse(eventTimeField);
+            Assert.assertTrue(eventDateTime.isAfter(date.toInstant()));
 
             assertFixedField(InetAddress.getLocalHost().getHostName(), ElasticAuditConstants.FixedFieldName.EVENT_TIME_SOURCE_FIELD, source);
             assertFixedField("TestAuditEvents", ElasticAuditConstants.FixedFieldName.APPLICATION_ID_FIELD, source);
@@ -297,9 +297,9 @@ public class GeneratedAuditLogIT {
         Long sourceField = source.getJsonNumber(fullFieldName).longValue();
 
         //  Transform the returned value into a DateTime object as the Java search api returns dates as a strings
-        DateTime dateTime = new DateTime(sourceField);
+        Instant dateTime = Instant.ofEpochMilli(sourceField);
 
-        Assert.assertEquals(new DateTime(expected), dateTime);
+        Assert.assertEquals(expected.toInstant(), dateTime);
     }
 
     private static void deleteIndex(OpenSearchClient client, String indexId)

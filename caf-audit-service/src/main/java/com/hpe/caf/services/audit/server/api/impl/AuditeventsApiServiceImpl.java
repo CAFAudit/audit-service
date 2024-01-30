@@ -21,6 +21,7 @@ import com.hpe.caf.auditing.AuditConnectionFactory;
 import com.hpe.caf.auditing.AuditCoreMetadataProvider;
 import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
+import com.hpe.caf.services.audit.server.api.AuditEventsApi;
 import com.hpe.caf.services.audit.server.api.exceptions.BadRequestException;
 
 import java.text.DateFormat;
@@ -28,26 +29,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hpe.caf.services.audit.server.api.AuditeventsApiService;
-import com.hpe.caf.services.audit.server.api.NotFoundException;
 import com.hpe.caf.services.audit.server.model.EventParam;
 import com.hpe.caf.services.audit.server.model.NewAuditEvent;
 
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
 
-@jakarta.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-05-24T10:10:27.102+01:00")
-public class AuditeventsApiServiceImpl extends AuditeventsApiService {
+public class AuditeventsApiServiceImpl implements AuditEventsApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuditeventsApiServiceImpl.class.getName());
 
@@ -79,7 +74,7 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
     private AuditConnection auditConnection;
 
     @Override
-    public Response auditeventsPost(NewAuditEvent newAuditEvent, SecurityContext securityContext) throws NotFoundException {
+    public Response auditeventsPost(final NewAuditEvent newAuditEvent) {
         //  Index new audit event into Elasticsearch.
         try {
             LOG.debug("Start indexing audit event message into Elasticsearch");
@@ -284,7 +279,8 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
         }
 
         //  Make sure at least one custom audit event field has been supplied.
-        if (newAuditEvent.getEventParams().isEmpty()) {
+        final List<EventParam> eventParams = newAuditEvent.getEventParams();
+        if (eventParams == null || eventParams.isEmpty()) {
             LOG.error(ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED);
             throw new BadRequestException(ERR_MSG_CUSTOM_FIELDS_NOT_SPECIFIED);
         }
@@ -314,11 +310,11 @@ public class AuditeventsApiServiceImpl extends AuditeventsApiService {
             @Override
             public long getThreadId()
             {
-                return newAuditEvent.getThreadId().longValue();
+                return newAuditEvent.getThreadId();
             }
 
             @Override
-            public long getEventOrder() { return newAuditEvent.getEventOrder().longValue(); }
+            public long getEventOrder() { return newAuditEvent.getEventOrder(); }
 
             @Override
             public Instant getEventTime()

@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.hpe.caf.services.audit.server.api.factories;
+package com.hpe.caf.services.audit.server.api;
 
-import com.hpe.caf.services.audit.server.api.AuditeventsApiService;
 import com.hpe.caf.services.audit.server.api.impl.AuditeventsApiServiceImpl;
+import java.util.function.Consumer;
 
-@jakarta.annotation.Generated(value = "class io.swagger.codegen.languages.JavaJerseyServerCodegen", date = "2017-05-24T10:10:27.102+01:00")
-public class AuditeventsApiServiceFactory {
-   private final static AuditeventsApiService service = new AuditeventsApiServiceImpl();
+public final class CafAuditServiceModule
+{
+    private CafAuditServiceModule()
+    {
+    }
 
-   public static AuditeventsApiService getAuditeventsApi() {
-      return service;
-   }
+    public static void registerProviders(final Consumer<Object> registrationFn)
+    {
+        registrationFn.accept(new AuditeventsApiServiceImpl());
+    }
 }

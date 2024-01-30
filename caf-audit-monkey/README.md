@@ -143,7 +143,7 @@ The following parameters may be set as required:
 2. Audit Web Service, (only required if Audit Events are to be sent via the Web Service)
 
 ### How to Run the Audit Monkey
-1. docker pull cafaudit/audit-monkey:3.1.0
+1. docker pull cafaudit/audit-monkey:4.0.0
 2. docker run [OPTIONS] \<IMAGE\_ID\>
 
 e.g.  

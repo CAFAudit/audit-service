@@ -50,7 +50,7 @@ public class MonkeyFactory
         BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(num);
         for(int i = 1; i <= num; i++) {
             try {
-                queue.put(new Integer(i));
+                queue.put(i);
             } catch (InterruptedException ie) {
                 LOG.error("Error populating work queue for StandardMonkey", ie);
             }

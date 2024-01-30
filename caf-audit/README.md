@@ -45,7 +45,7 @@ Here is a sample Maven project file that generates a client-side auditing librar
 	        <dependency>
 	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit</artifactId>
-	            <version>3.1.0</version>
+	            <version>4.0.0</version>
 	        </dependency>
 	    </dependencies>
 	
@@ -54,7 +54,7 @@ Here is a sample Maven project file that generates a client-side auditing librar
 	            <plugin>
 	                <groupId>com.github.cafaudit</groupId>
 	                <artifactId>caf-audit-maven-plugin</artifactId>
-	                <version>3.1.0</version>
+	                <version>4.0.0</version>
 	                <executions>
 	                    <execution>
 	                        <id>generate-code</id>
@@ -89,7 +89,7 @@ The generated library will have a dependency on `caf-audit`, which the generated
 	    <dependency>
 	        <groupId>com.github.cafaudit</groupId>
 	        <artifactId>caf-audit</artifactId>
-	        <version>3.1.0</version>
+	        <version>4.0.0</version>
 	    </dependency>
 	</dependencies>
 
@@ -102,7 +102,7 @@ The `xmltojava` goal of the [code generation plugin](../caf-audit-maven-plugin) 
 	        <plugin>
 	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit-maven-plugin</artifactId>
-	            <version>3.1.0</version>
+	            <version>4.0.0</version>
 	            <executions>
 	                <execution>
 	                    <id>generate-code</id>

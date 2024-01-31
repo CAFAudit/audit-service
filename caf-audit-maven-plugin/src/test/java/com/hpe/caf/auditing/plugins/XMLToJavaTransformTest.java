@@ -15,7 +15,6 @@
  */
 package com.hpe.caf.auditing.plugins;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.After;
 import org.junit.Assert;
@@ -23,7 +22,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 public class XMLToJavaTransformTest {
 
@@ -76,9 +75,9 @@ public class XMLToJavaTransformTest {
 
         //  Verify generated output matches expected output.
         File expected = new File(classLoader.getResource("transform/AuditLog.java").getFile());
-        Assert.assertEquals(
-            FileUtils.readLines(expected, StandardCharsets.UTF_8),
-            FileUtils.readLines(generatedJavaFile, StandardCharsets.UTF_8));
+        Assert.assertArrayEquals(
+            Files.readAllLines(expected.toPath()).toArray(),
+            Files.readAllLines(generatedJavaFile.toPath()).toArray());
     }
 
     @Test

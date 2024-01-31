@@ -17,6 +17,7 @@ package com.hpe.caf.auditing;
 
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
 import com.hpe.caf.auditing.noop.NoopAuditConnection;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -57,10 +58,11 @@ public class AuditConnectionFactory
             throw new AuditConfigurationException("No auditing implementations have been found for the mode selected.");
         }
         try {
-            final AuditConnectionProvider connectionProvider = (AuditConnectionProvider) implementations.iterator().next().newInstance();
+            final AuditConnectionProvider connectionProvider
+                = (AuditConnectionProvider) implementations.iterator().next().getDeclaredConstructor().newInstance();
             return connectionProvider.getConnection();
-        } catch (final InstantiationException | IllegalAccessException ex) {
+        } catch (final InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException ex) {
             throw new RuntimeException("Unable to instantiate provider for the requested auditing implemenation.", ex);
-        }        
+        }
     }
 }

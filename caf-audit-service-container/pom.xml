@@ -28,59 +28,16 @@
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
-        <version>3.12.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
-
-    <properties>
-        <webserviceWarName>caf-audit-service</webserviceWarName>
-    </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-service</artifactId>
-            <type>war</type>
+            <artifactId>caf-audit-service-dropwizard</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-service-admin</artifactId>
-            <type>war</type>
-        </dependency>
-        <!-- Auditing Implementations -->
-        <dependency>
-            <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-binding-elasticsearch</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opensearch.client</groupId>
-            <artifactId>opensearch-java</artifactId>
-        </dependency>
-        <!-- End of Auditing Implementations -->
-        <dependency>
-            <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-service-ui</artifactId>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        
+
         <!-- Testing dependencies -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-to-slf4j</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit-binding-webservice</artifactId>
@@ -93,42 +50,12 @@
         </dependency>
         <dependency>
             <groupId>com.github.cafaudit</groupId>
-            <artifactId>caf-audit-service-client</artifactId>
+            <artifactId>caf-audit-service-internal-testing-client</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.stefanbirkner</groupId>
             <artifactId>system-lambda</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-common</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.inject</groupId>
-            <artifactId>jersey-hk2</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -160,7 +87,6 @@
                                 </goals>
                                 <configuration>
                                     <skip>false</skip>
-                                    <image>audit-service,config,elasticsearch</image>
                                 </configuration>
                             </execution>
                             <execution>
@@ -171,7 +97,6 @@
                                 </goals>
                                 <configuration>
                                     <skip>false</skip>
-                                    <image>audit-service,config,elasticsearch</image>
                                 </configuration>
                             </execution>
                         </executions>
@@ -184,6 +109,7 @@
             <id>use-default-fixed-ports</id>
             <properties>
                 <webservice.adminport>25080</webservice.adminport>
+                <webservice.debugport>25085</webservice.debugport>
                 <webservice.https.adminport>25443</webservice.https.adminport>
                 <webservice.healthcheckport>25081</webservice.healthcheckport>
                 <elasticsearch.http.port>9200</elasticsearch.http.port>
@@ -203,15 +129,13 @@
                         <goals>
                             <goal>testCompile</goal>
                         </goals>
-                        <configuration>
-                            <testCompilerArgument>-parameters</testCompilerArgument>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
 
             <!-- Run integration tests. -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <executions>
                     <execution>
@@ -223,6 +147,10 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <argLine>
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens java.base/java.util=ALL-UNNAMED
+                    </argLine>
                     <systemPropertyVariables>
                         <docker.host.address>${docker.host.address}</docker.host.address>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
@@ -233,8 +161,8 @@
                         <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
                         <CAF_ELASTIC_HOST_VALUES>${docker.host.address}</CAF_ELASTIC_HOST_VALUES>
                         <CAF_ELASTIC_PORT_VALUE>${elasticsearch.http.port}</CAF_ELASTIC_PORT_VALUE>
-                        <webserviceurl>http://${docker.host.address}:${webservice.adminport}/${webserviceWarName}/v1</webserviceurl>
-                        <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/${webserviceWarName}/v1</webserviceurlhttps>
+                        <webserviceurl>http://${docker.host.address}:${webservice.adminport}/caf-audit-service/v1</webserviceurl>
+                        <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/caf-audit-service/v1</webserviceurlhttps>
                     </environmentVariables>
                 </configuration>
             </plugin>
@@ -251,7 +179,6 @@
                         </goals>
                         <configuration>
                             <skip>false</skip>
-                            <image>audit-service,config</image>
                         </configuration>
                     </execution>
                     <execution>
@@ -277,7 +204,7 @@
                             <alias>keystore</alias>
                             <name>${project.artifactId}-keystore:${project.version}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/opensuse-jre11:3</from>
+                                <from>${dockerHubPublic}/cafapi/opensuse-jre17:1</from>
                                 <runCmds>
                                     <runCmd>mkdir /test-keystore</runCmd>
                                     <runCmd>keytool -genkey -noprompt -alias tomcat -dname "CN=myname, OU=myorganisational.unit, O=myorganisation, L=mycity, S=myprovince, C=GB" -keystore /test-keystore/tomcat.keystore -storepass changeit -keypass changeit -keyalg RSA</runCmd>
@@ -292,7 +219,15 @@
                             <alias>audit-service</alias>
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/opensuse-tomcat-jre17:1</from>
+                                <from>${dockerHubPublic}/cafapi/opensuse-jre17:1</from>
+                                <cmd>
+                                    <exec>
+                                        <args>/maven/service.sh</args>
+                                    </exec>
+                                </cmd>
+                                <healthCheck>
+                                    <cmd>curl -f http://localhost:8081/healthcheck || exit 1</cmd>
+                                </healthCheck>
                                 <env>
                                     <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
                                     <CAF_AUDIT_MODE>elasticsearch</CAF_AUDIT_MODE>
@@ -302,56 +237,21 @@
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
                                 </env>
                                 <assembly>
-                                    <basedir>/usr/share/tomcat</basedir>
                                     <mode>tar</mode>
                                     <inline>
+                                        <fileSets>
+                                            <fileSet>
+                                                <fileMode>0755</fileMode>
+                                                <includes>
+                                                    <include>service.sh</include>
+                                                </includes>
+                                                <lineEnding>unix</lineEnding>
+                                            </fileSet>
+                                        </fileSets>
                                         <dependencySets>
                                             <dependencySet>
-                                                <outputDirectory>webapps/${webserviceWarName}</outputDirectory>
-                                                <includes>
-                                                    <include>com.github.cafaudit:caf-audit-service</include>
-                                                </includes>
-                                                <unpack>true</unpack>
                                                 <useProjectArtifact>false</useProjectArtifact>
-                                            </dependencySet>
-                                            <!-- service dependencies -->
-                                            <dependencySet>
-                                                <outputDirectory>webapps/${webserviceWarName}/WEB-INF/lib</outputDirectory>
-                                                <excludes>
-                                                    <exclude>com.github.cafaudit:caf-audit-service</exclude>
-                                                    <exclude>com.github.cafaudit:caf-audit-service-ui</exclude>
-                                                    <exclude>com.github.cafaudit:caf-audit-service-admin</exclude>
-                                                </excludes>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                            </dependencySet>
-                                            <!-- Including the swagger ui in the container image. -->
-                                            <dependencySet>
-                                                <outputDirectory>webapps/caf-audit-service-ui</outputDirectory>
-                                                <includes>
-                                                    <include>com.github.cafaudit:caf-audit-service-ui</include>
-                                                </includes>
-                                                <unpack>true</unpack>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                            </dependencySet>
-                                            <!-- Including the healthcheck web application. -->
-                                            <dependencySet>
-                                                <outputDirectory>adminapps/ROOT/</outputDirectory>
-                                                <includes>
-                                                    <include>com.github.cafaudit:caf-audit-service-admin</include>
-                                                </includes>
-                                                <unpack>true</unpack>
-                                                <useProjectArtifact>false</useProjectArtifact>
-                                            </dependencySet>
-                                            <!-- healthcheck dependencies -->
-                                            <dependencySet>
-                                                <outputDirectory>adminapps/ROOT/WEB-INF/lib</outputDirectory>
-                                                <includes>
-                                                    <include>com.github.cafaudit:caf-audit-binding-elasticsearch</include>
-                                                    <include>org.opensearch.client:opensearch-java</include>
-                                                </includes>
-                                                <useTransitiveDependencies>true</useTransitiveDependencies>
-                                                <useTransitiveFiltering>true</useTransitiveFiltering>
-                                                <useProjectArtifact>false</useProjectArtifact>
+                                                <scope>runtime</scope>
                                             </dependencySet>
                                         </dependencySets>
                                     </inline>
@@ -359,17 +259,22 @@
                             </build>
                             <run>
                                 <ports>
+                                    <port>${webservice.debugport}:5005</port>
                                     <port>${webservice.adminport}:8080</port>
                                     <port>${webservice.https.adminport}:8443</port>
                                     <port>${webservice.healthcheckport}:8081</port>
                                 </ports>
                                 <env>
-                                    <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
-                                    <CAF_ELASTIC_HOST_VALUES>elasticsearch</CAF_ELASTIC_HOST_VALUES>
-                                    <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
+                                    <CAF_AUDIT_SERVICE_JAVA_OPTS>
+                                        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+                                    </CAF_AUDIT_SERVICE_JAVA_OPTS>
                                     <CAF_LOG_LEVEL>INFO</CAF_LOG_LEVEL>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
-                                    <SSL_TOMCAT_CA_CERT_LOCATION>/test-keystore/tomcat.keystore</SSL_TOMCAT_CA_CERT_LOCATION>
+                                    <SSL_KEYSTORE_PATH>/test-keystore</SSL_KEYSTORE_PATH>
+                                    <SSL_KEYSTORE>tomcat.keystore</SSL_KEYSTORE>
+                                    <SSL_KEYSTORE_PASSWORD>changeit</SSL_KEYSTORE_PASSWORD>
+                                    <SSL_CERT_ALIAS>tomcat</SSL_CERT_ALIAS>
+                                    <SSL_DISABLE_SNI_HOST_CHECK>true</SSL_DISABLE_SNI_HOST_CHECK>
                                 </env>
                                 <volumes>
                                     <from>

@@ -92,7 +92,7 @@ public class WebserviceClientAuditIT {
     private static String CAF_ELASTIC_PASSWORD;
 
     @BeforeClass
-    public static void setup() throws Exception {
+    public void setup() throws Exception {
         // Test the Auditing library in webservice mode
         System.setProperty("CAF_AUDIT_MODE", "webservice");
 

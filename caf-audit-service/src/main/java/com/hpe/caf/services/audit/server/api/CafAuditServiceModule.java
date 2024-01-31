@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.swagger.jaxrs;
+package com.hpe.caf.services.audit.server.api;
 
-/**
- * This class under package named io.swagger.jaxrs created to avoid compilation 
- * error in swagger generated Api class com.hpe.caf.services.audit.server.api.AuditeventsApi. 
- * The error is due to unused import io.swagger.jaxrs.*.
- * For this, the dependency io.swagger:swagger-jersey2-jaxrs should be declared as compile time dependency.
- * But io.swagger:swagger-jersey2-jaxrs is required as runtime dependency 
- * to use io.swagger.jersey.config.JerseyJaxrsConfig class in web.xml.
- */
-final class Dummy {
+import com.hpe.caf.services.audit.server.api.impl.AuditeventsApiServiceImpl;
+import java.util.function.Consumer;
 
-    private Dummy() {
-        
+public final class CafAuditServiceModule
+{
+    private CafAuditServiceModule()
+    {
+    }
+
+    public static void registerProviders(final Consumer<Object> registrationFn)
+    {
+        registrationFn.accept(new AuditeventsApiServiceImpl());
     }
 }

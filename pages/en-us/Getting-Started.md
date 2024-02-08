@@ -67,7 +67,7 @@ If you reference the XML schema file from your audit event definition file, then
 
 	<AuditedApplication xmlns="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.1.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">	                   
+	                    xsi:schemaLocation="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v4.0.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">	                   
 
 Many IDEs and XML editors use the schema file to provide IntelliSense / Auto-Complete when authoring the definition file.
 
@@ -78,7 +78,7 @@ The following is an example of an audit event definition file used throughout th
 	<?xml version="1.0" encoding="UTF-8"?>
 	<AuditedApplication xmlns="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd"
 	                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	                    xsi:schemaLocation="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v3.1.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">
+	                    xsi:schemaLocation="https://cafaudit.github.io/audit-service/schema/AuditedApplication.xsd https://raw.githubusercontent.com/CAFAudit/audit-service/v4.0.0/caf-audit-schema/src/main/resources/schema/AuditedApplication.xsd">
 	  <ApplicationId>SampleApp</ApplicationId>
 	  <AuditEvents>
 	    <AuditEvent>
@@ -134,15 +134,14 @@ The following sample Maven project file generates a client-side auditing library
 	
 	    <properties>
 	        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	        <maven.compiler.source>1.8</maven.compiler.source>
-	        <maven.compiler.target>1.8</maven.compiler.target>
+	        <maven.compiler.release>17</maven.compiler.release>
 	    </properties>
 	
 	    <dependencies>
 	        <dependency>
 	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit</artifactId>
-	            <version>3.1.0</version>
+	            <version>4.0.0</version>
 	        </dependency>
 	    </dependencies>
 	
@@ -151,7 +150,7 @@ The following sample Maven project file generates a client-side auditing library
 	            <plugin>
 	                <groupId>com.github.cafaudit</groupId>
 	                <artifactId>caf-audit-maven-plugin</artifactId>
-	                <version>3.1.0</version>
+	                <version>4.0.0</version>
 	                <executions>
 	                    <execution>
 	                        <id>generate-code</id>
@@ -186,7 +185,7 @@ The generated library has a dependency on `caf-audit`, which the generated code 
 	    <dependency>
 	        <groupId>com.github.cafaudit</groupId>
 	        <artifactId>caf-audit</artifactId>
-	        <version>3.1.0</version>
+	        <version>4.0.0</version>
 	    </dependency>
 	</dependencies>  
 
@@ -196,14 +195,14 @@ The library for audit must also take a dependency on either the webservice, elas
 	    <dependency>
 	        <groupId>com.github.cafaudit</groupId>
 	        <artifactId>caf-audit-binding-elasticsearch</artifactId>
-	        <version>3.3.0-SNAPSHOT</version>
-                <scope>runtime</scope>
+	        <version>4.0.0</version>
+	        <scope>runtime</scope>
 	    </dependency>
 	    <dependency>
 	        <groupId>com.github.cafaudit</groupId>
 	        <artifactId>caf-audit-binding-webservice</artifactId>
-	        <version>3.3.0-SNAPSHOT</version>
-                <scope>runtime</scope>
+	        <version>4.0.0</version>
+	        <scope>runtime</scope>
 	    </dependency>
 	</dependencies>
 
@@ -216,7 +215,7 @@ The `xmltojava` goal of the code generation plugin is used to generate the Java 
 	        <plugin>
 	            <groupId>com.github.cafaudit</groupId>
 	            <artifactId>caf-audit-maven-plugin</artifactId>
-	            <version>3.1.0</version>
+	            <version>4.0.0</version>
 	            <executions>
 	                <execution>
 	                    <id>generate-code</id>

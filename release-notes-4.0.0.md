@@ -20,4 +20,3 @@ ${version-number}
 
 #### Known Issues
 - None
-

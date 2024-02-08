@@ -250,11 +250,11 @@ The `docker-compose.https.yml` override file should be used to activate a HTTPS 
 ##### Create the Keystore
 First of all, you need to generate a keystore file. For more information on generating keystores see these [instructions](https://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html).
 
-A default keystore can be generated using the following command. Specify `changeit` when asked for both the keystore and key passwords.
+A default keystore can be generated using the following command. Specify `changeit` when asked for the keystore password.
 
 	keytool -genkey -alias tomcat -keystore .keystore -keyalg RSA
 
-If you generate a keystore with custom passwords instead, then make sure to provide environment variables `CAF_AUDIT_SERVICE_KEYSTORE_PASS` and `CAF_AUDIT_SERVICE_KEY_PASS` (see override options below).
+If you generate a keystore with a custom password instead, then make sure to provide environment variable `CAF_AUDIT_SERVICE_KEYSTORE_PASS` (see override options below).
 
 ##### Deploy the Keystore
 The generated keystore file then needs placed in a folder called `keystore` in audit-service-deploy. Name it `.keystore` or else provide your own custom path by setting `CAF_AUDIT_SERVICE_KEYSTORE` (e.g. `./mykeystore/ks.p12`).
@@ -286,17 +286,12 @@ Additional external parameters can be set and used within the `docker-compose.ht
   <tr>
     <td>CAF_AUDIT_SERVICE_KEYSTORE_ALIAS</td>
     <td>tomcat</td>
-    <td>If you generated your own keystore with a custom keystore alias, use this environment variable to update the Audit Web Service's keystore configuration in the <code>server.xml</code>. The default is "tomcat".</td>
+    <td>If you generated your own keystore with a custom keystore alias, use this environment variable to update the Audit Web Service's keystore configuration.</td>
   </tr>
   <tr>
     <td>CAF_AUDIT_SERVICE_KEYSTORE_PASS</td>
     <td>changeit</td>
-    <td>If you generated your own keystore with a custom keystore password, use this environment variable to update the Audit Web Service's keystore configuration in the <code>server.xml</code>. The default is "changeit".</td>
-  </tr>
-  <tr>
-    <td>CAF_AUDIT_SERVICE_KEY_PASS</td>
-    <td>changeit</td>
-    <td>If you generated your own keystore with a custom key password, use this environment variable to update the Audit Web Service's keystore configuration in the <code>server.xml</code>. The default is "changeit".</td>
+    <td>If you generated your own keystore with a custom keystore password, use this environment variable to update the Audit Web Service's keystore configuration.</td>
   </tr>
 </table>
 

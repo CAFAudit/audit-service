@@ -29,6 +29,10 @@
     <dependencies>
         <!-- Compile time dependencies -->
         <dependency>
+            <groupId>com.github.cafapi.dropwizard</groupId>
+            <artifactId>dropwizard-ssl</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.cafaudit</groupId>
             <artifactId>caf-audit</artifactId>
         </dependency>

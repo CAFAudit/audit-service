@@ -16,6 +16,7 @@
 package com.hpe.caf.services.audit.server.dropwizard;
 
 import com.github.cafapi.correlation.dropwizard.CorrelationIdBundle;
+import com.github.cafapi.dropwizardssl.DropWizardSslBundle;
 import com.hpe.caf.services.audit.server.api.CafAuditServiceModule;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.configuration.ResourceConfigurationSourceProvider;

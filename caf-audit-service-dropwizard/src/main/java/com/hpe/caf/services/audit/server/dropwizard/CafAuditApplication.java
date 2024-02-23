@@ -16,7 +16,7 @@
 package com.hpe.caf.services.audit.server.dropwizard;
 
 import com.github.cafapi.correlation.dropwizard.CorrelationIdBundle;
-import com.github.cafapi.dropwizardssl.DropWizardSslBundle;
+import com.github.cafapi.dropwizardssl.DropWizardSslBundleProvider;
 import com.hpe.caf.services.audit.server.api.CafAuditServiceModule;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
@@ -59,7 +59,7 @@ public final class CafAuditApplication extends Application<CafAuditConfiguration
 
         // Add functionality bundles
         bootstrap.addBundle(new CorrelationIdBundle<>());
-        bootstrap.addBundle(DropWizardSslBundle.INSTANCE);
+        bootstrap.addBundle(DropWizardSslBundleProvider.getInstance());
         bootstrap.addBundle(CafAuditSwaggerUiBundle.INSTANCE);
         bootstrap.addBundle(new AssetsBundle("/root-redirect/", "/", "index.html", "root-redirect"));
     }

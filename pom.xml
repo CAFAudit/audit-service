@@ -203,7 +203,7 @@
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.dropwizard</groupId>
-                <artifactId>dropwizard-ssl</artifactId>
+                <artifactId>caf-dropwizard-ssl</artifactId>
                 <version>1.0.0-888061-SNAPSHOT</version>
             </dependency>
             <dependency>

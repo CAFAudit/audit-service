@@ -204,7 +204,7 @@
                             <alias>keystore</alias>
                             <name>${project.artifactId}-keystore:${project.version}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/opensuse-jre17:1</from>
+                                <from>${projectDockerRegistry}/cafapi/opensuse-jre17</from>
                                 <runCmds>
                                     <runCmd>mkdir /test-keystore</runCmd>
                                     <runCmd>keytool -genkey -noprompt -alias tomcat -dname "CN=myname, OU=myorganisational.unit, O=myorganisation, L=mycity, S=myprovince, C=GB" -keystore /test-keystore/tomcat.keystore -storepass changeit -keypass changeit -keyalg RSA</runCmd>
@@ -219,7 +219,7 @@
                             <alias>audit-service</alias>
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/opensuse-jre17:1</from>
+                                <from>${projectDockerRegistry}/cafapi/opensuse-jre17</from>
                                 <cmd>
                                     <exec>
                                         <args>/maven/service.sh</args>
@@ -302,7 +302,7 @@
                         <!-- elasticsearch image for running integration tests-->
                         <image>
                             <alias>elasticsearch</alias>
-                            <name>docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2</name>
+                            <name>${projectDockerRegistry}/elasticsearch/elasticsearch-oss</name>
                             <run>
                                 <hostname>elasticsearch</hostname>
                                 <containerNamePattern>%a-%t</containerNamePattern>

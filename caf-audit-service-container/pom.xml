@@ -111,7 +111,6 @@
                 <webservice.adminport>25080</webservice.adminport>
                 <webservice.debugport>25085</webservice.debugport>
                 <webservice.https.adminport>25443</webservice.https.adminport>
-                <webservice.healthcheckport>25081</webservice.healthcheckport>
                 <elasticsearch.http.port>9200</elasticsearch.http.port>
             </properties>
         </profile>
@@ -155,7 +154,6 @@
                         <docker.host.address>${docker.host.address}</docker.host.address>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
                         <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
-                        <webservice.healthcheckport>${webservice.healthcheckport}</webservice.healthcheckport>
                     </systemPropertyVariables>
                     <environmentVariables>
                         <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
@@ -272,7 +270,6 @@
                                     <port>${webservice.debugport}:5005</port>
                                     <port>${webservice.adminport}:8080</port>
                                     <port>${webservice.https.adminport}:8443</port>
-                                    <port>${webservice.healthcheckport}:8080</port>
                                 </ports>
                                 <env>
                                     <CAF_AUDIT_SERVICE_JAVA_OPTS>
@@ -300,7 +297,7 @@
                                 <wait>
                                     <http>
                                         <url>
-                                            http://${docker.host.address}:${webservice.healthcheckport}/health-check?type=READY
+                                            http://${docker.host.address}:${webservice.adminport}/health-check?type=READY
                                         </url>
                                     </http>
                                     <time>120000</time>

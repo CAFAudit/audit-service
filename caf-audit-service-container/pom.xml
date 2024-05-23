@@ -226,7 +226,7 @@
                                     </exec>
                                 </cmd>
                                 <healthCheck>
-                                    <cmd>curl -f http://localhost:8081/healthcheck || exit 1</cmd>
+                                    <cmd>curl -f http://localhost:8080/health-check?type=READY || exit 1</cmd>
                                 </healthCheck>
                                 <env>
                                     <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
@@ -272,7 +272,7 @@
                                     <port>${webservice.debugport}:5005</port>
                                     <port>${webservice.adminport}:8080</port>
                                     <port>${webservice.https.adminport}:8443</port>
-                                    <port>${webservice.healthcheckport}:8081</port>
+                                    <port>${webservice.healthcheckport}:8080</port>
                                 </ports>
                                 <env>
                                     <CAF_AUDIT_SERVICE_JAVA_OPTS>
@@ -300,7 +300,7 @@
                                 <wait>
                                     <http>
                                         <url>
-                                            http://${docker.host.address}:${webservice.healthcheckport}/healthcheck
+                                            http://${docker.host.address}:${webservice.healthcheckport}/health-check?type=READY
                                         </url>
                                     </http>
                                     <time>120000</time>

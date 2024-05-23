@@ -265,23 +265,13 @@
                                     <CAF_AUDIT_SERVICE_JAVA_OPTS>
                                         -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
                                     </CAF_AUDIT_SERVICE_JAVA_OPTS>
-                                    <CAF_LOG_LEVEL>TRACE</CAF_LOG_LEVEL>
+                                    <CAF_LOG_LEVEL>INFO</CAF_LOG_LEVEL>
                                     <DOCKER_HOST>http://172.17.0.1:2375</DOCKER_HOST>
                                     <SSL_KEYSTORE_PATH>/test-keystore</SSL_KEYSTORE_PATH>
                                     <SSL_KEYSTORE>tomcat.keystore</SSL_KEYSTORE>
                                     <SSL_KEYSTORE_PASSWORD>changeit</SSL_KEYSTORE_PASSWORD>
                                     <SSL_CERT_ALIAS>tomcat</SSL_CERT_ALIAS>
                                     <SSL_DISABLE_SNI_HOST_CHECK>true</SSL_DISABLE_SNI_HOST_CHECK>
-                                    <CAF_AUDIT_SERVICE_LIVENESS_INITIAL_DELAY_DURATION>0s</CAF_AUDIT_SERVICE_LIVENESS_INITIAL_DELAY_DURATION>
-                                    <CAF_AUDIT_SERVICE_LIVENESS_CHECK_INTERVAL_DURATION>5s</CAF_AUDIT_SERVICE_LIVENESS_CHECK_INTERVAL_DURATION>
-                                    <CAF_AUDIT_SERVICE_LIVENESS_DOWNTIME_INTERVAL_DURATION>5s</CAF_AUDIT_SERVICE_LIVENESS_DOWNTIME_INTERVAL_DURATION>
-                                    <CAF_AUDIT_SERVICE_LIVENESS_FAILURE_ATTEMPTS>3</CAF_AUDIT_SERVICE_LIVENESS_FAILURE_ATTEMPTS>
-                                    <CAF_AUDIT_SERVICE_LIVENESS_SUCCESS_ATTEMPTS>1</CAF_AUDIT_SERVICE_LIVENESS_SUCCESS_ATTEMPTS>
-                                    <CAF_AUDIT_SERVICE_READINESS_INITIAL_DELAY_DURATION>0s</CAF_AUDIT_SERVICE_READINESS_INITIAL_DELAY_DURATION>
-                                    <CAF_AUDIT_SERVICE_READINESS_CHECK_INTERVAL_DURATION>5s</CAF_AUDIT_SERVICE_READINESS_CHECK_INTERVAL_DURATION>
-                                    <CAF_AUDIT_SERVICE_READINESS_DOWNTIME_INTERVAL_DURATION>5s</CAF_AUDIT_SERVICE_READINESS_DOWNTIME_INTERVAL_DURATION>
-                                    <CAF_AUDIT_SERVICE_READINESS_FAILURE_ATTEMPTS>3</CAF_AUDIT_SERVICE_READINESS_FAILURE_ATTEMPTS>
-                                    <CAF_AUDIT_SERVICE_READINESS_SUCCESS_ATTEMPTS>1</CAF_AUDIT_SERVICE_READINESS_SUCCESS_ATTEMPTS>
                                 </env>
                                 <volumes>
                                     <from>

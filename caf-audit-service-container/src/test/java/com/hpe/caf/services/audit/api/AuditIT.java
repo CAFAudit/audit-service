@@ -106,8 +106,9 @@ public class AuditIT {
     }
 
     @Test
-    public void testAuditEventsPost_FixedFieldNotProvided() {
+    public void testAuditEventsPost_FixedFieldNotProvided() throws Exception {
         //  Create new audit event message with at least one fixed field missing.
+        Thread.sleep(30000);
         NewAuditEvent auditEventMessage = createNewAuditEventExcludeFixedField();
         try {
             auditEventsApi.auditeventsPost(auditEventMessage);

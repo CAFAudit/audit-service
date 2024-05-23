@@ -121,7 +121,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <!--

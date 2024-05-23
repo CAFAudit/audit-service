@@ -154,7 +154,7 @@
                         <docker.host.address>${docker.host.address}</docker.host.address>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
                         <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
-                        <webservice.admincheckport>${webservice.adminport}</webservice.admincheckport>
+                        <webservice.adminport>${webservice.adminport}</webservice.adminport>
                     </systemPropertyVariables>
                     <environmentVariables>
                         <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>

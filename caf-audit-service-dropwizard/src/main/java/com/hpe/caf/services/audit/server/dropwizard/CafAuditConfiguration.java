@@ -16,7 +16,15 @@
 package com.hpe.caf.services.audit.server.dropwizard;
 
 import io.dropwizard.core.Configuration;
+import jakarta.validation.constraints.NotNull;
 
 public final class CafAuditConfiguration extends Configuration
 {
+    @NotNull
+    private final HealthConfiguration healthConfiguration = new HealthConfiguration();
+
+    public HealthConfiguration getHealthConfiguration()
+    {
+        return healthConfiguration;
+    }
 }

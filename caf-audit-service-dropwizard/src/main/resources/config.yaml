@@ -27,9 +27,9 @@ health:
       critical: true
       initialState: false
       schedule:
-        initialDelay: ${CAF_AUDIT_SERVICE_LIVENESS_INITIAL_DELAY_DURATION:-15s}
-        checkInterval: ${CAF_AUDIT_SERVICE_LIVENESS_CHECK_INTERVAL_DURATION:-60s}
-        downtimeInterval: ${CAF_AUDIT_SERVICE_LIVENESS_DOWNTIME_INTERVAL_DURATION:-60s}
+        initialDelay: ${CAF_AUDIT_SERVICE_LIVENESS_INITIAL_DELAY_DURATION:-0s}
+        checkInterval: ${CAF_AUDIT_SERVICE_LIVENESS_CHECK_INTERVAL_DURATION:-3s}
+        downtimeInterval: ${CAF_AUDIT_SERVICE_LIVENESS_DOWNTIME_INTERVAL_DURATION:-3s}
         failureAttempts: ${CAF_AUDIT_SERVICE_LIVENESS_FAILURE_ATTEMPTS:-3}
         successAttempts: ${CAF_AUDIT_SERVICE_LIVENESS_SUCCESS_ATTEMPTS:-1}
     - name: service
@@ -37,8 +37,8 @@ health:
       critical: true
       initialState: false
       schedule:
-        initialDelay: ${CAF_AUDIT_SERVICE_READINESS_INITIAL_DELAY_DURATION:-15s}
-        checkInterval: ${CAF_AUDIT_SERVICE_READINESS_CHECK_INTERVAL_DURATION:-60s}
-        downtimeInterval: ${CAF_AUDIT_SERVICE_READINESS_DOWNTIME_INTERVAL_DURATION:-60s}
+        initialDelay: ${CAF_AUDIT_SERVICE_READINESS_INITIAL_DELAY_DURATION:-0s}
+        checkInterval: ${CAF_AUDIT_SERVICE_READINESS_CHECK_INTERVAL_DURATION:-3s}
+        downtimeInterval: ${CAF_AUDIT_SERVICE_READINESS_DOWNTIME_INTERVAL_DURATION:-3s}
         failureAttempts: ${CAF_AUDIT_SERVICE_READINESS_FAILURE_ATTEMPTS:-3}
         successAttempts: ${CAF_AUDIT_SERVICE_READINESS_SUCCESS_ATTEMPTS:-1}

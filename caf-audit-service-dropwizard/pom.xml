@@ -83,6 +83,10 @@
             <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.cafapi.logging</groupId>
             <artifactId>caf-logging-logback</artifactId>
             <scope>runtime</scope>

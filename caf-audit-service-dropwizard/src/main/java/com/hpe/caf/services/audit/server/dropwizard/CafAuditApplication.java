@@ -19,7 +19,9 @@ import com.github.cafapi.correlation.dropwizard.CorrelationIdBundle;
 import com.github.cafapi.ssl.dropwizard.DropWizardSslBundleProvider;
 import com.hpe.caf.services.audit.server.api.CafAuditServiceModule;
 import io.dropwizard.assets.AssetsBundle;
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.core.Application;
 import io.dropwizard.core.setup.Bootstrap;
 import io.dropwizard.core.setup.Environment;
@@ -54,7 +56,9 @@ public final class CafAuditApplication extends Application<CafAuditConfiguration
     {
         // Pick up the built-in config file from resources
         if (useInternalConfig) {
-            bootstrap.setConfigurationSourceProvider(new ResourceConfigurationSourceProvider());
+            bootstrap.setConfigurationSourceProvider(new SubstitutingSourceProvider(
+                    new ResourceConfigurationSourceProvider(),
+                    new EnvironmentVariableSubstitutor(false, true)));
         }
 
         // Add functionality bundles

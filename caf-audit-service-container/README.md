@@ -54,6 +54,36 @@ The Logging levels supported are:
 
 A default logging level of INFO is applied if this environment variable is not configured.
 
+##### CAF\_AUDIT\_SERVICE\_LIVENESS\_INITIAL\_DELAY\_DURATION
+The initial delay to use when first scheduling the liveness check. Default value: 15s
+
+##### CAF\_AUDIT\_SERVICE\_LIVENESS\_CHECK\_INTERVAL\_DURATION
+The interval on which to perform a liveness check for while in a healthy state. Default value: 60s
+
+##### CAF\_AUDIT\_SERVICE\_LIVENESS\_DOWNTIME\_INTERVAL\_DURATION
+The interval on which to perform a liveness check for while in an unhealthy state. Default value: 60s
+
+##### CAF\_AUDIT\_SERVICE\_LIVENESS\_FAILURE\_ATTEMPTS
+The threshold of consecutive failed attempts needed to mark the liveness check as unhealthy (from a healthy state). Default value: 3
+
+##### CAF\_AUDIT\_SERVICE\_LIVENESS\_SUCCESS\_ATTEMPTS
+The threshold of consecutive successful attempts needed to mark the liveness check as healthy (from an unhealthy state). Default value: 1
+
+##### CAF\_AUDIT\_SERVICE\_READINESS\_INITIAL\_DELAY\_DURATION
+The initial delay to use when first scheduling the readiness check. Default value: 15s
+
+##### CAF\_AUDIT\_SERVICE\_READINESS\_CHECK\_INTERVAL\_DURATION
+The interval on which to perform a readiness check for while in a healthy state. Default value: 60s
+
+##### CAF\_AUDIT\_SERVICE\_READINESS\_DOWNTIME\_INTERVAL\_DURATION
+The interval on which to perform a readiness check for while in an unhealthy state. Default value: 60s
+
+##### CAF\_AUDIT\_SERVICE\_READINESS\_FAILURE\_ATTEMPTS
+The threshold of consecutive failed attempts needed to mark the readiness check as unhealthy (from a healthy state). Default value: 3
+
+##### CAF\_AUDIT\_SERVICE\_READINESS\_SUCCESS\_ATTEMPTS
+The threshold of consecutive successful attempts needed to mark the readiness check as healthy (from an unhealthy state). Default value: 1
+
 <br></br>
 
 ## Audit Service Links

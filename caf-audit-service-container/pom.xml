@@ -111,7 +111,6 @@
                 <webservice.adminport>25080</webservice.adminport>
                 <webservice.debugport>25085</webservice.debugport>
                 <webservice.https.adminport>25443</webservice.https.adminport>
-                <webservice.healthcheckport>25081</webservice.healthcheckport>
                 <elasticsearch.http.port>9200</elasticsearch.http.port>
             </properties>
         </profile>
@@ -155,7 +154,6 @@
                         <docker.host.address>${docker.host.address}</docker.host.address>
                         <webservice.adminport>${webservice.adminport}</webservice.adminport>
                         <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
-                        <webservice.healthcheckport>${webservice.healthcheckport}</webservice.healthcheckport>
                     </systemPropertyVariables>
                     <environmentVariables>
                         <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
@@ -226,7 +224,7 @@
                                     </exec>
                                 </cmd>
                                 <healthCheck>
-                                    <cmd>curl -f http://localhost:8081/healthcheck || exit 1</cmd>
+                                    <cmd>curl -f http://localhost:8080/health-check?type=READY || exit 1</cmd>
                                 </healthCheck>
                                 <env>
                                     <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
@@ -262,7 +260,6 @@
                                     <port>${webservice.debugport}:5005</port>
                                     <port>${webservice.adminport}:8080</port>
                                     <port>${webservice.https.adminport}:8443</port>
-                                    <port>${webservice.healthcheckport}:8081</port>
                                 </ports>
                                 <env>
                                     <CAF_AUDIT_SERVICE_JAVA_OPTS>
@@ -290,7 +287,7 @@
                                 <wait>
                                     <http>
                                         <url>
-                                            http://${docker.host.address}:${webservice.healthcheckport}/healthcheck
+                                            http://${docker.host.address}:${webservice.adminport}/health-check?type=READY
                                         </url>
                                     </http>
                                     <time>120000</time>

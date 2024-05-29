@@ -1159,7 +1159,9 @@
                             <ignoreVersion>
                                 <type>regex</type>
                                 <version>(?!7\.10\.2-amd64$).*</version>
-                                <images>(?i).*elasticsearch/elasticsearch-oss.*</images>
+                                <images>
+                                    <image>(?i).*elasticsearch/elasticsearch-oss.*</image>
+                                </images>
                             </ignoreVersion>
                         </ignoreVersions>
                     </imageManagement>

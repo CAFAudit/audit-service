@@ -1061,7 +1061,7 @@
                 <plugin>
                     <groupId>com.github.cafapi.plugins.docker.versions</groupId>
                     <artifactId>docker-versions-maven-plugin</artifactId>
-                    <version>1.0.0-US887111-paramFix-SNAPSHOT</version>
+                    <version>1.0.0-SNAPSHOT</version>
                 </plugin>
                 <plugin>
                     <groupId>com.github.cafaudit</groupId>
@@ -1155,16 +1155,16 @@
                             <digest>sha256:d3542054e2388828f14828a6fd08cc6c44526d906ee564effb0139f0b1b596d5</digest>
                             <latestTag>7.10.2-amd64</latestTag>
                         </image>
-                        <ignoreVersions>
-                            <ignoreVersion>
-                                <type>regex</type>
-                                <version>(?!7\.10\.2-amd64$).*</version>
-                                <images>
-                                    <image>(?i).*elasticsearch/elasticsearch-oss.*</image>
-                                </images>
-                            </ignoreVersion>
-                        </ignoreVersions>
                     </imageManagement>
+                    <ignoreVersions>
+                        <ignoreVersion>
+                            <type>regex</type>
+                            <version>(?!7\.10\.2-amd64$).*</version>
+                            <images>
+                                <image>(?i).*elasticsearch/elasticsearch-oss.*</image>
+                            </images>
+                        </ignoreVersion>
+                    </ignoreVersions>
                 </configuration>
             </plugin>
             <plugin>

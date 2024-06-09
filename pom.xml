@@ -225,7 +225,7 @@
             <dependency>
                 <groupId>com.github.cafapi.util</groupId>
                 <artifactId>util-process-identifier</artifactId>
-                <version>3.0.0-549</version>
+                <version>3.1.0-596</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
@@ -356,6 +356,11 @@
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
                 <version>2.6</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>99.0-does-not-exist</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
@@ -994,7 +999,7 @@
             <dependency>
                 <groupId>org.opensearch.client</groupId>
                 <artifactId>opensearch-java</artifactId>
-                <version>2.10.3</version>
+                <version>2.10.4</version>
             </dependency>
             <dependency>
                 <groupId>org.opensearch.client</groupId>

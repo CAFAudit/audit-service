@@ -103,7 +103,7 @@ services:
       - elasticsearch1
       - elasticsearch2
       - elasticsearch3
-    image: cafaudit/prereleases:audit-service-3.11.2-1080
+    image: cafaudit/prereleases:audit-service-4.1.0-1195
     ports:
       - "${CAF_AUDIT_SERVICE_PORT:-25080}:8080"
     environment:

@@ -2,10 +2,10 @@ version: '3'
 services:
   auditService:
     environment:
-      SSL_TOMCAT_CA_CERT_LOCATION: /keystore/tomcat.keystore
-      SSL_TOMCAT_CA_CERT_KEYSTORE_PASS: ${CAF_AUDIT_SERVICE_KEYSTORE_PASS:-changeit}
-      SSL_TOMCAT_CA_CERT_KEY_PASS: ${CAF_AUDIT_SERVICE_KEY_PASS:-changeit}
-      SSL_TOMCAT_CA_CERT_KEYSTORE_ALIAS: ${CAF_AUDIT_SERVICE_KEYSTORE_ALIAS:-tomcat}
+      SSL_KEYSTORE_PATH: /keystore
+      SSL_KEYSTORE: tomcat.keystore
+      SSL_KEYSTORE_PASSWORD: ${CAF_AUDIT_SERVICE_KEYSTORE_PASS:-changeit}
+      SSL_CERT_ALIAS: ${CAF_AUDIT_SERVICE_KEYSTORE_ALIAS:-tomcat}
     volumes:
       - ${CAF_AUDIT_SERVICE_KEYSTORE:-./keystore/.keystore}:/keystore/tomcat.keystore
     ports:

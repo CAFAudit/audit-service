@@ -1,5 +1,3 @@
-!not-ready-for-release!
-
 #### Version Number
 ${version-number}
 
@@ -13,3 +11,4 @@ ${version-number}
     [README.md](https://github.com/CAFAudit/audit-service/tree/develop/caf-audit-service-container#configuration).
 
 #### Known Issues
+- None

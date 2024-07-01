@@ -16,9 +16,14 @@
 package com.hpe.caf.auditing.plugins;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -45,7 +50,7 @@ public class XMLToJavaTransformTest {
         outputDirectory = new File(targetPath, OUTPUT_PATH);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
 
         //  Delete generated .Java file after every test if it exists.
@@ -61,21 +66,21 @@ public class XMLToJavaTransformTest {
 
         ClassLoader classLoader = getClass().getClassLoader();
         this.auditXMLConfig = new File(classLoader.getResource(VALID_XML_AUDIT_FILENAME).getFile());
-        Assert.assertNotNull(this.auditXMLConfig);
-        Assert.assertTrue(this.auditXMLConfig.exists());
+        assertNotNull(this.auditXMLConfig);
+        assertTrue(this.auditXMLConfig.exists());
 
         XMLToJavaTransform transform = new XMLToJavaTransform(this.auditXMLConfig, PACKAGE_NAME);
-        Assert.assertNotNull(transform);
+        assertNotNull(transform);
 
         transform.doTransform(outputDirectory, XSD_FILEPATH, VELOCITY_TEMPLATE_NAME, OUTPUT_FILENAME);
 
         //  Verify .Java file was generated.
         File generatedJavaFile = new File( outputDirectory, OUTPUT_FILENAME );
-        Assert.assertTrue(generatedJavaFile.exists());
+        assertTrue(generatedJavaFile.exists());
 
         //  Verify generated output matches expected output.
         File expected = new File(classLoader.getResource("transform/AuditLog.java").getFile());
-        Assert.assertArrayEquals(
+        assertArrayEquals(
             Files.readAllLines(expected.toPath()).toArray(),
             Files.readAllLines(generatedJavaFile.toPath()).toArray());
     }
@@ -87,22 +92,22 @@ public class XMLToJavaTransformTest {
         this.auditXMLConfig = null;
 
         XMLToJavaTransform transform = new XMLToJavaTransform(this.auditXMLConfig, PACKAGE_NAME);
-        Assert.assertNotNull(transform);
+        assertNotNull(transform);
 
         try
         {
             transform.doTransform(outputDirectory, XSD_FILEPATH, VELOCITY_TEMPLATE_NAME, OUTPUT_FILENAME);
-            Assert.fail("Should throw an exception" );
+            fail("Should throw an exception" );
         }
         catch( MojoExecutionException ee )
         {
             final String msg = "The audit events XML configuration file cannot be found.";
-            Assert.assertEquals(msg, ee.getMessage());
+            assertEquals(msg, ee.getMessage());
         }
 
         //  Verify .Java file was not generated.
         File generatedJavaFile = new File( outputDirectory, OUTPUT_FILENAME);
-        Assert.assertFalse(generatedJavaFile.exists());
+        assertFalse(generatedJavaFile.exists());
 
     }
 
@@ -111,26 +116,26 @@ public class XMLToJavaTransformTest {
 
         ClassLoader classLoader = getClass().getClassLoader();
         this.auditXMLConfig = new File(classLoader.getResource(INVALID_XML_AUDIT_FILENAME).getFile());
-        Assert.assertNotNull(this.auditXMLConfig);
-        Assert.assertTrue(this.auditXMLConfig.exists());
+        assertNotNull(this.auditXMLConfig);
+        assertTrue(this.auditXMLConfig.exists());
 
         XMLToJavaTransform transform = new XMLToJavaTransform(this.auditXMLConfig, PACKAGE_NAME);
-        Assert.assertNotNull(transform);
+        assertNotNull(transform);
 
         try
         {
             transform.doTransform(outputDirectory, XSD_FILEPATH, VELOCITY_TEMPLATE_NAME, OUTPUT_FILENAME);
-            Assert.fail("Should throw an exception" );
+            fail("Should throw an exception" );
         }
         catch( MojoExecutionException ee )
         {
             final String msg = "Exception : org.apache.maven.plugin.MojoExecutionException: The audit events XML configuration file does not conform to the schema.";
-            Assert.assertEquals(msg, ee.getMessage());
+            assertEquals(msg, ee.getMessage());
         }
 
         //  Verify .Java file was not generated.
         File generatedJavaFile = new File( outputDirectory, OUTPUT_FILENAME);
-        Assert.assertFalse(generatedJavaFile.exists());
+        assertFalse(generatedJavaFile.exists());
 
     }
 
@@ -139,26 +144,26 @@ public class XMLToJavaTransformTest {
 
         ClassLoader classLoader = getClass().getClassLoader();
         this.auditXMLConfig = new File(classLoader.getResource(VALID_XML_AUDIT_FILENAME).getFile());
-        Assert.assertNotNull(this.auditXMLConfig);
-        Assert.assertTrue(this.auditXMLConfig.exists());
+        assertNotNull(this.auditXMLConfig);
+        assertTrue(this.auditXMLConfig.exists());
 
         XMLToJavaTransform transform = new XMLToJavaTransform(this.auditXMLConfig, PACKAGE_NAME);
-        Assert.assertNotNull(transform);
+        assertNotNull(transform);
 
         try
         {
             transform.doTransform(outputDirectory, XSD_FILEPATH, INVALID_VELOCITY_TEMPLATE_NAME, OUTPUT_FILENAME);
-            Assert.fail("Should throw an exception" );
+            fail("Should throw an exception" );
         }
         catch( MojoExecutionException ee )
         {
             final String msg = "Exception : org.apache.maven.plugin.MojoExecutionException: The audit events transform template cannot be found.";
-            Assert.assertEquals(msg, ee.getMessage());
+            assertEquals(msg, ee.getMessage());
         }
 
         //  Verify .Java file was not generated.
         File generatedJavaFile = new File( outputDirectory, OUTPUT_FILENAME);
-        Assert.assertFalse(generatedJavaFile.exists());
+        assertFalse(generatedJavaFile.exists());
 
     }
 

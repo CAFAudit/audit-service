@@ -21,9 +21,10 @@ import com.hpe.caf.auditing.internal.AuditNewEventFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mockito;
 import org.opensearch.client.opensearch.OpenSearchClient;
@@ -36,7 +37,7 @@ public class ElasticAuditChannelTest {
 
     private OpenSearchClient mockOpenSearchClient;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         final GetIndexTemplateResponse response = Mockito.mock(GetIndexTemplateResponse.class);
         final List<IndexTemplateItem> list = new ArrayList<>();
@@ -63,7 +64,7 @@ public class ElasticAuditChannelTest {
     public void testCreateEventBuilder() throws Exception {
         ElasticAuditChannel channel = new ElasticAuditChannel(mockOpenSearchClient);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
-        Assert.assertNotNull(auditEventBuilder);
+        Assertions.assertNotNull(auditEventBuilder);
     }
 
     @Test
@@ -71,7 +72,7 @@ public class ElasticAuditChannelTest {
         AuditCoreMetadataProvider acmp = AuditNewEventFactory.createNewEvent();
         ElasticAuditChannel channel = new ElasticAuditChannel(mockOpenSearchClient);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder(acmp);
-        Assert.assertNotNull(auditEventBuilder);
+        Assertions.assertNotNull(auditEventBuilder);
     }
 
 }

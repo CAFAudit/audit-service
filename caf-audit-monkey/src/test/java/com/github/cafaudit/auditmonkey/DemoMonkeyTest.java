@@ -15,8 +15,10 @@
  */
 package com.github.cafaudit.auditmonkey;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,8 +28,6 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.joda.time.LocalDate;
-import org.junit.Before;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class DemoMonkeyTest
     private MonkeyConfig monkeyConfig;
     private AuditEventBuilder auditEventBuilder;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         
         channel = mock(AuditChannel.class);

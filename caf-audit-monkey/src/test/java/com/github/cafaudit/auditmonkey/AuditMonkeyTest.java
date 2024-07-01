@@ -15,12 +15,11 @@
  */
 package com.github.cafaudit.auditmonkey;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import com.hpe.caf.auditing.AuditChannel;
 
@@ -29,7 +28,7 @@ public class AuditMonkeyTest
     private AuditChannel channel;
     private StandardMonkey standardMonkey;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         
         channel = mock(AuditChannel.class);

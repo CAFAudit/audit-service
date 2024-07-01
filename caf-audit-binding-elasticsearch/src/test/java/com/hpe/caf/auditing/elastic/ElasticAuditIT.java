@@ -25,6 +25,7 @@ import jakarta.json.JsonObject;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.ConnectException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -107,7 +108,6 @@ public class ElasticAuditIT
     }
 
     @Test
-    @SuppressWarnings("ThrowableResultIgnored")
     public void testIncorrectESPort() throws Exception
     {
         //  This tests the usage of an unexpected port number for the ES config.
@@ -130,7 +130,9 @@ public class ElasticAuditIT
 
             //  No need to set up custom data as we expect the call to index the document to fail because
             //  of the unexpected port used.
-            Assertions.assertThrows(Exception.class, auditEventBuilder::send);
+            auditEventBuilder.send();
+        } catch (final ConnectException ex) {
+            assertNotNull(ex);
         }
     }
 

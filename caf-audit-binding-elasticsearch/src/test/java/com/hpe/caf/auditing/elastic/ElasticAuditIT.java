@@ -107,6 +107,7 @@ public class ElasticAuditIT
     }
 
     @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void testIncorrectESPort() throws Exception
     {
         //  This tests the usage of an unexpected port number for the ES config.
@@ -129,11 +130,12 @@ public class ElasticAuditIT
 
             //  No need to set up custom data as we expect the call to index the document to fail because
             //  of the unexpected port used.
-            auditEventBuilder.send();
+            Assertions.assertThrows(Exception.class, auditEventBuilder::send);
         }
     }
 
     @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void testInvalidTenantId() throws Exception
     {
         //  This tests the usage of invalid characters (i.e. commas) in
@@ -160,6 +162,7 @@ public class ElasticAuditIT
     }
 
     @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void testStringLengthRestrictionTenantId() throws Exception
     {
         //  This tests the usage of too many characters supplied as the tenant identifier. The tenant identifier is

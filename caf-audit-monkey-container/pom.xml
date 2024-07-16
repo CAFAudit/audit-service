@@ -75,7 +75,7 @@
                         <image>
                             <name>${dockerCafAuditOrg}audit-monkey${dockerProjectVersion}</name>
                             <build>
-                                <from>${projectDockerRegistry}/cafapi/opensuse-jre17</from>
+                                <from>${projectDockerRegistry}/cafapi/opensuse-jre21</from>
                                 <cmd>
                                     <exec>
                                         <args>/maven/start.sh</args>

@@ -17,9 +17,10 @@ package com.hpe.caf.auditing.webserviceclient;
 
 import com.hpe.caf.auditing.*;
 import com.hpe.caf.auditing.internal.AuditNewEventFactory;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URL;
@@ -28,7 +29,7 @@ public class WebServiceClientAuditChannelTest {
 
     private static URL webServiceHttpURLConnection;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws IOException {
         webServiceHttpURLConnection = new URL("http://testWsHost:8080/caf-audit-service/v1/audtevents");
         // Test the Auditing library in webservice mode
@@ -39,7 +40,7 @@ public class WebServiceClientAuditChannelTest {
     public void testCreateEventBuilder() throws Exception {
         WebServiceClientAuditChannel channel = new WebServiceClientAuditChannel(webServiceHttpURLConnection, null);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
-        Assert.assertNotNull(auditEventBuilder);
+        assertNotNull(auditEventBuilder);
     }
 
     @Test
@@ -47,10 +48,10 @@ public class WebServiceClientAuditChannelTest {
         AuditCoreMetadataProvider acmp = AuditNewEventFactory.createNewEvent();
         WebServiceClientAuditChannel channel = new WebServiceClientAuditChannel(webServiceHttpURLConnection, null);
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder(acmp);
-        Assert.assertNotNull(auditEventBuilder);
+        assertNotNull(auditEventBuilder);
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testWebserviceClientBadWebserviceHost() throws Exception {
 
         WebServiceClientAuditChannel channel = new WebServiceClientAuditChannel(webServiceHttpURLConnection, null);
@@ -59,7 +60,7 @@ public class WebServiceClientAuditChannelTest {
         AuditEventBuilder auditEventBuilder = channel.createEventBuilder();
 
         //  Send audit event message to Elasticsearch.
-        auditEventBuilder.send();
+        Assertions.assertThrows(IOException.class, auditEventBuilder::send);
     }
 
 }

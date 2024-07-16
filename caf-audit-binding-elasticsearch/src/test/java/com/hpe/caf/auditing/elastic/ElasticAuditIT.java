@@ -22,19 +22,25 @@ import com.hpe.caf.auditing.AuditEventBuilder;
 import com.hpe.caf.auditing.AuditIndexingHint;
 import com.hpe.caf.auditing.AuditConnectionFactory;
 import jakarta.json.JsonObject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.ConnectException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 import java.util.Date;
 import java.util.List;
+
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opensearch.client.json.JsonData;
 import org.opensearch.client.json.jackson.JacksonJsonpGenerator;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
@@ -81,7 +87,7 @@ public class ElasticAuditIT
     private static String CAF_ELASTIC_USERNAME;
     private static String CAF_ELASTIC_PASSWORD;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception
     {
         // Test the Auditing library in elasticsearch mode
@@ -95,13 +101,13 @@ public class ElasticAuditIT
         USER_ID = UUID.randomUUID().toString();
     }
 
-    @Before
+    @BeforeEach
     public void randomiseTenantId() {
         TENANT_ID = UUID.randomUUID().toString().replace("-", "");
         ES_INDEX = TENANT_ID + ElasticAuditConstants.Index.SUFFIX;
     }
 
-    @Test(expected = Exception.class)
+    @Test
     public void testIncorrectESPort() throws Exception
     {
         //  This tests the usage of an unexpected port number for the ES config.
@@ -125,10 +131,13 @@ public class ElasticAuditIT
             //  No need to set up custom data as we expect the call to index the document to fail because
             //  of the unexpected port used.
             auditEventBuilder.send();
+        } catch (final ConnectException ex) {
+            assertNotNull(ex);
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void testInvalidTenantId() throws Exception
     {
         //  This tests the usage of invalid characters (i.e. commas) in
@@ -149,11 +158,13 @@ public class ElasticAuditIT
             auditEventBuilder.setApplication(APPLICATION_ID);
             auditEventBuilder.setEventType(EVENT_CATEGORY_ID, EVENT_TYPE_ID);
             auditEventBuilder.setCorrelationId(CORRELATION_ID);
-            auditEventBuilder.setTenant(invalidTenantIdContainingCommas);
+            Assertions.assertThrows(IllegalArgumentException.class, () ->
+                    auditEventBuilder.setTenant(invalidTenantIdContainingCommas));
         }
     }
 
-    @Test(expected = OpenSearchException.class)
+    @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void testStringLengthRestrictionTenantId() throws Exception
     {
         //  This tests the usage of too many characters supplied as the tenant identifier. The tenant identifier is
@@ -179,7 +190,7 @@ public class ElasticAuditIT
             auditEventBuilder.setTenant(tenantIdContainingOver255Chars);
             auditEventBuilder.setUser(USER_ID);
 
-            auditEventBuilder.send();
+            Assertions.assertThrows(OpenSearchException.class, auditEventBuilder::send);
         }
     }
 
@@ -240,7 +251,7 @@ public class ElasticAuditIT
                                          USER_ID);
 
             //  Expecting a single hit.
-            Assert.assertTrue(hits.size() == 1);
+            assertEquals(1, hits.size());
 
             //  Make a note of the document identifier as we will use this to clean
             //  up afterwards.
@@ -301,8 +312,7 @@ public class ElasticAuditIT
             throw new RuntimeException(e);
         }
 
-        Assert.assertEquals("Expected type mappings and actual type mappings should match", expectedTypeMappings,
-                writer.toString());
+        assertEquals(expectedTypeMappings, writer.toString(), "Expected type mappings and actual type mappings should match");
     }
 
     @Test
@@ -383,13 +393,13 @@ public class ElasticAuditIT
                         }
                     } else if (numberOfTenantIndexHits > 2) {
                         deleteIndices(openSearchClient, tenantIndexIds);
-                        Assert.fail("Expecting only two hits to be returned from Audit, however "
+                        fail("Expecting only two hits to be returned from Audit, however "
                             + numberOfTenantIndexHits + " hits were returned from Elastic");
                     }
 
                     //  Expecting two hits.
-                    Assert.assertTrue("Expected two hits, one for each tenant index, to be returned from Elastic",
-                                      numberOfTenantIndexHits == 2);
+                    assertEquals(2, numberOfTenantIndexHits,
+                            "Expected two hits, one for each tenant index, to be returned from Elastic");
                     break;
                 }
 
@@ -512,11 +522,11 @@ public class ElasticAuditIT
         actualFieldValue = result.getString(field);
 
         //  Assert result is not null and matches expected value.
-        Assert.assertNotNull(actualFieldValue);
+        assertNotNull(actualFieldValue);
         if (!type.toLowerCase().equals("date")) {
-            Assert.assertEquals(expectedValue.toString(), actualFieldValue);
+            assertEquals(expectedValue.toString(), actualFieldValue);
         } else {
-            Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue));
+            assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue));
         }
     }
 
@@ -565,13 +575,13 @@ public class ElasticAuditIT
 
         //  Identify matching field in search results.
         actualFieldValue = result.get(field).toString().replace("\"", "");
-        Assert.assertNotNull(actualFieldValue);
+        assertNotNull(actualFieldValue);
 
         //  Assert result is not null and matches expected value.
         if (!type.toLowerCase().equals("date")) {
-            Assert.assertEquals(expectedValue.toString(), actualFieldValue);
+            assertEquals(expectedValue.toString(), actualFieldValue);
         } else {
-            Assert.assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue));
+            assertTrue(datesAreEqual((Date) expectedValue, actualFieldValue));
         }
     }
 

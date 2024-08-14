@@ -4,5 +4,7 @@
 ${version-number}
 
 #### New Features
+- US929026: Updated to run on Java 21.
+- US914108: Version Currency: JUnit 5 migration
 
 #### Known Issues

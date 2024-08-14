@@ -15,21 +15,20 @@
  */
 package com.github.cafaudit.auditmonkey;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class MonkeyConfigTest
 {
-    @Before
+    @BeforeEach
     public void setUp()
     {
         System.setProperty(MonkeyConstants.CAF_AUDIT_MODE, MonkeyConstants.ELASTICSEARCH);
     }
     
-    @After
+    @AfterEach
     public void tearDown()
     {
         System.clearProperty(MonkeyConstants.CAF_AUDIT_MODE);

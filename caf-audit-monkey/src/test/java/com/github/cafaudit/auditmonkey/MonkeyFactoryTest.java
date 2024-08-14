@@ -15,27 +15,25 @@
  */
 package com.github.cafaudit.auditmonkey;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.hpe.caf.auditing.AuditChannel;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class MonkeyFactoryTest
 {
     private AuditChannel channel;
     private MonkeyConfig monkeyConfig;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         System.setProperty(MonkeyConstants.CAF_AUDIT_MODE, MonkeyConstants.ELASTICSEARCH);
         monkeyConfig = new MonkeyConfig();
     }
     
-    @After
+    @AfterEach
     public void tearDown()
     {
         System.clearProperty(MonkeyConstants.CAF_AUDIT_MODE);

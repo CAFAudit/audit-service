@@ -17,11 +17,12 @@ package com.hpe.caf.auditing.webserviceclient;
 
 import com.hpe.caf.auditing.*;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import java.net.UnknownHostException;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class WebServiceClientAuditConnectionTest {
     private static final String TEST_WEB_SERVICE_HTTPS_ENDPOINT = "https://testWsHost:8080/caf-audit-service/v1";
@@ -29,23 +30,25 @@ public class WebServiceClientAuditConnectionTest {
     private static final String HTTP_PROXY = "HTTP_PROXY";
     private static final String HTTPS_PROXY = "HTTPS_PROXY";
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         // Test the Auditing library in webservice mode
         System.setProperty("CAF_AUDIT_MODE", "webservice");
     }
 
-    @Test(expected = AuditConfigurationException.class)
+    @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void testWebServiceClientBadWebserviceEndpoint() throws Exception {
 
         String invalidWebServiceEndpoint = "thisIsNotAValidEndpointUrl";
         System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", invalidWebServiceEndpoint);
-        AuditConnectionFactory.createConnection();
+        Assertions.assertThrows(AuditConfigurationException.class, AuditConnectionFactory::createConnection);
     }
 
-    @Test(expected = UnknownHostException.class)
+    @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void testWebServiceClientUnknownHttpsProxy() throws Exception {
-        withEnvironmentVariable(NO_PROXY, "")
+        Assertions.assertThrows(UnknownHostException.class, () -> withEnvironmentVariable(NO_PROXY, "")
             .and(HTTP_PROXY, "")
             .and(HTTPS_PROXY, "https://a-https-proxy:8081")
             .execute(() -> {
@@ -58,30 +61,32 @@ public class WebServiceClientAuditConnectionTest {
 
                 //  Send audit event message to Elasticsearch.
                 auditEventBuilder.send();
-            });
+            }));
     }
 
-    @Test(expected = AuditConfigurationException.class)
+    @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void testWebServiceClientMalformedHttpsProxy() throws Exception {
-        withEnvironmentVariable(NO_PROXY, "")
+        Assertions.assertThrows(AuditConfigurationException.class, () -> withEnvironmentVariable(NO_PROXY, "")
             .and(HTTP_PROXY, "")
             .and(HTTPS_PROXY, "notAValidUrl")
             .execute(() -> {
                 System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", TEST_WEB_SERVICE_HTTPS_ENDPOINT);
                 AuditConnectionFactory.createConnection();
-            });
+            }));
     }
 
-    @Test(expected = AuditConfigurationException.class)
+    @Test
+    @SuppressWarnings("ThrowableResultIgnored")
     public void testWebServiceClientMalformedHttpProxy() throws Exception {
         String testWebServiceHttpEndpoint = "http://testWsHost:8080/caf-audit-service/v1";
-        withEnvironmentVariable(NO_PROXY, "")
+        Assertions.assertThrows(AuditConfigurationException.class, () -> withEnvironmentVariable(NO_PROXY, "")
             .and(HTTP_PROXY, "notAValidUrl")
             .and(HTTPS_PROXY, "")
             .execute(() -> {
                 System.setProperty("CAF_AUDIT_WEBSERVICE_ENDPOINT_URL", testWebServiceHttpEndpoint);
                 AuditConnectionFactory.createConnection();
-            });
+            }));
 
     }
 }

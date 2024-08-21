@@ -6,6 +6,6 @@ ${version-number}
 #### New Features
 - US929026: Updated to run on Java 21.
 - US914108: Version Currency: JUnit 5 migration
-- US952036: Image is now built on OracleLinux.
+- US952036: Image is now built on Oracle Linux.
 
 #### Known Issues

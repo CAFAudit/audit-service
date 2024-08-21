@@ -1,6 +1,6 @@
 # Audit Web Service Container
 
-This is a docker container for the [CAF Audit Web Service](https://github.com/CAFAudit/audit-service/tree/develop/caf-audit-service). It consists of an OracleLinux web server that connects to Elasticsearch. It uses the [OracleLinux JRE21 base image](https://github.com/CAFapi/oraclelinux-base-images). [Audit Service Deploy](https://github.com/CAFAudit/audit-service-deploy) can be used to deploy this container on Docker.
+This is a docker container for the [CAF Audit Web Service](https://github.com/CAFAudit/audit-service/tree/develop/caf-audit-service). It consists of an Oracle Linux web server that connects to Elasticsearch. It uses the [Oracle Linux JRE21 base image](https://github.com/CAFapi/oraclelinux-base-images). [Audit Service Deploy](https://github.com/CAFAudit/audit-service-deploy) can be used to deploy this container on Docker.
 
 ### Configuration
 

@@ -217,7 +217,7 @@
                             <alias>audit-service</alias>
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
-                                <from>${projectDockerRegistry}/cafapi/opensuse-jre21</from>
+                                <from>${projectDockerRegistry}/cafapi/oraclelinux-jre21</from>
                                 <cmd>
                                     <exec>
                                         <args>/maven/service.sh</args>

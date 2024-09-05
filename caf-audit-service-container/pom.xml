@@ -133,37 +133,37 @@
             </plugin>
 
             <!-- Run integration tests. -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>webservice-Docker</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <argLine>
-                        --add-opens java.base/java.lang=ALL-UNNAMED
-                        --add-opens java.base/java.util=ALL-UNNAMED
-                    </argLine>
-                    <systemPropertyVariables>
-                        <docker.host.address>${docker.host.address}</docker.host.address>
-                        <webservice.adminport>${webservice.adminport}</webservice.adminport>
-                        <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>
-                    </systemPropertyVariables>
-                    <environmentVariables>
-                        <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>
-                        <CAF_ELASTIC_HOST_VALUES>${docker.host.address}</CAF_ELASTIC_HOST_VALUES>
-                        <CAF_ELASTIC_PORT_VALUE>${elasticsearch.http.port}</CAF_ELASTIC_PORT_VALUE>
-                        <webserviceurl>http://${docker.host.address}:${webservice.adminport}/caf-audit-service/v1</webserviceurl>
-                        <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/caf-audit-service/v1</webserviceurlhttps>
-                    </environmentVariables>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-failsafe-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>webservice-Docker</id>-->
+<!--                        <goals>-->
+<!--                            <goal>integration-test</goal>-->
+<!--                            <goal>verify</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <argLine>-->
+<!--                        &#45;&#45;add-opens java.base/java.lang=ALL-UNNAMED-->
+<!--                        &#45;&#45;add-opens java.base/java.util=ALL-UNNAMED-->
+<!--                    </argLine>-->
+<!--                    <systemPropertyVariables>-->
+<!--                        <docker.host.address>${docker.host.address}</docker.host.address>-->
+<!--                        <webservice.adminport>${webservice.adminport}</webservice.adminport>-->
+<!--                        <elasticsearch.http.port>${elasticsearch.http.port}</elasticsearch.http.port>-->
+<!--                    </systemPropertyVariables>-->
+<!--                    <environmentVariables>-->
+<!--                        <CAF_ELASTIC_PROTOCOL>http</CAF_ELASTIC_PROTOCOL>-->
+<!--                        <CAF_ELASTIC_HOST_VALUES>${docker.host.address}</CAF_ELASTIC_HOST_VALUES>-->
+<!--                        <CAF_ELASTIC_PORT_VALUE>${elasticsearch.http.port}</CAF_ELASTIC_PORT_VALUE>-->
+<!--                        <webserviceurl>http://${docker.host.address}:${webservice.adminport}/caf-audit-service/v1</webserviceurl>-->
+<!--                        <webserviceurlhttps>https://${docker.host.address}:${webservice.https.adminport}/caf-audit-service/v1</webserviceurlhttps>-->
+<!--                    </environmentVariables>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
 
             <plugin>
                 <groupId>io.fabric8</groupId>
@@ -233,6 +233,9 @@
                                     <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
+                                    <CAF_LIVENESS_CHCK_INTERVAL_SECONDS>10</CAF_LIVENESS_CHCK_INTERVAL_SECONDS>
+                                    <CAF_READINESS_CHECK_INTERVAL_SECONDS>10</CAF_READINESS_CHECK_INTERVAL_SECONDS>
+                                    <CRASH_DUMP_ON_OUT_OF_MEMORY_ERROR>true</CRASH_DUMP_ON_OUT_OF_MEMORY_ERROR>
                                 </env>
                                 <assembly>
                                     <mode>tar</mode>

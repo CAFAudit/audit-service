@@ -26,14 +26,53 @@ import io.dropwizard.core.Application;
 import io.dropwizard.core.setup.Bootstrap;
 import io.dropwizard.core.setup.Environment;
 import io.dropwizard.logging.common.LoggingUtil;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public final class CafAuditApplication extends Application<CafAuditConfiguration>
 {
+    private static final Logger LOG = LoggerFactory.getLogger(CafAuditApplication.class);
     private final boolean useInternalConfig;
 
     private CafAuditApplication(final boolean useInternalConfig)
     {
         this.useInternalConfig = useInternalConfig;
+    }
+
+    private static AtomicBoolean oomGeneratorInited = new AtomicBoolean(false);
+
+    private static final List<byte[]> list = new ArrayList<>();
+
+    public static class OOMGenerator implements Runnable {
+        @Override
+        public void run() {
+
+            while(true) {
+                // Allocate 1MB of memory and add it to the list
+                byte[] bytes = new byte[1024 * 1024];
+                list.add(bytes);
+
+                System.out.println("Allocated " + list.size() + "MB");
+            }
+        }
+    }
+
+    private static void initOOMGenerator()
+    {
+        if (!oomGeneratorInited.get()) {
+            LOG.info("CAOIMHE --- Will execute OOM in 3 minutes");
+            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+            executor.schedule(new OOMGenerator(), 3, TimeUnit.MINUTES);
+            oomGeneratorInited.set(true);
+        }
     }
 
     public static void main(final String[] args) throws Exception
@@ -74,6 +113,7 @@ public final class CafAuditApplication extends Application<CafAuditConfiguration
         final Environment environment
     ) throws Exception
     {
+        initOOMGenerator();
         environment.healthChecks().register("service", new CafAuditHealthCheck());
         CafAuditServiceModule.registerProviders(environment.jersey()::register);
     }

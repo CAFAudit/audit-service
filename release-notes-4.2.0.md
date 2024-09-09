@@ -7,5 +7,6 @@ ${version-number}
 - US929026: Updated to run on Java 21.
 - US914108: Version Currency: JUnit 5 migration
 - US952036: Image is now built on Oracle Linux.
+- I948127: JVM arguments introduced for diagnosing OutOfMemoryError.
 
 #### Known Issues

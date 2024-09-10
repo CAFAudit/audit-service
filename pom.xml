@@ -183,11 +183,6 @@
                 <version>2.17.2</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.woodstox</groupId>
-                <artifactId>woodstox-core</artifactId>
-                <version>7.0.0</version>
-            </dependency>
-            <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>3.1.8</version>
@@ -571,7 +566,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.17.0</version>
+                <version>3.14.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -637,16 +632,6 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
-                <artifactId>maven-api-meta</artifactId>
-                <version>4.0.0-alpha-9</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-api-xml</artifactId>
-                <version>4.0.0-alpha-9</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
                 <artifactId>maven-artifact</artifactId>
                 <version>3.9.9</version>
             </dependency>
@@ -694,11 +679,6 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-settings-builder</artifactId>
                 <version>3.9.9</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-xml-impl</artifactId>
-                <version>4.0.0-alpha-9</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
@@ -783,12 +763,7 @@
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-xml</artifactId>
-                <version>4.0.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.woodstox</groupId>
-                <artifactId>stax2-api</artifactId>
-                <version>4.2.2</version>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse</groupId>
@@ -974,7 +949,7 @@
             <dependency>
                 <groupId>org.jboss.logging</groupId>
                 <artifactId>jboss-logging</artifactId>
-                <version>3.6.0.Final</version>
+                <version>3.6.1.Final</version>
             </dependency>
             <dependency>
                 <groupId>org.jdom</groupId>

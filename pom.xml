@@ -1153,9 +1153,9 @@
                             <digest>sha256:57531bc26fcdd52b74c343d772cf49b3b5b819b76d9b58935e47684742f671c4</digest>
                         </image>
                         <image>
-                            <targetRepository>cafapi/oraclelinux-jre21</targetRepository>
-                            <repository>${dockerHubPublic}/cafapi/prereleases</repository>
-                            <tag>oraclelinux-jre21-1.0.0-SNAPSHOT</tag>
+                            <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
+                            <tag>1.0.0</tag>
+                            <digest>sha256:23ca581d948e68681b95b2390c3e7a55e6e043046a540983912887f1ece43be4</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

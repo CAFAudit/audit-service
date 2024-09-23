@@ -2,7 +2,7 @@ title: Audit
 email: caf-audit@hpe.com
 
 description: CAF Auditing Documentation
-baseurl: "/audit-service"
+baseurl: ""
 
 # Build settings
 exclude: ['node_modules']

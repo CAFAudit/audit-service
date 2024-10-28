@@ -18,6 +18,7 @@ package com.hpe.caf.auditing.elastic;
 import com.hpe.caf.auditing.AuditChannel;
 import com.hpe.caf.auditing.AuditConnection;
 import com.hpe.caf.auditing.exception.AuditConfigurationException;
+import com.hpe.caf.secret.SecretUtil;
 
 import java.io.IOException;
 import org.opensearch.client.opensearch.OpenSearchClient;
@@ -47,10 +48,15 @@ public class ElasticAuditConnection implements AuditConnection {
             final String username =
                 System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_USERNAME,
                                    System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_USERNAME));
-            final String password =
-                System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PASSWORD,
-                                   System.getenv(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PASSWORD));
-            final StringBuilder hostAndPortBuilder = new StringBuilder();
+        final String password;
+        try {
+            password = System.getProperty(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PASSWORD,
+                    SecretUtil.getSecret(ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PASSWORD));
+        } catch (final IOException e) {
+            throw new AuditConfigurationException(
+                    String.format("Unable to get secret for '%s'", ElasticAuditConstants.ConfigEnvVar.CAF_ELASTIC_PASSWORD), e);
+        }
+        final StringBuilder hostAndPortBuilder = new StringBuilder();
             
             if(hostAndPorts == null){
                 final String[] hostArray = hostValues.split(",");

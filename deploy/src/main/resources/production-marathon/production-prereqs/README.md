@@ -24,6 +24,8 @@ The `environment-testing.sh` file supports configurable property settings necess
 
 - `CAF_ELASTIC_PASSWORD`: Elasticsearch password. Defaults to null (anonymous access).
 
+- `CAF_ELASTIC_PASSWORD_FILE`: File containing elasticsearch password. Defaults to null (anonymous access).
+
 Please note that Elasticsearch cannot be deployed unless all of the above properties are configured in the marathon environment file.
 
 ## Elasticsearch Deployment

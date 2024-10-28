@@ -220,12 +220,22 @@
             <dependency>
                 <groupId>com.github.cafapi.ssl</groupId>
                 <artifactId>caf-ssl-dropwizard</artifactId>
-                <version>1.0.0-13</version>
+                <version>1.1.0-56</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.util</groupId>
                 <artifactId>util-process-identifier</artifactId>
-                <version>3.1.0-596</version>
+                <version>3.2.0-684</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafapi.util</groupId>
+                <artifactId>util-secret</artifactId>
+                <version>3.2.0-684</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.cafapi.util.dropwizard</groupId>
+                <artifactId>caf-substitutor-dropwizard</artifactId>
+                <version>1.0.0-7</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
@@ -1154,13 +1164,13 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/opensuse-jre21</repository>
-                            <tag>4.1.3</tag>
-                            <digest>sha256:4808d83ed7f04da0f5e136bd62cd727d6c2e9c5135404cf6b02be9e6ac79cc37</digest>
+                            <tag>4.2.0</tag>
+                            <digest>sha256:1aa674b535973fe04c5a7f35d7da0d15f240de24fbed32f76b8496bec1b2ef9a</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
-                            <tag>1.0.2</tag>
-                            <digest>sha256:be49c9235ee161d3a72aaa87cc860de95d34b81d11bac8656d8ed41cb2d09da6</digest>
+                            <tag>1.1.0</tag>
+                            <digest>sha256:ed8093edcab86b8d35e3b6db21f7f136d36068cddd67a9ce728661b6266f3eb4</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

@@ -26,6 +26,8 @@ The `environment.sh` file supports configurable property settings necessary for 
 
 - `CAF_ELASTIC_PASSWORD`: Elasticsearch password. Defaults to null (anonymous access).
 
+- `CAF_ELASTIC_PASSWORD_FILE`: File containing elasticsearch password. Defaults to null (anonymous access).
+
 Please note that the CAF Audit Web Service cannot be deployed unless all of the above properties are configured in the marathon environment file.
 
 ### Additional Marathon Configuration

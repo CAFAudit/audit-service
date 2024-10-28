@@ -264,6 +264,7 @@ The `AuditConnection` object, for direct to Elasticseach, can be constructed by 
         - `CAF_ELASTIC_PORT_VALUE` the REST port of the ElasticSearch server listens on. e.g. 9200.
         - `CAF_ELASTIC_USERNAME`: Elasticsearch username. Defaults to null (anonymous access).
         - `CAF_ELASTIC_PASSWORD`: Elasticsearch password. Defaults to null (anonymous access).
+        - `CAF_ELASTIC_PASSWORD_FILE`: File containing Elasticsearch password. Defaults to null (anonymous access).
     Or the following environment variable when using with the webservice audit implementation:  
         - `CAF_AUDIT_WEBSERVICE_ENDPOINT_URL` refers to the URL of the CAF audit web service.  
 

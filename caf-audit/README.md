@@ -158,6 +158,8 @@ Configuration required to be supplied via environment variable:
 
 - `CAF_ELASTIC_PASSWORD`: Elasticsearch password. Defaults to null (anonymous access).
 
+- `CAF_ELASTIC_PASSWORD_FILE`: File containing Elasticsearch password. Defaults to null (anonymous access).
+
 
 #### Audit Web Service Client Configuration 
 Configuration required to be supplied via environment variable:   

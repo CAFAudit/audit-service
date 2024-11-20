@@ -33,12 +33,12 @@
             <artifactId>caf-audit</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.util</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>util-process-identifier</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.cafapi.util</groupId>
+            <groupId>com.github.cafapi.common</groupId>
             <artifactId>util-secret</artifactId>
         </dependency>
         <dependency>
@@ -196,7 +196,7 @@
                 </executions>
                 <configuration>
                     <auditXMLConfig>./test-case/events.xml</auditXMLConfig>
-                    <packageName>com.hpe.caf.services.audit.api</packageName>
+                    <packageName>com.github.cafaudit.service.api</packageName>
                     <generateAsTestResource>true</generateAsTestResource>
                 </configuration>
             </plugin>

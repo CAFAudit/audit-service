@@ -17,10 +17,10 @@
 
 package com.hpe.caf.auditing.plugins.unittest;
 
-import com.hpe.caf.auditing.AuditChannel;
-import com.hpe.caf.auditing.AuditEventBuilder;
-import com.hpe.caf.auditing.exception.AuditingException;
-import com.hpe.caf.auditing.AuditIndexingHint;
+import com.github.cafaudit.service.core.AuditChannel;
+import com.github.cafaudit.service.core.AuditEventBuilder;
+import com.github.cafaudit.service.core.exception.AuditingException;
+import com.github.cafaudit.service.core.AuditIndexingHint;
 
 import java.io.IOException;
 import java.util.Date;

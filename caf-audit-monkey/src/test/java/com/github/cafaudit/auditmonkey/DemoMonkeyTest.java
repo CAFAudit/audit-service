@@ -31,8 +31,8 @@ import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hpe.caf.auditing.AuditChannel;
-import com.hpe.caf.auditing.AuditEventBuilder;
+import com.github.cafaudit.service.core.AuditChannel;
+import com.github.cafaudit.service.core.AuditEventBuilder;
 
 public class DemoMonkeyTest
 {

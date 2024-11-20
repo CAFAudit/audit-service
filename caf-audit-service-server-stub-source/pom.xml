@@ -65,11 +65,11 @@
                         </goals>
                         <configuration>
                             <!-- https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-maven-plugin#general-configuration-parameters -->
-                            <inputSpec>/com/hpe/caf/services/audit/contract/swagger.yaml</inputSpec>
+                            <inputSpec>/com/github/cafaudit/service/contract/swagger.yaml</inputSpec>
                             <generatorName>jaxrs-spec</generatorName>
                             <output>${project.build.directory}/openapi-codegen</output>
-                            <apiPackage>com.hpe.caf.services.audit.server.api</apiPackage>
-                            <modelPackage>com.hpe.caf.services.audit.server.model</modelPackage>
+                            <apiPackage>com.github.cafaudit.service.server.api</apiPackage>
+                            <modelPackage>com.github.cafaudit.service.server.model</modelPackage>
                             <configOptions>
                                 <!-- https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/jaxrs-spec.md#config-options -->
                                 <interfaceOnly>true</interfaceOnly>

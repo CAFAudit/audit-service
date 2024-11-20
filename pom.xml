@@ -223,14 +223,14 @@
                 <version>1.1.0-56</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.util</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>util-process-identifier</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
-                <groupId>com.github.cafapi.util</groupId>
+                <groupId>com.github.cafapi.common</groupId>
                 <artifactId>util-secret</artifactId>
-                <version>3.2.0-684</version>
+                <version>4.0.1-694</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.util.dropwizard</groupId>

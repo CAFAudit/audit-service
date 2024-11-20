@@ -22,8 +22,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.hpe.caf.auditing.AuditChannel;
-import com.hpe.caf.auditing.AuditEventBuilder;
+import com.github.cafaudit.service.core.AuditChannel;
+import com.github.cafaudit.service.core.AuditEventBuilder;
 
 public class RandomMonkeyTest
 {

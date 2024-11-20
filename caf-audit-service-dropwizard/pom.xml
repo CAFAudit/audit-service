@@ -141,7 +141,7 @@
                                 <argument>${debug.argument}</argument>
                                 <argument>-classpath</argument>
                                 <classpath />
-                                <argument>com.hpe.caf.services.audit.server.dropwizard.CafAuditApplication</argument>
+                                <argument>com.github.cafaudit.service.dropwizard.CafAuditApplication</argument>
                             </arguments>
                         </configuration>
                     </execution>

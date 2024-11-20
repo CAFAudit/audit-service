@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cafaudit.AuditLog;
-import com.hpe.caf.auditing.AuditChannel;
+import com.github.cafaudit.service.core.AuditChannel;
 
 public class DemoMonkey implements Monkey, Runnable
 {

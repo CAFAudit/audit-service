@@ -21,7 +21,7 @@ import java.util.concurrent.BlockingQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hpe.caf.auditing.AuditChannel;
+import com.github.cafaudit.service.core.AuditChannel;
 
 public class MonkeyFactory
 {

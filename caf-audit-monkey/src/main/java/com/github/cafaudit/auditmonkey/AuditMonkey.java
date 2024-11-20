@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.cafaudit.AuditLog;
-import com.hpe.caf.auditing.AuditChannel;
-import com.hpe.caf.auditing.AuditConnection;
-import com.hpe.caf.auditing.AuditConnectionFactory;
+import com.github.cafaudit.service.core.AuditChannel;
+import com.github.cafaudit.service.core.AuditConnection;
+import com.github.cafaudit.service.core.AuditConnectionFactory;
 
 /**
  * Audit Monkey.

@@ -21,7 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.hpe.caf.auditing.AuditChannel;
+import com.github.cafaudit.service.core.AuditChannel;
 
 public class AuditMonkeyTest
 {

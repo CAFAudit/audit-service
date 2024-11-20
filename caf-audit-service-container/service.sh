@@ -53,4 +53,4 @@ cd /maven
 exec java \
     ${CAF_AUDIT_SERVICE_JAVA_OPTS} \
     -classpath *:classpath \
-    com.hpe.caf.services.audit.server.dropwizard.CafAuditApplication
+    com.github.cafaudit.service.dropwizard.CafAuditApplication

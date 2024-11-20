@@ -15,7 +15,7 @@
  */
 package com.github.cafaudit.auditmonkey;
 
-import com.hpe.caf.auditing.AuditChannel;
+import com.github.cafaudit.service.core.AuditChannel;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;

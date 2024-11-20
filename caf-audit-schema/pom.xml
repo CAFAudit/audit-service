@@ -63,7 +63,7 @@
                             <xsdOptions>
                                 <xsdOption>
                                     <xsd>src/main/resources/schema/AuditedApplication.xsd</xsd>
-                                    <packagename>com.hpe.caf.auditing.schema</packagename>
+                                    <packagename>com.github.cafaudit.service.schema</packagename>
                                 </xsdOption>
                             </xsdOptions>
                         </configuration>

@@ -1162,13 +1162,13 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/opensuse-jre21</repository>
-                            <tag>4.2.1</tag>
-                            <digest>sha256:6606e750bdcdf2d638870b4d1077c8d16a8a56e538636d654865bfe49b778d96</digest>
+                            <tag>4.2.2</tag>
+                            <digest>sha256:5ca5ca6c3d3360ff7d12e2d45320ba83d8dae3587e85ee367ee93834c14ddd05</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
-                            <tag>1.1.1</tag>
-                            <digest>sha256:0b0656c185dd3ed99bc2d30e14bdca22e489ecf2860da03352be77a03e780409</digest>
+                            <tag>1.1.2</tag>
+                            <digest>sha256:1665922e758fe9a1d27aec29ac633663cb76ccb4ba504face735acd926766ed6</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

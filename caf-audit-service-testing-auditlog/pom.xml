@@ -61,7 +61,7 @@
                 </executions>
                 <configuration>
                     <auditXMLConfig>${auditXMLConfigFile}</auditXMLConfig>
-                    <packageName>com.hpe.caf.services.audit.api</packageName>
+                    <packageName>com.github.cafaudit.services.api</packageName>
                 </configuration>
             </plugin>
 

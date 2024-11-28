@@ -32,7 +32,7 @@ Here is a sample Maven project file that generates a client-side auditing librar
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	    <modelVersion>4.0.0</modelVersion>
 	
-	    <groupId>com.hpe.sampleapp</groupId>
+	    <groupId>com.github.sampleapp</groupId>
 	    <artifactId>sampleapp-audit</artifactId>
 	    <version>1.0.0-SNAPSHOT</version>
 	
@@ -77,7 +77,7 @@ Here is a sample Maven project file that generates a client-side auditing librar
 
 Like any other Maven project, the client-side auditing library must be assigned unique coordinates that can by used to reference it.
 
-	<groupId>com.hpe.sampleapp</groupId>
+	<groupId>com.github.sampleapp</groupId>
 	<artifactId>sampleapp-audit</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
@@ -120,7 +120,9 @@ The `xmltojava` goal of the [code generation plugin](../caf-audit-maven-plugin) 
 	    </plugins>
 	</build>
 
-In this example the Audit Event Definition file is in the `src/main/xml/` folder, though of course it could be read from any folder. The name of the package to use is being built up by appending `.auditing` to the project's group identifier (i.e. `com.hpe.sampleapp` in this example).
+In this example the Audit Event Definition file is in the `src/main/xml/` folder, though of course it could be read from any folder. 
+The name of the package to use is being built up by appending `.auditing` to the project's group identifier (i.e. `com.github.sampleapp` 
+in this example).
 
 ### String Validation
 
@@ -133,7 +135,7 @@ The standard auditing library, `caf-audit`, performs string validation on audit 
 A generated client-side library should be referenced in the normal way in the application's POM file. You shouldn't need to manually add a dependency on `caf-audit` as it will be a transitive dependency of the generated library.
 
 	<dependency>
-	    <groupId>com.hpe.sampleapp</groupId>
+	    <groupId>com.github.sampleapp</groupId>
 	    <artifactId>sampleapp-audit</artifactId>
 	    <version>1.0.0-SNAPSHOT</version>
 	</dependency>

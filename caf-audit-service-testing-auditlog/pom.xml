@@ -27,7 +27,7 @@
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
-        <version>4.3.0-SNAPSHOT</version>
+        <version>5.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -61,7 +61,7 @@
                 </executions>
                 <configuration>
                     <auditXMLConfig>${auditXMLConfigFile}</auditXMLConfig>
-                    <packageName>com.hpe.caf.services.audit.api</packageName>
+                    <packageName>com.github.cafaudit.services.api</packageName>
                 </configuration>
             </plugin>
 

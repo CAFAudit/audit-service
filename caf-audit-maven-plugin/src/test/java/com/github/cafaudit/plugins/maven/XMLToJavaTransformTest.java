@@ -31,7 +31,7 @@ import java.nio.file.Files;
 
 public class XMLToJavaTransformTest {
 
-    private static final String PACKAGE_NAME = "com.hpe.caf.auditing.plugins.unittest";
+    private static final String PACKAGE_NAME = "com.github.cafaudit.plugins.maven.unittest";
     private static final String OUTPUT_PATH = "generated-sources\\src\\main\\java\\com\\github\\cafaudit\\plugins\\maven\\unittest";
     private static final String OUTPUT_FILENAME = "AuditLog.java";
     private static final String XSD_FILEPATH = "schema/AuditedApplication.xsd";

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.hpe.caf.auditing.plugins.unittest;
+package com.github.cafaudit.plugins.maven.unittest;
 
 import com.github.cafaudit.service.core.AuditChannel;
 import com.github.cafaudit.service.core.AuditEventBuilder;

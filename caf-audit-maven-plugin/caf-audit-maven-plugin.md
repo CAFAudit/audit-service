@@ -74,7 +74,7 @@ reference the XML audit event file as shown below:
 	</executions>
 	<configuration>
 		<auditXMLConfig>.\sample-test-scripts\xml\AuditEventsConfig.xml</auditXMLConfig>
-		<packageName>com.hpe.productx.auditing</packageName>
+		<packageName>com.github.productx.auditing</packageName>
 	</configuration>
 </plugin >
 ```

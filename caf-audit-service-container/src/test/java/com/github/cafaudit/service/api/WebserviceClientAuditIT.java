@@ -26,7 +26,7 @@ import com.github.cafaudit.bindings.elastic.OpenSearchTransportFactory;
 import com.github.cafaudit.bindings.elastic.ElasticAuditRetryOperation;
 import com.github.cafaudit.service.core.exception.AuditConfigurationException;
 import com.github.cafaudit.service.core.exception.AuditingException;
-import com.hpe.caf.services.audit.api.AuditLog;
+import com.github.cafaudit.services.api.AuditLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;

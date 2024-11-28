@@ -128,7 +128,7 @@ The following sample Maven project file generates a client-side auditing library
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	    <modelVersion>4.0.0</modelVersion>
 	
-	    <groupId>com.hpe.sampleapp</groupId>
+	    <groupId>com.github.sampleapp</groupId>
 	    <artifactId>sampleapp-audit</artifactId>
 	    <version>1.0.0-SNAPSHOT</version>
 	
@@ -173,7 +173,7 @@ The following sample Maven project file generates a client-side auditing library
 
 Like any other Maven project, the client-side auditing library must be assigned a unique groupId, artifactId, and version, which are used to reference it.
 
-	<groupId>com.hpe.sampleapp</groupId>
+	<groupId>com.github.sampleapp</groupId>
 	<artifactId>sampleapp-audit</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
@@ -233,7 +233,7 @@ The `xmltojava` goal of the code generation plugin is used to generate the Java 
 	    </plugins>
 	</build>
 
-In this example, the audit event definition file is in the `src/main/xml/` folder, though, it could be read from any folder. The name of the package to use is built up by appending ".auditing" to the project's group identifier (that is, "com.hpe.sampleapp" in this example).
+In this example, the audit event definition file is in the `src/main/xml/` folder, though, it could be read from any folder. The name of the package to use is built up by appending ".auditing" to the project's group identifier (that is, "com.github.sampleapp" in this example).
 
 ## Using the Client-side Auditing Library
 
@@ -244,7 +244,7 @@ Once you have your auditing library (generated or `caf-audit`), you use it to se
 A generated client-side library should be referenced in the normal way in the application's POM file. You shouldn't need to manually add a dependency on `caf-audit` as it will be a transitive dependency of the generated library.
 
 	<dependency>
-	    <groupId>com.hpe.sampleapp</groupId>
+	    <groupId>com.github.sampleapp</groupId>
 	    <artifactId>sampleapp-audit</artifactId>
 	    <version>1.0.0-SNAPSHOT</version>
 	</dependency>
@@ -264,6 +264,7 @@ The `AuditConnection` object, for direct to Elasticseach, can be constructed by 
         - `CAF_ELASTIC_PORT_VALUE` the REST port of the ElasticSearch server listens on. e.g. 9200.
         - `CAF_ELASTIC_USERNAME`: Elasticsearch username. Defaults to null (anonymous access).
         - `CAF_ELASTIC_PASSWORD`: Elasticsearch password. Defaults to null (anonymous access).
+        - `CAF_ELASTIC_PASSWORD_FILE`: File containing Elasticsearch password. Defaults to null (anonymous access).
     Or the following environment variable when using with the webservice audit implementation:  
         - `CAF_AUDIT_WEBSERVICE_ENDPOINT_URL` refers to the URL of the CAF audit web service.  
 

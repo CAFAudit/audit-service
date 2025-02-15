@@ -23,7 +23,7 @@
 
     <groupId>com.github.cafaudit</groupId>
     <artifactId>audit-service-aggregator</artifactId>
-    <version>5.0.1-SNAPSHOT</version>
+    <version>5.0.1-1274</version>
     <packaging>pom</packaging>
 
     <name>Auditing</name>
@@ -245,57 +245,57 @@
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-binding-elasticsearch</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-binding-webservice</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-monkey</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-monkey-auditlog</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service-contract</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service-dropwizard</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service-internal-testing-client</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service-server-stub-source</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafaudit</groupId>
                 <artifactId>caf-audit-service-testing-auditlog</artifactId>
-                <version>5.0.1-SNAPSHOT</version>
+                <version>5.0.1-1274</version>
             </dependency>
             <dependency>
                 <groupId>com.github.stefanbirkner</groupId>
@@ -1100,7 +1100,7 @@
                 <plugin>
                     <groupId>com.github.cafaudit</groupId>
                     <artifactId>caf-audit-maven-plugin</artifactId>
-                    <version>5.0.1-SNAPSHOT</version>
+                    <version>5.0.1-1274</version>
                 </plugin>
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>

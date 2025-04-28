@@ -1172,8 +1172,8 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
-                            <tag>1.1.11</tag>
-                            <digest>sha256:dc3121ea4d101bdf87c5336079fbe5291ec741c50bbf36645b60546fd17d46fd</digest>
+                            <tag>1.1.12</tag>
+                            <digest>sha256:8eb5136a2ab064831c855eb4ebaf10e2c09f075aa8c2003b8644a9dbbcbe3ac5</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

@@ -24,7 +24,7 @@
     <parent>
         <groupId>com.github.cafaudit</groupId>
         <artifactId>audit-service-aggregator</artifactId>
-        <version>5.0.2-SNAPSHOT</version>
+        <version>5.0.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>caf-audit-service-internal-testing-client</artifactId>
@@ -81,7 +81,7 @@
                     <dependency>
                         <groupId>com.github.cafaudit</groupId>
                         <artifactId>caf-audit-service-contract</artifactId>
-                        <version>5.0.2-SNAPSHOT</version>
+                        <version>5.0.3-SNAPSHOT</version>
                     </dependency>
                 </dependencies>
                 <executions>

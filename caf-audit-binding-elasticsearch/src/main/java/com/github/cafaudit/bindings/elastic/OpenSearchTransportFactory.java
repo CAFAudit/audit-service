@@ -32,8 +32,6 @@ import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.rest_client.RestClientTransport;
 
-import static org.apache.http.auth.AuthScope.ANY_HOST;
-
 /**
  * A factory for Open Search TransportClients.
  */

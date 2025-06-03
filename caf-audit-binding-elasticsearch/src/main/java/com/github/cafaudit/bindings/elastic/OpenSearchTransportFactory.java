@@ -16,7 +16,10 @@
 package com.github.cafaudit.bindings.elastic;
 
 import com.github.cafaudit.service.core.exception.AuditConfigurationException;
-import org.apache.http.HttpHost;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.core5.http.HttpHost;
 import org.opensearch.client.RestClient;
 import org.opensearch.client.RestClientBuilder;
 import org.slf4j.Logger;
@@ -25,10 +28,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.rest_client.RestClientTransport;
@@ -81,7 +80,7 @@ public class OpenSearchTransportFactory {
                         throw new URISyntaxException(uri.toString(), ES_PORT_NOT_PROVIDED);
                     }
 
-                    httpHostList.add(new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme()));
+                    httpHostList.add(new HttpHost(uri.getScheme(), uri.getHost(), uri.getPort()));
 
                     LOG.debug("Elasticsearch initialization - added host: " + uri.toString());
 
@@ -90,13 +89,12 @@ public class OpenSearchTransportFactory {
                     throw new AuditConfigurationException(e.getMessage(), e);
                 }
             }
-
             final RestClientBuilder restClientBuilder = RestClient.builder(httpHostList.toArray(new HttpHost[0]));
 
             if (credentialsSupplied(elasticUsername, elasticPassword)) {
-                final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-                credentialsProvider.setCredentials(AuthScope.ANY,
-                                                   new UsernamePasswordCredentials(elasticUsername, elasticPassword));
+                final var credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(new AuthScope(null, -1),
+                                                   new UsernamePasswordCredentials(elasticUsername, elasticPassword.toCharArray()));
 
                 restClientBuilder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                     .setDefaultCredentialsProvider(credentialsProvider));

@@ -370,72 +370,72 @@
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-assets</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-configuration</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-core</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-health</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-jackson</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-jersey</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-jetty</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-lifecycle</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-logging</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-metrics</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-request-logging</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-servlets</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-util</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-validation</artifactId>
-                <version>5.0.0-rc.2</version>
+                <version>5.0.0-rc.3</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.logback</groupId>
@@ -445,57 +445,57 @@
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-annotation</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-core</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-healthchecks</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-jakarta-servlets</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-jersey3</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-jetty12</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-jetty12-ee10</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-jmx</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-json</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-jvm</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.dropwizard.metrics</groupId>
                 <artifactId>metrics-logback</artifactId>
-                <version>4.2.30</version>
+                <version>4.2.32</version>
             </dependency>
             <dependency>
                 <groupId>io.projectreactor</groupId>
@@ -593,25 +593,9 @@
                 <version>1.13.1</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>4.5.14</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpcore-nio</artifactId>
-                <version>4.4.16</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
-                <version>5.4.4</version>
+                <version>5.5</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents.core5</groupId>
@@ -696,27 +680,27 @@
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-api</artifactId>
-                <version>2.0.8</version>
+                <version>2.0.9</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-impl</artifactId>
-                <version>2.0.8</version>
+                <version>2.0.9</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-named-locks</artifactId>
-                <version>2.0.8</version>
+                <version>2.0.9</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-spi</artifactId>
-                <version>2.0.8</version>
+                <version>2.0.9</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-util</artifactId>
-                <version>2.0.8</version>
+                <version>2.0.9</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.shared</groupId>
@@ -846,7 +830,7 @@
             <dependency>
                 <groupId>org.glassfish.expressly</groupId>
                 <artifactId>expressly</artifactId>
-                <version>5.0.0</version>
+                <version>6.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
@@ -976,12 +960,12 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>5.12.2</version>
+                <version>5.13.0</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.platform</groupId>
                 <artifactId>junit-platform-commons</artifactId>
-                <version>1.12.2</version>
+                <version>1.13.0</version>
             </dependency>
             <dependency>
                 <groupId>org.jvnet.mimepull</groupId>
@@ -991,7 +975,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>5.17.0</version>
+                <version>5.18.0</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -1176,8 +1160,8 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
-                            <tag>1.1.13</tag>
-                            <digest>sha256:c0e4c7ac7a0bc8dfd378c3d965079c6c6ed8597613521b229ef4d0c7f0d39ac1</digest>
+                            <tag>1.2.0</tag>
+                            <digest>sha256:f7ed6ed0caa4b51c04bebf83bb381c796fb319b923dd68d88f873f8c03f3f353</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

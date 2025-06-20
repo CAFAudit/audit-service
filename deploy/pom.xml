@@ -23,6 +23,7 @@
 
     <groupId>com.github.cafaudit</groupId>
     <artifactId>caf-audit-deploy</artifactId>
+    <name>caf-audit-deploy</name>
     <packaging>pom</packaging>
 
     <parent>

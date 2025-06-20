@@ -28,6 +28,7 @@
     </parent>
 
     <artifactId>caf-audit-service</artifactId>
+    <name>caf-audit-service</name>
 
     <dependencies>
         <dependency>

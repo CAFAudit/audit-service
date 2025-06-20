@@ -25,6 +25,7 @@
         <version>5.0.3-SNAPSHOT</version>
     </parent>
     <artifactId>caf-audit-binding-webservice</artifactId>
+    <name>caf-audit-binding-webservice</name>
 
     <dependencies>
         <dependency>

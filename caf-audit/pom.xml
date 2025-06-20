@@ -23,6 +23,7 @@
 
     <groupId>com.github.cafaudit</groupId>
     <artifactId>caf-audit</artifactId>
+    <name>caf-audit</name>
 
     <parent>
         <groupId>com.github.cafaudit</groupId>

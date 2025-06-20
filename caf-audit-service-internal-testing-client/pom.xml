@@ -28,6 +28,7 @@
     </parent>
 
     <artifactId>caf-audit-service-internal-testing-client</artifactId>
+    <name>caf-audit-service-internal-testing-client</name>
 
     <dependencies>
         <dependency>

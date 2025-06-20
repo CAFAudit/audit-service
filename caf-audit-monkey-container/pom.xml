@@ -21,6 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>caf-audit-monkey-container</artifactId>
+    <name>caf-audit-monkey-container</name>
     <packaging>pom</packaging>
 
     <parent>

@@ -22,6 +22,7 @@
 
     <groupId>com.github.cafaudit</groupId>
     <artifactId>caf-audit-maven-plugin</artifactId>
+    <name>caf-audit-maven-plugin</name>
     <packaging>maven-plugin</packaging>
 
     <description>

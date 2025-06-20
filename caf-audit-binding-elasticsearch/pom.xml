@@ -25,6 +25,7 @@
         <version>5.0.3-SNAPSHOT</version>
     </parent>
     <artifactId>caf-audit-binding-elasticsearch</artifactId>
+    <name>caf-audit-binding-elasticsearch</name>
 
     <dependencies>
         <!-- Compile time dependencies -->

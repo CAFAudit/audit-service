@@ -28,6 +28,7 @@
     </parent>
 
     <artifactId>caf-audit-service-server-stub-source</artifactId>
+    <name>caf-audit-service-server-stub-source</name>
 
     <dependencies>
         <dependency>

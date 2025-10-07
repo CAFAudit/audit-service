@@ -1175,15 +1175,6 @@
                     </ignoreVersions>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.basepom.maven</groupId>
-                <artifactId>duplicate-finder-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>deepcheck-dependencies</id>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 

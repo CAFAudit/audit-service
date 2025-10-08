@@ -1175,27 +1175,6 @@
                     </ignoreVersions>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.basepom.maven</groupId>
-                <artifactId>duplicate-finder-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>deepcheck-dependencies</id>
-                        <configuration>
-                            <ignoredResourcePatterns>
-                                <!--
-                                    Unfortunately this is included by both HttpClient 4 and HttpClient 5.
-                                    We're currently using opensearch-rest-client version 2.11.1 which uses HttpClient 4,
-                                    but its main branch has already been updated to HttpClient 5 so we should be able to
-                                    get rid of this exclusion when we move to the next major version.
-                                    Of source this project itself will also have to be moved to HttpClient 5.
-                                -->
-                                <ignoredResourcePattern>^mozilla/public-suffix-list.txt</ignoredResourcePattern>
-                            </ignoredResourcePatterns>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 

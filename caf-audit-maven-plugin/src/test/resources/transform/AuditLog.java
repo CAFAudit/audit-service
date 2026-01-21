@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2015-2026 Open Text.
  *
@@ -13,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.github.cafaudit.plugins.maven.unittest;
 
 import com.github.cafaudit.service.core.AuditChannel;

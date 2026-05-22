@@ -130,62 +130,62 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-guava</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jdk8</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
                 <artifactId>jackson-jakarta-rs-base</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
                 <artifactId>jackson-jakarta-rs-json-provider</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-blackbird</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jakarta-xmlbind-annotations</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-parameter-names</artifactId>
-                <version>2.21.2</version>
+                <version>2.21.3</version>
             </dependency>
             <dependency>
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
-                <version>3.2.3</version>
+                <version>3.2.4</version>
             </dependency>
             <dependency>
                 <groupId>com.github.cafapi.common</groupId>
@@ -305,12 +305,12 @@
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
-                <version>2.13.2</version>
+                <version>2.14.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.errorprone</groupId>
                 <artifactId>error_prone_annotations</artifactId>
-                <version>2.48.0</version>
+                <version>2.49.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -320,7 +320,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.5.0-jre</version>
+                <version>33.6.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -356,7 +356,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.21.0</version>
+                <version>1.22.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-collections</groupId>
@@ -501,7 +501,7 @@
             <dependency>
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-core</artifactId>
-                <version>3.8.4</version>
+                <version>3.8.5</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.activation</groupId>
@@ -561,17 +561,17 @@
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
-                <version>2.14.1</version>
+                <version>2.14.2</version>
             </dependency>
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.18.7-jdk5</version>
+                <version>1.18.8-jdk5</version>
             </dependency>
             <dependency>
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy-agent</artifactId>
-                <version>1.18.7-jdk5</version>
+                <version>1.18.8-jdk5</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
@@ -596,7 +596,7 @@
             <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
-                <version>5.6</version>
+                <version>5.6.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents.core5</groupId>
@@ -616,62 +616,62 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
-                <version>2.25.3</version>
+                <version>2.26.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-to-slf4j</artifactId>
-                <version>2.25.3</version>
+                <version>2.26.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-artifact</artifactId>
-                <version>3.9.14</version>
+                <version>3.9.16</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-builder-support</artifactId>
-                <version>3.9.14</version>
+                <version>3.9.16</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-core</artifactId>
-                <version>3.9.14</version>
+                <version>3.9.16</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-model</artifactId>
-                <version>3.9.14</version>
+                <version>3.9.16</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-model-builder</artifactId>
-                <version>3.9.14</version>
+                <version>3.9.16</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-plugin-api</artifactId>
-                <version>3.9.14</version>
+                <version>3.9.16</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-repository-metadata</artifactId>
-                <version>3.9.14</version>
+                <version>3.9.16</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-resolver-provider</artifactId>
-                <version>3.9.14</version>
+                <version>3.9.16</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-settings</artifactId>
-                <version>3.9.14</version>
+                <version>3.9.16</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-settings-builder</artifactId>
-                <version>3.9.14</version>
+                <version>3.9.16</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
@@ -681,27 +681,27 @@
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-api</artifactId>
-                <version>2.0.16</version>
+                <version>2.0.18</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-impl</artifactId>
-                <version>2.0.16</version>
+                <version>2.0.18</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-named-locks</artifactId>
-                <version>2.0.16</version>
+                <version>2.0.18</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-spi</artifactId>
-                <version>2.0.16</version>
+                <version>2.0.18</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-util</artifactId>
-                <version>2.0.16</version>
+                <version>2.0.18</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.shared</groupId>
@@ -721,7 +721,7 @@
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-classworlds</artifactId>
-                <version>2.9.0</version>
+                <version>2.12.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
@@ -741,7 +741,7 @@
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-utils</artifactId>
-                <version>4.0.2</version>
+                <version>4.0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse</groupId>
@@ -756,37 +756,37 @@
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-http</artifactId>
-                <version>12.1.7</version>
+                <version>12.1.9</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-io</artifactId>
-                <version>12.1.7</version>
+                <version>12.1.9</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-security</artifactId>
-                <version>12.1.7</version>
+                <version>12.1.9</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
-                <version>12.1.7</version>
+                <version>12.1.9</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-session</artifactId>
-                <version>12.1.7</version>
+                <version>12.1.9</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-util</artifactId>
-                <version>12.1.7</version>
+                <version>12.1.9</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty.ee10</groupId>
                 <artifactId>jetty-ee10-servlet</artifactId>
-                <version>12.1.7</version>
+                <version>12.1.9</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty.toolchain.setuid</groupId>
@@ -816,17 +816,17 @@
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>hk2-api</artifactId>
-                <version>3.1.1</version>
+                <version>4.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>hk2-locator</artifactId>
-                <version>3.1.1</version>
+                <version>4.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>hk2-utils</artifactId>
-                <version>3.1.1</version>
+                <version>4.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
@@ -836,22 +836,22 @@
             <dependency>
                 <groupId>org.glassfish.hk2.external</groupId>
                 <artifactId>aopalliance-repackaged</artifactId>
-                <version>3.1.1</version>
+                <version>4.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-core</artifactId>
-                <version>4.0.7</version>
+                <version>4.0.8</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
-                <version>4.0.7</version>
+                <version>4.0.8</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>txw2</artifactId>
-                <version>4.0.7</version>
+                <version>4.0.8</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
@@ -916,7 +916,7 @@
             <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
-                <version>3.30.2-GA</version>
+                <version>3.31.0-GA</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.logging</groupId>
@@ -941,17 +941,17 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>6.0.3</version>
+                <version>6.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.platform</groupId>
                 <artifactId>junit-platform-commons</artifactId>
-                <version>6.0.3</version>
+                <version>6.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.jvnet.mimepull</groupId>
                 <artifactId>mimepull</artifactId>
-                <version>1.10.0</version>
+                <version>1.11.0</version>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -976,7 +976,7 @@
             <dependency>
                 <groupId>org.opensearch.client</groupId>
                 <artifactId>opensearch-java</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -987,7 +987,7 @@
             <dependency>
                 <groupId>org.opensearch.client</groupId>
                 <artifactId>opensearch-rest-client</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>commons-logging</groupId>
@@ -1003,7 +1003,7 @@
             <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm</artifactId>
-                <version>9.9.1</version>
+                <version>9.10</version>
             </dependency>
             <dependency>
                 <groupId>org.reactivestreams</groupId>
@@ -1018,27 +1018,27 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
-                <version>2.0.17</version>
+                <version>2.0.18</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
-                <version>2.0.17</version>
+                <version>2.0.18</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>log4j-over-slf4j</artifactId>
-                <version>2.0.17</version>
+                <version>2.0.18</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>2.0.17</version>
+                <version>2.0.18</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
-                <version>2.0.17</version>
+                <version>2.0.18</version>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
@@ -1141,13 +1141,13 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/opensuse-jre21</repository>
-                            <tag>5.1.2</tag>
-                            <digest>sha256:c43a12ffe93d5e76e2ae8ce020dafa02fadfdea95e7216c06a2ccb516e7ad8c1</digest>
+                            <tag>7.0.0</tag>
+                            <digest>sha256:afbb10a069e97c7d01b42acfbfc4d676a633d8f77ac30cad2c59a6e22ac159ad</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/oraclelinux-jre21</repository>
-                            <tag>2.1.5</tag>
-                            <digest>sha256:13c7f81849d73faae337341c9d5ab116f94f883da75f2ed79125000c8992da67</digest>
+                            <tag>2.2.1</tag>
+                            <digest>sha256:7c766b0ce3fd64295fca070e89a83d143e1c3494364977e002ba43ca3199ade7</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

@@ -81,9 +81,12 @@ public class AuditeventsApiServiceImpl implements AuditEventsApi {
             LOG.debug("Indexing audit event message into Elasticsearch complete");
             return Response.noContent().build();
         } catch (BadRequestException e){
-            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type("text/plain").build();
+            LOG.error("Bad request while processing audit event: {}",e.getMessage(), e);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid audit event data provided").type("text/plain").build();
         } catch(Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type("text/plain").build();
+            LOG.error("An Internal Server Error occurred while processing audit event: {}",e.getMessage(), e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("An Internal Server Error occurred while processing the audit event")
+                    .type("text/plain").build();
         }
     }
 

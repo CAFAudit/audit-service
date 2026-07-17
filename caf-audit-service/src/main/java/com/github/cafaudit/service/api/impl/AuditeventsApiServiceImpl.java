@@ -82,7 +82,7 @@ public class AuditeventsApiServiceImpl implements AuditEventsApi {
             return Response.noContent().build();
         } catch (BadRequestException e){
             LOG.error("Bad request while processing audit event: {}",e.getMessage(), e);
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid audit event data provided").type("text/plain").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).type("text/plain").build();
         } catch(Exception e){
             LOG.error("An Internal Server Error occurred while processing audit event: {}",e.getMessage(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("An Internal Server Error occurred while processing the audit event")

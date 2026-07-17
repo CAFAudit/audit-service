@@ -112,7 +112,7 @@ public class AuditIT {
         try {
             auditEventsApi.auditeventsPost(auditEventMessage);
         } catch (ApiException ae) {
-            Assert.assertEquals(ae.getMessage(),"Invalid audit event data provided");
+            Assert.assertEquals(ae.getMessage(),"The application identifier has not been specified");
         }
     }
 
@@ -123,7 +123,7 @@ public class AuditIT {
         try {
             auditEventsApi.auditeventsPost(auditEventMessage);
         } catch (ApiException ae) {
-            Assert.assertEquals(ae.getMessage(),"Invalid audit event data provided");
+            Assert.assertEquals(ae.getMessage(),"Custom audit event fields have not been specified");
         }
     }
 

@@ -218,7 +218,7 @@
                             <alias>audit-service</alias>
                             <name>${dockerCafAuditOrg}audit-service${dockerProjectVersion}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/prereleases:oraclelinux-jre25-otel-2.3.3-US1212235-SNAPSHOT</from>
+                                <from>${dockerHubPublic}/cafapi/prereleases:oraclelinux-jre25-otel-2.4.0-SNAPSHOT</from>
                                 <cmd>
                                     <exec>
                                         <args>/maven/service.sh</args>
@@ -234,7 +234,6 @@
                                     <CAF_ELASTIC_PORT_VALUE>9200</CAF_ELASTIC_PORT_VALUE>
                                     <CAF_ELASTIC_NUMBER_OF_SHARDS>5</CAF_ELASTIC_NUMBER_OF_SHARDS>
                                     <CAF_ELASTIC_NUMBER_OF_REPLICAS>1</CAF_ELASTIC_NUMBER_OF_REPLICAS>
-                                    <OTEL_SERVICE_NAME>audit-service</OTEL_SERVICE_NAME>
                                 </env>
                                 <assembly>
                                     <mode>tar</mode>

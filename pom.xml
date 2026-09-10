@@ -1146,7 +1146,7 @@
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/cafapi/prereleases</repository>
-                            <tag>oraclelinux-jre25-otel-2.3.3-US1212235-SNAPSHOT</tag>
+                            <tag>oraclelinux-jre25-otel-2.4.0-SNAPSHOT</tag>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

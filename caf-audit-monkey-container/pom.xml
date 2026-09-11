@@ -76,7 +76,7 @@
                         <image>
                             <name>${dockerCafAuditOrg}audit-monkey${dockerProjectVersion}</name>
                             <build>
-                                <from>${dockerHubPublic}/cafapi/prereleases:oraclelinux-jre25-otel-2.4.0-SNAPSHOT</from>
+                                <from>${projectDockerRegistry}/cafapi/oraclelinux-jre25-otel</from>
                                 <cmd>
                                     <exec>
                                         <args>/maven/start.sh</args>

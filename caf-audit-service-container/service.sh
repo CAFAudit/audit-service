@@ -50,7 +50,11 @@ then
 fi
 
 cd /maven
-exec java \
+if [ "$OTEL_JAVAAGENT_ENABLED" = "true" ]
+then
+  export OTEL_SERVICE_NAME=audit-service
+fi
+exec java $(${OTEL_GET_JAVA_TOOL_OPTIONS}) \
     ${CAF_AUDIT_SERVICE_JAVA_OPTS} \
     -classpath *:classpath \
     com.github.cafaudit.service.dropwizard.CafAuditApplication

@@ -77,6 +77,9 @@
                             <name>${dockerCafAuditOrg}audit-monkey${dockerProjectVersion}</name>
                             <build>
                                 <from>${projectDockerRegistry}/cafapi/oraclelinux-jre25-otel</from>
+                                <env>
+                                    <OTEL_SERVICE_NAME>audit-monkey</OTEL_SERVICE_NAME>
+                                </env>
                                 <cmd>
                                     <exec>
                                         <args>/maven/start.sh</args>

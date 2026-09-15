@@ -1165,9 +1165,9 @@
                             <digest>sha256:8ab07ae50380c1c00b77c026ab51df5d71ab7b6ca1954bba1ba43a4d65a3b8b1</digest>
                         </image>
                         <image>
-                            <targetRepository>cafapi/oraclelinux-jre25-otel</targetRepository>
-                            <repository>${dockerHubPublic}/cafapi/prereleases</repository>
-                            <tag>oraclelinux-jre25-otel-2.4.0-SNAPSHOT</tag>
+                            <repository>${dockerHubPublic}/cafapi/oraclelinux-jre25-otel</repository>
+                            <tag>2.4.0</tag>
+                            <digest>sha256:83a26a5483484303fa9ee700fe73cc82ee7a0d1a3052c9935d6cbf6dfa4d12fd</digest>
                         </image>
                         <image>
                             <repository>${dockerHubPublic}/library/busybox</repository>

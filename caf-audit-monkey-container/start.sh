@@ -17,4 +17,4 @@
 
 
 cd /maven
-java $CAF_AUDIT_MONKEY_JAVA_OPTS -cp "*" com.github.cafaudit.auditmonkey.AuditMonkey
+java $(${OTEL_GET_JAVA_TOOL_OPTIONS}) $CAF_AUDIT_MONKEY_JAVA_OPTS -cp "*" com.github.cafaudit.auditmonkey.AuditMonkey
